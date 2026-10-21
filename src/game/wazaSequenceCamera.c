@@ -133,7 +133,7 @@ void* battleCameraWazaGetOwner(void) {
 void battleCameraWazaRestart(void* owner) {
     extern void GSscene_SetMode(s32 arg);
     extern void cameraStopAnime(void* arg);
-    extern void fn_801765F4(s32 arg);
+    extern void battleCameraSetFlag3(s32 arg);
     extern s32  GSgetVersionMinor(void);
     extern u8   lbl_8047B3F4;
 
@@ -151,7 +151,7 @@ void battleCameraWazaRestart(void* owner) {
                     }
                     lbl_8047B3F0 = NULL;
                 }
-                fn_801765F4(0);
+                battleCameraSetFlag3(0);
                 lbl_8047B3EC = NULL;
                 if (GSgetVersionMinor() == 2) {
                     GSscene_SetMode(2);
@@ -274,7 +274,7 @@ void battleCameraWazaUpdate(void)
  */
 extern void GSscene_SetMode(s32 arg);
 extern void cameraStopAnime(void* arg);
-extern void fn_801765F4(s32 arg);
+extern void battleCameraSetFlag3(s32 arg);
 extern s32  GSgetVersionMinor(void);
 void battleCameraWazaStop(void) {
     void* obj;
@@ -288,7 +288,7 @@ void battleCameraWazaStop(void) {
             }
             lbl_8047B3F0 = NULL;
         }
-        fn_801765F4(0);
+        battleCameraSetFlag3(0);
         lbl_8047B3EC = NULL;
         if (GSgetVersionMinor() == 2) {
             GSscene_SetMode(2);
@@ -323,7 +323,7 @@ void battleCameraWazaStopIfOwner(void* state) {
             }
             lbl_8047B3F0 = NULL;
         }
-        fn_801765F4(0);
+        battleCameraSetFlag3(0);
         lbl_8047B3EC = NULL;
         if (GSgetVersionMinor() == 2) {
             GSscene_SetMode(2);
@@ -434,7 +434,7 @@ void battleCameraStartWaza(void* owner, void* sequence) {
                     (f32*)&offsetScale, scaleValue, scaleValue, scaleValue);
             }
 
-            fn_801765F4(animShift);
+            battleCameraSetFlag3(animShift);
             cameraMoveStop();
             cameraSetOffsetPosition(&offsetPosition);
             cameraSetOffsetRotation(&offsetRotation);

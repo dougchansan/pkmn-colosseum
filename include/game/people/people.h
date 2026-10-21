@@ -318,19 +318,19 @@ void peopleSetTransform(PeopleEntry* entry, void* mtx);
 /** Get the world transform pointer for a people entry. fn_8018FC00 */
 void* peopleGetTransform(PeopleEntry* entry);
 
-u32 fn_8018F470(u32 index);
-u32 fn_8018F490(const PeopleInfoBiosEntry* info);
+u32 floorGetShadowLight(u32 index);
+u32 peopleInfoGetFlag4(const PeopleInfoBiosEntry* info);
 u32 characterModelGetTalkSE(const PeopleInfoBiosEntry* info);
-f32 fn_8018F5B4(const PeopleInfoBiosEntry* info);
-f32 fn_8018F5CC(const PeopleInfoBiosEntry* info);
+f32 peopleInfoGetHeight(const PeopleInfoBiosEntry* info);
+f32 peopleInfoGetRadius(const PeopleInfoBiosEntry* info);
 f32 charModelGetRadius(const PeopleInfoBiosEntry* info);
-u8 fn_8018F5FC(const PeopleInfoBiosEntry* info);
+u8 peopleInfoGetCollisionType(const PeopleInfoBiosEntry* info);
 f32 charModelGetHeadPitchMax(const PeopleInfoBiosEntry* info);
 f32 charModelGetHeadPitchMin(const PeopleInfoBiosEntry* info);
 f32 charModelGetHeadYawMax(const PeopleInfoBiosEntry* info);
 f32 charModelGetHeadYawMin(const PeopleInfoBiosEntry* info);
 s8 charModelGetHeadPart(const PeopleInfoBiosEntry* info);
-void* fn_8018F6B4(const PeopleInfoBiosEntry* info);
+void* peopleInfoGetModelId(const PeopleInfoBiosEntry* info);
 PeopleInfoBiosEntry* peopleInfoBiosGetPtrFromIndex(u32 index);
 
 /* =========================================================================
@@ -355,7 +355,7 @@ void peopleMoveWalkPosition(u32 groupId, u32 index, u32 targetX, u32 targetY, u3
  * wrong, same class as the peopleMoveCheck fix). */
 
 /** Check movement completion (self-tag string lbl_8036C52C; scrCmd table
- * index 62). 0x8018A280 -- the old fn_8018F4C8 attribution here was wrong.
+ * index 62). 0x8018A280 -- the old peopleInfoGetMotion attribution here was wrong.
  * Real ABI per disasm: r3-r5 = groupId, index, waitFlag (was void(void)). */
 BOOL peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
 

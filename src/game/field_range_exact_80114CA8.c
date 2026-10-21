@@ -20,7 +20,7 @@ extern void GSlogWrite(const char* fmt, ...);
 extern void* GSresAllocResourceAlign(u32 size, u32 alignment, u32 group, u32 id, void* release);
 extern void* GSresGetResource(u32 group, u32 id);
 extern u8 floorGetFadeOutFlag(void); /* the current floor's fade-out flag */
-extern u8 fn_800FF554(void); /* the current floor's fade-in flag */
+extern u8 floorGetCurrentKind(void); /* the current floor's fade-in flag */
 extern void cms_RegisterScript(void* script);
 extern s32 cms_UnregisterScript(void* script);
 extern void floorStartSoundScript(void);
@@ -167,7 +167,7 @@ u32 _unloadLight__FPvUlUl(void* data, u32 group, u32 id) {
 
 /* A resource read while a floor fades in is kept (release vetoed). */
 u32 _unloadScript__FPvUlUl(void* data, u32 group, u32 id) {
-    if (fn_800FF554() != 0) {
+    if (floorGetCurrentKind() != 0) {
         return 0;
     }
     cms_UnregisterScript(data);
@@ -175,7 +175,7 @@ u32 _unloadScript__FPvUlUl(void* data, u32 group, u32 id) {
 }
 
 u32 _unloadFont__FPvUlUl(void* data, u32 group, u32 id) {
-    if (fn_800FF554() != 0) {
+    if (floorGetCurrentKind() != 0) {
         return 0;
     }
     GSmsgFontClose(data);
@@ -183,7 +183,7 @@ u32 _unloadFont__FPvUlUl(void* data, u32 group, u32 id) {
 }
 
 u32 _unloadMsg__FPvUlUl(void* data, u32 group, u32 id) {
-    if (fn_800FF554() != 0) {
+    if (floorGetCurrentKind() != 0) {
         return 0;
     }
     GSmsgClose(data);

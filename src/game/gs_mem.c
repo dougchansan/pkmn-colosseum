@@ -425,7 +425,7 @@ void* GSmemLock(u16 handle)
     return entry->data;
 }
 
-s32 fn_800E2AF8(u16 handle)
+s32 GSmemReturnTrue(u16 handle)
 {
     return 1;
 }
@@ -702,7 +702,7 @@ u16 _toolentryAlloc__FUl(u32 size)
     return GSmemAlloc(size, 0x20);
 }
 
-void fn_800E3560(s32 strategy)
+void GSmemSetDebugFlag(s32 strategy)
 {
     lbl_8047AB2C = strategy;
 }

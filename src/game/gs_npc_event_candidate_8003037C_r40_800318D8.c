@@ -100,7 +100,7 @@ void gbaTradeMenuDrawSprite7(void* r3, void* r4)
     }
 }
 
-void fn_80031B10(void)
+void cardeWaitFaceLoadAndStopObject(void)
 {
     while ((u8) menuFaceIsAnyLoading() != 0) {
         _threadSwitch();

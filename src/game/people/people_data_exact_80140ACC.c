@@ -4,19 +4,19 @@
  *        out of an item-record array, either from the record at `index` or,
  *        when index < 0, from successive records of that id until the
  *        amount is covered. Emptied records are cleared and the array is
- *        re-sorted (fn_801425E8). Returns the amount still owed, or -1.
+ *        re-sorted (itemSlotsCompact). Returns the amount still owed, or -1.
  *
  * Function-boundary carve of the item/people data TU (people_data.c), GC/1.3
  * -O4,p, text only. The validity tests are the TU's u8-materialised inlines
  * (as in people_data_exact_80142368.c); the record search, take, count and
- * clear helpers never exist out of line. The take mirrors fn_80141308's add:
+ * clear helpers never exist out of line. The take mirrors itemSlotsAdd's add:
  * id checks, then a count helper that re-checks the record.
  */
 #include "dolphin/types.h"
 
 extern s32 itemGetStatus(u32, u16, u16, u32);
 extern void fn_80142B24(void*, u32, u16, u32, u32);
-extern void fn_801425E8(u32* base, u16 count, u8 mode);
+extern void itemSlotsCompact(u32* base, u16 count, u8 mode);
 extern u32 lbl_80478BD8; /* gPeopleFieldCount */
 
 static inline u8 peopleItemIdValid(u16 id)
@@ -164,7 +164,7 @@ s32 heroItemChangeCount(u32* base, u16 count, u16 id, u16 amount, s16 index, u16
         }
     }
     if (needsSort == 1) {
-        fn_801425E8(base, count, sortMode);
+        itemSlotsCompact(base, count, sortMode);
     }
     return remaining;
 }

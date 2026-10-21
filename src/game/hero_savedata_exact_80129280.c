@@ -46,19 +46,19 @@ typedef struct HeroSaveData {
 /* 0x80129280 | 0x104 */
 u32 savedataGetStatus(u8* arg1, u16 arg2) {
     extern u8* savedataGetWorkPtr(u8* ptr);
-    extern u32 fn_80128E04(u8* ptr);
-    extern u32 fn_80128DEC(u8* ptr);
+    extern u32 savedataGetSection0(u8* ptr);
+    extern u32 savedataGetSection70(u8* ptr);
     extern u32 savedataGetSectionB88(u8* ptr);
-    extern u32 fn_80128DB8(u8* ptr);
-    extern u32 fn_80128D9C(u8* ptr);
-    extern u32 fn_80128D80(u8* ptr);
-    extern u32 fn_80128D68(u8* ptr);
-    extern u32 fn_80128D4C(u8* ptr);
+    extern u32 savedataGetSection1BDBC(u8* ptr);
+    extern u32 savedataGetSection1BDDC(u8* ptr);
+    extern u32 savedataGetSection1BE5C(u8* ptr);
+    extern u32 savedataGetSection7D20(u8* ptr);
+    extern u32 savedataGetSection8168(u8* ptr);
     extern u32 savedataGetSection82A8(u8* ptr);
-    extern u32 fn_80128D14(u8* ptr);
+    extern u32 savedataGetSection9A1C(u8* ptr);
     extern u32 savedataBiosGetE3E8Ptr(u8* ptr);
     extern u32 savedataGetSection1B014(u8* ptr);
-    extern u32 fn_80128CC0(u8* ptr);
+    extern u32 savedataGetSection1C45C(u8* ptr);
 
     if ((u32)arg2 >= 0x11) { return 0; }
     if (arg1 == NULL) {
@@ -69,17 +69,17 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     case 0:
         return (u32)arg1;
     case 1:
-        return fn_80128E04(arg1);
+        return savedataGetSection0(arg1);
     case 2:
-        return fn_80128DEC(arg1);
+        return savedataGetSection70(arg1);
     case 3:
         return savedataGetSectionB88(arg1);
     case 4:
-        return fn_80128DB8(arg1);
+        return savedataGetSection1BDBC(arg1);
     case 5:
-        return fn_80128D9C(arg1);
+        return savedataGetSection1BDDC(arg1);
     case 6:
-        return fn_80128D80(arg1);
+        return savedataGetSection1BE5C(arg1);
     case 7:
         return 8;
     case 8:
@@ -87,19 +87,19 @@ u32 savedataGetStatus(u8* arg1, u16 arg2) {
     case 9:
         return 0x180;
     case 10:
-        return fn_80128D68(arg1);
+        return savedataGetSection7D20(arg1);
     case 11:
-        return fn_80128D4C(arg1);
+        return savedataGetSection8168(arg1);
     case 12:
         return savedataGetSection82A8(arg1);
     case 13:
-        return fn_80128D14(arg1);
+        return savedataGetSection9A1C(arg1);
     case 14:
         return savedataBiosGetE3E8Ptr(arg1);
     case 15:
         return savedataGetSection1B014(arg1);
     case 16:
-        return fn_80128CC0(arg1);
+        return savedataGetSection1C45C(arg1);
     default:
         return 0;
     }
@@ -163,8 +163,8 @@ static inline void* heroGetHizukiItems(
 }
 
 /* 0x80129514 | 0x88 */
-void fn_80129514(u8* ptr, s32 arg2, s32 arg3) {
-    extern void fn_80140A9C(u8* first, u8* second);
+void heroBoxSwapItems(u8* ptr, s32 arg2, s32 arg3) {
+    extern void itemSwapSlots(u8* first, u8* second);
     u16 count;
     u8* items;
 
@@ -172,11 +172,11 @@ void fn_80129514(u8* ptr, s32 arg2, s32 arg3) {
     if (items == NULL) { return; }
     if ((u16)arg2 >= count) { return; }
     if ((u16)arg3 >= count) { return; }
-    fn_80140A9C(items + (u16)arg2 * 4, items + (u16)arg3 * 4);
+    itemSwapSlots(items + (u16)arg2 * 4, items + (u16)arg3 * 4);
 }
 
 /* 0x8012959C | 0xB4 */
-s32 fn_8012959C(u8* ptr, u32 arg2, u32 arg3, u32 arg4) {
+s32 heroBoxChangeItemCount(u8* ptr, u32 arg2, u32 arg3, u32 arg4) {
     extern s32 heroItemChangeCount(
         void* items, u16 count, u32 item, u32 amount, u32 index, u16 max,
         u8 flag);
@@ -191,8 +191,8 @@ s32 fn_8012959C(u8* ptr, u32 arg2, u32 arg3, u32 arg4) {
 }
 
 /* 0x80129650 | 0xC8 */
-s32 fn_80129650(u8* ptr, u32 arg2, u32 arg3, u32 arg4) {
-    extern s32 fn_80141308(
+s32 heroBoxAddItem(u8* ptr, u32 arg2, u32 arg3, u32 arg4) {
+    extern s32 itemSlotsAdd(
         void* items, u16 count, u32 item, u32 amount, u32 index, u16 max,
         u8 flag1, u8 flag2);
     u16 count = 0;
@@ -203,13 +203,13 @@ s32 fn_80129650(u8* ptr, u32 arg2, u32 arg3, u32 arg4) {
 
     items = heroGetHizukiItems(ptr, &count, &max, &flag1, &flag2);
     if (items == NULL) { return -1; }
-    return fn_80141308(
+    return itemSlotsAdd(
         items, count, arg2, arg3, arg4, max, flag1, flag2);
 }
 
 /* 0x80129718 | 0xC0 */
-u32 fn_80129718(u8* ptr, u32 arg2) {
-    extern s32 fn_80142368(
+u32 heroBoxHasRoom(u8* ptr, u32 arg2) {
+    extern s32 itemSlotsFind(
         void* items, u16 count, u32 item, u32 mode, u16 max);
     u16 count = 0;
     u16 max = 0;
@@ -217,8 +217,8 @@ u32 fn_80129718(u8* ptr, u32 arg2) {
 
     items = heroGetHizukiItems(ptr, &count, &max, NULL, NULL);
     if (items == NULL) { return 0; }
-    if ((u32)fn_80142368(items, count, arg2, 1, max) != 0) { return 1; }
-    return fn_80142368(items, count, arg2, 2, max) != 0;
+    if ((u32)itemSlotsFind(items, count, arg2, 1, max) != 0) { return 1; }
+    return itemSlotsFind(items, count, arg2, 2, max) != 0;
 }
 
 /* 0x801297D8 | 0x68 */
@@ -262,12 +262,12 @@ s32 heroItemCheckAddItemDataId(u8* ptr, u32 item_id) {
 }
 
 /* 0x80129948 | 0x80 */
-void fn_80129948(
+void heroItemSwapItems(
     u8* ptr, u32 kind, u32 first, u32 second, u32 arg5, u32 arg6,
     u32 arg7) {
     extern void* heroItemGetItemKindToItemAryPtr(
         u8*, u32, u16*, u32, u32, u32);
-    extern void fn_80140A9C(u8*, u8*);
+    extern void itemSwapSlots(u8*, u8*);
     u16 count;
     u8* items;
 
@@ -276,7 +276,7 @@ void fn_80129948(
     if (items == NULL) { return; }
     if ((u16)first >= count) { return; }
     if ((u16)second >= count) { return; }
-    fn_80140A9C(items + (u16)first * 4, items + (u16)second * 4);
+    itemSwapSlots(items + (u16)first * 4, items + (u16)second * 4);
 }
 
 /* 0x801299C8 | 0xB0 */
@@ -306,7 +306,7 @@ s32 heroItemAddItemDataId(
     extern u32 itemGetStatus(u32, u32, u32, u32);
     extern void* heroItemGetItemKindToItemAryPtr(
         u8*, u8, u16*, u16*, u8*, u8*);
-    extern s32 fn_80141308(
+    extern s32 itemSlotsAdd(
         void*, u16, u32, u32, u32, u16, u8, u8);
     u16 count = 0;
     u16 max = 0;
@@ -319,7 +319,7 @@ s32 heroItemAddItemDataId(
     items = heroItemGetItemKindToItemAryPtr(
         ptr, kind, &count, &max, &flag1, &flag2);
     if (items == NULL) { return -1; }
-    return fn_80141308(
+    return itemSlotsAdd(
         items, count, item_id, amount, index, max, flag1, flag2);
 }
 
@@ -328,7 +328,7 @@ u32 heroItemCheckHaveItemDataId(u8* ptr, u32 item_id) {
     extern u32 itemGetStatus(u32, u32, u32, u32);
     extern void* heroItemGetItemKindToItemAryPtr(
         u8*, u8, u16*, u16*, u32, u32);
-    extern s32 fn_80142368(void*, u16, u32, u32, u16);
+    extern s32 itemSlotsFind(void*, u16, u32, u32, u16);
     u16 count = 0;
     u16 max = 0;
     void* items;
@@ -336,7 +336,7 @@ u32 heroItemCheckHaveItemDataId(u8* ptr, u32 item_id) {
     items = heroItemGetItemKindToItemAryPtr(
         ptr, (u8)itemGetStatus(0, item_id, 2, 0), &count, &max, 0, 0);
     if (items == NULL) { return 0; }
-    return fn_80142368(items, count, item_id, 0, max) != 0;
+    return itemSlotsFind(items, count, item_id, 0, max) != 0;
 }
 
 /* 0x80129BC8 | 0x19C */
@@ -547,18 +547,18 @@ void heroInit(u8* ptr) {
     extern void heroSetStatus(u8*, u32, u32);
     extern u8* heroGetStatus(u8*, u32, u32);
     extern void pokemonInitAry(u8*, u16);
-    extern void fn_80142A88(u8*, u32);
+    extern void itemSlotsClear(u8*, u32);
     u16 empty_name = 0;
 
     heroSetStatus(ptr, 1, (u32)&empty_name);
     heroSetStatus(ptr, 2, 0);
     pokemonInitAry(heroGetStatus(ptr, 3, 0), 6);
-    fn_80142A88(heroGetStatus(ptr, 4, 0), 0x14);
-    fn_80142A88(heroGetStatus(ptr, 5, 0), 0x2B);
-    fn_80142A88(heroGetStatus(ptr, 6, 0), 0x10);
-    fn_80142A88(heroGetStatus(ptr, 7, 0), 0x40);
-    fn_80142A88(heroGetStatus(ptr, 8, 0), 0x2E);
-    fn_80142A88(heroGetStatus(ptr, 9, 0), 3);
+    itemSlotsClear(heroGetStatus(ptr, 4, 0), 0x14);
+    itemSlotsClear(heroGetStatus(ptr, 5, 0), 0x2B);
+    itemSlotsClear(heroGetStatus(ptr, 6, 0), 0x10);
+    itemSlotsClear(heroGetStatus(ptr, 7, 0), 0x40);
+    itemSlotsClear(heroGetStatus(ptr, 8, 0), 0x2E);
+    itemSlotsClear(heroGetStatus(ptr, 9, 0), 3);
     heroSetStatus(ptr, 0xB, 2);
     heroSetStatus(ptr, 0xC, 0);
     heroSetStatus(ptr, 0xD, 0);
@@ -573,6 +573,6 @@ void heroInit(u8* ptr) {
     heroSetStatus(ptr, 0x16, 1);
     heroSetStatus(ptr, 0x17, (u32)&empty_name);
     heroSetStatus(ptr, 0x18, 0);
-    fn_80142A88(heroGetStatus(ptr, 10, 0), 10);
+    itemSlotsClear(heroGetStatus(ptr, 10, 0), 10);
     heroSetStatus(ptr, 0x19, 0);
 }

@@ -19,8 +19,8 @@ extern const MenuData* menuDataBiosGetPtr(u32 id);
 extern void* menuSeBiosGetPtr(s32 group);
 extern u16 menuSeTableLookup(void*, s32);
 extern int soundStartSE(u16);
-extern u8 fn_8008ABA0(s32);
-extern s32 fn_8008AB8C(s32);
+extern u8 gbaCommIsReady(s32);
+extern s32 gbaCommGetKeys(s32);
 
 /* 0x80103484 | 0x58 */
 void menuPlaySe(u32 id, s32 event) {
@@ -42,11 +42,11 @@ u8 _menuGetAgbKeyInfo__FlPUs(s32 port, u16* keys) {
 
     device = port + 1;
     result = 0;
-    if (fn_8008ABA0(device) == 0) {
+    if (gbaCommIsReady(device) == 0) {
         return 0;
     }
 
-    buttons = fn_8008AB8C(device);
+    buttons = gbaCommGetKeys(device);
     if (buttons & 0x40) result |= 0x1;
     if (buttons & 0x80) result |= 0x2;
     if (buttons & 0x20) result |= 0x4;

@@ -14,12 +14,12 @@ void gbaCommandSendWazaText(s32 param0, s32 param1)
     gbaCmdUpload88(param0 - 1, buf);
 }
 
-s32 fn_8008AB8C(s32 value)
+s32 gbaCommGetKeys(s32 value)
 {
     return lbl_8047A67C[value - 1];
 }
 
-u8 fn_8008ABA0(s32 index)
+u8 gbaCommIsReady(s32 index)
 {
     u32 result = 0;
 

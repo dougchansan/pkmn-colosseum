@@ -18,8 +18,8 @@
  *   titleMainLoop  GStitle_MainLoop             -- 0xE8 bytes, title screen main loop
  *   titleInit  GStitle_Init                 -- 0xF0 bytes, initialize title screen
  *   _titleThread  GStitle_ThreadEntry          -- 0x2C bytes, title thread entry point
- *   fn_800205B8  GStitle_SetMode              -- 8 bytes, set title mode (stw + blr)
- *   fn_800205C0  GStitle_SetDemoPtr           -- 8 bytes, set autodemo pointer
+ *   titleSetMode8047A310  GStitle_SetMode              -- 8 bytes, set title mode (stw + blr)
+ *   titleSetMode8047A350  GStitle_SetDemoPtr           -- 8 bytes, set autodemo pointer
  *   titleDrawAutodemoTimer  GStitle_CheckAutodemo        -- 0x44 bytes, check autodemo timer
  *   titleResetAutodemoTimer  GStitle_ResetTimer           -- 0xC bytes, reset autodemo countdown
  *   titleOptionsMenuCB  GStitle_RenderFrame          -- 0x304 bytes, render one title frame
@@ -37,9 +37,9 @@
  *   titleDrawContinueInfo  GStitle_SaveFileSelect       -- 0x19C bytes, save file selection
  *   titleMenuMain  GStitle_LoadSaveFile         -- 0x4D4 bytes, load save from memcard
  *   titleMenuExit  GStitle_NewGameSetup         -- 0x60 bytes, initialize new game
- *   fn_80021624  GStitle_SetDifficulty        -- 0x20 bytes, set game difficulty
+ *   titleMenuMainCallback  GStitle_SetDifficulty        -- 0x20 bytes, set game difficulty
  *   titleIntroStart  GStitle_IntroSequence        -- 0x9C bytes, start intro sequence
- *   fn_800216E0  GStitle_SkipIntro            -- 8 bytes, set skip flag
+ *   titleSetIntroFlag8047A358  GStitle_SkipIntro            -- 8 bytes, set skip flag
  *   itemUseFormatMessage  GStitle_NameEntry            -- 0x1D4 bytes, player name input screen
  *   itemFieldUseCologne  GStitle_NameEntryInput       -- 0x1E0 bytes, keyboard input handler
  *   itemFieldUseCannotUse  GStitle_NameEntryConfirm     -- 0x78 bytes, confirm name
@@ -167,7 +167,7 @@
  *   Original-name candidates for our extern fn_XXXXXXXX:
  *     menuItemBiosGetPtr / menuDataBiosGetPtr -- linked-list/menu accessors
  *     fn_800D3088 / GSgfxGetVsyncRate -- frame timing (returns u32/s32 ticks)
- *     fn_800E0CA0 / GSlerpGetLinearInterpolationVector -- vec3 transform helpers
+ *     GSsinTable / GSlerpGetLinearInterpolationVector -- vec3 transform helpers
  *     GSmsgGetGSchar / msgctrlSetValue -- message/window callbacks
  *     winMsgOpen / winMsgClose -- text print + wait
  *     fn_801902E0 -- config flag check (returns u8)
@@ -317,14 +317,14 @@ extern u32 lbl_8047A358;
 
 /* Address: 0x800205B8 | Size: 0x8 | Pattern: sda_setter */
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800205B8)
-void fn_800205B8(u32 val) {
+void titleSetMode8047A310(u32 val) {
     lbl_8047A310 = val;
 }
 #endif
 
 /* Address: 0x800205C0 | Size: 0x8 | Pattern: sda_setter */
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800205C0)
-void fn_800205C0(u32 val) {
+void titleSetMode8047A350(u32 val) {
     lbl_8047A350 = val;
 }
 #endif
@@ -336,7 +336,7 @@ u32 titleOptionsCursor(void) { return 0; }
 
 /* Address: 0x800216E0 | Size: 0x8 | Pattern: sda_setter */
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_800216E0)
-void fn_800216E0(u32 val) {
+void titleSetIntroFlag8047A358(u32 val) {
     lbl_8047A358 = val;
 }
 #endif
@@ -973,7 +973,7 @@ void wmapMenuDrawItem4(s32 arg0, u8* arg1) {
 /* 0x80024DBC | 0x170
  *
  * wmapMenuDrawAnim -- one of four "twin" functions. Fade-aware position writer.
- *   - case 1 (lbl_8047A370 == 1): call fn_800E0CA0(fade_amt) + GSlerpGetLinearInterpolationVector
+ *   - case 1 (lbl_8047A370 == 1): call GSsinTable(fade_amt) + GSlerpGetLinearInterpolationVector
  *     to interpolate a float-pair position into local_48[0..1]; convert to int.
  *   - default: linked-list walk to find the menu item at lbl_8047A368,
  *     pull its x (pbVar3+2) and y (pbVar3+4) shorts.
@@ -988,7 +988,7 @@ void wmapMenuDrawItem4(s32 arg0, u8* arg1) {
  * Status: 96.6% matched. Remaining diffs: @NNN@sda21 anonymous f64 bias
  * constants vs target lbl_8047B8B8@sda21 named refs.
  */
-extern f32 fn_800E0CA0(f32);
+extern f32 GSsinTable(f32);
 extern void GSlerpGetLinearInterpolationVector(void*, void*, void*, f32);
 extern u32 lbl_8047A370;
 extern f32 lbl_80478898;
@@ -1009,7 +1009,7 @@ void wmapMenuDrawAnim(s32 arg0, u8* arg1) {
     extern u8* menuItemBiosGetPtr(s32);
     extern u8* menuDataBiosGetPtr(u32);
     extern void GSlerpGetLinearInterpolationVector(void*, void*, void*);
-    extern void fn_800E0CA0(f64);
+    extern void GSsinTable(f64);
     s32 iVar2;
     u8 *pbVar3;
     s32 uVar5;
@@ -1021,7 +1021,7 @@ void wmapMenuDrawAnim(s32 arg0, u8* arg1) {
 
     switch ((s32)lbl_8047A370) {
     case 1:
-        fn_800E0CA0((f64)lbl_80478898);
+        GSsinTable((f64)lbl_80478898);
         GSlerpGetLinearInterpolationVector(local_48, lbl_803A2058, lbl_803A204C);
         unaff_r28 = (s32)local_48[0];
         unaff_r31 = (s32)local_48[1];
@@ -1087,7 +1087,7 @@ void wmapMenuDrawAnim2(s32 arg0, u8* arg1) {
     extern u8* menuItemBiosGetPtr(s32);
     extern u8* menuDataBiosGetPtr(u32);
     extern void GSlerpGetLinearInterpolationVector(void*, void*, void*);
-    extern void fn_800E0CA0(f64);
+    extern void GSsinTable(f64);
     s32 iVar2;
     u8 *pbVar3;
     s32 uVar5;
@@ -1099,7 +1099,7 @@ void wmapMenuDrawAnim2(s32 arg0, u8* arg1) {
 
     switch ((s32)lbl_8047A370) {
     case 1:
-        fn_800E0CA0((f64)lbl_80478898);
+        GSsinTable((f64)lbl_80478898);
         GSlerpGetLinearInterpolationVector(local_48, lbl_803A2058, lbl_803A204C);
         unaff_r28 = (s32)local_48[0];
         unaff_r31 = (s32)local_48[1];
@@ -1160,7 +1160,7 @@ void wmapMenuDrawAnim3(s32 arg0, u8* arg1) {
     extern u8* menuItemBiosGetPtr(s32);
     extern u8* menuDataBiosGetPtr(u32);
     extern void GSlerpGetLinearInterpolationVector(void*, void*, void*);
-    extern void fn_800E0CA0(f64);
+    extern void GSsinTable(f64);
     s32 iVar2;
     u8 *pbVar3;
     s32 uVar5;
@@ -1172,7 +1172,7 @@ void wmapMenuDrawAnim3(s32 arg0, u8* arg1) {
 
     switch ((s32)lbl_8047A370) {
     case 1:
-        fn_800E0CA0((f64)lbl_80478898);
+        GSsinTable((f64)lbl_80478898);
         GSlerpGetLinearInterpolationVector(local_48, lbl_803A2058, lbl_803A204C);
         unaff_r28 = (s32)local_48[0];
         unaff_r31 = (s32)local_48[1];
@@ -1235,7 +1235,7 @@ void wmapMenuDrawAnim4(s32 arg0, u8* arg1) {
     extern u8* menuItemBiosGetPtr(s32);
     extern u8* menuDataBiosGetPtr(u32);
     extern void GSlerpGetLinearInterpolationVector(void*, void*, void*);
-    extern void fn_800E0CA0(f64);
+    extern void GSsinTable(f64);
     s32 iVar2;
     u8 *pbVar3;
     s32 uVar5;
@@ -1247,7 +1247,7 @@ void wmapMenuDrawAnim4(s32 arg0, u8* arg1) {
 
     switch ((s32)lbl_8047A370) {
     case 1:
-        fn_800E0CA0((f64)lbl_80478898);
+        GSsinTable((f64)lbl_80478898);
         GSlerpGetLinearInterpolationVector(local_48, lbl_803A2058, lbl_803A204C);
         unaff_r28 = (s32)local_48[0];
         unaff_r31 = (s32)local_48[1];
@@ -1312,7 +1312,7 @@ void wmapMenuDrawAnim5(s32 arg0, u8* arg1) {
     extern u8* menuItemBiosGetPtr(s32);
     extern u8* menuDataBiosGetPtr(u32);
     extern void GSlerpGetLinearInterpolationVector(void*, void*, void*);
-    extern void fn_800E0CA0(f64);
+    extern void GSsinTable(f64);
     s32 iVar1;
     u8 *pbVar2;
     s32 uVar4;
@@ -1322,7 +1322,7 @@ void wmapMenuDrawAnim5(s32 arg0, u8* arg1) {
 
     switch ((s32)lbl_8047A370) {
     case 1:
-        fn_800E0CA0((f64)lbl_80478898);
+        GSsinTable((f64)lbl_80478898);
         GSlerpGetLinearInterpolationVector(local_28, lbl_803A2058, lbl_803A204C);
         unaff_r29 = (s32)local_28[0];
         break;
@@ -1385,7 +1385,7 @@ void wmapMenuDrawAnim6(s32 arg0, u8* arg1) {
     extern u8* menuItemBiosGetPtr(s32);
     extern u8* menuDataBiosGetPtr(u32);
     extern void GSlerpGetLinearInterpolationVector(void*, void*, void*);
-    extern void fn_800E0CA0(f64);
+    extern void GSsinTable(f64);
     s32 iVar1;
     u8 *pbVar2;
     s32 uVar4;
@@ -1395,7 +1395,7 @@ void wmapMenuDrawAnim6(s32 arg0, u8* arg1) {
 
     switch ((s32)lbl_8047A370) {
     case 1:
-        fn_800E0CA0((f64)lbl_80478898);
+        GSsinTable((f64)lbl_80478898);
         GSlerpGetLinearInterpolationVector(local_24, lbl_803A2058, lbl_803A204C);
         unaff_r29 = (s32)local_24[1];
         break;
@@ -1777,7 +1777,7 @@ extern void gfxSetUpdates(void);
 extern void gfxSetZMode(void);
 extern void gfxSetAlphaCompare(void);
 extern void gfxSetCullMode(void);
-extern void fn_800D9ED8(void);
+extern void gfxSetFlag1A(void);
 extern f32 lbl_8047A3A0;
 extern u32 lbl_8047A388;
 extern f32 lbl_8047A3A4;
@@ -1832,7 +1832,7 @@ s32 wmapRideOverlay(s32 param_1) {
     extern f32 lbl_8047A3A4;
     extern void wmapDrawCaptureQuad(s32, f32, f32, f32, s32, s32, f32*);
     extern void gfxSetOrtho(f32, f32, f32, f32);
-    extern void fn_800D9ED8(s32);
+    extern void gfxSetFlag1A(s32);
     extern void gfxSetCullMode(s32);
     extern void gfxSetAlphaCompare(s32, s32, s32, s32, s32, s32);
     extern void gfxSetZMode(s32, s32, s32);
@@ -1846,7 +1846,7 @@ s32 wmapRideOverlay(s32 param_1) {
     gfxSetZMode(0, 1, 1);
     gfxSetAlphaCompare(0, 7, 0, 1, 7, 0);
     gfxSetCullMode(0);
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
 
     local_18[0] = 320.0f;
     local_18[1] = 240.0f;
@@ -1876,13 +1876,13 @@ s32 wmapRideOverlay(s32 param_1) {
  *             s32 flag_b, f32 *pos)  -- GX quad render primitive.
  *
  *   1. Build two vec3s (vec_a, vec_b) based on flag_a (1 = symmetric scale,
- *      else diagonal). Call fn_800E0CA0(rot) + GSlerpGetLinearInterpolationVector to combine them
+ *      else diagonal). Call GSsinTable(rot) + GSlerpGetLinearInterpolationVector to combine them
  *      into a rotated offset vector at result_1.
  *   2. Multiply result_1.x by lbl_8047B8DC (alpha) and store as scaled.
- *   3. Build second vec3 pair based on flag_b, call fn_800E0CA0+090C again,
- *      feed through fn_800E042C to get transformed coords into result_2.
+ *   3. Build second vec3 pair based on flag_b, call GSsinTable+090C again,
+ *      feed through GSmtxMakeScaleVec to get transformed coords into result_2.
  *   4. Third set: combine pos[0], pos[1] with lbl_8047B8F0/F4 UV corners,
- *      via fn_800E0CA0+090C+GSmtxTransApply for the inverse transform.
+ *      via GSsinTable+090C+GSmtxTransApply for the inverse transform.
  *   5. Set GX render state (TEV stage 3, prim TRIANGLE_FAN count 4):
  *        fn_800D88DC(3), fn_800D888C(4), fn_800D6A00(4),
  *        fn_800D7820(lbl_80314AE8), fn_800D85D4(0, tex), fn_800D67BC(4)
@@ -1894,12 +1894,12 @@ s32 wmapRideOverlay(s32 param_1) {
  *      4 UV corners: (0,0) (1,0) (0,1) (1,1) via lbl_8047B8AC/B8B0.
  *   7. fn_800D6728() to flush the primitive.
  *
- * result_2 is a 3x4 matrix (fn_800E042C builds it, GSmtxTransApply updates it,
+ * result_2 is a 3x4 matrix (GSmtxMakeScaleVec builds it, GSmtxTransApply updates it,
  * GSvecTransform applies it), which accounts for retail's 0xA0 frame.
  *
  * Status: exact.
  */
-extern void fn_800E042C(void);
+extern void GSmtxMakeScaleVec(void);
 extern void GSmtxTransApply(void);
 extern void gfxSetFlags(void);
 extern void gfxClearFlags(void);
@@ -1928,9 +1928,9 @@ void wmapDrawCaptureQuad(s32 arg_r3, f32 arg_f1, f32 arg_f2, f32 arg_f3,
     extern void gfxSetFlags(s32);
     extern void GSvecTransform(f32*, f32 (*)[4], f32*);
     extern void GSmtxTransApply(f32 (*)[4], f32*);
-    extern void fn_800E042C(f32 (*)[4], f32*);
+    extern void GSmtxMakeScaleVec(f32 (*)[4], f32*);
     extern void GSlerpGetLinearInterpolationVector(f32*, f32*, f32*);
-    extern void fn_800E0CA0(f32);
+    extern void GSsinTable(f32);
     f32 mtx[3][4];
     f32 result_1[3];
     f32 vec_b[3];
@@ -1944,7 +1944,7 @@ void wmapDrawCaptureQuad(s32 arg_r3, f32 arg_f1, f32 arg_f2, f32 arg_f3,
         vec_b[0] = 0.0f; vec_b[1] = 0.0f; vec_b[2] = 0.0f;
         vec_a[0] = arg_f2;       vec_a[1] = arg_f2;       vec_a[2] = arg_f2;
     }
-    fn_800E0CA0(arg_f1);
+    GSsinTable(arg_f1);
     GSlerpGetLinearInterpolationVector(result_1, vec_b, vec_a);
     scaled = (s32)(255.0f * result_1[0]);
 
@@ -1955,13 +1955,13 @@ void wmapDrawCaptureQuad(s32 arg_r3, f32 arg_f1, f32 arg_f2, f32 arg_f3,
         vec_b[0] = arg_f3;       vec_b[1] = arg_f3;       vec_b[2] = 1.0f;
         vec_a[0] = 1.0f; vec_a[1] = 1.0f; vec_a[2] = 1.0f;
     }
-    fn_800E0CA0(arg_f1);
+    GSsinTable(arg_f1);
     GSlerpGetLinearInterpolationVector(result_1, vec_b, vec_a);
-    fn_800E042C(mtx, result_1);
+    GSmtxMakeScaleVec(mtx, result_1);
 
     vec_b[0] = 320.0f; vec_b[1] = 240.0f; vec_b[2] = 0.0f;
     vec_a[0] = arg_r6[0]; vec_a[1] = arg_r6[1]; vec_a[2] = 0.0f;
-    fn_800E0CA0(arg_f1);
+    GSsinTable(arg_f1);
     GSlerpGetLinearInterpolationVector(result_1, vec_b, vec_a);
     GSmtxTransApply(mtx, result_1);
 
@@ -2477,7 +2477,7 @@ extern void menuCloseCustom(s32, s32, s32);
 void titleNewContinueSelect(void) {
     extern void _threadSwitch(void);
     extern u8 winSeqCheckMove(s32);
-    extern void fn_800205C0(s32);
+    extern void titleSetMode8047A350(s32);
     extern u32 GSsndGetOutputMode(void);
     extern s32 gamedatasaveGetStatus(s32, s32);
     extern s32 menuOpen(s32, s32);
@@ -2501,7 +2501,7 @@ void titleNewContinueSelect(void) {
     while (winSeqCheckMove(0xAA) != 0) {
         _threadSwitch();
     }
-    fn_800205C0(0);
+    titleSetMode8047A350(0);
 
     *(s32*)((u8*)&lbl_803A1FC8 + 0x0) = 0;
     *(f32*)((u8*)&lbl_803A1FC8 + 0x14) = 0.0f;
@@ -2578,7 +2578,7 @@ void titleDrawOptionHelp(u8* r3, u8* r4) {
 extern void* menuModelRender(void*);
 extern void gfxVtxPos2s16(void);
 extern s32 darkPokemonCountFlag14(void);
-extern void fn_801021F8(u32, u32);
+extern void windowSetAllSpritesDisp(u32, u32);
 extern u8 lbl_803A1FF8[];
 extern u8 lbl_80314F98[];
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80020F54)
@@ -2635,9 +2635,9 @@ void titleDrawContinueInfo(u8* arg0, u8* arg1) {
     case 0x916:
     case 0x917:
         if ((s32)(&lbl_8047A360)[1] == 5) {
-            fn_801021F8(0xAA, 0);
+            windowSetAllSpritesDisp(0xAA, 0);
         } else {
-            fn_801021F8(0xAA, 1);
+            windowSetAllSpritesDisp(0xAA, 1);
         }
         break;
     }
@@ -2656,7 +2656,7 @@ void titleDrawContinueInfo(u8* arg0, u8* arg1) {
  *    entered directly instead of jumping to the test first;
  *  - the inner menu switch lays out case 1 after cases 2 and 3;
  *  - the three message values are their own object, not the address-taken
- *    work variables: those are passed to fn_8018F4C8 by address, so reusing
+ *    work variables: those are passed to peopleInfoGetMotion by address, so reusing
  *    them puts the values in memory, while retail holds them in r27/r28
  *    across the calls. As an array their elements outrank the state web and
  *    take r28, leaving state r27; as separate scalars state takes r28 and
@@ -2669,19 +2669,19 @@ void titleDrawContinueInfo(u8* arg0, u8* arg1) {
  */
 extern void menuColosseumBattle(void);
 extern void floorRequestChange(void);
-extern void fn_8006A718(void);
+extern void savedataBattleGetHeroSpecies(void);
 extern void std113_mapObjectUnk_8018db68(u32);
 extern void menuModelTerm(void*);
 extern void menuNameEntryOpen(void);
 extern void menuNameEntryGetLastName(void);
 extern void savedataCreate(void);
-extern void fn_800056E4(void);
+extern void titleSetFlag80478DC8(void);
 extern void gamedataSetPlaytime(void);
 extern void heroMoveSyncWithHero(void);
 extern void menuModelInit(void);
 extern void menuPokemonModelRequestById(void);
 extern void peopleInfoBiosGetPtr(void);
-extern void fn_8018F4C8(void);
+extern void peopleInfoGetMotion(void);
 extern void gamedataGetPlaytime(void);
 extern void darkPokemonCountFlag12(void);
 extern void floorReturnToSavedRoom(void);
@@ -2698,21 +2698,21 @@ s32 titleMenuMain(void)
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
     extern void menuCloseCustom(s32, s32, s32);
     extern s32 menuColosseumBattle(s32);
-    extern void fn_800205B8(u32);
+    extern void titleSetMode8047A310(u32);
     extern u32 gamedatasaveGetStatus(s32, s32);
-    extern u16 fn_8006A718(s32);
+    extern u16 savedataBattleGetHeroSpecies(s32);
     extern u8 memcardGetFlag41(void);
     extern s32 floorRequestChange(s32);
     extern void menuModelInit(void*, s16, s16);
     extern s32 menuModelSetMotion(void*, u32);
     extern void menuPokemonModelRequestById(void*, u32);
     extern void* peopleInfoBiosGetPtr(u32);
-    extern void fn_8018F4C8(void*, s32, s32*, void*);
+    extern void peopleInfoGetMotion(void*, s32, s32*, void*);
     extern s32 menuNameEntryOpen(s32, s32);
     extern void menuNameEntryGetLastName(void*);
     extern void savedataCreate(u32, const void*);
     extern void std104_soundSetBackgroundMusic(s32, s32, s32);
-    extern void fn_800056E4(u8);
+    extern void titleSetFlag80478DC8(u8);
     extern void gamedataSetPlaytime(f32);
     extern void floorLink(s32, s32);
     extern s32 gamedataGetPlaytime(void);
@@ -2769,7 +2769,7 @@ s32 titleMenuMain(void)
                 state = 4;
                 break;
             default:
-                fn_800205B8(1);
+                titleSetMode8047A310(1);
                 floorRequestChange(0x384);
                 state = 0x64;
                 break;
@@ -2779,7 +2779,7 @@ s32 titleMenuMain(void)
         case 5:
             if (gamedatasaveGetStatus(0, 4) == 0) {
                 result = 0x3C3A;
-            } else if ((u16)fn_8006A718(0) == 1) {
+            } else if ((u16)savedataBattleGetHeroSpecies(0) == 1) {
                 result = 0x44C9;
             } else {
                 result = 0x3C35;
@@ -2798,7 +2798,7 @@ s32 titleMenuMain(void)
                 menuNameEntryOpen(0, 0);
                 menuNameEntryGetLastName(nameBuf);
                 savedataCreate(0, nameBuf);
-                fn_800056E4(1);
+                titleSetFlag80478DC8(1);
                 gamedataSetPlaytime(0.0f);
                 heroMoveSyncWithHero();
                 floorLink(0x3A0, 0);
@@ -2809,7 +2809,7 @@ s32 titleMenuMain(void)
             break;
 
         case 2:
-            fn_800056E4(0);
+            titleSetFlag80478DC8(0);
             if (gamedatasaveGetStatus(0, 4) != 0) {
                 state = 3;
                 break;
@@ -2830,7 +2830,7 @@ s32 titleMenuMain(void)
                           *(s16*)(lbl_802EF0A8 + 0x4EFE),
                           *(s16*)(lbl_802EF0A8 + 0x4F00));
             menuPokemonModelRequestById(lbl_803A1FF8, 0xF70400);
-            fn_8018F4C8(peopleInfoBiosGetPtr(0xF70400), 1, &workA, &workB);
+            peopleInfoGetMotion(peopleInfoBiosGetPtr(0xF70400), 1, &workA, &workB);
             menuModelSetMotion(lbl_803A1FF8, workA);
             msgVals[0] = gamedataGetPlaytime();
             msgVals[1] = darkPokemonCountFlag14();
@@ -2845,13 +2845,13 @@ s32 titleMenuMain(void)
                 heroMoveSyncWithHero();
                 floorReturnToSavedRoom();
                 state = 0x64;
-                fn_800056E4(1);
+                titleSetFlag80478DC8(1);
             } else if (answer == 1) {
                 state = 1;
-                fn_800056E4(1);
+                titleSetFlag80478DC8(1);
             } else {
                 state = 1;
-                fn_800056E4(1);
+                titleSetFlag80478DC8(1);
             }
             menuCloseCustom(0x16, 0, 1);
             winMsgClose(1);
@@ -2899,9 +2899,9 @@ void titleMenuExit(void) {
 }
 #endif
 
-/* fn_80021624 - 0x80021624 | size: 0x20 */
+/* titleMenuMainCallback - 0x80021624 | size: 0x20 */
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80021624)
-void fn_80021624(void) {
+void titleMenuMainCallback(void) {
     titleMenuMain();
 }
 #endif
@@ -3146,9 +3146,9 @@ s32 itemFieldUseCannotUse(u32 r3, u32* r4) {
  */
 extern void fn_80142EF8(void);
 extern void fn_801431AC(void);
-extern s32 fn_80014110(void);
+extern s32 itemFieldUseGetPokemon(void);
 extern s32 pokemonIsJoutaiDataId(s32, s32);
-extern s16 fn_80144574(void*, s32, s32, u16, s32);
+extern s16 itemUseApply(void*, s32, s32, u16, s32);
 extern void soundStart(s32, s32, s32, s32);
 extern void menuPokemonRefresh(void);
 extern u8 lbl_80478890[8];
@@ -3172,7 +3172,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
     typedef struct TitleBgmTable {
         u16 entries[5];
     } TitleBgmTable;
-    extern s32 fn_80144574(void*, s32, s32, u16, u8);
+    extern s32 itemUseApply(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
     extern u8 pokemonIsJoutaiDataId(s32, s32);
@@ -3201,7 +3201,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
         TitleSpecialEntry* entry;
         s32 owner;
 
-        slot = fn_80014110();
+        slot = itemFieldUseGetPokemon();
         itemUseGetTargetPokemon(slot, &pokemon, &data);
         if (pokemonIsJoutaiDataId(pokemon, 0x3E)) {
             msgctrlSetValue(0x32, (void*)pokemonBiosGetNicknamePtr(pokemon));
@@ -3210,7 +3210,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
             return 1;
         }
 
-        effectCount = fn_80144574(effects, pokemon, data, arg0, 0);
+        effectCount = itemUseApply(effects, pokemon, data, arg0, 0);
         if ((s16)effectCount > 0) {
             bgm = *(TitleBgmTable*)lbl_80266DB0;
             for (bgmIndex = 0; bgmIndex < 5; bgmIndex++) {
@@ -3285,7 +3285,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
         if (slot >= 0) {
             itemUseGetTargetPokemon(slot, &pokemon, &data);
             if (pokemonIsJoutaiDataId(pokemon, 0x3E) == 0) {
-                effect_count = fn_80144574(effects, pokemon, data, arg0, 0);
+                effect_count = itemUseApply(effects, pokemon, data, arg0, 0);
                 if ((s16)effect_count > 0) {
                     bgm = *(TitleBgmTable*)lbl_80266DB0;
                     for (i = 0; i < 5; i++) {
@@ -3340,7 +3340,7 @@ s32 itemFieldUseRecover(u32 arg0, u32* arg1) {
 /* itemFieldUseBall - 0x80022050 | size: 0x12c */
 extern s32 pcboxGetNbPokemonBox(void);
 extern s32 fn_801347E8(s32, s8);
-extern void fn_800140FC(s32*, s32*);
+extern void itemFieldUseGetTarget(s32*, s32*);
 extern s32 fightTrainerIsSelectedItemBall(s32);
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80022050)
 s32 itemFieldUseBall(s32 arg0, s32* arg1) {
@@ -3378,7 +3378,7 @@ s32 itemFieldUseBall(s32 arg0, s32* arg1) {
             return 1;
         }
     }
-    fn_800140FC(&sp14, &sp10);
+    itemFieldUseGetTarget(&sp14, &sp10);
     if ((u8)fightTrainerIsSelectedItemBall(sp10) != 0) {
         winMsgOpen(2, 0x426d, 1, 0);
         winMsgClose(1);
@@ -3428,7 +3428,7 @@ s32 itemFieldUseStatusHeal(u32 wazaDataId, u32* result) {
     TitleSpecialEntry* entry;
     s32 owner;
 
-    slot = fn_80014110();
+    slot = itemFieldUseGetPokemon();
     itemUseGetTargetPokemon(slot, &pokemon, &data);
     if ((u8)pokemonIsJoutaiDataId(pokemon, 0x3E)) {
         nickname = pokemonBiosGetNicknamePtr(pokemon);
@@ -3439,7 +3439,7 @@ s32 itemFieldUseStatusHeal(u32 wazaDataId, u32* result) {
     }
 
     effectCount =
-        fn_80144574(effects, pokemon, data, wazaDataId, 0);
+        itemUseApply(effects, pokemon, data, wazaDataId, 0);
     if (effectCount > 0) {
         bgm = *(TitleBgmTable*)lbl_80266DB0;
         for (bgmIndex = 0; bgmIndex < 5; bgmIndex++) {
@@ -3538,7 +3538,7 @@ s32 itemFieldUseParamItem(u32 arg0, u32* arg1) {
         if (slot >= 0) {
             itemUseGetTargetPokemon(slot, &pokemon, &data);
             if ((u8)pokemonIsJoutaiDataId(pokemon, 0x3E) == 0) {
-                effect_count = fn_80144574(effects, pokemon, data, (u16)arg0, 0);
+                effect_count = itemUseApply(effects, pokemon, data, (u16)arg0, 0);
                 if (effect_count > 0) {
                     bgm = *(TitleBgmList*)lbl_80266DB0;
                     for (i = 0; i < 5; i++) {
@@ -3901,7 +3901,7 @@ extern s32 pokemonEvolutionCheck(s32, s32, u16, void*, void*);
 extern void menuOffScreenSetDisp(s32);
 extern void pokemonEvolutionAll(s32, s32, u16, void*, s32, s32, s32, s32);
 s32 itemFieldUseEvolutionStone(u32 arg0, u32* arg1) {
-    extern s32 fn_80144574(void*, s32, s32, u16, s32);
+    extern s32 itemUseApply(void*, s32, s32, u16, s32);
     u8 text_buf[0x100];
     s32 slot;
     s32 effect;
@@ -3914,7 +3914,7 @@ s32 itemFieldUseEvolutionStone(u32 arg0, u32* arg1) {
     if (slot >= 0) {
         itemUseGetTargetPokemon(slot, &sc, &sd);
         if ((u8)pokemonIsDarkPokemon(sc) == 0) {
-            effect = fn_80144574(text_buf, sc, sd, (u16)arg0, 0);
+            effect = itemUseApply(text_buf, sc, sd, (u16)arg0, 0);
             if ((s16)effect <= 0) {
                 winMsgOpen(2, 0x4261, 1, 0);
                 winMsgClose(1);
@@ -3946,13 +3946,13 @@ s32 itemFieldUseEvolutionStone(u32 arg0, u32* arg1) {
 
 /* _itemUseHealStatus - 0x80023068 | size: 0x20c */
 extern s32 menuPokemonOpenMoveSummary(s32);
-extern void fn_80019B1C(void);
+extern void bagCloseMenu42(void);
 #if !defined(GS_TITLE_SPLIT) || defined(GS_TITLE_RANGE_80023068)
 s32 _itemUseHealStatus(u32 arg0, u32* arg1) {
     typedef struct TitleBgmList {
         u16 entries[5];
     } TitleBgmList;
-    extern s32 fn_80144574(void*, s32, s32, u16, u8);
+    extern s32 itemUseApply(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
     extern u8 pokemonIsJoutaiDataId(s32, s32);
@@ -3980,7 +3980,7 @@ s32 _itemUseHealStatus(u32 arg0, u32* arg1) {
             break;
         }
         mode = menuPokemonOpenMoveSummary((s8)slot);
-        fn_80019B1C();
+        bagCloseMenu42();
     } while (mode < 0);
 
     if (slot >= 0) {
@@ -3991,7 +3991,7 @@ s32 _itemUseHealStatus(u32 arg0, u32* arg1) {
             winMsgClose(1);
             effect_count = 0;
         } else {
-            effect_count = fn_80144574(effects, pokemon, data, arg0, mode);
+            effect_count = itemUseApply(effects, pokemon, data, arg0, mode);
             if ((s16)effect_count > 0) {
                 bgm = *(TitleBgmList*)lbl_80266DB0;
                 for (i = 0; i < 5; i++) {
@@ -4082,7 +4082,7 @@ s32 _itemUseRareCandy(u32 wazaDataId, u32* result) {
         s16 spDefense;
     } TitleLevelUpStatus;
     extern s32 itemUseOpenPartyMenu(void*, s32);
-    extern s32 fn_80144574(void*, s32, s32, u16, u8);
+    extern s32 itemUseApply(void*, s32, s32, u16, u8);
     s32 pokemon;
     s32 data;
     u16 evolveTo;
@@ -4117,7 +4117,7 @@ s32 _itemUseRareCandy(u32 wazaDataId, u32* result) {
             oldSpAttack = pokemonGetStatus(target, 0, 0x8A, 0);
             oldSpDefense = pokemonGetStatus(target, 0, 0x8B, 0);
             oldSpeed = pokemonGetStatus(target, 0, 0x8C, 0);
-            effectCount = fn_80144574(effects, pokemon, data, wazaDataId, 0);
+            effectCount = itemUseApply(effects, pokemon, data, wazaDataId, 0);
             if ((s16)effectCount > 0) {
                 menuPokemonRefresh();
             } else {
@@ -4201,7 +4201,7 @@ s32 _itemUseRevive(u32 arg0, u32* arg1) {
     typedef struct TitleBgmList {
         u16 entries[5];
     } TitleBgmList;
-    extern s32 fn_80144574(void*, s32, s32, u16, u8);
+    extern s32 itemUseApply(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
     extern u8 pokemonIsJoutaiDataId(s32, s32);
@@ -4231,7 +4231,7 @@ s32 _itemUseRevive(u32 arg0, u32* arg1) {
         if (pokemonIsJoutaiDataId(pokemon, 0x3E) != 0) {
             continue;
         }
-        effect_count = fn_80144574(effects, pokemon, data, arg0, 0);
+        effect_count = itemUseApply(effects, pokemon, data, arg0, 0);
         if ((s16)effect_count <= 0) {
             continue;
         }
@@ -4273,7 +4273,7 @@ s32 _itemUsePPRestore(u32 arg0, u32* arg1) {
     typedef struct TitleBgmList {
         u16 entries[5];
     } TitleBgmList;
-    extern s32 fn_80144574(void*, s32, s32, u16, u8);
+    extern s32 itemUseApply(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
     extern u8 pokemonIsJoutaiDataId(s32, s32);
@@ -4304,7 +4304,7 @@ s32 _itemUsePPRestore(u32 arg0, u32* arg1) {
         if (itemParamGetPPSelectFlag(itemParamGetPtr(itemDataBiosGetItemEffectParam(
                 itemDataBiosGetPtr(arg0))))) {
             mode = menuPokemonOpenMoveSummary((s8)slot);
-            fn_80019B1C();
+            bagCloseMenu42();
         } else {
             mode = 0;
         }
@@ -4318,7 +4318,7 @@ s32 _itemUsePPRestore(u32 arg0, u32* arg1) {
             winMsgClose(1);
             effect_count = 0;
         } else {
-            effect_count = fn_80144574(effects, pokemon, data, arg0, mode);
+            effect_count = itemUseApply(effects, pokemon, data, arg0, mode);
             if ((s16)effect_count > 0) {
                 bgm = *(TitleBgmList*)lbl_80266DB0;
                 for (i = 0; i < 5; i++) {
@@ -4349,7 +4349,7 @@ s32 itemFieldUseStatBoost(u32 arg0, u32* arg1) {
     typedef struct TitleBgmList {
         u16 entries[5];
     } TitleBgmList;
-    extern s32 fn_80144574(void*, s32, s32, u16, u8);
+    extern s32 itemUseApply(void*, s32, s32, u16, u8);
     extern void itemUseFormatMessage(void*, s32, void*, s32, s32);
     extern s32 itemUseOpenPartyMenu(void*, s32);
     extern u8 pokemonIsJoutaiDataId(s32, s32);
@@ -4367,7 +4367,7 @@ s32 itemFieldUseStatBoost(u32 arg0, u32* arg1) {
     if (slot >= 0) {
         itemUseGetTargetPokemon(slot, &pokemon, &data);
         if (pokemonIsJoutaiDataId(pokemon, 0x3E) == 0) {
-            effect_count = fn_80144574(effects, pokemon, data, arg0, 0);
+            effect_count = itemUseApply(effects, pokemon, data, arg0, 0);
             if ((s16)effect_count > 0) {
                 bgm = *(TitleBgmList*)lbl_80266DB0;
                 for (i = 0; i < 5; i++) {

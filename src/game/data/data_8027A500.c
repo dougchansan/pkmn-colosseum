@@ -31,7 +31,7 @@ extern u8 floorCharacterSetPos[];
 extern u8 floorEventChangeTresure[];
 extern u8 floorEventSetTresureDisp[];
 extern u8 mainLogicTask[];
-extern u8 fn_80006908[];
+extern u8 dbgMenuFightEditEncount[];
 extern u8 dbgMenuFightStop[];
 extern u8 dbgFlagMenuCursor[];
 extern u8 dbgMenuPokemonEdit[];
@@ -56,11 +56,11 @@ extern u8 std026_unkMenuSequence26[];
 extern u8 menuShopOpen[];
 extern u8 std198_menuEnterTradingMenu[];
 extern u8 std202_warpToMenuRoom393[];
-extern u8 fn_80035DA0[];
+extern u8 cardeArenaRoomExit[];
 extern u8 std024_dialogDisplayPCBoxMenu[];
 extern u8 pdaMemoMainDrawText[];
 extern u8 std027_unkMenuSequence27[];
-extern u8 fn_80088428[];
+extern u8 cardeGridPromptScene[];
 extern u8 std215_battleStartTrainerWithPrompt[];
 extern u8 std213_gbaGetLinkedGameId[];
 extern u8 std212_gbaIsLinkActive[];
@@ -99,7 +99,7 @@ extern u8 floorEventCtrlElevator[];
 extern u8 floorEventCtrlDoor[];
 extern u8 fieldCameraMoveTo[];
 extern u8 std136_fieldClearFlag_8047ad71[];
-extern u8 fn_80117500[];
+extern u8 cameraSetReturnDone[];
 extern u8 std171_mapSetTextureChange[];
 extern u8 heroMoveAddAutoEvent[];
 extern u8 heroMoveTermEvent[];
@@ -114,7 +114,7 @@ extern u8 std137_soundStopAll[];
 extern u8 std109_soundPlayEffectVariant[];
 extern u8 std108_soundIsAnyPlaying[];
 extern u8 soundPlayAtPosition[];
-extern u8 fn_801658FC[];
+extern u8 soundPlayAfterFade[];
 extern u8 std138_soundPlayEffectEx[];
 extern u8 std105_soundPlayEffect[];
 extern u8 std104_soundSetBackgroundMusic[];
@@ -163,7 +163,7 @@ extern u8 std068_characterTurnToAngle[];
 extern u8 std177_characterMoveToCharacter[];
 extern u8 peopleStopAnimation[];
 extern u8 std154_characterPlayAnimation[];
-extern u8 fn_8018B558[];
+extern u8 peopleSetAnimation[];
 extern u8 std051_characterSetAnimation[];
 extern u8 peopleGetPositionByIndex[];
 extern u8 std172_characterGetPosition[];
@@ -197,19 +197,19 @@ extern u8 std211_tvSetChannelByStory[];
 extern u8 std157_sleep[];
 extern u8 fieldStartEncount[];
 extern u8 std239_playerGetCouponsEarnedInLastArea[];
-extern u8 fn_801CA728[];
-extern u8 fn_801CA7AC[];
+extern u8 std_couponAddRun[];
+extern u8 std_couponSetRun[];
 extern u8 std236_playerGetCouponsEarnedOnCurrentRun[];
 extern u8 scriptHeroSetStatus0D[];
 extern u8 scriptHeroGetStatus0D[];
-extern u8 fn_801CADA0[];
+extern u8 std_returnFalse_801CADA0[];
 extern u8 std217_playerReceiveGiftPokemon[];
 extern u8 scriptIsAnyInput[];
 extern u8 std005_threadIsRunning[];
 extern u8 std006_threadWaitForCompletion[];
 extern u8 scriptTerminateScriptThreads[];
 extern u8 std209_threadRunScriptMode4[];
-extern u8 fn_801CB4E8[];
+extern u8 std_particleKill[];
 extern u8 std221_mapObjectLinkParticles[];
 extern u8 scriptCharacterDetach[];
 extern u8 std166_mapObjectAttachToObject[];
@@ -33008,7 +33008,7 @@ void* lbl_8027A500[68440] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x000008DD,
-    (void*)((u8*)fn_80006908 + 0x8),
+    (void*)((u8*)dbgMenuFightEditEncount + 0x8),
     (void*)0x0000008F,
     (void*)0xFFF800FF,
     (void*)0x70000000,
@@ -94199,7 +94199,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)scriptGetPokedoru),
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80117500),
+    (void*)((u8*)cameraSetReturnDone),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)std136_fieldClearFlag_8047ad71),
@@ -94211,7 +94211,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std138_soundPlayEffectEx),
     (void*)0x01010101,
     (void*)0x00000000,
-    (void*)((u8*)fn_801658FC),
+    (void*)((u8*)soundPlayAfterFade),
     (void*)0x01010101,
     (void*)0x00000000,
     (void*)((u8*)cameraMovePositionXYZ),
@@ -94319,7 +94319,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)evolution),
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8018B558),
+    (void*)((u8*)peopleSetAnimation),
     (void*)0x01010101,
     (void*)0x01000000,
     (void*)((u8*)peopleWaitSyncMotionBlend),
@@ -94397,7 +94397,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std200_gbaConnectEvent),
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80035DA0),
+    (void*)((u8*)cardeArenaRoomExit),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)std202_warpToMenuRoom393),
@@ -94412,7 +94412,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std205_getDNASampleSepcies),
     (void*)0x01000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80088428),
+    (void*)((u8*)cardeGridPromptScene),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)std207_gbaUnk_80075638),
@@ -94460,7 +94460,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std221_mapObjectLinkParticles),
     (void*)0x01010100,
     (void*)0x00000000,
-    (void*)((u8*)fn_801CB4E8),
+    (void*)((u8*)std_particleKill),
     (void*)0x01010000,
     (void*)0x00000000,
     (void*)((u8*)std223_askYesNoThenWarp395),
@@ -94493,7 +94493,7 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std232_characterApproachPlayer),
     (void*)0x01010000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801CADA0),
+    (void*)((u8*)std_returnFalse_801CADA0),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)((u8*)scriptGetEarthRibbon),
@@ -94505,10 +94505,10 @@ void* lbl_802E1CF0[742] = {
     (void*)((u8*)std236_playerGetCouponsEarnedOnCurrentRun),
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801CA7AC),
+    (void*)((u8*)std_couponSetRun),
     (void*)0x01000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_801CA728),
+    (void*)((u8*)std_couponAddRun),
     (void*)0x01000000,
     (void*)0x00000000,
     (void*)((u8*)std239_playerGetCouponsEarnedInLastArea),
@@ -94560,5 +94560,5 @@ void* lbl_802E2888[18] = {
 };
 
 /* 0x802E28D0 - 0x802E28EC (jumptable_802E28D0) belongs to the linked
- * game/gs_task_residual_80006908.c: it is fn_80006908's own switch table. */
+ * game/gs_task_residual_80006908.c: it is dbgMenuFightEditEncount's own switch table. */
 

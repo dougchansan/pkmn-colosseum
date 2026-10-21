@@ -2,7 +2,7 @@
  * @file gs_dvd_r47_80168638_o4s.c
  * @brief Screen-filter manager initialisation, 0x80168638 - 0x80168934.
  *
- * Function-boundary carve of fn_80168638, the last function of the
+ * Function-boundary carve of GSgappInitPools, the last function of the
  * screen-filter block that gs_dvd_r47_prefix.c owns up to 0x80168638.
  * The range has no jump tables or pooled constants: every immediate is
  * an `li`, and all data (lbl_804526E0, lbl_8047B100) stays extern.
@@ -124,7 +124,7 @@ static inline void* GSfilterRenderStateCreate(void)
     return NULL;
 }
 
-void fn_80168638(u8 capacity)
+void GSgappInitPools(u8 capacity)
 {
     u32 size;
     u16 handle;

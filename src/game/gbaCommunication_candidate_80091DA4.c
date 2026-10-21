@@ -577,7 +577,7 @@ s32 gbaCommStartSendPokemon(s32 channel, void* arg1, void* arg2)
             work = *(u8**)(lbl_803FB328 + slot);
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
-            fn_800716C8(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
+            gbaCommSetChannelBuffer(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
             OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
@@ -651,7 +651,7 @@ s32 gbaCommStartTransferA(s32 channel, void* requestValue)
             work = *(u8**)(lbl_803FB328 + slot);
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
-            fn_800716C8(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
+            gbaCommSetChannelBuffer(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
             OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,

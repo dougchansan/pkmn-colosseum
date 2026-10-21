@@ -1,8 +1,8 @@
 #include "dolphin/types.h"
 
 extern void _threadSwitch(void);
-extern void fn_80018F54(s32 arg0, s32 arg1, s32 arg2);
-extern s32 fn_80039498(s32 value);
+extern void bagMenuOpen(s32 arg0, s32 arg1, s32 arg2);
+extern s32 itemStorageSelectAction(s32 value);
 extern void itemStorageTransfer(s32 mode);
 extern void GSresReleaseOwner(s32 id);
 extern void menuClose(s32 id);
@@ -10,7 +10,7 @@ extern void menuCloseSync(s32 id, s32 sync);
 extern void menuOpen(s32 id, s32 flag);
 extern void GSresReleaseById(s32 id);
 extern s32 GSresGroupGetState(s32 id);
-extern void fn_8017B3E4(s32 id);
+extern void fsysStartLoad(s32 id);
 
 void itemStorageRun(void)
 {
@@ -18,7 +18,7 @@ void itemStorageRun(void)
 
     result = 0;
     while (1) {
-        result = fn_80039498(result);
+        result = itemStorageSelectAction(result);
         if ((u32)(result - 3) <= 1) {
             break;
         }
@@ -39,11 +39,11 @@ void itemStorageRun(void)
             menuCloseSync(0x19, 1);
             menuCloseSync(0x1A, 1);
             menuCloseSync(0x1B, 1);
-            fn_8017B3E4(0x66F);
+            fsysStartLoad(0x66F);
             while (GSresGroupGetState(0x66F) == 1) {
                 _threadSwitch();
             }
-            fn_80018F54(4, 0, 0);
+            bagMenuOpen(4, 0, 0);
             GSresReleaseById(0x66F);
             GSresReleaseOwner(0x66F);
             menuOpen(0x1A, 0);

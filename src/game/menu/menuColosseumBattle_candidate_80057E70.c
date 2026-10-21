@@ -27,7 +27,7 @@ extern void* GSresFindById(u32);
 extern const u32 lbl_802676F0[56];
 
 #ifndef MENU_COLOSSEUM_BATTLE_80057F94_ONLY
-void fn_80057E70(void)
+void pcBoxStreamModels(void)
 {
     u32* entry;
     u8 firstRequest = 1;

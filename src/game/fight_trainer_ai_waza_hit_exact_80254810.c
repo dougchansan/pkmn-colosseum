@@ -235,7 +235,7 @@ u32 fightTrainerAiWazaHit178(void* ctx, u32 slot, u32 param, u32 extra) {
 s32 fightTrainerAiWazaHit177(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u16 fightAiGetSoubiItemOf(void* ctx, u32 elem);
     extern u8 fightAiCanStealItem(u32 elem);
-    extern u8 fn_80142984(u16 elem);
+    extern u8 itemIdIsValid(u16 elem);
     extern u8 fightTrainerAiIsTokusei(void* ctx, u32 a, u32 type);
     u16 A = fightAiGetSoubiItemOf(ctx, param1);
     u16 B = fightAiGetSoubiItemOf(ctx, param3);
@@ -252,10 +252,10 @@ s32 fightTrainerAiWazaHit177(void* ctx, u32 param1, u32 param2, u32 param3) {
     if (B == 0xaf) {
         goto ret0;
     }
-    if (A != 0 && fn_80142984(A) == 0) {
+    if (A != 0 && itemIdIsValid(A) == 0) {
         goto ret0;
     }
-    if (B != 0 && fn_80142984(B) == 0) {
+    if (B != 0 && itemIdIsValid(B) == 0) {
     ret0:
         return 0;
     }

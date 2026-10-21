@@ -71,7 +71,7 @@ void fn_800D9E4C(s32 val) {
     }
 }
 
-void fn_800D9ED8(s32 val) {
+void gfxSetFlag1A(s32 val) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x35, 1, val); }
     else if (val == 1) { *(u8*)(lbl_8047AA80 + 0x1a) = 1; }
     else if (val == 0) { *(u8*)(lbl_8047AA80 + 0x1a) = 0; }

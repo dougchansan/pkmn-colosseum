@@ -102,7 +102,7 @@ static volatile EXIRegBlock* const ExiHw = (volatile EXIRegBlock*)0xCC006800;
 static volatile OSLowMem* const LowMem = (volatile OSLowMem*)0x80000000;
 
 s32 EXIGetID(s32 chan, u32 dev, u32* id);
-BOOL fn_80098790(s32 chan);
+BOOL EXIProbeChannel(s32 chan);
 u32 EXIClearInterrupts(s32 chan, s32 exi, s32 tc, s32 ext);
 u32 __OSGetDIConfig(void);
 u32 OSGetConsoleType(void);
@@ -375,7 +375,7 @@ EXICallback EXISetExiCallback(s32 chan, EXICallback volatile callback) {
 #pragma optimization_level 0
 #pragma optimize_for_size on
 #pragma scheduling off
-BOOL fn_80098790(s32 chan) {
+BOOL EXIProbeChannel(s32 chan) {
     EXIControl* exi = &lbl_803FB3C8[chan];
     BOOL enabled;
     BOOL probe;
@@ -427,7 +427,7 @@ BOOL EXIProbe(s32 chan) {
     EXIControl* exi = &lbl_803FB3C8[chan];
     u32 id;
 
-    probe = fn_80098790(chan);
+    probe = EXIProbeChannel(chan);
     if (probe && exi->idTime == 0) {
         probe = EXIGetID(chan, 0, &id) ? TRUE : FALSE;
     }
@@ -442,7 +442,7 @@ static inline BOOL fn_800989C0_probe(s32 chan, EXIControl* base) {
     u32 id;
 
     exi = &base[chan];
-    probe = fn_80098790(chan);
+    probe = EXIProbeChannel(chan);
     if (probe && exi->idTime == 0) {
         probe = EXIGetID(chan, 0, &id) ? TRUE : FALSE;
     }
@@ -456,7 +456,7 @@ static inline BOOL fn_800989C0_attach(s32 chan, EXICallback extCallback, EXICont
     exi = &base[chan];
     enabled = OSDisableInterrupts();
 
-    if ((exi->state & 8) || !fn_80098790(chan)) {
+    if ((exi->state & 8) || !EXIProbeChannel(chan)) {
         OSRestoreInterrupts(enabled);
         return FALSE;
     }
@@ -535,7 +535,7 @@ BOOL EXISelect(s32 chan, u32 dev, u32 freq) {
     enabled = OSDisableInterrupts();
     if ((exi->state & 4) ||
         ((chan != 2) &&
-         (((dev == 0) && !(exi->state & 8) && (fn_80098790(chan) == 0)) ||
+         (((dev == 0) && !(exi->state & 8) && (EXIProbeChannel(chan) == 0)) ||
           !(exi->state & 0x10) || (exi->device != dev)))) {
         OSRestoreInterrupts(enabled);
         return FALSE;
@@ -597,7 +597,7 @@ BOOL EXIDeselect(s32 chan) {
     OSRestoreInterrupts(enabled);
 
     if (chan != 2 && (csr & 0x80)) {
-        return fn_80098790(chan) ? TRUE : FALSE;
+        return EXIProbeChannel(chan) ? TRUE : FALSE;
     }
 
     return TRUE;
@@ -708,8 +708,8 @@ void EXIInit(void) {
     if (OSGetConsoleType() & 0x10000000) {
         LowMem->exiProbeStartTime[0] = LowMem->exiProbeStartTime[1] = 0;
         lbl_803FB3C8[0].idTime = lbl_803FB3C8[1].idTime = 0;
-        fn_80098790(0);
-        fn_80098790(1);
+        EXIProbeChannel(0);
+        EXIProbeChannel(1);
     }
 }
 #pragma scheduling reset
@@ -833,7 +833,7 @@ static inline int EXIGetID_Attach(s32 chan, EXICallback extCallback) {
     exi = &lbl_803FB3C8[chan];
     enabled = OSDisableInterrupts();
 
-    if ((exi->state & 8) || !fn_80098790(chan)) {
+    if ((exi->state & 8) || !EXIProbeChannel(chan)) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
@@ -906,7 +906,7 @@ s32 EXIGetID(s32 chan, u32 dev, u32* id) {
     BOOL enabled;
 
     if ((chan < 2) && (dev == 0)) {
-        if (fn_80098790(chan) == 0) {
+        if (EXIProbeChannel(chan) == 0) {
             return 0;
         }
 

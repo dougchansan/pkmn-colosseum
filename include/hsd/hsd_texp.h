@@ -363,7 +363,7 @@ void HSD_TExpSchedule(int num, HSD_TExpDag* list, HSD_TExp** result,
                  HSD_TExpRes* resource);
 int HSD_TExpSimplify(HSD_TExp* texp);
 int HSD_TExpSimplify2(HSD_TExp* texp);
-void fn_801B9048(HSD_TETev* tev);
+void HSD_TExpCalcCost(HSD_TETev* tev);
 
 static inline BOOL IsThroughColor(HSD_TExp* texp)
 {

@@ -18,7 +18,7 @@ extern const char lbl_80268B4C[];
 /* Retail retains this otherwise-unreferenced menu entry-point group. */
 #pragma force_active on
 
-void fn_8007C260(void) {
+void cardeMatrixResetSelection(void) {
     lbl_80478940 = -1;
 }
 

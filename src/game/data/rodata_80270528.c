@@ -73,9 +73,9 @@ extern u8 dbgMenuPokemonEdit[];
 extern u8 _floorGetStateSize[];
 extern u8 _floorMakeStateData[];
 extern u8 _floorRestoreStateData[];
-extern u8 fn_80118068[];
+extern u8 tvFloorHandlerReturnFalse[];
 extern u8 tvRelease2[];
-extern u8 fn_80118100[];
+extern u8 tvFloorHandlerNop[];
 extern u8 _cameraGetStateSize[];
 extern u8 _cameraMakeStateData[];
 extern u8 _cameraRestoreStateData[];
@@ -1183,9 +1183,9 @@ const u8 lbl_802727B8[16] = {
 };
 
 const void* lbl_802727C8[4] = {
-    (void*)fn_80118100,
+    (void*)tvFloorHandlerNop,
     (void*)tvRelease2,
-    (void*)fn_80118068,
+    (void*)tvFloorHandlerReturnFalse,
     (void*)0x00000000,
 };
 

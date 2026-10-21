@@ -31,7 +31,7 @@ extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 extern void  set__5GSvecFfff(void* out, f32 angle, f32 a, f32 b); /* rotation matrix */
 extern void  GSmtxMakeXRotation(void* out, f32 angle);
 extern void  GSmtxMakeYRotation(void* out, f32 angle);         /* angle to vector */
-extern void  fn_800E0108(void* dst, void* lhs, void* rhs);
+extern void  GSvecMulComponents(void* dst, void* lhs, void* rhs);
 extern void  GSmtxTranspose(void* dst, void* src);
 extern void  GSmtxRotateZ(void* matrix, f32 angle);
 extern void  GSmtxRotateY(void* matrix, f32 angle);

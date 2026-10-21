@@ -1,6 +1,6 @@
 /**
  * @file gba_misc_r58_8008C6FC_suffix.c
- * @brief gba_misc.c carve: fn_8008C6FC, demoScenePlayNext and fn_8008C78C,
+ * @brief gba_misc.c carve: gbaNop_8008C6FC, demoScenePlayNext and demoGetFlagB5D,
  * 0x8008C6FC - 0x8008C7B0.
  *
  * Standalone: gba_misc.c's declarations plus only these bodies, copied
@@ -125,10 +125,10 @@ typedef struct GbaPokemon {
  */
 #define GbaMisc_GetMappedContextByte std213_gbaGetLinkedGameId
 #define GbaMisc_HasActiveContextState std212_gbaIsLinkActive
-#define GbaMisc_PollEntryStatusA fn_80089CA8
+#define GbaMisc_PollEntryStatusA gbaCommWaitReadyA
 #define GbaMisc_ResetEntryStatusA gbaPortUpload22
 #define GbaMisc_GetEntryStatus gbaEntryCheckStatus
-#define GbaMisc_SendPackedEntryStatus fn_8008AB20
+#define GbaMisc_SendPackedEntryStatus gbaCommSendCmd77
 #define GbaMisc_SetEntryState gbaCommandSetKeyState
 #define GbaMisc_RunFlagDispatch demoScenePlayNext
 
@@ -167,7 +167,7 @@ extern void gbaCmdSend77();
 extern void gbaCmdUpload88();
 extern void gbaCmdKeepAlive();
 extern void gbaCmdReadKeys();
-extern void fn_800830A4();
+extern void cardeSaveCompact();
 extern void cardeArenaCountRecords();
 extern GbaMiscContext* cardeArenaGetPtr();
 extern void cardeEncodePartyMoveText();
@@ -244,42 +244,42 @@ extern u8 lbl_803FB318[];
 /* ===== Forward declarations ===== */
 void gbaReceiveHero(void);
 u32 fightGetResult80478960(void);
-u32 fn_800896C0(void);
-u32 fn_800896C8(void);
-void fn_800896D0(u32 v);
-void fn_800896D8(u32 v);
-void fn_800896E0(u32 v);
+u32 cardeGetEncounterParam8047A674(void);
+u32 cardeGetEncounterParam8047A670(void);
+void cardeSetEncounterParam80478960(u32 v);
+void cardeSetEncounterParam8047A674(u32 v);
+void cardeSetEncounterParam8047A670(u32 v);
 void std215_battleStartTrainerWithPrompt(void);
 void gbaBuildTrainerPokemon(void);
 u8 GbaMisc_GetMappedContextByte(void);
 s32 GbaMisc_HasActiveContextState(void);
 s32 std220_gbaUnk_80083bf8(void);
-void fn_80089C84(s32 param);
+void gbaCommHandshakeA(s32 param);
 s32 GbaMisc_PollEntryStatusA(s32 r31);
 s32 GbaMisc_ResetEntryStatusA(s32 param);
-void fn_80089D74(s32 param);
-s32 fn_80089D98(s32 r31);
-s32 fn_80089E20(s32 idx, void* obj, u32 packedStatus, u32 highHalf);
-u32 fn_80089F58(u32 v);
-u32 fn_80089F60(u32 v);
-u32 fn_80089F68(u32 v);
-u32 fn_80089F70(u32 v);
+void gbaCommHandshakeB(s32 param);
+s32 gbaCommWaitReadyB(s32 r31);
+s32 gbaCommSendPokemon(s32 idx, void* obj, u32 packedStatus, u32 highHalf);
+u32 gbaKeyGetWord(u32 v);
+u32 gbaKeyGetHighByte(u32 v);
+u32 gbaKeyGetByte(u32 v);
+u32 gbaKeyGetHighHalf(u32 v);
 u32 gbaSendBattleSnapshot(u32 arg0, u32 arg1, u32 arg2, u32 arg3);
-s32 fn_8008A99C(void);
+s32 gbaSetSnapshotSent(void);
 int gbaCommandEntryPokemon(u32 r3, u8* r4);
 s32 GbaMisc_GetEntryStatus(s32 idx, u32* out);
 void GbaMisc_SendPackedEntryStatus(s32 param0, u32 param1, u32 param2);
 void gbaCommandSendWazaText(s32 param0, s32 param1);
-s32 fn_8008AB8C(s32 r3);
-u8 fn_8008ABA0(s32 idx);
+s32 gbaCommGetKeys(s32 r3);
+u8 gbaCommIsReady(s32 idx);
 s32 GbaMisc_SetEntryState(s32 idx, s32 value);
 void gbaPollPort(void);
 void pokeconvPokemonToGBA(void* src, GbaPokemon* dst);
 void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src);
 void gbaPokemonConditonFromGC(void);
-void fn_8008C6FC(void);
+void gbaNop_8008C6FC(void);
 void GbaMisc_RunFlagDispatch(void);
-s32 fn_8008C78C(void);
+s32 demoGetFlagB5D(void);
 void demoScene30(void);
 void demoScene29(void);
 void demoScene28(void);
@@ -316,7 +316,7 @@ void demoScene00(void);
 
 
 /* 0x8008C6FC | size: 0x4 */
-void fn_8008C6FC(void) {
+void gbaNop_8008C6FC(void) {
 }
 
 /* 0x8008C700 | size: 0x8C */
@@ -353,7 +353,7 @@ void GbaMisc_RunFlagDispatch(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-s32 fn_8008C78C(void) {
+s32 demoGetFlagB5D(void) {
     extern s32 std082_flagGetValue(s32);
     return std082_flagGetValue(0xb5d);
 }

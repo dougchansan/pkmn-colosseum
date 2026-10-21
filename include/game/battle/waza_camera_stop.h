@@ -8,7 +8,7 @@ extern void* lbl_8047B3F0; /* its camera animation */
 
 extern void GSscene_SetMode(s32 arg);
 extern void cameraStopAnime(void* arg);
-extern void fn_801765F4(s32 arg);
+extern void battleCameraSetFlag3(s32 arg);
 extern s32 GSgetVersionMinor(void);
 
 /*
@@ -34,7 +34,7 @@ static inline void wazaCameraStop(void)
         }
         lbl_8047B3F0 = NULL;
     }
-    fn_801765F4(0);
+    battleCameraSetFlag3(0);
     lbl_8047B3EC = NULL;
     if (GSgetVersionMinor() == 2) {
         GSscene_SetMode(2);

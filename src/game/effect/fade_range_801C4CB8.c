@@ -87,7 +87,7 @@ extern void GSgfxBeginBackFBCapture(void* texture, u32 (*callback)(void), u32 ar
 extern void* gfxVtxDescAlloc(void);
 extern void gfxVtxDescSetAttr(void* object, u32 arg1, u32 arg2, u32 arg3, u32 arg4,
                         u32 arg5, u32 arg6, u32 arg7);
-extern void fn_800D9ED8(u32 enable);
+extern void gfxSetFlag1A(u32 enable);
 extern void gfxSetFlags(u32 mask);
 extern void gfxClearFlags(u32 mask);
 extern void gfxSetOrtho(f32 left, f32 top, f32 right, f32 bottom);
@@ -100,13 +100,13 @@ extern void gfxSetPrimitive(u32 arg0);
 extern void gfxSetVtxDesc(void* ptr);
 extern void gfxLoadTexture(u32 arg0, void* ptr);
 extern void gfxLoadTexMatrix(u32 arg0, u32 arg1, u32 arg2, void* ptr);
-extern void fn_800DC1D4(u32 arg0);
+extern void gfxSetNumTevStages(u32 arg0);
 extern void gfxSetTevStage(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4);
-extern void fn_800DC14C(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5);
-extern void fn_800DC0D4(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4);
-extern void fn_800DC04C(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5);
-extern void fn_800DBFD4(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4);
-extern void fn_800E042C(void* mtx, GSvec* scale);
+extern void gfxSetTevAlphaOp(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5);
+extern void gfxSetTevAlphaIn(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4);
+extern void gfxSetTevColorOp(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5);
+extern void gfxSetTevColorIn(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4);
+extern void GSmtxMakeScaleVec(void* mtx, GSvec* scale);
 extern void GSmtxRotateZ(void* mtx, f32 angle);
 extern void GSmtxTransApply(void* mtx, GSvec* trans);
 extern void GSvecTransform(GSvec* dst, void* mtx, GSvec* src);
@@ -270,7 +270,7 @@ u32 fadeEffectFuncCapture(u32 finish, void* texture, f32 frame, f32 duration)
                 0.5f);
 
     if (lbl_8047B3B4 != NULL) {
-        fn_800D9ED8(1);
+        gfxSetFlag1A(1);
         gfxSetFlags(0x80000003);
         gfxClearFlags(4);
         gfxSetOrtho(0.0f, 0.0f, 640.0f, 480.0f);
@@ -281,19 +281,19 @@ u32 fadeEffectFuncCapture(u32 finish, void* texture, f32 frame, f32 duration)
         gfxSetCullMode(0);
         gfxLoadTexMatrix(0, 0, 4, textureMatrix);
         gfxLoadTexMatrix(1, 0, 5, textureMatrix);
-        fn_800DC1D4(2);
+        gfxSetNumTevStages(2);
         gfxLoadTexture(0, ((FadeCameraWork*)lbl_80467030)->tex1);
         gfxSetTevStage(0, 0, 0, 0, 0);
-        fn_800DC14C(0, 8, 0, 0, 0, 1);
-        fn_800DC0D4(0, 9, 13, 12, 15);
-        fn_800DC04C(0, 0, 0, 0, 0, 1);
-        fn_800DBFD4(0, 7, 4, 5, 7);
+        gfxSetTevAlphaOp(0, 8, 0, 0, 0, 1);
+        gfxSetTevAlphaIn(0, 9, 13, 12, 15);
+        gfxSetTevColorOp(0, 0, 0, 0, 0, 1);
+        gfxSetTevColorIn(0, 7, 4, 5, 7);
         gfxLoadTexture(1, texture);
         gfxSetTevStage(1, 0, 1, 1, 0);
-        fn_800DC14C(1, 0, 0, 0, 0, 0);
-        fn_800DC0D4(1, 15, 8, 2, 15);
-        fn_800DC04C(1, 0, 0, 0, 0, 0);
-        fn_800DBFD4(1, 7, 7, 7, 1);
+        gfxSetTevAlphaOp(1, 0, 0, 0, 0, 0);
+        gfxSetTevAlphaIn(1, 15, 8, 2, 15);
+        gfxSetTevColorOp(1, 0, 0, 0, 0, 0);
+        gfxSetTevColorIn(1, 7, 7, 7, 1);
         gfxSetVtxDesc(lbl_8047B3B4);
         gfxSetPrimitive(4);
 
@@ -305,7 +305,7 @@ u32 fadeEffectFuncCapture(u32 finish, void* texture, f32 frame, f32 duration)
         point.y = scaleValue;
         point.z = scaleValue;
         progress = 255.0f * (1.0f - progress);
-        fn_800E042C(matrix, &point);
+        GSmtxMakeScaleVec(matrix, &point);
         GSmtxRotateZ(matrix, 0.0f);
         GSmtxTransApply(matrix, &position);
 
@@ -357,9 +357,9 @@ u32 fadeEffectFuncCapture(u32 finish, void* texture, f32 frame, f32 duration)
         gfxVtxTexCoord(0, 1.0f, 1.0f);
         gfxVtxTexCoord(1, right, bottom);
         gfxEnd();
-        fn_800DC1D4(1);
+        gfxSetNumTevStages(1);
         gfxClearFlags(0x80000000);
-        fn_800D9ED8(0);
+        gfxSetFlag1A(0);
     }
 
     if (lbl_8047B3B0 == 0 && (u8)finish == 0) {
@@ -630,7 +630,7 @@ void fadeEffectDrawSpinQuad(FadeTrailPoint* position, s32 alpha, f32 scale, f32 
     point.x = scale;
     point.y = scale;
     point.z = scale;
-    fn_800E042C(matrix, &point);
+    GSmtxMakeScaleVec(matrix, &point);
     GSmtxRotateZ(matrix, 0.017453292f * angle);
     GSmtxTransApply(matrix, (GSvec*)position);
     gfxBegin(4);
@@ -884,7 +884,7 @@ void fadeEffectDrawCapturedQuad(void* texture, GSvec* position, f32 scale, f32 a
     vec.x = scale;
     vec.y = scale;
     vec.z = scale;
-    fn_800E042C(matrix, &vec);
+    GSmtxMakeScaleVec(matrix, &vec);
     GSmtxRotateZ(matrix, 0.017453292f * angle);
     GSmtxTransApply(matrix, position);
     gfxBegin(4);
@@ -941,11 +941,11 @@ void fadeEffectDrawAlphaQuad(f32 t) {
 }
 
 void fadeEffectEnd2D(void) {
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 }
 
 void fadeEffectBegin2DColor(void) {
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     gfxSetFlags(1);
     gfxClearFlags(6);
     gfxSetOrtho(0.0f, 0.0f, 640.0f, 480.0f);
@@ -959,7 +959,7 @@ void fadeEffectBegin2DColor(void) {
 }
 
 void fadeEffectBegin2DTexture(void* texture) {
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     gfxSetFlags(3);
     gfxClearFlags(4);
     gfxSetOrtho(0.0f, 0.0f, 640.0f, 480.0f);
@@ -1013,7 +1013,7 @@ void fadeEffectFluidDraw(void* texture, f32 progress, f32 blend)
     alpha = (s32)(255.0f * interpolated.x);
     alpha = (s32)((f32)alpha * (1.0f - progress));
 
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     gfxSetFlags(3);
     gfxClearFlags(4);
     spriteSetEnv();
@@ -1032,7 +1032,7 @@ void fadeEffectFluidDraw(void* texture, f32 progress, f32 blend)
             fadeEffectFluidDrawGrid(x, y, (u8)alpha);
         }
     }
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 }
 
 void fadeEffectFluidDrawGrid(u32 x, u32 y, u8 alpha) {

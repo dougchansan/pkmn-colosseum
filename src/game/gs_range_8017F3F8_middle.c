@@ -34,7 +34,7 @@ extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void fn_800E24B0(u16 handle);
 extern void GSmemFree(u16 handle);
 extern BOOL OSLink(OSModuleInfo* module, void* bss);
-extern BOOL fn_8009EFE4(OSModuleInfo* module);
+extern BOOL OSUnlinkModule(OSModuleInfo* module);
 extern void gsSmallHeapFree(void* allocation);
 extern void* gsSmallHeapAlloc(u32 size);
 
@@ -154,7 +154,7 @@ s32 floorRelRelease(void* unused, u32 group, u32 handle)
     if (module->epilog) {
         ((void (*)(void))module->epilog)();
     }
-    fn_8009EFE4(&module->info);
+    OSUnlinkModule(&module->info);
     return 1;
 }
 
@@ -216,7 +216,7 @@ void* fsysCacheLookup(u32 fileHandle, u32 key1, u32 key2)
     return NULL;
 }
 
-void fn_8017F800(u32 fileHandle)
+void fsysCacheFreeHandle(u32 fileHandle)
 {
     GsRangeCacheNode* node;
     GsRangeCacheNode* prev;

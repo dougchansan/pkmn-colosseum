@@ -188,7 +188,7 @@ extern void modelShadowInit__Fv(void);
 extern void GSmodelApplyAnimation(GSmodel* model);
 extern void gsParticleKill(void* bank, u32 destroyChildren);
 extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
-extern u32 fn_80191118(GSbound* bound);
+extern u32 GSboundIsVisible(GSbound* bound);
 extern u32 GSmaterialGetEnabledExtensions(void* material);
 extern void GSmaterialGetModulate(void* material, GScolor* color);
 extern void GSmaterialSetModulate(void* material, const GScolor* color);
@@ -402,9 +402,9 @@ GSmodel* _modelLoad(GSmodelResource* resource, GSjobjDesc* joint,
         GSmodelSetTexAnimType(model, 1);
     }
 
-    fn_8019147C(&model->bound, &model->boundCenter);
-    fn_80191474(&model->bound, &model->rotation);
-    fn_8019146C(&model->bound, &model->scale);
+    GSboundSetPosition(&model->bound, &model->boundCenter);
+    GSboundSetRotation(&model->bound, &model->rotation);
+    GSboundSetScale(&model->bound, &model->scale);
     GSmodelRecalculateBound(model);
 
     model->boundYOffset = lbl_8047CB7C;

@@ -1711,7 +1711,7 @@ PSParticle* psGenerateParticleID0(PSParticle* parent, s32 linkNo,
         object != NULL ? object->value : 0, NULL, arg);
 }
 
-void fn_8016EA88(void) {
+void HSD_FogReleaseCurrent(void) {
     HSD_Obj* obj;
 
     if ((obj = lbl_8047B128) != NULL) {

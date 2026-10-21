@@ -17,9 +17,9 @@
 #endif
 
 /* ===== External function declarations (cardeGbaTransfer only) ===== */
-extern void fn_8005CF2C();
+extern void menuColosseumShowPartyError();
 extern void menuRuleCheckPartyAndRule();
-extern void fn_8008ABA0();
+extern void gbaCommIsReady();
 extern void gbaCommStartTransferA();
 extern void gbaCommStartTransferB();
 extern void gbaCommStartTransferC();
@@ -2512,7 +2512,7 @@ static inline u8* cardEGetCell(u8* card, s8 pageIndex, s8 row, s8 column)
 
 /* The grid functions, last to first: built with deferred inlining (see
  * cardesavedata_grid_80082650.c), MWCC emits them in reverse source order,
- * so fn_80082650 lands first at 0x80082650, and cardeSaveRemoveCard/cardeSaveSetCard
+ * so cardeSaveClearIfEmpty lands first at 0x80082650, and cardeSaveRemoveCard/cardeSaveSetCard
  * inline cardeSaveLevelHasCard/cardeSaveGetCard although those come earlier in the file. */
 void* cardeGridGetRecord(u8* arena, u8* descriptor, u8 create)
 {
@@ -2657,7 +2657,7 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
     darkPokemonSaveSet49C(pending[0x1E1], pending[0x125]);
 }
 
-void fn_800830A4(u8* arena)
+void cardeSaveCompact(u8* arena)
 {
     extern void* savedataGetStatus(u32, u32);
     CardEGridEntry* series;
@@ -2817,7 +2817,7 @@ u32 cardeSaveRemoveCard(u8* card, const u8* window, s8 pageIndex)
 
 /* Clear an empty decoded card-e grid entry. */
 #pragma push
-void fn_80082650(CardEGridEntry* entry)
+void cardeSaveClearIfEmpty(CardEGridEntry* entry)
 {
     CardEGridLayer* layer;
     s32 i;
@@ -3116,7 +3116,7 @@ typedef struct CardEMessageEntry {
 } CardEMessageEntry;
 
 extern char lbl_8047C198[] __attribute__((section(".sdata2")));
-extern void fn_801081F8(void* window, u16 itemId, u16 messageId);
+extern void winSeqSetItem(void* window, u16 itemId, u16 messageId);
 extern void winSpriteSetDisp(void* sprite, u32 enable);
 
 /* The status display's rodata: per-state sprite masks, then the item
@@ -3146,9 +3146,9 @@ static inline void CardESetStatusMessage(u8* window, void* sprite, s32 active)
 {
     if (sprite != NULL) {
         if (active) {
-            fn_801081F8(window, *(s16*)((u8*)sprite + 6), 0x1BA);
+            winSeqSetItem(window, *(s16*)((u8*)sprite + 6), 0x1BA);
         } else {
-            fn_801081F8(window, *(s16*)((u8*)sprite + 6), 0);
+            winSeqSetItem(window, *(s16*)((u8*)sprite + 6), 0);
             *(s32*)((u8*)sprite + 0x64) = -1;
         }
     }
@@ -3236,7 +3236,7 @@ void menuGBACRun(u8* window)
 #undef FIND_STATUS_SPRITE
 
         for (n = 0; n < 46; n++) {
-            fn_801081F8(window, ((const CardEMessageEntry*)(data + 0x70))[n].itemId,
+            winSeqSetItem(window, ((const CardEMessageEntry*)(data + 0x70))[n].itemId,
                         ((const CardEMessageEntry*)(data + 0x70))[n].initialMessage);
         }
         break;
@@ -3245,7 +3245,7 @@ void menuGBACRun(u8* window)
             break;
         }
         for (n = 0; n < 46; n++) {
-            fn_801081F8(window, ((const CardEMessageEntry*)(data + 0x70))[n].itemId,
+            winSeqSetItem(window, ((const CardEMessageEntry*)(data + 0x70))[n].itemId,
                         ((const CardEMessageEntry*)(data + 0x70))[n].updatedMessage);
         }
         window[2] = 1;
@@ -3269,7 +3269,7 @@ void menuGBACRun(u8* window)
 
     for (i = 0; i <= 3; i++) {
         if ((work->state[i] == 5 || work->state[i] == 4) &&
-            !((u8 (*)(s32))fn_8008ABA0)(i + 1)) {
+            !((u8 (*)(s32))gbaCommIsReady)(i + 1)) {
             ((void (*)(u8))menuSetEnablePort)(
                 ((u32 (*)(void))menuGetEnablePort)() & ~lbl_80478950[i]);
             work->state[i] = 7;
@@ -3341,7 +3341,7 @@ void menuGBACRun(u8* window)
             if ((flags & 4) != 0) {
                 sprite = work->optionSprite[2][i];
                 if (*(u32*)((u8*)sprite + 0x0C) == 0) {
-                    fn_801081F8(window, *(s16*)((u8*)sprite + 6),
+                    winSeqSetItem(window, *(s16*)((u8*)sprite + 6),
                                 lbl_8047C190[i]);
                 }
             }
@@ -3394,7 +3394,7 @@ s32 cardeTransferUI(s32 mode, s32 command, void* input, void* output)
 #define CardE_menuIsCheck(id) ((u8 (*)(s32))menuIsCheck)(id)
 #define CardE_menuGetEnablePort() ((u32 (*)(void))menuGetEnablePort)()
 #define CardE_menuSetEnablePort(mask) ((u8 (*)(u8))menuSetEnablePort)(mask)
-#define CardE_portConnected(port) ((u8 (*)(s32))fn_8008ABA0)(port)
+#define CardE_portConnected(port) ((u8 (*)(s32))gbaCommIsReady)(port)
 #define CardE_portBusy(port) ((s32 (*)(s32))gbaCommIsBusy)(port)
 #define CardE_portResult(port) ((s32 (*)(s32))gbaCommGetResult)(port)
 #define CardE_portClose(port) ((void (*)(s32))gbaCommEnd)(port)
@@ -3405,7 +3405,7 @@ extern void soundStartSE(s32 se);
 extern s32 cardeWaitMessage();
 #define CardE_step(work, flags) \
     ((u8 (*)(CardEStatusWork*, s32))cardeWaitMessage)(work, flags)
-extern void* fn_80128E04(void);
+extern void* savedataGetSection0(void);
 extern u32 savedataGetWorkPtr(void);
 extern u8 gamedataAttestBiosGetLangareaId(void*);
 extern u32 gamedataBiosGetGamedataAtttestPtr(void*);
@@ -3537,7 +3537,7 @@ static inline u8 CardEIsLangArea(u8 lang)
     void* bios;
     u32 attest;
 
-    if (savedataGetWorkPtr() != 0 && (bios = fn_80128E04()) != NULL &&
+    if (savedataGetWorkPtr() != 0 && (bios = savedataGetSection0()) != NULL &&
         (attest = gamedataBiosGetGamedataAtttestPtr(bios)) != 0 &&
         gamedataAttestBiosGetLangareaId((void*)attest) == lang) {
         return 1;
@@ -3643,7 +3643,7 @@ u8 cardeGbaTransfer(s32 mode, u32 command, void* input, void* output)
             CardEWaitSecond();
             if (!((u8 (*)(void*))menuRuleCheckPartyAndRule)(status)) {
                 ((void (*)(s32, s32, s32))menuCloseCustom)(0xE4, 0, 1);
-                ((void (*)(void*, s32))fn_8005CF2C)(status, 0);
+                ((void (*)(void*, s32))menuColosseumShowPartyError)(status, 0);
                 return 0;
             }
         }
@@ -3776,7 +3776,7 @@ u8 cardeGbaTransfer(s32 mode, u32 command, void* input, void* output)
             }
             if (!((u8 (*)(void*))menuRuleCheckPartyAndRule)(hero)) {
                 ((void (*)(s32, s32, s32))menuCloseCustom)(0xE4, 0, 1);
-                ((void (*)(void*, s32))fn_8005CF2C)(hero, 1);
+                ((void (*)(void*, s32))menuColosseumShowPartyError)(hero, 1);
                 if ((command & 8) == 0) {
                     return 0;
                 }

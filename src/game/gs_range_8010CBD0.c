@@ -69,7 +69,7 @@ s32 GScolsys2UnloadCCD(void)
 }
 
 /* 0x8010CC54 | 0x118 */
-void fn_8010CC54(void)
+void GScolsys2ClearHitFlags(void)
 {
     GSColFloor* floor;
     u32 i;
@@ -84,7 +84,7 @@ void fn_8010CC54(void)
 }
 
 /* 0x8010CD6C | 0x98 */
-void fn_8010CD6C(void)
+void GScolsys2CopyTriangles(void)
 {
     CCD_FILEHEAD* head;
     u32 i;
@@ -200,7 +200,7 @@ void _offsetCCD__FP12CCD_FILEHEAD(CCD_FILEHEAD* head)
 }
 
 /* 0x8010CFE4 | 0x54 */
-s32 fn_8010CFE4(CCD_FILEHEAD* fileHead)
+s32 GScolsys2SetFloor(CCD_FILEHEAD* fileHead)
 {
     if (lbl_80404C68.activeLayer < 0) {
         return 0;
@@ -211,7 +211,7 @@ s32 fn_8010CFE4(CCD_FILEHEAD* fileHead)
 }
 
 /* 0x8010D038 | 0x2C */
-s32 fn_8010D038(void)
+s32 GScolsys2PopFloor(void)
 {
     s32 layer;
 
@@ -224,7 +224,7 @@ s32 fn_8010D038(void)
 }
 
 /* 0x8010D064 | 0x10C */
-s32 fn_8010D064(void)
+s32 GScolsys2PushFloor(void)
 {
     s32 layer;
     u32 i;

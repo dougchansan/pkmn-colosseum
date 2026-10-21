@@ -140,7 +140,7 @@
  *   GSmaterialLerpSpecular  -- pass +0x30 to color-lerp fn (specular)
  *   GSmaterialLerpAmbient  -- pass +0x24 to color-lerp fn (ambient)
  *   GSmaterialLerpDiffuse  -- pass +0x18 to color-lerp fn (diffuse)
- *   fn_800E3DC4  -- large function accessing +0x08, +0x24, +0x114, +0x98
+ *   GSmodelTranslate  -- large function accessing +0x08, +0x24, +0x114, +0x98
  * =================================================================== */
 typedef struct GSmaterialEntry {
     /* 0x000 */ u32    flags;           /* GSMAT_FLAG_* bitmask */
@@ -400,7 +400,7 @@ f32* GSmaterialGetTransformPtr(GSmaterialEntry* entry);
  * @param entry   Pointer to a GSmaterialEntry.
  * @return        1 if the transform matrix is non-identity.
  *
- * Calls fn_80191118 (MTXIsIdentity) on the matrix at +0x4C.
+ * Calls GSboundIsVisible (MTXIsIdentity) on the matrix at +0x4C.
  *
  * Corresponds to GSmaterialHasTransform. Size: 0x30.
  */
@@ -516,7 +516,7 @@ void GSmaterialLerpDiffuse(GSmaterialEntry* entry, void* param);
  * @param entry   Pointer to a GSmaterialEntry.
  * @param delta   Float delta / interpolation factor.
  *
- * Corresponds to fn_800E3DC4. Size: 0x250.
+ * Corresponds to GSmodelTranslate. Size: 0x250.
  */
 
 /**
@@ -678,7 +678,7 @@ void GSmaterialSetDistanceThreshold(f32 dist);
  * GSmaterialConfigureAlpha -- Set up alpha compare and alpha-to-coverage
  * for a material.
  *
- * Corresponds to fn_800EB268. Size: 0xD8.
+ * Corresponds to GSmodelComputeBound. Size: 0xD8.
  */
 
 /* ===================================================================
@@ -851,7 +851,7 @@ void GSmaterialSetDistanceThreshold(f32 dist);
 /**
  * GSmaterialFinalize -- Final cleanup for material state at end of frame.
  *
- * Corresponds to fn_800EE288. Size: 0x40.
+ * Corresponds to characterClearLookTarget. Size: 0x40.
  */
 
 #endif /* GS_MATERIAL_H */

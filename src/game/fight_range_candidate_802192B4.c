@@ -42,7 +42,7 @@ void wsCmdA6(void)
 {
     extern u32 GSrand();
     extern u32 GSmsgGetGSchar();
-    extern void fn_8010C4D4();
+    extern void wazaDataGetDesc();
     extern u32 wazaGetStatus();
     extern void msgctrlSetValue();
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
@@ -106,7 +106,7 @@ void wsCmdA6(void)
                 for (i = 0; i < 2; i++) {
                     fightOutPokemonSetZokuseiDataId(pokemon, (u8)i, selected);
                 }
-                fn_8010C4D4(selected);
+                wazaDataGetDesc(selected);
                 msgctrlSetValue(0xd, GSmsgGetGSchar());
                 lbl_8047B610 += 5;
             }

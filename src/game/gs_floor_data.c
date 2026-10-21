@@ -10,8 +10,8 @@
  *     three remain honest TODO stubs. No rodata string references exist
  *     for any of the four, and no evidence supports semantic names.
  *     floorTerminateTasks calls floorTerminateScriptThreads only; the other three call nothing.
- *   - 11 small floor-state accessors/helpers (fn_800FF4D4 through
- *     fn_800FF784), all matched at 100% -- must stay byte-identical.
+ *   - 11 small floor-state accessors/helpers (floorRegisterHandler through
+ *     floorNop_800FF784), all matched at 100% -- must stay byte-identical.
  *
  * A prior campaign-generation transplant had attached a large orphan
  * block to this file: "GSfloorLoadCallback"/"GSfloorRegisterResHandlers"-
@@ -238,7 +238,7 @@ void floorTaskRegister0(u8 priority, u32 floorId, void* callback) {
 #if defined(GS_FLOOR_DATA_ALL)
 
 /* 0x800FF4D4 | 0x58 */
-void fn_800FF4D4(void* data, u8 typeId) {
+void floorRegisterHandler(void* data, u8 typeId) {
     GSFloorResHandler* handler;
 
     if (lbl_8047ACE0 < 0x18) {
@@ -250,12 +250,12 @@ void fn_800FF4D4(void* data, u8 typeId) {
 }
 
 /* 0x800FF52C | 0x14 */
-u32 fn_800FF52C(void) {
+u32 floorIsLinking(void) {
     return lbl_8047ACC4 != 0;
 }
 
 /* 0x800FF540 | 0x8 | sda_getter */
-u32 fn_800FF540(void) { return lbl_8047ACC4; }
+u32 floorGetPendingLink(void) { return lbl_8047ACC4; }
 
 /* 0x800FF548 | 0xC | sda_deref_getter */
 u8 floorGetFadeOutFlag(void) {
@@ -263,7 +263,7 @@ u8 floorGetFadeOutFlag(void) {
 }
 
 /* 0x800FF554 | 0xC | sda_deref_getter */
-u8 fn_800FF554(void) {
+u8 floorGetCurrentKind(void) {
     return *(u8*)((u8*)lbl_8047ACC8 + 0xA);
 }
 
@@ -362,7 +362,7 @@ void std098_mapWarpToMenuRoom(u32 floorId) {
 }
 
 /* 0x800FF784 | 0x4 | void_stub */
-void fn_800FF784(void) {
+void floorNop_800FF784(void) {
 }
 
 #endif

@@ -48,7 +48,7 @@ typedef struct PkjbIdleCallback {
 /* Alarm that resumes the waiting thread after 1 ms (_gbaCmdAlarm). */
 extern OSAlarm lbl_803B6DE0;
 /*
- * Per-channel cancel flags. fn_800716E8 sets them from the GBA
+ * Per-channel cancel flags. gbaCommSetChannelResult sets them from the GBA
  * communication code while the command functions poll them in their wait
  * loops, so they are volatile: every loop re-derives the flag address
  * instead of reusing the previous loop's, as MWCC does for volatile

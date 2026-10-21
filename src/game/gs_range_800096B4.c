@@ -47,7 +47,7 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
     extern void pokemonWriteJoutaiDataId(u32, u16, s32);
     extern u8 pokemonCheckWriteJoutaiDataId(u32, u16);
     extern void pokemonInitPersistentJoutai();
-    extern u8 fn_80142984(u16);
+    extern u8 itemIdIsValid(u16);
     extern s32 gamedataGetStatus();
     extern void menuCloseCustom();
     extern s32 menuOpenCustom(s32, ...);
@@ -1082,7 +1082,7 @@ s32 dbgMenuPokemonEdit(u32 arg0, u8 arg1, u8* arg2, u8* arg3, u8* arg4, u8* arg5
     if ((u8)pokemonCheckValid(arg0) == 0) {
         pokemonInit((u8*)arg0);
     } else {
-        if (fn_80142984(pokemonGetSoubiItemDataId(arg0)) == 0) {
+        if (itemIdIsValid(pokemonGetSoubiItemDataId(arg0)) == 0) {
             pokemonDoItemSoubi(arg0, 0, 0);
         }
         if (trainerId != 0 && arg1 == 1) {

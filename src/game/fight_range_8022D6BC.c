@@ -28,7 +28,7 @@ u32 _wsTokuseiAfterDamage(u32 attacker, u32 defender)
     extern void fightOutPokemonSetZokuseiDataId();
     extern u8 fightOutPokemonCheckFightOut();
     extern u16 fightOutPokemonMaxHpWaruValue();
-    extern void fn_8010C4D4();
+    extern void wazaDataGetDesc();
     extern u32 GSmsgGetGSchar();
     extern void msgctrlSetValue();
     extern void wsRunScript();
@@ -94,7 +94,7 @@ u32 _wsTokuseiAfterDamage(u32 attacker, u32 defender)
             for (i = 0; (u8)i < 2; i++) {
                 fightOutPokemonSetZokuseiDataId(defender, i, moveType);
             }
-            fn_8010C4D4(moveType);
+            wazaDataGetDesc(moveType);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             wsRunScript(lbl_8047B62C, lbl_803798F3, 0);
             result = 1;

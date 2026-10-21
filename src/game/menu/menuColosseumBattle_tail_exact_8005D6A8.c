@@ -69,7 +69,7 @@ void menu9DButton(MenuWindow* window) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-u32 fn_8005D738(u8 flags) {
+u32 pcBoxConfirmRelease(u8 flags) {
     s32 menuResult;
 
     lbl_8047A5A8 = flags;

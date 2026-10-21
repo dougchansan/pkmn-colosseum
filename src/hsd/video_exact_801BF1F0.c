@@ -5,7 +5,7 @@
  *
  * Text-only carve of src/hsd/video.c, the full HAL translation unit, which
  * stays the reference and the candidate for 0x801BF6AC-0x801BFA1C. There,
- * HSD_VICopyXFBAsync (fn_801BF8A0) calls HSD_VIGetDrawDoneWaitingFlag out
+ * HSD_VICopyXFBAsync (HSD_VICopyEFB2XFBWait) calls HSD_VIGetDrawDoneWaitingFlag out
  * of line; Melee reproduces that only with a local dont_inline pragma,
  * which campaign policy forbids, so video.c cannot link as one unit.
  * HSD_VIFinishDrawXFB (exact in the full TU) stays with it: its asserts address

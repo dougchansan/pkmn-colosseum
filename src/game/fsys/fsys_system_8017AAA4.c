@@ -120,7 +120,7 @@ void fsysUpdateTask(void)
 }
 
 /* Address: 0x8017AC30 | size: 0x10 */
-u32 fn_8017AC30(void)
+u32 fsysGetLoadMode(void)
 {
     return lbl_80453FEC.field_28;
 }

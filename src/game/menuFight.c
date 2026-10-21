@@ -38,7 +38,7 @@ extern void* menuItemBiosGetPtr(s16 npcId);                  /* Lookup NPC data 
 /* Text/dialog system */
 extern void  windowDrawSprite();
 extern void  winSeqSetMenu(void* ctx, s32 state);       /* Set dialog state */
-extern void  fn_801081F8(void* ctx, s32 msgId, s32 flags); /* Display message */
+extern void  winSeqSetItem(void* ctx, s32 msgId, s32 flags); /* Display message */
 
 /* Rendering */
 extern u32   GSmsgGetRect();                           /* Get model dimensions */
@@ -81,7 +81,7 @@ extern u32   windowGetParam();                           /* Get participant data
 extern u8 lbl_8047A2A0;
 
 /* Address: 0x8000DAA8 | Size: 0x8 | Pattern: sda_getter */
-u8 fn_8000DAA8(void) {
+u8 dbgGetFlag8047A2A0(void) {
     return lbl_8047A2A0;
 }
 
@@ -356,11 +356,11 @@ u32 menuFightCloseTop(void* obj) {
 
 /* 0x80011A1C | 0x130 */
 #if 0
-asm void fn_80011A1C(void) {
+asm void menuFightOpenCommandMenu(void) {
 #include "src/game/gs_npc_interact_fn_80011A1C.inc"
 }
 #else
-s32 fn_80011A1C(u8* obj, s32 a1, s32 a2) {
+s32 menuFightOpenCommandMenu(u8* obj, s32 a1, s32 a2) {
     u32 sp8;
     s32 ret;    /* r30 */
     u8 locked;  /* r29 */
@@ -414,8 +414,8 @@ extern void menuClose();
 extern void GSmodelAllUnpauseAnimation(void);
 extern void menuPokemonOpen(void);
 extern void menuPdaOpen(void);
-extern u32 fn_80018F88();
-extern u32 fn_80019070();
+extern u32 bagMenuRunInMenuRoom();
+extern u32 bagTakeResultForItem();
 extern void heroMoveAddAutoEvent(void);
 extern s32 std223_askYesNoThenWarp395();
 extern void menuOffScreenRelease(void);
@@ -458,8 +458,8 @@ u32 heroMoveRunEvent(u32 mode) {
     extern void GSmodelAllUnpauseAnimation(void);
     extern void menuPokemonOpen(s32, s32, s32);
     extern void menuPdaOpen(void);
-    extern u32 fn_80018F88(s32, void*, s32);
-    extern u32 fn_80019070(u32);
+    extern u32 bagMenuRunInMenuRoom(s32, void*, s32);
+    extern u32 bagTakeResultForItem(u32);
     extern void heroMoveAddAutoEvent(u32, u32, u32, s32, s32);
     extern s32 std223_askYesNoThenWarp395(void);
     extern void menuOffScreenRelease(void);
@@ -528,10 +528,10 @@ u32 heroMoveRunEvent(u32 mode) {
             } else if (lbl_8047A2B0 == 2) {
                 menuClose(dialogId);
                 GSmodelAllUnpauseAnimation();
-                result = fn_80018F88(0, &work, 0);
+                result = bagMenuRunInMenuRoom(0, &work, 0);
                 GSmodelAllPauseAnimation();
-                if (((u16)result != 0) && (fn_80019070(result) != 0xFFFFFFFF)) {
-                    heroMoveAddAutoEvent(fn_80019070(result), (u16)result, work, 0, 0);
+                if (((u16)result != 0) && (bagTakeResultForItem(result) != 0xFFFFFFFF)) {
+                    heroMoveAddAutoEvent(bagTakeResultForItem(result), (u16)result, work, 0, 0);
                     break;
                 }
             } else {
@@ -540,16 +540,16 @@ u32 heroMoveRunEvent(u32 mode) {
         } while (1);
         break;
     case 1:
-        result = fn_80018F88(0, &work, 0);
-        if (((u16)result != 0) && (fn_80019070(result) != 0xFFFFFFFF)) {
-            heroMoveAddAutoEvent(fn_80019070(result), (u16)result, work, 0, 0);
+        result = bagMenuRunInMenuRoom(0, &work, 0);
+        if (((u16)result != 0) && (bagTakeResultForItem(result) != 0xFFFFFFFF)) {
+            heroMoveAddAutoEvent(bagTakeResultForItem(result), (u16)result, work, 0, 0);
         }
         break;
     default:
         break;
     }
 
-    fn_80019070(result);
+    bagTakeResultForItem(result);
     soundUnduck(0x1F4, 1, 1);
     menuClose(dialogId);
     tmp = GSgfxGetVsyncRate();
@@ -873,7 +873,7 @@ void menuFightCtrlTarget(void) {}
 /* menuFightDrawSecretPokemonStatus - 0x8000E290 | size: 0x780 */
 extern void* pokemonDataBiosGetPtr();
 extern u8 pokemonDataBiosGetZokuseiDataId();
-extern u16 fn_8010C46C();
+extern u16 wazaDataGetName();
 extern u32 wazaGetStatus();
 extern u8 pokemonWazaGetMaxPP();
 extern u32 GSmsgGetGSchar();
@@ -924,7 +924,7 @@ void menuFightDrawSecretPokemonStatus(u8* ctx, u8* sprite)
     extern u32 menuPokemonGetStatusSprite();
     extern u32 pokemonDataBiosGetPtr();
     extern u32 pokemonDataBiosGetZokuseiDataId();
-    extern u32 fn_8010C46C();
+    extern u32 wazaDataGetName();
     extern u32 wazaGetStatus();
     extern u32 pokemonWazaGetMaxPP(u32, u16);
     extern u32 pokemonGetSoubiItemDataId();
@@ -986,7 +986,7 @@ void menuFightDrawSecretPokemonStatus(u8* ctx, u8* sprite)
     case 0x123D: {
         u32 data = pokemonDataBiosGetPtr((u16)pokemonGetStatus(pokemon, 0, 0x6E, 0));
         u8 type = pokemonDataBiosGetZokuseiDataId(data, 0);
-        windowDrawSprite(0, 0, ctx, (u16)fn_8010C46C(type), 0);
+        windowDrawSprite(0, 0, ctx, (u16)wazaDataGetName(type), 0);
         break;
     }
 
@@ -997,7 +997,7 @@ void menuFightDrawSecretPokemonStatus(u8* ctx, u8* sprite)
         first = pokemonDataBiosGetZokuseiDataId(data, 0);
         second = pokemonDataBiosGetZokuseiDataId(data, 1);
         if (first != second) {
-            windowDrawSprite(0, 0, ctx, (u16)fn_8010C46C(second), 0);
+            windowDrawSprite(0, 0, ctx, (u16)wazaDataGetName(second), 0);
         }
         break;
     }
@@ -1016,7 +1016,7 @@ void menuFightDrawSecretPokemonStatus(u8* ctx, u8* sprite)
         move = (u16)pokemonGetStatus(pokemon, 0, 0x7F, slot);
         if (move != 0) {
             u16 icon = (u16)wazaGetStatus(0, move, 3, 0);
-            windowDrawSprite(0, 0, ctx, (u16)fn_8010C46C(icon), 0);
+            windowDrawSprite(0, 0, ctx, (u16)wazaDataGetName(icon), 0);
         }
         break;
     }

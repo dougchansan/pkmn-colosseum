@@ -87,7 +87,7 @@ extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetBlendMode(s32, s32, s32);
 extern void gfxSetZMode(s32, s32, s32);
-extern void fn_800D9ED8(s32);
+extern void gfxSetFlag1A(s32);
 extern void colsysMakeSRTMatrix(ColMtx out, u32 index);
 extern void colsysMakeRotMatrix(ColMtx out, u32 index);
 extern void PSMTXMultVec(ColMtx, const f32*, f32*);
@@ -276,7 +276,7 @@ void* GScolsys2Draw(void)
     gfxClearFlags(6);
     gfxSetBlendMode(1, 6, 7);
     gfxSetZMode(1, 2, 1);
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 
     if (GSgfxDLBegin(*(void**)((u8*)&lbl_80404C68 + 0x3708), 0x80000) == 0) {
         printf(lbl_80272050);
@@ -335,7 +335,7 @@ void colsysDebugDraw(void)
     gfxClearFlags(6);
     gfxSetBlendMode(1, 6, 7);
     gfxSetZMode(1, 2, 1);
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 
     object = scene->objects;
     floorObj = lbl_80404C68.floors[lbl_80404C68.activeLayer].objs;

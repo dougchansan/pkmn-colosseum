@@ -9,7 +9,7 @@ extern u8 lbl_803143B4[];
 extern u8 lbl_803143D8[];
 
 extern void gfxRecordCommand(u32, ...);
-extern void fn_800D7940(u8*, u16);
+extern void gfxDrawIndexedVertices(u8*, u16);
 extern void gfxSetupChannelsTev(u32);
 extern void GXSetVtxAttrFmt(u32, u32, u32, u32, u8);
 extern void GXClearVtxDesc(void);
@@ -58,7 +58,7 @@ void gfxSetVtxDescRaw(u32 obj, u16 vertCount) {
     if (*(u8*)(lbl_8047AA80 + 0x47e) == 1) {
         oldObj = *(u32*)(lbl_8047AA80 + 0x24);
         *(u32*)(lbl_8047AA80 + 0x24) = obj;
-        fn_800D7940((u8*)obj, vertCount);
+        gfxDrawIndexedVertices((u8*)obj, vertCount);
         *(u32*)(lbl_8047AA80 + 0x24) = oldObj;
         return;
     }
@@ -70,5 +70,5 @@ void gfxSetVtxDescRaw(u32 obj, u16 vertCount) {
 
     GSgfxLoadVtxDesc(obj);
     gfxSetupChannelsTev(obj);
-    fn_800D7940((u8*)obj, vertCount);
+    gfxDrawIndexedVertices((u8*)obj, vertCount);
 }

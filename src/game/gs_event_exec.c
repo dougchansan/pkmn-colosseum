@@ -21,14 +21,14 @@
  *   fn_80012FB0  GSevent_DisplayText          -- 0x2EC bytes, show event text box
  *   menuLvUpPanelDrawText  GSevent_MoveNPC              -- 0x3CC bytes, script NPC movement
  *   fn_80013668  GSevent_PlayAnimation        -- 0xDC bytes, trigger NPC animation
- *   fn_80013744  GSevent_Nop                  -- 8 bytes, no-op command
+ *   menuReturnTrue_80013744  GSevent_Nop                  -- 8 bytes, no-op command
  *   itemStorageWithdraw  GSevent_WaitFrames           -- 0x168 bytes, wait N frames
- *   fn_800138B4  GSevent_FadeScreen           -- 0x164 bytes, screen fade in/out
+ *   bagUseKindItemAt  GSevent_FadeScreen           -- 0x164 bytes, screen fade in/out
  *   bagItemToss  GSevent_CameraControl        -- 0x3E4 bytes, camera movement script
  *   bagItemGive  GSevent_PlaySound            -- 0x184 bytes, play sound effect
  *   bagItemUse  GSevent_PlayMusic            -- 0x17C bytes, change BGM
- *   fn_800140FC  GSevent_StopMusic            -- 0x14 bytes, stop current BGM
- *   fn_80014110  GSevent_ReturnTrue           -- 8 bytes, stub returns 1
+ *   itemFieldUseGetTarget  GSevent_StopMusic            -- 0x14 bytes, stop current BGM
+ *   itemFieldUseGetPokemon  GSevent_ReturnTrue           -- 8 bytes, stub returns 1
  *   itemUseGetTargetPokemon  GSevent_CheckPartyState      -- 0x80 bytes, check party condition
  *   itemUseClosePartyMenu  GSevent_GetPartySize         -- 0x24 bytes, return party count
  *   itemUseOpenPartyMenu  GSevent_GiveItem             -- 0x78 bytes, give item to player
@@ -111,7 +111,7 @@ extern void GSthreadCreate(s32 priority, void* stack, s32 stackSize,
  *   +0x08: Parameter block pointer
  *   +0x0C-0x48: Type-specific data
  *
- * This table is referenced heavily by bagMenuDrawCursor and fn_800150E4
+ * This table is referenced heavily by bagMenuDrawCursor and pocketDrawKindItemList
  * which index into it using: entry = table + (slotIndex * 0x4C)
  */
 
@@ -126,10 +126,10 @@ extern u32 lbl_8047A2EC;
 
 #if !defined(GS_EVENT_EXEC_ONLY_80012D20) && !defined(GS_EVENT_EXEC_ONLY_8001374C) && !defined(GS_EVENT_EXEC_ONLY_800141BC)
 /* Address: 0x80013744 | Size: 0x8 | Pattern: return_constant */
-u32 fn_80013744(void) { return 1; }
+u32 menuReturnTrue_80013744(void) { return 1; }
 
 /* Address: 0x80014110 | Size: 0x8 | Pattern: sda_getter */
-u32 fn_80014110(void) {
+u32 itemFieldUseGetPokemon(void) {
     return lbl_8047A2EC;
 }
 #endif /* !GS_EVENT_EXEC_ONLY_80012D20 */
@@ -141,7 +141,7 @@ extern u8*  windowGetFreeWork(void);
 extern void* windowAllocMemory(void*, s32);
 extern void* windowGetAllocPtr(void*);
 extern u8   windowSearchID(s32);
-extern void fn_80103F74(s32, s32, s32);
+extern void windowSetItemDisp(s32, s32, s32);
 extern void soundStopSE(s32);
 extern void* memcpy(void* dst, const void* src, u32 n);
 #if !defined(GS_EVENT_EXEC_ONLY_80012D20) && !defined(GS_EVENT_EXEC_ONLY_8001374C) && !defined(GS_EVENT_EXEC_ONLY_800141BC)
@@ -164,7 +164,7 @@ s32 menuFightCmdCtrl(u8* ctx) {
             else if (id >= 0x49) { if (id < 0x4b) kind = 0x540; }
             else if (id >= 0x47) kind = 0x540;
             else if (id >= 0x45) kind = 0x538;
-            fn_80103F74(id, kind, 0);
+            windowSetItemDisp(id, kind, 0);
         }
         id = *(s32*)(ctx + 4);
         kind = 0;
@@ -173,7 +173,7 @@ s32 menuFightCmdCtrl(u8* ctx) {
             else if (id >= 0x49) { if (id < 0x4b) kind = 0x541; }
             else if (id >= 0x47) kind = 0x541;
             else if (id >= 0x45) kind = 0x539;
-            fn_80103F74(id, kind, 0);
+            windowSetItemDisp(id, kind, 0);
         }
     }
     if (*(s16*)(p + 2) != 0) {
@@ -558,10 +558,10 @@ extern void msgctrlSetValue(s32, s32);
 /* itemStorageWithdraw - 0x8001374C | size: 0x168 */
 extern void* heroItemGetItemKindToItemAryPtr(u32, u8, void*, u16*, s32, s32);
 extern void* heroHizukiItemGetItemAryPtr(u32, void*, s32, s32, s32);
-extern u8  fn_801429E8(void*);
+extern u8  itemSlotIsValid(void*);
 extern s32 itemBiosGetItemDataId(void*);
 extern s32 heroItemAddItemDataId(u32, s32, s32, s32);
-extern void fn_8012959C(u32, s32, s32, s16);
+extern void heroBoxChangeItemCount(u32, s32, s32, s16);
 extern u8 lbl_80266918[];
 #define sSummaryPageEntries lbl_80266918
 extern u32 lbl_8047A2F8;
@@ -585,7 +585,7 @@ static inline s32 eventItemListFindDataId(s32 entry_idx, s32 target_n) {
     idx = -1;
     i = 0;
     while (i < *(u16*)buf) {
-        if (fn_801429E8(list)) {
+        if (itemSlotIsValid(list)) {
             idx++;
             if (idx >= target_n) {
                 idx = itemBiosGetItemDataId(list);
@@ -611,7 +611,7 @@ s32 itemStorageWithdraw(s32 entry_idx, s32 target_n, s32* out) {
         *out = 0;
         return 0;
     }
-    fn_8012959C(lbl_8047A2F8, idx, 1, (s16)target_n);
+    heroBoxChangeItemCount(lbl_8047A2F8, idx, 1, (s16)target_n);
     msgctrlSetValue(0x2d, (u16)idx);
     winMsgOpen(2, 0x4268, 1, 0);
     winMsgClose(1);
@@ -622,15 +622,15 @@ s32 itemStorageWithdraw(s32 entry_idx, s32 target_n, s32* out) {
 #pragma pop
 #endif
 
-/* fn_800138B4 - 0x800138B4 | size: 0x164 */
-extern u8 fn_80129718(u32, s32);
-extern void fn_80129650(u32, s32, s32, s32);
+/* bagUseKindItemAt - 0x800138B4 | size: 0x164 */
+extern u8 heroBoxHasRoom(u32, s32);
+extern void heroBoxAddItem(u32, s32, s32, s32);
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma (the GS_EVENT_EXEC_ONLY_8001374C carve skips it and uses the unit's -opt nopeephole) - see docs/RULE_EXCEPTIONS.md */
 #if !defined(GS_EVENT_EXEC_ONLY_8001374C)
 #pragma push
 #pragma peephole off
 #endif
-s32 fn_800138B4(s32 entry_idx, s32 target_n, s32* out) {
+s32 bagUseKindItemAt(s32 entry_idx, s32 target_n, s32* out) {
     s32   buf[4];
     u8*   entry;
     s32   flag;
@@ -648,7 +648,7 @@ s32 fn_800138B4(s32 entry_idx, s32 target_n, s32* out) {
     idx = -1;
     i = 0;
     while (i < *(u16*)buf) {
-        if (fn_801429E8(list)) {
+        if (itemSlotIsValid(list)) {
             idx++;
             if (idx >= target_n) {
                 idx = itemBiosGetItemDataId(list);
@@ -660,13 +660,13 @@ s32 fn_800138B4(s32 entry_idx, s32 target_n, s32* out) {
     }
     idx = 0;
 after:
-    if (fn_80129718(lbl_8047A2F8, idx) == 0) {
+    if (heroBoxHasRoom(lbl_8047A2F8, idx) == 0) {
         winMsgOpen(2, 0x425F, 1, 0);
         winMsgClose(1);
         *out = 0;
         return 2;
     }
-    fn_80129650(lbl_8047A2F8, idx, 1, -1);
+    heroBoxAddItem(lbl_8047A2F8, idx, 1, -1);
     msgctrlSetValue(0x2d, (u16)idx);
     winMsgOpen(2, 0x4264, 1, 0);
     winMsgClose(1);
@@ -724,7 +724,7 @@ static inline s32 eventItemListGetNum(s32* kind, s32 target_n) {
     idx = -1;
     i = 0;
     while (i < count) {
-        if (fn_801429E8(list)) {
+        if (itemSlotIsValid(list)) {
             idx++;
             if (idx >= target_n) {
                 return itemBiosGetNum(list);
@@ -749,7 +749,7 @@ static inline s32 eventItemListGetDataId(s32* kind, s32 target_n) {
     idx = -1;
     i = 0;
     while (i < count) {
-        if (fn_801429E8(list)) {
+        if (itemSlotIsValid(list)) {
             idx++;
             if (idx >= target_n) {
                 idx = itemBiosGetItemDataId(list);
@@ -939,7 +939,7 @@ s32 bagItemGive(s32 entry_idx, s32 target_n, s32* out) {
     idx = -1;
     i = 0;
     while (i < *(u16*)buf) {
-        if (fn_801429E8(list)) {
+        if (itemSlotIsValid(list)) {
             idx++;
             if (idx >= target_n) {
                 idx = itemBiosGetItemDataId(list);
@@ -1006,7 +1006,7 @@ s32 bagItemUse(s32 entry_idx, s32 target_n, s32* out) {
     idx = -1;
     i = 0;
     while (i < *(u16*)buf) {
-        if (fn_801429E8(list)) {
+        if (itemSlotIsValid(list)) {
             idx++;
             if (idx >= target_n) {
                 idx = itemBiosGetItemDataId(list);
@@ -1046,10 +1046,10 @@ after:
 
 #if !defined(GS_EVENT_EXEC_ONLY_8001374C)
 #if !defined(GS_EVENT_EXEC_ONLY_800141BC)
-/* fn_800140FC - 0x800140FC | size: 0x14 */
+/* itemFieldUseGetTarget - 0x800140FC | size: 0x14 */
 extern u32 lbl_8047A2F8;
 extern u32 lbl_8047A2F4;
-void fn_800140FC(u32* out1, u32* out2) {
+void itemFieldUseGetTarget(u32* out1, u32* out2) {
     *out1 = lbl_8047A2F8;
     *out2 = lbl_8047A2F4;
 }

@@ -19,7 +19,7 @@ extern void windowGetParam();
 extern void windowGetActiveID();
 extern void windowSearchID();
 extern void windowGetKeyInfo();
-extern void fn_801081F8();
+extern void winSeqSetItem();
 extern void winSpriteGetDisp();
 extern void winSpriteSetDisp();
 extern void msgctrlSetValue();
@@ -210,14 +210,14 @@ extern u8 lbl_80268DB4[];
 
 /* ===== Forward declarations ===== */
 void menuCardEMatrixSelectCard(u8 cardId, u8 subIndex);
-void fn_8007C414(void);
+void cardeMatrixClearAnimTimer(void);
 void menuCardEMatrixSetTarget(u8 cardId, u8 subIndex, s8 row, s8 column, s32 state);
-void fn_8007C634(void);
-void fn_8007C764(u8 arg);
-void fn_8007C7A8(u8 arg);
-void fn_8007C7EC(void);
-void fn_8007CAB0(void);
-void fn_8007CB54(u32 arg);
+void cardeMatrixCommitEntry(void);
+void cardeMatrixSetFlagC9(u8 arg);
+void cardeMatrixSetFlagC8(u8 arg);
+void cardeMatrixLoadEntries(void);
+void cardeMatrixUpdateSortKeys(void);
+void cardeMatrixSetTitle(u32 arg);
 struct MenuCardEMatrixItem;
 void cardeMatrixDrawText(void*, struct MenuCardEMatrixItem*);
 void cardeMatrixDrawText2(void* window, u8* param);
@@ -330,7 +330,7 @@ void menuCardEMatrixSelectCard(u8 cardId, u8 subIndex) {
 }
 
 /* 0x8007C414 | size: 0x3C */
-void fn_8007C414(void) {
+void cardeMatrixClearAnimTimer(void) {
     extern void* windowSearchID(u32 id);
     extern u32* windowGetFreeWork(void* obj);
     u32 p;
@@ -390,7 +390,7 @@ void menuCardEMatrixSetTarget(u8 cardId, u8 subIndex, s8 row, s8 column, s32 sta
 }
 
 /* 0x8007C634 | size: 0x130 */
-void fn_8007C634(void) {
+void cardeMatrixCommitEntry(void) {
     MenuCardEMatrixContext* context;
 
     context = menuCardEWaitTransition();
@@ -413,7 +413,7 @@ void fn_8007C634(void) {
 }
 
 /* 0x8007C764 | size: 0x44 */
-void fn_8007C764(u8 arg) {
+void cardeMatrixSetFlagC9(u8 arg) {
     extern void* windowSearchID(u32 id);
     extern u32* windowGetFreeWork(void* obj);
     u32 p;
@@ -426,7 +426,7 @@ void fn_8007C764(u8 arg) {
 }
 
 /* 0x8007C7A8 | size: 0x44 */
-void fn_8007C7A8(u8 arg) {
+void cardeMatrixSetFlagC8(u8 arg) {
     extern void* windowSearchID(u32 id);
     extern u32* windowGetFreeWork(void* obj);
     u32 p;
@@ -491,7 +491,7 @@ static inline void menuCardEMatrixFillEntries(MenuCardEMatrixContext* context,
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8007C7EC(void) {
+void cardeMatrixLoadEntries(void) {
     extern void* windowSearchID(s32 id);
     extern MenuCardEMatrixContext** windowGetFreeWork(void* window);
     extern s32 cardeArenaCountRecords(void* arena);
@@ -587,7 +587,7 @@ void fn_8007C7EC(void) {
 /* RULE-EXCEPTION(user-approved): unit-wide local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8007CAB0(void) {
+void cardeMatrixUpdateSortKeys(void) {
     extern void* windowSearchID(s32 id);
     extern MenuCardEMatrixContext** windowGetFreeWork(void* window);
     MenuCardEMatrixContext* context;
@@ -613,7 +613,7 @@ void fn_8007CAB0(void) {
 }
 
 /* 0x8007CB54 | size: 0x60 */
-void fn_8007CB54(u32 arg) {
+void cardeMatrixSetTitle(u32 arg) {
     extern void* windowSearchID(u32 id);
     extern u32* windowGetFreeWork(void* obj);
     extern void GScharLenCpy(u32 p, u32 arg, u32 size);
@@ -1112,7 +1112,7 @@ void menuCardEMatrixWindowProc(MenuCardEWindow* window) {
     extern s32 windowGetActiveID(void);
     extern MenuCardEKeyInfo* windowGetKeyInfo(void);
     extern MenuCardEMatrixWork* menuCardEMatrixBuild(void* window, void* title);
-    extern void fn_801081F8(void* window, s32 itemId, s32 arg);
+    extern void winSeqSetItem(void* window, s32 itemId, s32 arg);
     extern void winSpriteSetDisp(MenuCardESprite* sprite, s32 disp);
     extern void soundStartSE(s32 id);
     extern u8 cardeSaveLevelHasCard(MenuCardEEntry* entry, s8 layer);
@@ -1160,8 +1160,8 @@ void menuCardEMatrixWindowProc(MenuCardEWindow* window) {
         if (window->subState == 0) {
             work = menuCardEMatrixBuild(window, windowGetParam(window, 0));
             *windowGetFreeWork(window) = work;
-            fn_801081F8(window, 0x79A, 0x40);
-            fn_801081F8(window, 0x826, 0x48);
+            winSeqSetItem(window, 0x79A, 0x40);
+            winSeqSetItem(window, 0x826, 0x48);
         }
         break;
     case 3:

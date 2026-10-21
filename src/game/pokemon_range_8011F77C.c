@@ -58,8 +58,8 @@ extern void* pokemonGrowDataBiosGetPtr(u8 idx);
 extern u32 pokemonGrowDataBiosGetExp(void* ptr, u8 idx);
 extern void GScharCpy(u8* dst, u32 src);
 extern u32 GSmsgGetGSchar(u32 id);
-extern u32 fn_8010C46C(u16 id);
-extern u32 fn_8010C4D4(u16 id);
+extern u32 wazaDataGetName(u16 id);
+extern u32 wazaDataGetDesc(u16 id);
 extern u8 wazaGetMaxPP(u16 id, u8 up);
 extern u32 wazaGetStatus(u32 obj, u16 id, u32 status, u32 index);
 extern void* memset(void* dst, int val, u32 size);
@@ -279,8 +279,8 @@ void pokemonToMenuWazaStatus(u8* ptr, u8* out)
             id = (u16)pokemonGetStatus(ptr, 0, 0x7F, i);
             resolved = (u16)wazaGetStatus(0, id, 3, 0);
             *(u32*)(slot + 0x0) = GSmsgGetGSchar(wazaGetStatus(0, id, 1, 0));
-            *(u32*)(slot + 0x4) = GSmsgGetGSchar(fn_8010C4D4(resolved));
-            *(u16*)(slot + 0x8) = (u16)fn_8010C46C(resolved);
+            *(u32*)(slot + 0x4) = GSmsgGetGSchar(wazaDataGetDesc(resolved));
+            *(u16*)(slot + 0x8) = (u16)wazaDataGetName(resolved);
             *(u8*)(slot + 0xA) = pokemonGetWazaMaxPP(ptr, i);
             *(u8*)(slot + 0xB) = (u8)pokemonGetStatus(ptr, 0, 0x80, i);
         }

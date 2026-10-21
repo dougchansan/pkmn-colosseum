@@ -21,7 +21,7 @@ extern void winMsgOpen(s32, s32, s32, s32);
 extern void winMsgClose(s32);
 extern u8 lbl_8047A5D0;
 
-void fn_80075A34(void)
+void exDiscRoomSetup(void)
 {
     u32 archive;
 
@@ -32,12 +32,12 @@ void fn_80075A34(void)
     GSscene_SetMode(4);
 }
 
-s32 fn_80075A9C(void) { return std078_flagSetFalse(0xab5); }
-u8 fn_80075AC0(void) { return std081_flagCheckTrue(0xab5); }
-s32 fn_80075AE4(void) { return std078_flagSetFalse(0xab4); }
-u8 fn_80075B08(void) { return std081_flagCheckTrue(0xab4); }
-s32 fn_80075B2C(void) { return std078_flagSetFalse(0xab3); }
-u8 fn_80075B50(void) { return std081_flagCheckTrue(0xab3); }
+s32 exDiscSetFlagAB5(void) { return std078_flagSetFalse(0xab5); }
+u8 exDiscCheckFlagAB5(void) { return std081_flagCheckTrue(0xab5); }
+s32 exDiscSetFlagAB4(void) { return std078_flagSetFalse(0xab4); }
+u8 exDiscCheckFlagAB4(void) { return std081_flagCheckTrue(0xab4); }
+s32 exDiscSetFlagAB3(void) { return std078_flagSetFalse(0xab3); }
+u8 exDiscCheckFlagAB3(void) { return std081_flagCheckTrue(0xab3); }
 
 s32 exShrineIncCounter(void)
 {
@@ -66,11 +66,11 @@ s32 exShrineGetRemaining(void)
     }
 }
 
-s32 fn_80075BFC(void) { return std078_flagSetFalse(0xab1); }
-u8 fn_80075C20(void) { return std081_flagCheckTrue(0xab1); }
-u8 fn_80075C44(void) { return std081_flagCheckTrue(0xa14); }
+s32 exDiscSetFlagAB1(void) { return std078_flagSetFalse(0xab1); }
+u8 exDiscCheckFlagAB1(void) { return std081_flagCheckTrue(0xab1); }
+u8 exDiscCheckFlagA14(void) { return std081_flagCheckTrue(0xa14); }
 
-s32 fn_80075C68(void)
+s32 exDiscCloseMenuE0(void)
 {
     fadeCheck(1);
     return menuClose(0xe0);
@@ -114,11 +114,11 @@ void exDiscCheckStorySave(void)
     }
 }
 
-void fn_80075D98(void)
+void exDiscNop_80075D98(void)
 {
 }
 
-s32 fn_80075D9C(void)
+s32 exDiscCloseMenuE2(void)
 {
     fadeCheck(1);
     return menuClose(0xe2);

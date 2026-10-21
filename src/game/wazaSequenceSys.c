@@ -658,7 +658,7 @@ void wazaSequenceOwnerDraw(void* effectPtr) {
                     flags = 0x2000;
                 }
 
-                if (modelID == (u8)fn_800E3CBC(effect->model)) {
+                if (modelID == (u8)GSmodelGetFlag200(effect->model)) {
                     GSmodelDrawModel(effect->model, flags);
                 }
 

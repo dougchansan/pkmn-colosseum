@@ -17,7 +17,7 @@ s32 gbaPortUpload22(s32 index)
     return result;
 }
 
-void fn_80089D74(s32 index)
+void gbaCommHandshakeB(s32 index)
 {
     extern void gbaCmdHandshakeB(s32);
     gbaCmdHandshakeB(index - 1);

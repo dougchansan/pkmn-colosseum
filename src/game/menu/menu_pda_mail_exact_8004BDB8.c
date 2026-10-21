@@ -13,7 +13,7 @@ extern void* GSmsgGetGSchar(u32 id);
 extern s32 GScharCmp(void* a, void* b);
 extern s32 mailGetReceiveNumber(s32 mailId);
 
-void fn_8004BDB8(s8 a, s8 b)
+void pdaStrategyMemoSetSelection(s8 a, s8 b)
 {
     if (a >= 0) {
         *(s8*) &lbl_803A6A60[1] = a;
@@ -24,12 +24,12 @@ void fn_8004BDB8(s8 a, s8 b)
     *(s8*) &lbl_803A6A60[1] = b;
 }
 
-u8 fn_8004BDEC(void)
+u8 pdaStrategyMemoGetSelection0(void)
 {
     return lbl_803A6A60[0];
 }
 
-u8 fn_8004BDFC(void)
+u8 pdaStrategyMemoGetSelection1(void)
 {
     return lbl_803A6A60[1];
 }

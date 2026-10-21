@@ -100,7 +100,7 @@ void reliveSaveSound(int *r3)
 {
     extern int soundGetCurrentSubSound();
     extern int std228_soundGetCurrentBackgroundMusic();
-    extern int fn_801656D8();
+    extern int soundGetSlotVoiceState();
     extern void std104_soundSetBackgroundMusic();
     int iVar1;
     int iVar2;
@@ -109,14 +109,14 @@ void reliveSaveSound(int *r3)
 
     iVar1 = std228_soundGetCurrentBackgroundMusic();
     if (iVar1 != 0) {
-        iVar2 = fn_801656D8();
+        iVar2 = soundGetSlotVoiceState();
         std104_soundSetBackgroundMusic(1, 0x32, 0xff);
     } else {
         iVar2 = 0;
     }
     iVar3 = soundGetCurrentSubSound();
     if (iVar3 != 0) {
-        iVar4 = fn_801656D8();
+        iVar4 = soundGetSlotVoiceState();
     } else {
         iVar4 = 0;
     }
@@ -219,7 +219,7 @@ u32 effectCreate(u32* r3, u32 r4, u16* r5, int r6)
     extern u32 floorDataBiosGetShadowReciveNum(void* floor);
     extern u32 floorDataBiosGetShadowReciveID(void* floor, u32 index);
     extern void* floorDataBiosGetCurrentPtr(void);
-    extern u32 fn_8018F470(u32 index);
+    extern u32 floorGetShadowLight(u32 index);
     extern u8 wazaSequenceOwnerLoadWaza(u32 handle, u16 a, u16 b, s32 c);
     extern u32 wazaSequencePokemonCreate(u32 id, u32 random, s32 flags);
     extern void* wazaSequenceOwnerGetModel(u32 handle);
@@ -251,7 +251,7 @@ u32 effectCreate(u32* r3, u32 r4, u16* r5, int r6)
         GSmodelClearShadowFlags(model, 1);
         floor = floorDataBiosGetCurrentPtr();
         if (floor != NULL) {
-            light = fn_8018F470(1);
+            light = floorGetShadowLight(1);
             count = floorDataBiosGetShadowReciveNum(floor);
             n = 0;
             if (count == 1) {

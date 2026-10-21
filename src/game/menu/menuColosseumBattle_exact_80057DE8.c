@@ -33,7 +33,7 @@ s32 pcBoxIsShadowPokemon(void* pokemon) {
 #pragma push
 #pragma scheduling off
 #pragma peephole off
-s32 fn_80057E40(void) {
+s32 pcBoxStreamGetState(void) {
     ColosseumBattleConnectState* state = (ColosseumBattleConnectState*)lbl_803A9A08;
 
     if (state->active != 0) {

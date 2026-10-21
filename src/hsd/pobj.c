@@ -11,7 +11,7 @@
  *
  * Colosseum keeps a shape animation's AObj on the PObj itself (and drives it
  * through the class's update method), hides PObjs flagged 0x800, counts
- * vertices and triangles (fn_801ACDAC), and invalidates the vertex cache
+ * vertices and triangles (HSD_DObjCountVerticesSub), and invalidates the vertex cache
  * after loading.
  *
  * Globals other objects already link against keep their dtk names; the
@@ -570,7 +570,7 @@ void HSD_PObjResolveRefsAll(HSD_PObj* pobj, HSD_PObjDesc* pdesc)
  * a direct attribute in an unsupported format ends that PObj's count,
  * which retail branches straight to the next PObj for.
  */
-void fn_801ACDAC(HSD_PObj* pobj, u32* nb_vtx, u32* nb_tri)
+void HSD_DObjCountVerticesSub(HSD_PObj* pobj, u32* nb_vtx, u32* nb_tri)
 {
     u32 vtx = 0;
     u32 tri = 0;

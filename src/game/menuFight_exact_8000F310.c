@@ -23,7 +23,7 @@ extern void* menuItemBiosGetPtr(s16 npcId);                  /* Lookup NPC data 
 /* Text/dialog system */
 extern void  windowDrawSprite();
 extern void  winSeqSetMenu(void* ctx, s32 state);       /* Set dialog state */
-extern void  fn_801081F8(void* ctx, s32 msgId, s32 flags); /* Display message */
+extern void  winSeqSetItem(void* ctx, s32 msgId, s32 flags); /* Display message */
 
 /* Rendering */
 extern u32   GSmsgGetRect();                           /* Get model dimensions */

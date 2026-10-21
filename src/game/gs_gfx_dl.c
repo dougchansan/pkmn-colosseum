@@ -2,15 +2,15 @@
  * @file gs_gfx_dl.c
  * @brief GSgfx display lists, the whole TU: parse a GX display list back
  * into vertex callbacks, record (GSgfxDLBegin / GSgfxDLEnd, gfxDLCaptureVertex,
- * fn_800DB758) or replay (GSgfxDLDraw) captured lists.
+ * gfxBeginPrimitive) or replay (GSgfxDLDraw) captured lists.
  * .text 0x800DA578 - 0x800DB890, .data 0x803152B8 - 0x80315384.
  *
  * XD source unit: game/pxdvs/GSAPI/GSgfxM/dl.cpp (C++; the parse helpers
  * keep their mangled names). The TU's .data is its four switch tables,
  * laid out contiguously from the 8-aligned start: _dlParseSurface's
  * (0x803152B8), _dlParseVertex's two (0x80315320, 0x80315340; MWCC emits
- * a function's tables last switch first) and fn_800DB758's (0x80315364).
- * fn_800DB758's table starts at a 4-aligned address, so the TU cannot be
+ * a function's tables last switch first) and gfxBeginPrimitive's (0x80315364).
+ * gfxBeginPrimitive's table starts at a 4-aligned address, so the TU cannot be
  * linked as function carves once _dlParseVertex's tables are compiled; it
  * links whole. Its data (the GSgfx state pointer lbl_8047AA80 and the
  * capture table lbl_8047AAD4 / lbl_8047AAD8, in .sbss) stays extern.
@@ -46,7 +46,7 @@ extern void gfxSetupChannelsTev(GSVtxDesc* desc);
 extern void fn_800E24B0(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void* GSmemLock(u16 handle);
-extern void fn_800E2AF8(u16 handle, u32 size);
+extern void GSmemReturnTrue(u16 handle, u32 size);
 extern u16 GSmemAlloc(u32 size, u32 align);
 
 extern GSgfxDLCapture* lbl_8047AAD4;
@@ -523,7 +523,7 @@ GSgfxDLCapture* GSgfxDLEnd(void) {
         *lbl_8047AA80->captureCursor++ = 0;
     }
     capture->size = end - (u8*)capture->data;
-    fn_800E2AF8(capture->handle, capture->size);
+    GSmemReturnTrue(capture->handle, capture->size);
     DCFlushRange(capture->data, capture->size);
     lbl_8047AA80->captureActive = 0;
     lbl_8047AA80->captureDL = NULL;
@@ -732,7 +732,7 @@ void gfxDLCaptureVertex(void) {
     }
 }
 
-void fn_800DB758(u16 vertCount)
+void gfxBeginPrimitive(u16 vertCount)
 {
     u32 state;
     u32 obj;

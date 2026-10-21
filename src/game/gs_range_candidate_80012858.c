@@ -9,7 +9,7 @@ extern void* windowGetFreeWork(void*);
 extern void* windowAllocMemory(void*, s32);
 extern void* windowGetAllocPtr(void*);
 extern void* windowSearchID(s32);
-extern void fn_80103F74(void*, s32, s32);
+extern void windowSetItemDisp(void*, s32, s32);
 extern void soundStopSE(s32);
 
 s32 menuFightCmdCtrl(u8* ctx)
@@ -48,7 +48,7 @@ s32 menuFightCmdCtrl(u8* ctx)
                 kind = 0x540;
                 break;
             }
-            fn_80103F74(window, kind, 0);
+            windowSetItemDisp(window, kind, 0);
         }
 
         id2 = *(s32*)(ctx + 4);
@@ -67,7 +67,7 @@ s32 menuFightCmdCtrl(u8* ctx)
                 kind2 = 0x541;
                 break;
             }
-            fn_80103F74(window2, kind2, 0);
+            windowSetItemDisp(window2, kind2, 0);
         }
     }
 

@@ -9,10 +9,10 @@
  * pkjb_uploader.c (0x800716C8 - 0x80075390) in configure.py. Evidence:
  * - with the peephole pass off, every function of the command layer
  *   (0x800716C8 - 0x80073E8C) that is exact is exact with no local pragma:
- *   fn_800716C8, fn_800716E8, gbaCmdHandshakeA, gbaCmdWaitReady, gbaCmdRecv33Locked,
+ *   gbaCommSetChannelBuffer, gbaCommSetChannelResult, gbaCmdHandshakeA, gbaCmdWaitReady, gbaCmdRecv33Locked,
  *   gbaCmdHandshakeB, gbaCmdWaitReadyB, _gbaCmdAlarm, gbaCmdSendWords, gbaCmdPollWord,
  *   gbaCmdUpload66, _AGB_EntryGetStatus, gbaCmdSend77, gbaCmdUpload88,
- *   gbaCmdRecv99Locked, gbaCmdKeepAlive, gbaCmdReadKeys, gbaCmdResetLink, fn_80073E84; with
+ *   gbaCmdRecv99Locked, gbaCmdKeepAlive, gbaCmdReadKeys, gbaCmdResetLink, gbaCommReturnTrue; with
  *   it on, gbaCmdKeepAlive/gbaCmdReadKeys/gbaCmdPollWord/_AGB_EntryGetStatus and the
  *   others that used to need "#pragma peephole off" all lose;
  * - the uploader part moves toward the target too (old sources):
@@ -132,7 +132,7 @@ s32 gbaCmdResetLink(s32 chan)
 }
 
 /* 0x80073E84 | 0x8 */
-s32 fn_80073E84(void)
+s32 gbaCommReturnTrue(void)
 {
     return 1;
 }

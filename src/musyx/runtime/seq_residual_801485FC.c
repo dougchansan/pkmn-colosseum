@@ -6,7 +6,7 @@
  * AxioDL/musyx `musyx/runtime/seq.c`, cross-verified byte-exact against the
  * matched copies in Mario Party 4, Metroid Prime and Mario Strikers
  * (GC/1.3.2). Boundary evidence: seqGetPrivateId (0x8014635C) is the first
- * seq.c function after the item-use function fn_80144574; seqInit
+ * seq.c function after the item-use function itemUseApply; seqInit
  * (0x8014A094 + 0x1A8) is reference seq.c's last function and ends exactly
  * at synthSetBpm (0x8014A23C), reference synth.c's first.
  */
@@ -90,8 +90,8 @@ extern void  GSmodelSetVisibility(void* param);
 /* People data layer (people_data.c) */
 extern void* itemDataBiosGetPtr(u16 index);   /* peopleFieldGetByIndex */
 extern void* fn_80142CF4(u32 a, u32 b, u32 c, u32 d);  /* peopleFieldAlloc */
-extern void  fn_801429E8(void* entry);  /* peopleFieldGetEntry */
-extern void  fn_80142984(u32 id);       /* peopleFieldGetByID */
+extern void  itemSlotIsValid(void* entry);  /* peopleFieldGetEntry */
+extern void  itemIdIsValid(u32 id);       /* peopleFieldGetByID */
 
 /* Script system */
 extern void sndConvertMs(u32* ptr);  /* peopleFieldUtilDispatch - same-TU asm wrapper */

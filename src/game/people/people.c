@@ -251,7 +251,7 @@ typedef struct PeopleHumanCollision {
 
 /*
  * Floor save/restore handler triple (load, save, size), the layout
- * fn_800FF4D4 copies into its GSFloorResHandler table.
+ * floorRegisterHandler copies into its GSFloorResHandler table.
  */
 typedef struct PeopleFloorResFuncs {
     void* func[3];
@@ -329,8 +329,8 @@ extern void GSmodelDetachFromGSpart(void* model, s32 index);
 extern void GSpartFree(void* part);
 extern void GSpartGetTransform(void* part, void* out, void* a, void* b);
 extern void GSpartRegisterRotation(void* part, void* rotation, s32 order);
-extern void fn_800E3CC8(void* model, s32 mode);
-extern void fn_800EE288(void* part);
+extern void GSmodelSetFlag200(void* model, s32 mode);
+extern void characterClearLookTarget(void* part);
 
 /* Lights */
 extern void* GSlightCreate(void);
@@ -346,7 +346,7 @@ extern u32 GSinputGetButtons(s32 pad);
 extern void* GSvmGetThreadByKey(u16 id);
 extern u16 _vmThreadCreate(u32 type, u32 scriptId, u32 stackSize, u32 a, u32 b, s32 argc, ...);
 extern void GSresReleaseOwnerItem(u32 groupId, u32 index);
-extern void fn_800FF4D4(void* funcs, u8 typeId);
+extern void floorRegisterHandler(void* funcs, u8 typeId);
 extern void gappLoadMeterDraw(u32 color);
 extern void soundStartSE(u32 id);
 extern u8 std081_flagCheckTrue(u32 flag);
@@ -399,7 +399,7 @@ extern void gfxSetVtxDesc(void* a);
 extern void gfxSetFlags(s32 a);
 extern void gfxClearFlags(s32 a);
 extern void gfxSetBlendMode(s32 a, s32 b, s32 c);
-extern void fn_800D9ED8(s32 a);
+extern void gfxSetFlag1A(s32 a);
 extern void gfxSetPrimitive(s32 a);
 extern void gfxBegin(s32 a);
 extern void gfxVtxPos(f32 x, f32 y, f32 z);
@@ -408,11 +408,11 @@ extern void gfxEnd(void);
 extern u8 lbl_80314638[];
 
 /* ===== The people core unit (0x8018F470-0x8018FE30) ===== */
-extern u32 fn_8018F490(const PeopleInfoBiosEntry* info);
+extern u32 peopleInfoGetFlag4(const PeopleInfoBiosEntry* info);
 extern u32 characterModelGetTalkSE(const PeopleInfoBiosEntry* info);
-extern void fn_8018F4C8(void* info, u8 motion, s32* outAnim, u8* outLoop);
-extern f32 fn_8018F5B4(const PeopleInfoBiosEntry* info);
-extern f32 fn_8018F5CC(const PeopleInfoBiosEntry* info);
+extern void peopleInfoGetMotion(void* info, u8 motion, s32* outAnim, u8* outLoop);
+extern f32 peopleInfoGetHeight(const PeopleInfoBiosEntry* info);
+extern f32 peopleInfoGetRadius(const PeopleInfoBiosEntry* info);
 extern f32 charModelGetRadius(const PeopleInfoBiosEntry* info);
 
 extern f32 charModelGetHeadPitchMax(const PeopleInfoBiosEntry* info);
@@ -474,7 +474,7 @@ s32 peopleHideAndSuspendBySelf(PeopleEntry* self);
 s32 peopleStartScript(u32 groupId, u32 index, u32 flagId, u32 param1, u32 param2);
 u32 peopleGetMoveScriptId(u32 groupId, u32 index);
 u32 peopleGetTalkScript(u32 groupId, u32 index);
-s32 fn_801839A0(u32 groupId, u32 index, f32 field88, f32 field8C);
+s32 peopleFindNear(u32 groupId, u32 index, f32 field88, f32 field8C);
 s32 peopleStartWander(u32 groupId, u32 index, f32 field80);
 s32 std075_characterAllocPathAlt(u32 groupId, u32 index);
 BOOL peopleStartWalkList(u32 groupId, u32 index, u32 loop);
@@ -523,7 +523,7 @@ u8 peopleWaitSyncMotionBlend(u32 groupId, u32 index, u8 wait);
 BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait);
 void peopleStopAnimation(u32 groupId, u32 index);
 void std154_characterPlayAnimation(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 looping);
-u8 fn_8018B558(u32 groupId, u32 index, s32 blendAnimation, s32 animation, u32 frames);
+u8 peopleSetAnimation(u32 groupId, u32 index, s32 blendAnimation, s32 animation, u32 frames);
 u8 std051_characterSetAnimation(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 loop);
 void peopleGetHeadGroundPos(u32 groupId, u32 index, GSvec* position);
 void peopleGetPositionByIndex(u32 groupId, u32 index, s32 partIndex, GSvec* position);
@@ -721,7 +721,7 @@ static inline void peopleSetMotionIndex(PeopleEntry* entry, s32 motionIndex)
     if (info == NULL) {
         return;
     }
-    fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+    peopleInfoGetMotion(info, (u8)entry->motionIndex, &animIndex, &loop);
     if (animIndex == -1) {
         return;
     }
@@ -1254,7 +1254,7 @@ void peopleSetMotionSlot(PeopleEntry* entry, s32 motionIndex)
     if (info == NULL) {
         return;
     }
-    fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+    peopleInfoGetMotion(info, (u8)entry->motionIndex, &animIndex, &loop);
     if (animIndex == -1) {
         return;
     }
@@ -1498,7 +1498,7 @@ void peopleSystemInit(u32 maxPeople)
         GSlightSetType(*light, 2);
         GSlightSetActive(*light, 0);
     }
-    fn_800FF4D4(&funcs, 1);
+    floorRegisterHandler(&funcs, 1);
 }
 
 /*
@@ -1555,33 +1555,33 @@ u8 peopleOpenSub(PeopleEntry* entry, u32 groupId, u32 index, s32 objectId)
 
     info = peopleInfoBiosGetPtr((void*)objectId);
     if (info != NULL) {
-        fn_8018F4C8(info, 2, &animIndex, &loop);
+        peopleInfoGetMotion(info, 2, &animIndex, &loop);
         if (animIndex != -1) {
             GSmodelSetAnimIndex(model, animIndex);
             GSmodelGetFrameCount(model, &frames, NULL);
             if (frames > 0.0f) {
-                entry->field_34 = fn_8018F5CC(info) / frames;
+                entry->field_34 = peopleInfoGetRadius(info) / frames;
             } else {
                 GSlogWrite("ERROR! [%s]: People[%d,%d] WalkMotion[%d] is frame zero.\n",
                            __FUNCTION__, groupId, index, animIndex);
             }
         }
-        fn_8018F4C8(info, 3, &animIndex, &loop);
+        peopleInfoGetMotion(info, 3, &animIndex, &loop);
         if (animIndex != -1) {
             GSmodelSetAnimIndex(model, animIndex);
             GSmodelGetFrameCount(model, &frames, NULL);
             if (frames > 0.0f) {
-                entry->field_38 = fn_8018F5B4(info) / frames;
+                entry->field_38 = peopleInfoGetHeight(info) / frames;
             } else {
                 GSlogWrite("ERROR! [%s]: People[%d,%d] RunMotion[%d] is frame zero.\n",
                            __FUNCTION__, groupId, index, animIndex);
             }
         }
-        fn_8018F4C8(info, 1, &animIndex, &loop);
+        peopleInfoGetMotion(info, 1, &animIndex, &loop);
         if (animIndex != -1) {
             peoplePlayMotion(groupId, index, animIndex, 0, TRUE);
         }
-        GSmodelSetBoundCheck(model, fn_8018F490(info));
+        GSmodelSetBoundCheck(model, peopleInfoGetFlag4(info));
     }
 
     character = floorCharacterGetInfo(groupId, index);
@@ -1945,7 +1945,7 @@ void peopleRegisterHumanCollision(u32 groupId, u32 index)
     if (entry->shadowId >= 0) {
         return;
     }
-    if (fn_8018F5FC(info) != 1) {
+    if (peopleInfoGetCollisionType(info) != 1) {
         return;
     }
     collision.groupId = groupId;
@@ -2171,7 +2171,7 @@ u8 std051_characterSetAnimation(u32 groupId, u32 index, s32 animIndex, s32 frame
     return restart;
 }
 
-u8 fn_8018B558(u32 groupId, u32 index, s32 blendAnimation,
+u8 peopleSetAnimation(u32 groupId, u32 index, s32 blendAnimation,
                 s32 animation, u32 frames) {
     PeopleEntry* entry;
     void* model;
@@ -2291,7 +2291,7 @@ BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait)
 }
 
 /*
- * Whether a person's motion blend (fn_8018B558) is still running. With
+ * Whether a person's motion blend (peopleSetAnimation) is still running. With
  * `wait`, yield until it completes (logging and giving up if the model's
  * motion loops) and return FALSE.
  */
@@ -2615,7 +2615,7 @@ void std067_characterStopLookAt(u32 groupId, u32 index)
         return;
     }
     part = GSmodelGetPart(model, partIndex);
-    fn_800EE288(part);
+    characterClearLookTarget(part);
     GSpartFree(part);
     entry->threadHandle = NULL;
     set__5GSvecFfff(entry->headTarget, 0.0f, 0.0f, 0.0f);
@@ -2873,7 +2873,7 @@ u8 std058_characterCheckWithinBounds(u32 groupId, u32 index, f32 x0, f32 z0, f32
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetBlendMode(1, 6, 7);
-        fn_800D9ED8(0);
+        gfxSetFlag1A(0);
         gfxSetPrimitive(4);
         gfxBegin(10);
         gfxVtxPos(x0, position.y, z0);
@@ -3152,7 +3152,7 @@ u8 std170_cameraFocusOnCharacter(u32 groupId, u32 index, u8 push, f32 x0, f32 z0
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetBlendMode(1, 6, 7);
-        fn_800D9ED8(0);
+        gfxSetFlag1A(0);
         gfxSetPrimitive(4);
         gfxBegin(4);
         gfxVtxPos(x0, position.y - 50.0f, z0);
@@ -3793,7 +3793,7 @@ s32 peopleStartWander(u32 groupId, u32 index, f32 field80) {
     return 1;
 }
 
-s32 fn_801839A0(u32 groupId, u32 index, f32 field88, f32 field8C) {
+s32 peopleFindNear(u32 groupId, u32 index, f32 field88, f32 field8C) {
     PeopleEntry* entry;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -3985,7 +3985,7 @@ void std131_characterSurpriseAnimation(u32 groupId, u32 index) {
 
     model = GSresGetResource(modelGroup, modelIndex);
     if (model != NULL) {
-        fn_800E3CC8(model, 1);
+        GSmodelSetFlag200(model, 1);
         GSmodelClearShadowFlags(model, 1);
     }
 

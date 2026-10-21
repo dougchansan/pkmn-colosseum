@@ -35,7 +35,7 @@ void ShowMessage(void)
     extern u32 VIGetTvFormat(void);
     extern u16 OSGetFontEncode(void);
     extern u8 OSGetLanguage(void);
-    extern void fn_8009CD38(GXColor foreground, GXColor background,
+    extern void __OSBootDol(GXColor foreground, GXColor background,
                             const char* message);
     GXColor background = lbl_8047C2D8;
     GXColor foreground = lbl_8047C2DC;
@@ -50,7 +50,7 @@ void ShowMessage(void)
     } else {
         message = lbl_8026F5F8[OSGetLanguage()];
     }
-    fn_8009CD38(foreground, background, message);
+    __OSBootDol(foreground, background, message);
 }
 
 extern void (*FatalFunc_8047A830)(void);

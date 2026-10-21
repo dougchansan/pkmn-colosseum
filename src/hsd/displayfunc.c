@@ -328,7 +328,7 @@ static void mkBillBoardMtx(HSD_JObj* jobj, MtxPtr src, MtxPtr dst)
 }
 
 /* mkRBillBoardMtx */
-void fn_80197C70(HSD_JObj* jobj, MtxPtr src, MtxPtr dst)
+void HSD_JObjMakeBillboardMtx(HSD_JObj* jobj, MtxPtr src, MtxPtr dst)
 {
     Mtx rot, scl;
     f32 sx, sy, sz;
@@ -361,7 +361,7 @@ void HSD_JObjMakePositionMtx(HSD_JObj* jobj, MtxPtr vmtx, MtxPtr pmtx)
             mkHBillBoardMtx(jobj, mtx, pmtx);
             break;
         case JOBJ_RBILLBOARD:
-            fn_80197C70(jobj, mtx, pmtx);
+            HSD_JObjMakeBillboardMtx(jobj, mtx, pmtx);
             break;
         default:
             HSD_Panic(__FILE__, 368, "unkown type of billboard.\n");

@@ -36,16 +36,16 @@ typedef struct SequenceVariantEntry {
 } SequenceVariantEntry;
 
 static inline void sequenceWaitResource(u32 group, u32 resource) {
-    extern void fn_8017B3E4(u32 group);
+    extern void fsysStartLoad(u32 group);
     extern void* GSresGetResource(u32 group, u32 resource);
     extern const char lbl_802799C8[];
     s32 state;
 
     if (GSresGroupGetState(group) < 0) {
-        fn_8017B3E4(group);
+        fsysStartLoad(group);
     } else if (GSresGroupGetState(group) == 0 && resource != 0 &&
                GSresGetResource(group, resource) == NULL) {
-        fn_8017B3E4(group);
+        fsysStartLoad(group);
     }
 
     for (;;) {
@@ -442,7 +442,7 @@ void wazaSequenceOwnerFreeAll(void* obj) {
 BOOL sequenceLoad(void* effect, void* data) {
     extern void* GSresGetResource(u32, u32);
     extern u32 wazaSequenceOwnerFindAnim(void*);
-    extern void fn_800EB268(void*, u32);
+    extern void GSmodelComputeBound(void*, u32);
     extern void* gsParticleBankLoad(void*);
     extern void GSmodelLinkToGSparticleBank(void*, void*);
     extern void GSmodelLinkTexAnimToAnim(void*, s32);
@@ -460,7 +460,7 @@ BOOL sequenceLoad(void* effect, void* data) {
     extern void GSmodelSetShadowLight(void*, u32);
     extern void GSmodelSetShadowSurface(void*, s32, void*);
     extern void GSmodelSetBoundCheck(void*, s32);
-    extern void fn_800E3B44(void*, s32);
+    extern void GSmodelSetFlag400(void*, s32);
     extern void GSlogWrite(const char*, ...);
     extern u8 lbl_803727B0[];
     extern u8 lbl_803727BC[];
@@ -474,7 +474,7 @@ BOOL sequenceLoad(void* effect, void* data) {
     if (sequenceLoadEntries(sequence, data)) {
         model = *(void**)(sequence + 0x24) =
             GSresGetResource(*(u32*)(sequence + 0), *(u32*)(sequence + 4));
-        fn_800EB268(model, wazaSequenceOwnerFindAnim(sequence));
+        GSmodelComputeBound(model, wazaSequenceOwnerFindAnim(sequence));
         if (*(u32*)(sequence + 0xC) != 0) {
             *(void**)(sequence + 0x28) =
                 gsParticleBankLoad(GSresGetResource(
@@ -497,7 +497,7 @@ BOOL sequenceLoad(void* effect, void* data) {
                 model, wazaSequenceSysGetModelShadowCount__Fv(),
                 wazaSequenceSysGetModelShadowList__Fv());
             GSmodelSetBoundCheck(model, 1);
-            fn_800E3B44(model, 1);
+            GSmodelSetFlag400(model, 1);
         }
         return TRUE;
     }
@@ -837,7 +837,7 @@ s32 wazaSequenceCheckResExists(u16 index, u16 type) {
  */
 BOOL wazaSequenceOwnerLoadWaza(void* owner, u16 group, u16 index, u8 variant) {
     extern void* GSresGetResource(u32 group, u32 resource);
-    extern void fn_8017B3E4(u32 group);
+    extern void fsysStartLoad(u32 group);
     extern const char lbl_802799C8[];
     u32 resourceGroup;
     u32 resourceId;
@@ -1171,17 +1171,17 @@ void* wazaSequenceTrainerCreate(u16 index) {
  * Address: 0x801DE598 | Size: 0xBC
  */
 void wazaSequenceLoadResourceSync(u32 group, u32 resource) {
-    extern void fn_8017B3E4(u32 group);
+    extern void fsysStartLoad(u32 group);
     extern void* GSresGetResource(u32 group, u32 resource);
     extern const char lbl_802799C8[];
     s32 state;
 
     state = GSresGroupGetState(group);
     if (state < 0) {
-        fn_8017B3E4(group);
+        fsysStartLoad(group);
     } else if (GSresGroupGetState(group) == 0 && resource != 0 &&
                GSresGetResource(group, resource) == NULL) {
-        fn_8017B3E4(group);
+        fsysStartLoad(group);
     }
 
     for (;;) {

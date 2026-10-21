@@ -113,9 +113,9 @@ extern MenuModelWork lbl_803A9720;
 extern u32 lbl_8047A560;
 
 extern void* pcBoxGetCursorPokemon(MenuCBPane* pane);
-extern s32 fn_800573C0(void);
-extern s32 fn_800566E8(void);
-extern s32 fn_80057E40(MenuCBPane* pane);
+extern s32 pcBoxCursorBusy(void);
+extern s32 pcBoxTabIsMoving(void);
+extern s32 pcBoxStreamGetState(MenuCBPane* pane);
 extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 msgId);
 extern u32 GSmsgGetGSchar(u32 msgId);
 extern u32 GSmsgGetRect(u32 msgId);
@@ -143,32 +143,32 @@ extern s8 getPokemonBoxNbUsedSlot__5PCBOXFSc(void* pcbox, s8 box);
 extern void winSpriteSetDisp(MenuCBPane* pane, u8 enable);
 extern MenuKeyInfo* windowGetKeyInfo(void);
 extern void menuModelTerm(MenuModelWork* work);
-s32 fn_80057694(void);
-void fn_800576A4(u32 value);
-u32 fn_800567AC(void);
-u32 fn_80056704(void);
+s32 pcBoxGetHeldFlag(void);
+void pcBoxSetHeldFlag(u32 value);
+u32 pcBoxTabNext(void);
+u32 pcBoxTabPrev(void);
 void menuCursorNormal(MenuCBPane* pane);
 MenuCursorItem* windowGetCursorToItem();
-void fn_80057830(s16 x, s16 y, s32 selected);
-extern void fn_80054760(s32 forward, s32 wait);
+void pcBoxSetCursorTarget(s16 x, s16 y, s32 selected);
+extern void pcBoxOpenDetail(s32 forward, s32 wait);
 extern void pcBoxRun(void);
-extern void fn_80056A80(void);
-extern void fn_80056B74(MenuCBPane* pane, s32 enabled);
-extern void fn_80057A38(void);
-extern void fn_80057A64(void* pokemon, s32 arg1);
-extern s8 fn_801347D8(void);
-extern s32 fn_80055E38(MenuCBPane* pane);
-extern void fn_800FE6D0(s16 x, s16 y);
+extern void pcBoxCloseTabs(void);
+extern void pcBoxOpenTabs(MenuCBPane* pane, s32 enabled);
+extern void pcBoxCloseHeldWindow(void);
+extern void pcBoxOpenHeldWindow(void* pokemon, s32 arg1);
+extern s8 pcBoxGetSlotCount(void);
+extern s32 pcBoxTabMenuIdle(MenuCBPane* pane);
+extern void spriteSetOrigin(s16 x, s16 y);
 extern void spriteSetEnv(void);
 extern void* heroGetStatus(void* hero, s32 selector, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
 extern s32 pcBoxIsShadowPokemon(void* pokemon);
 extern void* pcBoxGetIconResource(void* pokemon);
 extern void gfxSetFlags(u32 flags);
-extern void fn_800DC0D4(s32, s32, s32, s32, s32);
-extern void fn_800DC14C(s32, s32, s32, s32, s32, s32);
-extern void fn_800DBFD4(s32, s32, s32, s32, s32);
-extern void fn_800DC04C(s32, s32, s32, s32, s32, s32);
+extern void gfxSetTevAlphaIn(s32, s32, s32, s32, s32);
+extern void gfxSetTevAlphaOp(s32, s32, s32, s32, s32, s32);
+extern void gfxSetTevColorIn(s32, s32, s32, s32, s32);
+extern void gfxSetTevColorOp(s32, s32, s32, s32, s32, s32);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
 extern void gfxSetVtxDesc(void* resource);
@@ -182,17 +182,17 @@ extern void gfxEnd(void);
 extern void gfxClearFlags(u32 flags);
 extern void* menuSpriteBiosGetPtr(s32 id);
 extern void windowDrawSprite2(s32, s32, s16, s16, s32, void*, s32, s32);
-s32 fn_800576B4(void);
-s32 fn_80057538(void);
-s32 fn_80056A78(void);
+s32 pcBoxGetHoldState(void);
+s32 pcBoxHeldSequenceDone(void);
+s32 pcBoxGetTab(void);
 void* getPokemon__5PCBOXFScSc(void*, s8, s8);
 void delPokemon__5PCBOXFScSc(void*, s8, s8);
 void setPokemon__5PCBOXFP7PokemonScSc(void*, void*, s8, s8);
-void fn_800574FC(void* pokemon);
-void* fn_800574E0(void);
-void fn_800574A8(void);
-void fn_80057400(void);
-void fn_800576C4(s32 state);
+void pcBoxCopyToHeld(void* pokemon);
+void* pcBoxGetHeld(void);
+void pcBoxClearHeld(void);
+void pcBoxSwapHeldBuffer(void);
+void pcBoxSetHoldState(s32 state);
 void* pcBoxGetPokemonAt(void* pokemon, s32 direction, s32* moveState);
 static inline s32 menuCBFindBoxSlot(s32* state)
 {
@@ -214,37 +214,37 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
     extern void* getPokemon__5PCBOXFScSc(void*, s8, s8);
     extern void delPokemon__5PCBOXFScSc(void*, s8, s8);
     extern u8 pokemonCheckValid(void*);
-    extern s32 fn_800576B4(void);
-    extern void* fn_800574E0(void);
-    extern s32 fn_80057694(void);
+    extern s32 pcBoxGetHoldState(void);
+    extern void* pcBoxGetHeld(void);
+    extern s32 pcBoxGetHeldFlag(void);
     extern u32 pokemonGetStatus(void*, s32, s32, s32);
-    extern void fn_80058804(void*, s32);
-    extern s32 fn_80054B1C(s32, s32);
-    extern void fn_800587D8(void);
-    extern void fn_800576C4(s32);
-    extern void fn_80057458(void*);
+    extern void pcBoxShowMessage(void*, s32);
+    extern s32 pcBoxSelectCommand(s32, s32);
+    extern void pcBoxCloseMessage(void);
+    extern void pcBoxSetHoldState(s32);
+    extern void pcBoxCopyToOtherHeld(void*);
     extern void* heroGetStatus(void*, s32, u16);
-    extern void fn_800546F0(s32);
-    extern s32 fn_80054680(void);
-    extern void fn_800599AC(s32);
-    extern void fn_800546C0(s32);
+    extern void pcBoxScrollStartOut(s32);
+    extern s32 pcBoxScrollGetState(void);
+    extern void pcBoxPokemonMenu(s32);
+    extern void pcBoxScrollStartIn(s32);
     extern void fadeSet(s32, f32);
     extern s32 fadeCheck(s32);
-    extern void fn_8005471C(void);
-    extern void fn_80057C9C(void*, void*, s32*);
+    extern void pcBoxCloseDetail(void);
+    extern void pcBoxRunStatus(void*, void*, s32*);
     extern void* menuItemBiosGetPtr(s32);
-    extern void fn_80057830(s16, s16, s32);
+    extern void pcBoxSetCursorTarget(s16, s16, s32);
     extern MenuCBPane* windowSearchID(s32);
-    extern u8 fn_8005D738(u8);
+    extern u8 pcBoxConfirmRelease(u8);
     extern void pokemonBiosSetPcboxMark(void*, u8);
     extern s32 pcBoxIsShadowPokemon(void*);
-    extern s32 fn_8005D3D0(s32);
+    extern s32 pcBoxSelectMode(s32);
     extern void GScharCpy(void*, void*);
-    extern void fn_800566D8(s32);
-    extern s32 fn_800566B4(void);
-    extern void fn_8005744C(void);
-    extern s32 fn_80057428(void);
-    extern void fn_800574A8(void);
+    extern void pcBoxCommandFadeStart(s32);
+    extern s32 pcBoxCommandFadeDone(void);
+    extern void pcBoxHeldFadeStart(void);
+    extern s32 pcBoxHeldFadeDone(void);
+    extern void pcBoxClearHeld(void);
     MenuCBPokemonBlob pokemonCopy;
     u16 name[0x10];
     s32 moveState[3];
@@ -269,7 +269,7 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
     canAct = pokemonCheckValid(boxPokemon);
     mode = 1;
 
-    if (fn_800576B4() != 3) {
+    if (pcBoxGetHoldState() != 3) {
         alternatePokemon = NULL;
         if (canAct == 0) {
             mode = 0;
@@ -277,7 +277,7 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
             context = 0;
         }
     } else {
-        alternatePokemon = fn_800574E0();
+        alternatePokemon = pcBoxGetHeld();
         if (canAct == 0) {
             context = 1;
         } else {
@@ -293,13 +293,13 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
         pokemon = alternatePokemon;
     }
 
-    if (fn_80057694() == 0) {
+    if (pcBoxGetHeldFlag() == 0) {
         nameValue = pokemonGetStatus(pokemon, 0, 0x77, 0);
         msgctrlSetValue(0x36, nameValue);
         msgctrlSetValue(0x32, nameValue);
-        fn_80058804((void*)0x1B74, 0);
-        action = fn_80054B1C(context, 0);
-        fn_800587D8();
+        pcBoxShowMessage((void*)0x1B74, 0);
+        action = pcBoxSelectCommand(context, 0);
+        pcBoxCloseMessage();
     } else {
         switch (context) {
         case 0:
@@ -319,15 +319,15 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
 
     switch (action) {
     case 0:
-        fn_800576C4(1);
+        pcBoxSetHoldState(1);
         break;
     case 1:
-        fn_800576C4(4);
+        pcBoxSetHoldState(4);
         break;
     case 2:
-        fn_80057458(boxPokemon);
+        pcBoxCopyToOtherHeld(boxPokemon);
         delPokemon__5PCBOXFScSc(NULL, box, slot);
-        fn_800576C4(6);
+        pcBoxSetHoldState(6);
         break;
     case 4:
         emptySlots = 6;
@@ -337,35 +337,35 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
             }
         }
         if (emptySlots <= 0) {
-            fn_80058804((void*)0x1B7D, 1);
+            pcBoxShowMessage((void*)0x1B7D, 1);
             break;
         }
         if (alternatePokemon != NULL) {
-            fn_800546F0(0);
-            while (fn_80054680() == 2) {
+            pcBoxScrollStartOut(0);
+            while (pcBoxScrollGetState() == 2) {
                 _threadSwitch();
             }
-            fn_800599AC(1);
-            fn_800546C0(0);
-            while (fn_80054680() == 3) {
+            pcBoxPokemonMenu(1);
+            pcBoxScrollStartIn(0);
+            while (pcBoxScrollGetState() == 3) {
                 _threadSwitch();
             }
             break;
         }
         lbl_8047A560 = 1;
-        fn_800576C4(1);
+        pcBoxSetHoldState(1);
         break;
     case 3:
         fadeSet(3, lbl_8047BE98);
         fadeCheck(1);
-        fn_8005471C();
-        fn_80056A80();
-        if (fn_800576B4() == 3) {
+        pcBoxCloseDetail();
+        pcBoxCloseTabs();
+        if (pcBoxGetHoldState() == 3) {
             haveCopy = 1;
-            pokemonCopy = *(MenuCBPokemonBlob*)fn_800574E0();
+            pokemonCopy = *(MenuCBPokemonBlob*)pcBoxGetHeld();
         }
-        context = fn_80057694();
-        fn_80057A38();
+        context = pcBoxGetHeldFlag();
+        pcBoxCloseHeldWindow();
         if (alternatePokemon != NULL) {
             moveState[0] = 1;
         } else {
@@ -373,15 +373,15 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
         }
         moveState[1] = box;
         moveState[2] = slot;
-        fn_80057C9C(pokemon, pcBoxGetPokemonAt, moveState);
-        fn_80056B74((MenuCBPane*)box, 0);
-        fn_80054760(0, 0);
-        fn_80057A64(haveCopy != 0 ? &pokemonCopy : NULL, context);
+        pcBoxRunStatus(pokemon, pcBoxGetPokemonAt, moveState);
+        pcBoxOpenTabs((MenuCBPane*)box, 0);
+        pcBoxOpenDetail(0, 0);
+        pcBoxOpenHeldWindow(haveCopy != 0 ? &pokemonCopy : NULL, context);
         if (moveState[0] == 0) {
             i = menuCBFindBoxSlot(moveState);
             if (i < 32) {
                 item = menuItemBiosGetPtr(lbl_80267398[i].itemId);
-                fn_80057830(*(s16*)((u8*)item + 2),
+                pcBoxSetCursorTarget(*(s16*)((u8*)item + 2),
                              *(s16*)((u8*)item + 4), 1);
             }
             slot = moveState[2];
@@ -394,43 +394,43 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
         fadeCheck(1);
         break;
     case 6:
-        fn_80058804((void*)0x1B88, 0);
-        mark = fn_8005D738(pokemonBiosGetPcboxMark(pokemon));
+        pcBoxShowMessage((void*)0x1B88, 0);
+        mark = pcBoxConfirmRelease(pokemonBiosGetPcboxMark(pokemon));
         if (mark != 0xFF) {
             pokemonBiosSetPcboxMark(pokemon, mark);
         }
-        fn_800587D8();
+        pcBoxCloseMessage();
         break;
     case 7:
         if (pcBoxIsShadowPokemon(pokemon) != 0) {
-            fn_80058804((void*)0x1B94, 1);
+            pcBoxShowMessage((void*)0x1B94, 1);
             break;
         }
-        fn_80058804((void*)0x1B91, 0);
-        answer = fn_8005D3D0(1);
-        fn_800587D8();
+        pcBoxShowMessage((void*)0x1B91, 0);
+        answer = pcBoxSelectMode(1);
+        pcBoxCloseMessage();
         if (answer == 1) {
             break;
         }
         nameValue = pokemonGetStatus(pokemon, 0, 0x77, 0);
         GScharCpy(name, (void*)nameValue);
         if (alternatePokemon == NULL) {
-            fn_800566D8(slot);
-            while (fn_800566B4() != 0) {
+            pcBoxCommandFadeStart(slot);
+            while (pcBoxCommandFadeDone() != 0) {
                 _threadSwitch();
             }
             delPokemon__5PCBOXFScSc(NULL, box, slot);
         } else {
-            fn_8005744C();
-            while (fn_80057428() != 0) {
+            pcBoxHeldFadeStart();
+            while (pcBoxHeldFadeDone() != 0) {
                 _threadSwitch();
             }
-            fn_800574A8();
-            fn_800576C4(0);
+            pcBoxClearHeld();
+            pcBoxSetHoldState(0);
         }
         msgctrlSetValue(0x36, (u32)name);
-        fn_80058804((void*)0x1B92, 1);
-        fn_80058804((void*)0x1B93, 1);
+        pcBoxShowMessage((void*)0x1B92, 1);
+        pcBoxShowMessage((void*)0x1B93, 1);
         break;
     }
 
@@ -438,49 +438,49 @@ s32 pcBoxPokemonCommand(s32 box, s32 slot)
 }
 
 static inline void fn_800558B8_open(u32 box) {
-    extern u32 fn_80057B34(u32, u32);
-    fn_80057B34(3, box);
-    fn_80056B74((MenuCBPane*)box, 0);
+    extern u32 pcBoxRunNameEntry(u32, u32);
+    pcBoxRunNameEntry(3, box);
+    pcBoxOpenTabs((MenuCBPane*)box, 0);
 }
 
 static inline void fn_800558B8_rebuild(void) {
-    extern s32 fn_80057694(void);
-    extern void fn_80057A38(void);
-    extern u32 fn_80056A78(void);
-    extern void fn_80057A64(void*, s32);
-    extern s32 fn_8005D26C(void);
+    extern s32 pcBoxGetHeldFlag(void);
+    extern void pcBoxCloseHeldWindow(void);
+    extern u32 pcBoxGetTab(void);
+    extern void pcBoxOpenHeldWindow(void*, s32);
+    extern s32 pcBoxSelectFromTable(void);
     extern void fadeSet(s32, f32);
     extern s32 fadeCheck(s32);
-    extern void fn_8005471C(void);
-    extern void fn_80056A80(void);
-    extern void* fn_800574E0(void);
-    extern s32 fn_800576B4(void);
-    extern void fn_80058804(void*, s32);
-    extern void fn_800587D8(void);
+    extern void pcBoxCloseDetail(void);
+    extern void pcBoxCloseTabs(void);
+    extern void* pcBoxGetHeld(void);
+    extern s32 pcBoxGetHoldState(void);
+    extern void pcBoxShowMessage(void*, s32);
+    extern void pcBoxCloseMessage(void);
     s32 haveCopy;
     s32 result;
     s32 count;
     MenuCBPokemonBlob pokemonCopy;
 
     haveCopy = 0;
-    fn_80058804((void*)0x1B87, 0);
-    result = fn_8005D26C();
-    fn_800587D8();
+    pcBoxShowMessage((void*)0x1B87, 0);
+    result = pcBoxSelectFromTable();
+    pcBoxCloseMessage();
     switch (result) {
     case 0:
         fadeSet(3, lbl_8047BE98);
         fadeCheck(1);
-        fn_8005471C();
-        fn_80056A80();
-        if (fn_800576B4() == 3) {
+        pcBoxCloseDetail();
+        pcBoxCloseTabs();
+        if (pcBoxGetHoldState() == 3) {
             haveCopy = 1;
-            pokemonCopy = *(MenuCBPokemonBlob*)fn_800574E0();
+            pokemonCopy = *(MenuCBPokemonBlob*)pcBoxGetHeld();
         }
-        count = fn_80057694();
-        fn_80057A38();
-        fn_800558B8_open(fn_80056A78());
-        fn_80054760(0, 0);
-        fn_80057A64(haveCopy != 0 ? &pokemonCopy : NULL, count);
+        count = pcBoxGetHeldFlag();
+        pcBoxCloseHeldWindow();
+        fn_800558B8_open(pcBoxGetTab());
+        pcBoxOpenDetail(0, 0);
+        pcBoxOpenHeldWindow(haveCopy != 0 ? &pokemonCopy : NULL, count);
         fadeSet(2, lbl_8047BE98);
         fadeCheck(1);
         break;
@@ -490,26 +490,26 @@ static inline void fn_800558B8_rebuild(void) {
 void pcBoxRun(void)
 {
     extern void soundStart(s32, s32, s32, s32);
-    extern s32 fn_800576B4(void);
-    extern void fn_80058804(void*, s32);
-    extern s32 fn_8005D3D0(s32);
-    extern void fn_800587D8(void);
-    extern void fn_800546F0(s32);
-    extern s32 fn_80054680(void);
-    extern void fn_800599AC(s32);
-    extern void fn_800546C0(s32);
-    extern u32 fn_80056A78(void);
+    extern s32 pcBoxGetHoldState(void);
+    extern void pcBoxShowMessage(void*, s32);
+    extern s32 pcBoxSelectMode(s32);
+    extern void pcBoxCloseMessage(void);
+    extern void pcBoxScrollStartOut(s32);
+    extern s32 pcBoxScrollGetState(void);
+    extern void pcBoxPokemonMenu(s32);
+    extern void pcBoxScrollStartIn(s32);
+    extern u32 pcBoxGetTab(void);
     extern s32 pcBoxPokemonCommand();
-    extern s32 fn_8005D26C(void);
+    extern s32 pcBoxSelectFromTable(void);
     extern void fadeSet(s32, f32);
     extern s32 fadeCheck(s32);
-    extern void fn_8005471C(void);
-    extern void fn_80056A80(void);
-    extern void* fn_800574E0(void);
-    extern s32 fn_80057694(void);
-    extern void fn_80057A38(void);
-    extern u32 fn_80057B34(u32, u32);
-    extern void fn_80057A64(void*, s32);
+    extern void pcBoxCloseDetail(void);
+    extern void pcBoxCloseTabs(void);
+    extern void* pcBoxGetHeld(void);
+    extern s32 pcBoxGetHeldFlag(void);
+    extern void pcBoxCloseHeldWindow(void);
+    extern u32 pcBoxRunNameEntry(u32, u32);
+    extern void pcBoxOpenHeldWindow(void*, s32);
     s32 selectedSlot;
     s32 slot;
     s32* selectedSlotPtr;
@@ -526,14 +526,14 @@ void pcBoxRun(void)
         selectedSlotPtr = NULL;
 
         if (selection == -1) {
-            if (fn_800576B4() == 3) {
-                fn_80058804((void*)0x1B7E, 1);
+            if (pcBoxGetHoldState() == 3) {
+                pcBoxShowMessage((void*)0x1B7E, 1);
                 continue;
             }
 
-            fn_80058804((void*)0x1B8B, 0);
-            result = fn_8005D3D0(0);
-            fn_800587D8();
+            pcBoxShowMessage((void*)0x1B8B, 0);
+            result = pcBoxSelectMode(0);
+            pcBoxCloseMessage();
             switch (result) {
             case 0:
                 continue;
@@ -542,13 +542,13 @@ void pcBoxRun(void)
         }
 
         if ((s32)lbl_8047A560 != 0) {
-            fn_800546F0(0);
-            while (fn_80054680() == 2) {
+            pcBoxScrollStartOut(0);
+            while (pcBoxScrollGetState() == 2) {
                 _threadSwitch();
             }
-            fn_800599AC(1);
-            fn_800546C0(0);
-            while (fn_80054680() == 3) {
+            pcBoxPokemonMenu(1);
+            pcBoxScrollStartIn(0);
+            while (pcBoxScrollGetState() == 3) {
                 _threadSwitch();
             }
             lbl_8047A560 = 0;
@@ -564,20 +564,20 @@ void pcBoxRun(void)
 
         switch (result) {
         case 2:
-            fn_800546F0(0);
-            while (fn_80054680() == 2) {
+            pcBoxScrollStartOut(0);
+            while (pcBoxScrollGetState() == 2) {
                 _threadSwitch();
             }
-            fn_800599AC(0);
-            fn_800546C0(0);
-            while (fn_80054680() == 3) {
+            pcBoxPokemonMenu(0);
+            pcBoxScrollStartIn(0);
+            while (pcBoxScrollGetState() == 3) {
                 _threadSwitch();
             }
             selectedSlot = 0;
             selectedSlotPtr = &selectedSlot;
             break;
         case 0:
-            selectedSlot = pcBoxPokemonCommand(fn_80056A78(), slot);
+            selectedSlot = pcBoxPokemonCommand(pcBoxGetTab(), slot);
             selectedSlotPtr = &selectedSlot;
             break;
         case 1:
@@ -593,18 +593,18 @@ void pcBoxRun(void)
 
 void pcBoxOpen(MenuCBPane* pane) {
     menuOpenCustom(0x10e, 0x1f, 0, 0, 0, 0);
-    fn_80056B74(pane, TRUE);
+    pcBoxOpenTabs(pane, TRUE);
 
-    while (fn_80055E38(pane) == 0) {
+    while (pcBoxTabMenuIdle(pane) == 0) {
         _threadSwitch();
     }
 
-    fn_80054760(FALSE, TRUE);
-    fn_80057A64(NULL, 0);
+    pcBoxOpenDetail(FALSE, TRUE);
+    pcBoxOpenHeldWindow(NULL, 0);
     pcBoxRun();
-    fn_80057A38();
-    fn_8005471C();
-    fn_80056A80();
+    pcBoxCloseHeldWindow();
+    pcBoxCloseDetail();
+    pcBoxCloseTabs();
 }
 
 s32 pcBoxDrawBoxCount(MenuCBPane* pane, MenuCBPane* sprite) {
@@ -617,7 +617,7 @@ s32 pcBoxDrawBoxCount(MenuCBPane* pane, MenuCBPane* sprite) {
         return 0;
     }
 
-    capacity = fn_801347D8();
+    capacity = pcBoxGetSlotCount();
     used = getPokemonBoxNbUsedSlot__5PCBOXFSc(NULL, box);
     if (used < 0) {
         return 0;
@@ -663,11 +663,11 @@ s32 pcBoxBoxSelectKey(MenuCBPane* pane) {
     return 0;
 }
 
-void fn_80055DE0(void) {
+void menuPartyCloseMenuA3(void) {
     menuClose(0xa3);
     menuCloseSync(0xa3, 1);
 }
 
-void fn_80055E10(void) {
+void menuPartyOpenMenuA3(void) {
     menuOpen(0xa3, 1);
 }

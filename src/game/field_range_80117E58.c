@@ -221,7 +221,7 @@ extern u8 lbl_8035B8A0[];
 extern void* floorDataBiosGetFieldCameraListPtr();
 extern u32 floorDataBiosGetGroupID();
 extern void* floorDataBiosGetPtr(u32 key);
-extern void fn_8011791C(void);
+extern void fieldCameraDebugUpdate(void);
 void gsParticleKillOldest(FieldParticleInstanceList* list);
 extern void gsParticlePtclHook();
 extern u8 joutaiDataBiosGetKaisuuId(u16 idx);
@@ -231,7 +231,7 @@ extern u8 joutaiDataBiosGetWriteMode(u16 idx);
 extern u8 joutaiDataBiosGetSlot(u16 idx);
 extern u16 joutaiDataBiosGetStatusKind(u16 idx);
 extern u8 joutaiDataBiosGetObjectKind(u16 idx);
-extern u32 fn_80119F50(u16 idx);
+extern u32 itemDataGetHoldEffect(u16 idx);
 extern void wazaDataBiosSetFightWazaWzxVariationFuncPtr(u8* ptr, u32 val);
 extern void wazaDataBiosSetFightWazaWzxTypeFuncPtr(u8* ptr, u32 val);
 extern u32 wazaDataBiosGetFightWazaWzxVariationFuncPtr(u8* ptr);
@@ -396,18 +396,18 @@ extern u32 lbl_8047AD94;
 extern u32 lbl_8047AD80;
 extern u32 lbl_8047AD84;
 extern void GSmodelApplyAnimation(u32);
-extern void fn_800D4604();
-extern void fn_800D377C();
+extern void gfxSetRecordMode();
+extern void GSgfxSetPixelFormatMode();
 extern void GSgfxRenderLayer();
-extern void fn_800D9B24();
-extern void fn_800D9AF0();
+extern void gfxGetScissorBox();
+extern void gfxGetViewportBox();
 extern void GScameraSetCurrent();
 extern void gfxSetScissor();
 extern void gfxSetViewport();
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void GSmodelDrawModel();
 extern void GSgfxRenderEnd(void);
-extern void fn_800FF4D4(void);
+extern void floorRegisterHandler(void);
 extern u32 lbl_802727C8[];
 extern void psSetBillboardCamera();
 extern void psDispMain();
@@ -418,7 +418,7 @@ extern u32 lbl_8047ADA0;
 void gsParticleUpdateAll(void);
 extern void GSquatFromEuler(void*, void*);
 extern void GSvecTransformQuat(void);
-extern void fn_800E0108(void*, void*, void*);
+extern void GSvecMulComponents(void*, void*, void*);
 extern void psInterpretParticles(u32);
 extern void psExecGenerator(u32);
 extern s32 GSgetVersionMajor(void);
@@ -430,7 +430,7 @@ extern void psSetGeneratorAngleRadiusScale(void);
 extern const f32 lbl_8047CFE8; /* 0.0f */
 extern const f32 lbl_8047CFEC; /* 1.0f */
 void* psCreateGeneratorID(u32 use_alt, u8 texture_type, u32 selector);
-void* fn_800D3094(void);
+void* GSgfxGetRetraceCount(void);
 extern u32 lbl_8047ADAC;
 extern u32 lbl_8047ADA8;
 u8* gsParticleCreate(u8* texture, u32 selector, u32 subid);
@@ -450,7 +450,7 @@ extern struct GSmodel* GSmodelSearchModelList(void* jobj);
 extern void* GSmodelGetLinkedGSparticleBank(struct GSmodel* model);
 extern u32 GSmodelIsRootNullAdded(struct GSmodel* model);
 extern u32 GSpartGetJObjIndex(void* jobj, void* root);
-extern u32 fn_800E3CBC(struct GSmodel* model);
+extern u32 GSmodelGetFlag200(struct GSmodel* model);
 extern u32 GSmodelGetGSparticleLinkAttachMode(struct GSmodel* model);
 extern u32 GSmodelGetVisibility(struct GSmodel* model);
 extern void fn_80135E44(void);
@@ -527,8 +527,8 @@ extern void pokemonGetFaceSpriteId(void);
 extern void fn_8001D994(void);
 void pokemonToMenuPokemonStatus(void);
 extern void GSmsgGetGSchar(void);
-extern void fn_8010C4D4(void);
-extern void fn_8010C46C(void);
+extern void wazaDataGetDesc(void);
+extern void wazaDataGetName(void);
 extern void GSrand(void);
 extern u8 lbl_8027296C[];
 void pokemonCheckSetMonohiroi(void);
@@ -580,13 +580,13 @@ extern void cardeArenaClear(void);
 extern void darkPokemonSaveInit(void);
 extern void exribbonInit(void);
 extern void jumptable_803634A8();
-extern void fn_80140A9C(void);
+extern void itemSwapSlots(void);
 extern void heroItemChangeCount(void);
-extern void fn_80141308(void);
-extern void fn_80142368(void);
+extern void itemSlotsAdd(void);
+extern void itemSlotsFind(void);
 extern void peopleFieldGetPlacementOffset(void);
 extern void pcboxAddPokemon(void);
-extern void fn_80142A88(void);
+extern void itemSlotsClear(void);
 extern void jumptable_803634F0();
 extern void jumptable_80363558();
 extern u8 lbl_80426BD0[];
@@ -616,7 +616,7 @@ extern f64 lbl_8047D050;
 extern f64 lbl_8047D058;
 extern u8 lbl_80478AC0[4];
 extern f32 lbl_8047D060;
-void fn_8012B19C(void);
+void partnerCheckBlocked(void);
 void heroMoveChkHinderClear(void);
 extern void GSgetFrameStep(void);
 extern f64 lbl_8047D068;
@@ -645,7 +645,7 @@ extern f32 lbl_8047D07C;
 extern f32 lbl_8047D080;
 void updateChat__F15HEROMOVE_MEMBER(void);
 void heroMoveCheckEvent(void);
-extern void fn_8018F4C8(void);
+extern void peopleInfoGetMotion(void);
 extern void GSmodelGetAnimIndex(void);
 extern void GSmodelGetAnimFrame(void);
 extern void GSmodelSetAnimBlend(void);
@@ -658,7 +658,7 @@ extern f32 lbl_8047D0A8;
 void circleLineIntersect(void);
 extern f32 lbl_8047D0AC;
 void partnerGetTarget(void);
-extern void fn_800E3C64(void);
+extern void GSmodelHasAnimation(void);
 extern f32 lbl_8047D0B0;
 void partnerMove(void);
 extern void GSinputGetLeftStickXData(void);
@@ -688,8 +688,8 @@ extern f32 lbl_8047D064;
 void heroMoveMain(void);
 extern void std067_characterStopLookAt(u32, u32);
 extern void std065_characterLookAtPlayer(u32, u32);
-void fn_8012F1FC(void);
-void fn_8012F40C(void);
+void partnerSetFollowing(void);
+void partnerSetFollowState(void);
 extern void GSmodelGetRotation(void);
 extern void GScolsys2CollectWalkHeight(void);
 extern void GSmodelSetRotation(void);
@@ -707,14 +707,14 @@ extern void fn_80189328(void);
 extern void peopleSetRotation(void);
 void heroMoveInit(void);
 void heroMoveSyncWithHero(void);
-void fn_8013024C(void);
+void partnerSystemInit(void);
 extern void gamedataGetStatus(void);
 extern void gamedataAttestCreate(void);
 extern void cms_RegisterScript();
 extern void floorStartSoundScript(void);
 extern void GSmsgFontOpen();
 extern void GSmsgOpen();
-extern u8 fn_800FF554(void);
+extern u8 floorGetCurrentKind(void);
 extern void cms_UnregisterScript();
 extern void fn_800FC2A8();
 extern void GSmsgClose();
@@ -911,7 +911,7 @@ extern f32 lbl_8047D098;
 extern f32 lbl_8047D09C;
 extern f32 lbl_8047D0A0;
 extern f32 lbl_8047D0A4;
-extern u8 fn_801174EC(void);
+extern u8 cameraGetReturnDone(void);
 extern void joutaiSlotSet0C(u8* ptr, u16 val);
 extern void joutaiSlotSet08(u8* ptr, u32 val);
 extern void joutaiSlotSetStack(u8* ptr, u8 val);
@@ -930,8 +930,8 @@ extern void wazaDataBiosSetRiskFlag(u8* ptr, u8 val);
 extern u8 wazaDataBiosGetRiskFlag(u8* ptr);
 extern void wazaDataBiosSetHidenFlag(u8* ptr, u8 val);
 extern u8 wazaDataBiosGetHidenFlag(u8* ptr);
-extern void fn_8011C5E0(u8* ptr, u8 val);
-extern void fn_8011C5F0(u8* ptr, u8 val);
+extern void wazaSetField15(u8* ptr, u8 val);
+extern void wazaSetField14(u8* ptr, u8 val);
 extern void wazaDataBiosSetDoc(u8* ptr, u32 val);
 extern void wazaDataBiosSetWazawzxdataId(u8* ptr, u32 val);
 extern void wazaDataBiosSetPressure(u8* ptr, u8 val);
@@ -957,8 +957,8 @@ extern void wazaDataBiosSetPri(u8* ptr, u8 val);
 extern void wazaDataBiosSetZokuseiDataId(u8* ptr, u8 val);
 extern void wazaDataBiosSetPp(u8* ptr, u8 val);
 extern void wazaDataBiosSetName(u8* ptr, u32 val);
-extern u8 fn_8011C790(u8* ptr);
-extern u8 fn_8011C7A8(u8* ptr);
+extern u8 wazaGetField15(u8* ptr);
+extern u8 wazaGetField14(u8* ptr);
 extern u32 wazaDataBiosGetDoc(u8* ptr);
 extern u32 wazaDataBiosGetWazawzxdataId(u8* ptr);
 extern u8 wazaDataBiosGetPressure(u8* ptr);
@@ -990,13 +990,13 @@ extern u32 pokemonTokuseiDataBiosGetDoc(u8* ptr);
 extern u32 pokemonTokuseiDataBiosGetName(u8* ptr);
 extern u8 pokemonSeikakuRateDataBiosGetWaru(u8* ptr);
 extern u8 pokemonSeikakuRateDataBiosGetKake(u8* ptr);
-extern u8 fn_8011CC54(u8* ptr);
-extern u8 fn_8011CC6C(u8* ptr);
-extern u8 fn_8011CC84(u8* ptr);
-extern u8 fn_8011CC9C(u8* ptr);
-extern u8 fn_8011CCB4(u8* ptr);
-extern u8 fn_8011CCCC(u8* ptr);
-extern u8 fn_8011CCE4(u8* ptr);
+extern u8 wazaGetField11(u8* ptr);
+extern u8 wazaGetField10(u8* ptr);
+extern u8 wazaGetField0F(u8* ptr);
+extern u8 wazaGetField0E(u8* ptr);
+extern u8 wazaGetField0D(u8* ptr);
+extern u8 wazaGetField0C(u8* ptr);
+extern u8 wazaGetField0B(u8* ptr);
 extern s32 pokemonSeikakuDataBiosGetReliveNadenade(u8* ptr);
 extern s32 pokemonSeikakuDataBiosGetReliveSodateya(u8* ptr);
 extern s32 pokemonSeikakuDataBiosGetReliveCall(u8* ptr);
@@ -1008,9 +1008,9 @@ extern u8 pokemonSeikakuDataBiosGetSpeAtkRateDataId(u8* ptr);
 extern u8 pokemonSeikakuDataBiosGetPhyDefRateDataId(u8* ptr);
 extern u8 pokemonSeikakuDataBiosGetPhyAtkRateDataId(u8* ptr);
 extern u32 pokemonSeikakuDataBiosGetName(u8* ptr);
-extern void fn_8011CEA0(u8* ptr, u8 val);
-extern void fn_8011CEB0(u8* ptr, u8 val);
-extern void fn_8011CEC0(u8* ptr, u16 val);
+extern void pokemonSetField04(u8* ptr, u8 val);
+extern void pokemonSetField03(u8* ptr, u8 val);
+extern void pokemonSetField16(u8* ptr, u16 val);
 extern void pokemonDataBiosSetPkxDataId(u8* ptr, u32 val);
 extern void pokemonDataBiosSetNumPokemon(u8* ptr, u16 val);
 extern void pokemonDataBiosSetNumZukan(u8* ptr, u16 val);
@@ -1047,9 +1047,9 @@ extern void pokemonBiosSetCatchLevel(u8* ptr, u8 val);
 extern void pokemonBiosSetCatchFloorId(u8* ptr, u16 val);
 extern void pokemonBiosSetRnd(u8* ptr, u32 val);
 extern void pokemonBiosSetPokemonDataId(u8* ptr, u16 val);
-extern u8 fn_8011E000(u8* ptr);
-extern u8 fn_8011E018(u8* ptr);
-extern u16 fn_8011E030(u8* ptr);
+extern u8 pokemonGetField04(u8* ptr);
+extern u8 pokemonGetField03(u8* ptr);
+extern u16 pokemonGetField16(u8* ptr);
 extern u32 pokemonDataBiosGetPkxDataId(u8* ptr);
 extern u16 pokemonDataBiosGetNumPokemon(u8* ptr);
 extern u16 pokemonDataBiosGetNumZukan(u8* ptr);
@@ -1158,21 +1158,21 @@ extern u32 floorCharacterBiosGetLoadInit(u8* ptr);
 extern u32 floorCharacterBiosGetVisibility(u8* ptr);
 extern void* floorCharacterBiosGetPeopleInfoPtr(u8* ptr);
 extern void floorCharacterBiosGetByIndex(u32 arg);
-extern void fn_80117154(void);
+extern void cameraClearReturn(void);
 extern void fieldCameraLoadList(void);
 extern void fieldCameraUpdate(void);
 extern void fieldCameraMoveTo(f32 arg);
-extern u32 fn_801174C4(void);
+extern u32 cameraReturnPending(void);
 extern void std136_fieldClearFlag_8047ad71(void);
-extern void fn_80117500(void);
-extern u32 fn_80117AD4(void);
+extern void cameraSetReturnDone(void);
+extern u32 fieldCameraDebugGetRoom(void);
 extern u8 std171_mapSetTextureChange(u32 arg1);
 extern void tvRelease(void);
 extern void tvRender(void);
 extern void tvInitFloor(void* arg);
-extern void fn_80118020(void);
+extern void tvRegisterFloorHandler(void);
 extern void tvRelease2(void);
-extern void fn_80118100(void);
+extern void tvFloorHandlerNop(void);
 extern void gsParticleDraw(u32 a, u8 b);
 extern void gsParticleKillOwned(u8* obj, u32 notify);
 extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
@@ -1188,7 +1188,7 @@ extern s32 gsParticleGetMaxLife(u8* ptr);
 extern void gsParticleSetAngleRadiusScale(u8* arg1, f32* arg2, u32 arg3, u32 arg4);
 extern void gsParticleSetVecA(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
 extern void gsParticleSetVecB(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
-extern void fn_80118F7C(u8* obj, f32* arg);
+extern void GSmodelGetPositionVec(u8* obj, f32* arg);
 extern void gsParticleLinkToJObj(u8* obj, GSpart* part, u32 state, u32 byte5,
                         u32 init_from_zero, u32 attach_model);
 extern void gsParticleInit(u32 count1, u32 count2);
@@ -1222,7 +1222,7 @@ extern u8 pokemonSeikakuDataBiosGetHyperRate(u8* ptr, u8 idx);
 extern void* pokemonSeikakuDataBiosGetPtr(u8 idx);
 extern u32 pokemonGrowDataBiosGetExp(u8* ptr, u8 idx);
 extern void* pokemonGrowDataBiosGetPtr(u8 idx);
-extern void fn_8011CED0(u8* ptr, u16 idx, u8 val);
+extern void pokemonSetField6E(u8* ptr, u16 idx, u8 val);
 extern void pokemonDataBiosSetKowaza(u8* ptr, u16 idx, u16 val);
 extern void pokemonDataBiosSetTukamaetaFlag(u8* ptr);
 extern void pokemonDataBiosSetMitaFlag(u8* ptr);
@@ -1304,7 +1304,7 @@ extern void pokemonBiosSetPoolFriend(u8* ptr, u16 val);
 extern void pokemonBiosSetNicknameOrgPtr(u8* ptr, void* src);
 extern void pokemonBiosSetNicknamePtr(u8* ptr, void* src);
 extern void pokemonBiosSetCatchTrainerNamePtr(u8* ptr, void* src);
-extern u8 fn_8011E048(u8* ptr, u16 idx);
+extern u8 pokemonGetField6E(u8* ptr, u16 idx);
 extern u16 pokemonDataBiosGetKowaza(u8* ptr, u16 idx);
 extern void* pokemonDataBiosGetTukamaetaFlag(u8* ptr);
 extern void* pokemonDataBiosGetMitaFlag(u8* ptr);
@@ -1423,33 +1423,33 @@ extern void pokemonInitJoutai(u8* ptr);
 extern void pokemonWazaInit(u8* ptr, u32 arg2);
 extern u32 pokemonCheckRare(void* ctx);
 extern void pokemonGrowBasisStatus(void* ptr, u32 arg2);
-extern void* fn_80128CC0(void* ptr);
+extern void* savedataGetSection1C45C(void* ptr);
 extern void* savedataGetSection1B014(void* ptr);
 extern void* savedataBiosGetE3E8Ptr(void* ptr);
-extern void* fn_80128D14(void* ptr);
+extern void* savedataGetSection9A1C(void* ptr);
 extern void* savedataGetSection82A8(void* ptr);
-extern void* fn_80128D4C(void* ptr);
-extern void* fn_80128D68(void* ptr);
-extern void* fn_80128D80(void* ptr);
-extern void* fn_80128D9C(void* ptr);
-extern void* fn_80128DB8(void* ptr);
+extern void* savedataGetSection8168(void* ptr);
+extern void* savedataGetSection7D20(void* ptr);
+extern void* savedataGetSection1BE5C(void* ptr);
+extern void* savedataGetSection1BDDC(void* ptr);
+extern void* savedataGetSection1BDBC(void* ptr);
 extern void* savedataGetSectionB88(void* ptr);
-extern void* fn_80128DEC(void* ptr);
-extern u32 fn_80128E04(void* ptr);
+extern void* savedataGetSection70(void* ptr);
+extern u32 savedataGetSection0(void* ptr);
 extern void randSetSeed(void* ptr);
-extern void* fn_80128E2C(void);
+extern void* savedataGetBuffer(void);
 extern u32 savedataGetStatus(u8* arg1, u16 arg2);
 extern void heroDecPokecoupon(u8* ptr, s32 offset);
 extern void heroAddPokecoupon(u8* ptr, s32 offset);
 extern void heroDecPokedoru(u8* ptr, u32 offset);
-extern void fn_80129514(u8* ptr, s32 arg2, s32 arg3);
-extern s32 fn_8012959C(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
-extern s32 fn_80129650(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
-extern u32 fn_80129718(u8* ptr, u32 arg2);
+extern void heroBoxSwapItems(u8* ptr, s32 arg2, s32 arg3);
+extern s32 heroBoxChangeItemCount(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
+extern s32 heroBoxAddItem(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
+extern u32 heroBoxHasRoom(u8* ptr, u32 arg2);
 extern u32 heroHizukiItemGetItemAryPtr(u8* ptr, u16* out_a, u16* out_b, u8* out_c, u8* out_d);
 extern void heroCheckSetMonohiroiAllTemotiPokemon(u8* arg1);
 extern s32 heroItemCheckAddItemDataId(u8* ptr, u32 arg2);
-extern void fn_80129948(u8* arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7);
+extern void heroItemSwapItems(u8* arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7);
 extern s32 heroItemDecItemDataId(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
 extern u32 heroItemCheckHaveItemDataId(u8* ptr, u32 arg2);
 extern u32 fn_80129D64(u8* ptr, u8* arg2);
@@ -1669,18 +1669,18 @@ void tvInitFloor(void* arg) {
     GSmodelSetTextureChange(GSresGetResource(std093_getCurrentGroupID(), *(u32*)((u8*)lbl_8047AD88 + 8)), (void*)lbl_8047AD8C);
     lbl_80478B40 = 0;
 }
-/* 0x48 | fn_80118020 | single_call_straight */
+/* 0x48 | tvRegisterFloorHandler | single_call_straight */
 extern u32 lbl_802727C8[];
-void fn_80118020(void) {
-    extern void fn_800FF4D4(void* ptr, u32 val);
+void tvRegisterFloorHandler(void) {
+    extern void floorRegisterHandler(void* ptr, u32 val);
     u32 local[3];
     local[0] = lbl_802727C8[0];
     local[1] = lbl_802727C8[1];
     local[2] = lbl_802727C8[2];
-    fn_800FF4D4(local, 1);
+    floorRegisterHandler(local, 1);
 }
 /* Address: 0x80118068 | Size: 0x8 | Pattern: return_constant */
-u32 fn_80118068(void) { return 0; }
+u32 tvFloorHandlerReturnFalse(void) { return 0; }
 /* 0x80118070 | 0x90 */
 extern u32 lbl_8047AD88;
 extern u32 lbl_8047AD8C;
@@ -1717,7 +1717,7 @@ void tvRelease2(void) {
 
 #if !defined(FIELD_BANK_ACTIVE) || defined(FIELD_EXACT_80118100_801183EC)
 /* 0x80118100 | 0x4 | void_stub */
-void fn_80118100(void) {
+void tvFloorHandlerNop(void) {
 }
 /* 0x80118104 | 0xAC */
 void gsParticleDraw(u32 a, u8 b) {
@@ -1900,7 +1900,7 @@ void gsParticleUpdate(u32 particleCount) {
                     GSvecTransformQuat(offset, quat, node->transformed_position);
                     GSvecAdd(pos, pos, offset);
                     GSvecAdd(rot, rot, node->transformed_rotation);
-                    fn_800E0108(scale, scale, node->transformed_scale);
+                    GSvecMulComponents(scale, scale, node->transformed_scale);
 
                     fieldParticleSetPosition(node, node->transformed_position);
                     fieldParticleSetRotation(node, node->transformed_rotation);
@@ -2075,7 +2075,7 @@ void gsParticleSetVecB(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5) {
     }
 }
 /* 0x80118F7C | 0x34 */
-void fn_80118F7C(u8* obj, f32* arg) {
+void GSmodelGetPositionVec(u8* obj, f32* arg) {
     f32 f1 = *(f32*)(&obj[0x38]);
     f32 f2 = *(f32*)(&obj[0x3C]);
     f32 f3 = *(f32*)(&obj[0x40]);
@@ -2194,7 +2194,7 @@ u8* gsParticleCreate(u8* texture, u32 selector, u32 subid) {
                     ((FieldParticleNode*)node)->generator->position[1],
                     ((FieldParticleNode*)node)->generator->position[2]);
     node[4] = (u8)subid;
-    *(u32*)(node + 0x08) = (u32)fn_800D3094();
+    *(u32*)(node + 0x08) = (u32)GSgfxGetRetraceCount();
     ((u32*)(texture + 0x08))[slot] = (u32)node;
 
     if (((FieldParticleNode*)node)->generator->field_10 == 0) {
@@ -2502,7 +2502,7 @@ void gsParticlePtclHook(u32 arg1, u32 arg2, u32 arg5, u8* arg6) {
     }
     entryBytes = (u8*)entry;
 
-    node = gsParticleCreate(texture, arg5, fn_800E3CBC(resource));
+    node = gsParticleCreate(texture, arg5, GSmodelGetFlag200(resource));
     if (node != NULL) {
         handle = GSmodelGetGSparticleLinkAttachMode(resource);
         if (*(s32*)(node + 0x44) == 0 && handle != 0) {
@@ -3614,7 +3614,7 @@ u8 joutaiDataBiosGetObjectKind(u16 idx) {
     return entry[0x0];
 }
 extern u32 lbl_80478B48;  /* NPC count (SDA) */
-u32 fn_80119F50(u16 idx) {
+u32 itemDataGetHoldEffect(u16 idx) {
     u8* entry;
     if ((u32)idx >= lbl_80478B48) { entry = NULL; } else { entry = lbl_8035BBA8 + (u32)idx * 0x14; }
     if (entry == NULL) { return 0; }

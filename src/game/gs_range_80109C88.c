@@ -365,7 +365,7 @@ static inline s32 faceDraw(u8* context, void* srcNode, u16 key)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
     extern void* GSresFindById(u32 key);
-    extern u8 fn_8010C388(u16 idx);
+    extern u8 menuFaceIsPokemon(u16 idx);
     extern u16 GStextureGetXsize(void* tex);
     extern u16 GStextureGetYsize(void* tex);
     extern void winSpriteDrawTexture(u8* context, WinSpriteDrawNode* sprite);
@@ -397,7 +397,7 @@ static inline s32 faceDraw(u8* context, void* srcNode, u16 key)
     lbl_80404BF0.crop_width = 0x2A;
     lbl_80404BF0.crop_height = 0x2A;
 
-    if (fn_8010C388(key)) {
+    if (menuFaceIsPokemon(key)) {
         if (GStextureGetYsize(tex) > 0x2A) {
             lbl_80404BF0.crop_y = 0x2A;
         }
@@ -515,7 +515,7 @@ s32 menuFaceAllocSlot(u16 key, void* (*callback)(u32), u32 arg)
 }
 #endif
 #ifdef GS_RANGE_80109C88_ALL
-void fn_8010C220(void) {
+void mainNop_8010C220(void) {
 }
 
 void menuFaceInit(s32 count)
@@ -630,7 +630,7 @@ void _menuFaceLoad(void* unused1, u32 unused2, u32 arg)
     extern void* GStextureLoad(void* data);
     extern void DCFlushRange(void* addr, u32 length);
     extern void GXInvalidateTexAll(void);
-    extern s32 fn_8010C364(void);
+    extern s32 menuFaceFreeTexture(void);
     extern u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg);
 
     u32 found1;
@@ -660,7 +660,7 @@ void _menuFaceLoad(void* unused1, u32 unused2, u32 arg)
     GSresReleaseOwnerItem(0x5c0, found1);
 
     tex = GStextureLoad(lbl_8047AD54[entry->slot].data);
-    GSresRegisterResource(tex, 0x5c0, found1, (void*)fn_8010C364);
+    GSresRegisterResource(tex, 0x5c0, found1, (void*)menuFaceFreeTexture);
 
     DCFlushRange(tex, 0x6ec0);
     GXInvalidateTexAll();
@@ -781,7 +781,7 @@ static inline s32 faceDrawPokemon(u8* context, void* srcNode, void* pokemon)
 {
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
     extern void* GSresFindById(u32 key);
-    extern u8 fn_8010C388(u16 idx);
+    extern u8 menuFaceIsPokemon(u16 idx);
     extern u16 GStextureGetXsize(void* tex);
     extern u16 GStextureGetYsize(void* tex);
     extern void winSpriteDrawTexture(u8* context, WinSpriteDrawNode* sprite);
@@ -815,7 +815,7 @@ static inline s32 faceDrawPokemon(u8* context, void* srcNode, void* pokemon)
     lbl_80404BF0.crop_width = 0x2A;
     lbl_80404BF0.crop_height = 0x2A;
 
-    if (fn_8010C388(key)) {
+    if (menuFaceIsPokemon(key)) {
         if (GStextureGetYsize(tex) > 0x2A) {
             lbl_80404BF0.crop_y = 0x2A;
         }
@@ -1266,7 +1266,7 @@ u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg)
     extern void* _menuFaceBiosGetPtr__FUs(u16 key);
     extern void menuFaceAllocSlot(u16 key, void* (*cb)(u32), u32 a);
     extern void GSresReleaseById(u32 group);
-    extern s32 fn_8017B000(u32 fileHandle, u32 requestID, u32 callbackA,
+    extern s32 fsysStartLoadInto(u32 fileHandle, u32 requestID, u32 callbackA,
                             u32 callbackB, u32 callbackC);
     extern void _menuFaceLoad(void* unused1, u32 unused2, u32 arg);
     void* ptr;
@@ -1318,7 +1318,7 @@ u16 menuFaceRequestPokemon(u16 key, void* (*callback)(u32), u32 arg)
         return 1;
     }
     lbl_8047AD4C[faceSlotFind(lbl_8047AD4C, _menuFaceBiosGetPtr__FUs(key))].state = 1;
-    fn_8017B000(0x5C0, (u32)ptr, (u32)_menuFaceLoad, 0, key);
+    fsysStartLoadInto(0x5C0, (u32)ptr, (u32)_menuFaceLoad, 0, key);
     return 1;
 }
 #endif

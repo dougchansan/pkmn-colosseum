@@ -7,7 +7,7 @@
  */
 #include "game/gs_range_8017FA5C_shared.h"
 
-u32 fn_8017FA5C(void)
+u32 fsysCacheGetFreeSize(void)
 {
     GsRangeMemNode* node;
     u32 sum;

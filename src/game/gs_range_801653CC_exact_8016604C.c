@@ -4,7 +4,7 @@
  */
 #include "game/gs_range_801653CC_shared.h"
 
-void* fn_8016604C(u32 size)
+void* soundAllocLocked(u32 size)
 {
     u32 handle = GSmemAlloc(size, 0x20);
 
@@ -14,12 +14,12 @@ void* fn_8016604C(u32 size)
     return 0;
 }
 
-u32 fn_80166084(u32 id)
+u32 soundSlotIsActive(u32 id)
 {
     return (lbl_80478FAC[id].flags & SND_FLAG_SE) >> 7;
 }
 
-u32 fn_80166098(u32 id)
+u32 soundGetSlotVoiceByte(u32 id)
 {
     GSsndEntry* entry = &lbl_80478FAC[id];
     u32 active = (entry->flags & SND_FLAG_ACTIVE) >> 5;
@@ -125,7 +125,7 @@ u32 _soundDuckSlot(u32 id, u32 volume, u32 limit)
     return soundSetVolume(id, volume, limit);
 }
 
-u32 fn_801662E8(u32 arg0, u32 arg1)
+u32 soundFindOwnerWrapper(u32 arg0, u32 arg1)
 {
     return soundFindOwner(arg0, arg1);
 }
@@ -153,7 +153,7 @@ u32 soundEmitterCreate(u32 id, const GSvec* position, const GSvec* velocity, f32
         emitter->minDistance = minDistance;
         emitter->maxDistance = maxDistance;
         emitter->soundId = id;
-        if ((u8)fn_8015E890(emitter->emitter) == 1) {
+        if ((u8)s3dIsEmitterActive(emitter->emitter) == 1) {
             return (u32)emitter;
         }
         _soundPool0Free(emitter);
@@ -255,7 +255,7 @@ s32 GSsndGetStatus(u32 id)
     return 3;
   }
   handle = work->handle;
-  if ((handle != ((u32) (-1))) && (((u8) fn_8014D598(handle)) == 1))
+  if ((handle != ((u32) (-1))) && (((u8) seqIsPlaying(handle)) == 1))
   {
     return 2;
   }

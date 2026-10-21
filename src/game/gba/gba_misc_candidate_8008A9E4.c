@@ -1,6 +1,6 @@
 /**
  * gba_misc 0x8008A9E4 - 0x8008AB4C: entry status query and packed status
- * send. Same code as gbaEntryCheckStatus / fn_8008AB20 in gba_misc.c, kept as a
+ * send. Same code as gbaEntryCheckStatus / gbaCommSendCmd77 in gba_misc.c, kept as a
  * standalone unit (like the gba_misc_exact_* siblings) so it can be linked.
  */
 #include "dolphin/types.h"
@@ -49,7 +49,7 @@ end:
 }
 
 /* 0x8008AB20 | size: 0x2C */
-void fn_8008AB20(s32 param0, u32 param1, u32 param2) {
+void gbaCommSendCmd77(s32 param0, u32 param1, u32 param2) {
     u32 packed;
 
     packed = param2 << 24;

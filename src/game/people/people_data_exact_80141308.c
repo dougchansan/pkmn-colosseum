@@ -1,16 +1,16 @@
 /**
  * @file people_data_exact_80141308.c
- * @brief fn_80141308 (0x80141308 - 0x80142368): adds `amount` of item `id`
+ * @brief itemSlotsAdd (0x80141308 - 0x80142368): adds `amount` of item `id`
  *        to an item-record array, capping each record at `max`. Without
  *        `force` it tops up the first record of that id (if below max) or
  *        fills a free record; with `force` it either tops up the record at
  *        `index` or, when index < 0, keeps topping up records below max and
  *        filling free ones until the amount is placed. New records trigger
- *        a re-sort (fn_801425E8). Returns the amount left over, or -1.
+ *        a re-sort (itemSlotsCompact). Returns the amount left over, or -1.
  *
  * Function-boundary carve of the item/people data TU (people_data.c), GC/1.3
  * -O4,p, text only. The validity tests are the TU's u8-materialised inlines.
- * The three record searches are fn_80142368's modes (0, 1 and 2) written
+ * The three record searches are itemSlotsFind's modes (0, 1 and 2) written
  * out, and the add/put/count helpers mirror heroItemChangeCount's take; none of the
  * helpers exists out of line.
  */
@@ -18,7 +18,7 @@
 
 extern s32 itemGetStatus(void*, u16, u16, u32);
 extern void fn_80142B24(void*, u32, u16, u32, u32);
-extern void fn_801425E8(u32* base, u16 count, u8 mode);
+extern void itemSlotsCompact(u32* base, u16 count, u8 mode);
 extern u32 lbl_80478BD8; /* gPeopleFieldCount */
 
 static inline u8 peopleItemIdValid(u16 id)
@@ -183,7 +183,7 @@ static inline s32 peopleEntryPut(u32* entry, u16 id, u16 amount, u16 max)
     return rest;
 }
 
-s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 max, u8 sortMode, u8 force)
+s32 itemSlotsAdd(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 max, u8 sortMode, u8 force)
 {
     u32* entry;
     s32 rest;
@@ -244,7 +244,7 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 max, u8
         remaining = peopleEntryAdd(&base[index], id, (u16)amount, max);
     }
     if (needsSort == 1) {
-        fn_801425E8(base, count, sortMode);
+        itemSlotsCompact(base, count, sortMode);
     }
     return remaining;
 }

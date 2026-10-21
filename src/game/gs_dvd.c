@@ -34,7 +34,7 @@
  * (not 100%), confirming the archive content for this file is
  * unreliable register-level fiction, not real disassembly. Reverted
  * both, no net change. The only new function landed this pass is
- * fn_80167FA4 (trivial 4-byte empty function / blr-only stub),
+ * mainNop_80167FA4 (trivial 4-byte empty function / blr-only stub),
  * confirmed 100% via objdiff.
  */
 
@@ -102,9 +102,9 @@ extern const char lbl_80273780[]; /* "[GSDVD_ERROR_STATE_COVEROPEN_WAIT]..." */
 extern GSsndEntry* lbl_80478FAC;
 
 /* Forward declarations for converted functions */
-s32 fn_80167E54(void);
+s32 soundReturnMinusOne(void);
 u32 GSdvdGetLength(u8* obj);
-void fn_80167FA4(void);
+void mainNop_80167FA4(void);
 
 
 /*
@@ -154,12 +154,12 @@ void _sndCheckSndWorkALL(void)
  */
 
 /* ==================================================================
- * fn_80167FA4 -- ported from archive (verified 100% via objdiff).
+ * mainNop_80167FA4 -- ported from archive (verified 100% via objdiff).
  * Archive labeled this "GSDVD_EmptyFunc" but that name is not in
  * symbols.txt (this unit is actually MusyX audio, see file header);
  * kept the fn_ name. 4-byte empty function (just blr).
  * ================================================================== */
-void fn_80167FA4(void) {
+void mainNop_80167FA4(void) {
     /* intentionally empty */
 }
 
@@ -170,7 +170,7 @@ void fn_80167FA4(void) {
  * =================================================================== */
 
 /* Address: 0x80167E54 | Size: 0x8 | Pattern: return_constant */
-s32 fn_80167E54(void) { return -1; }
+s32 soundReturnMinusOne(void) { return -1; }
 
 /* Address: 0x80167E5C | Size: 0x8 | Pattern: simple_getter */
 u32 GSdvdGetLength(u8* obj) {
@@ -470,7 +470,7 @@ extern void gfxSetBlendMode(u32, u32, u32);
 extern void gfxSetUpdates(u32, u32, u32);
 extern void gfxSetAlphaCompare(u32, u32, u32, u32, u32, u32);
 extern void gfxSetZMode(u32, u32, u32);
-extern void fn_800D9ED8(u32);
+extern void gfxSetFlag1A(u32);
 extern void gfxSetCullMode(u32);
 extern void gfxSetVtxDesc(u32);
 extern void gfxSetPrimitive(u32);
@@ -844,7 +844,7 @@ void GSfilterDraw(void)
             gfxSetUpdates(1, 1, 0);
             gfxSetAlphaCompare(0, 7, 0, 0, 7, 0);
             gfxSetZMode(1, 1, 1);
-            fn_800D9ED8(1);
+            gfxSetFlag1A(1);
             gfxSetCullMode(0);
             gfxSetVtxDesc(lbl_804526E0.renderState);
             gfxSetPrimitive(6);
@@ -862,7 +862,7 @@ void GSfilterDraw(void)
                 }
             }
             gfxEnd();
-            fn_800D9ED8(0);
+            gfxSetFlag1A(0);
         }
     }
 }
@@ -918,8 +918,8 @@ void GSfilterSetColor(GSFilter* filter, const u8* color)
 }
 
 /*
- * fn_80168638 carries GSfilterCreate's body inline. The linked owner of
- * fn_80168638 is the standalone carve gs_dvd_r47_80168638_o4s.c; this copy
+ * GSgappInitPools carries GSfilterCreate's body inline. The linked owner of
+ * GSgappInitPools is the standalone carve gs_dvd_r47_80168638_o4s.c; this copy
  * is kept in step with it. `inline` here means this file emits no
  * out-of-line GSfilterCreate (gs_dvd_r47_prefix.c owns that one).
  */
@@ -996,7 +996,7 @@ static inline void* GSfilterRenderStateCreate(void)
     return NULL;
 }
 
-void fn_80168638(u8 capacity)
+void GSgappInitPools(u8 capacity)
 {
     u32 size;
     u16 handle;

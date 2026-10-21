@@ -285,7 +285,7 @@ static void fn_801990B8(HSD_DObj* dobj, f32 vmtx[3][4], f32 pmtx[3][4], u32 rend
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-extern void fn_801ACDAC(HSD_PObj* pobj, s32* out1, s32* out2);
+extern void HSD_DObjCountVerticesSub(HSD_PObj* pobj, s32* out1, s32* out2);
 #if 0
 asm void HSD_DObjCountVertices(void) {
 #include "src/hsd/hsd_dobj_HSD_DObjCountVertices.inc"
@@ -300,7 +300,7 @@ void HSD_DObjCountVertices(HSD_DObj* dobj, s32* total_a, s32* total_b) {
     sum_a = 0;
     sum_b = 0;
     while (dobj != NULL) {
-        fn_801ACDAC(dobj->pobj, &a, &b);
+        HSD_DObjCountVerticesSub(dobj->pobj, &a, &b);
         dobj = dobj->next;
         sum_a += a;
         sum_b += b;

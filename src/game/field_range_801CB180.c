@@ -121,7 +121,7 @@ extern s32 GSinputGetLeftStickYData(s32 pad, s32 axis);
 extern void GSvmIsRunning(s32 id, s32 value);
 extern void floorTerminateScriptThreads(s32 id);
 extern void* GSthreadGetCurrentThread(void);
-extern s32 fn_800F036C(void);
+extern s32 GSvmGetGroup(void);
 extern void GSlogWrite(const void* format, const void* text, ...);
 extern s32 _vmThreadCreate(s32 task, void* callback, s32 stack_size, s32 arg3, s32 arg4, s32 arg5, ...);
 extern void cmsRunSync(void* callback, s32 arg, ...);
@@ -193,14 +193,14 @@ extern s32 mainTakePauseFlag();
 extern s32 GSgetVersionMinor();
 extern s32 GSgetVersionMajor(void);
 extern s32 gbaCmdPing60();
-extern s32 fn_80089D74();
-extern s32 fn_8008ABA0();
-extern s32 fn_800B01C4();
-extern void* fn_800B01AC(s32 channel);
+extern s32 gbaCommHandshakeB();
+extern s32 gbaCommIsReady();
+extern s32 CARDSetChanWord108();
+extern void* CARDGetChanWord108(s32 channel);
 extern s32 CARDOpen();
-extern s32 fn_800B4C7C();
+extern s32 CARDReadAsync();
 extern s32 CARDGetStatus();
-extern s32 fn_800B5BE4();
+extern s32 CARDSetAttributes();
 void* savedataGetStatus(void* data, s32 index);
 s32 gamedatasaveGetStatus(void* data, s32 index);
 void gamedatasaveSetStatus(void* data, s32 index, s32 value);
@@ -208,7 +208,7 @@ void savedataCreate(void* data, s32 index);
 void* gamedatasaveBiosGetPtr(void* data);
 u64 gamedatasaveBiosGetMemcardID(u32* data);
 void gamedatasaveBiosSetMemcardID(void* data, u64 memcard_id);
-u16 fn_8006A718(void* data);
+u16 savedataBattleGetHeroSpecies(void* data);
 void savedataBattleSetSavedHero(void* data, void* value);
 void savedataEncrypt(void* data, u32 size, void* hash, u32 offset);
 u16 GSrand(void);
@@ -329,7 +329,7 @@ s32 scriptExecTask(void* callback, u32 priority, u32 arg2, u32 arg3, u32 arg4, u
     s32 task;
 
     if (GSthreadGetCurrentThread() != NULL) {
-        task = fn_800F036C();
+        task = GSvmGetGroup();
     } else {
         GSlogWrite(lbl_802758C8, lbl_8036DCA8);
         task = 0x7F;
@@ -349,7 +349,7 @@ void std209_threadRunScriptMode4(void* callback, s32 arg1, s32 arg2, s32 arg3, s
     cmsRunSync(callback, 4, arg1, arg2, arg3, arg4);
 }
 
-void fn_801CB4E8(u32 resource, u32 arg)
+void std_particleKill(u32 resource, u32 arg)
 {
     void* object = GSresGetResource(std093_getCurrentGroupID(), resource);
 
@@ -536,7 +536,7 @@ s32 std112_modelGetResourceID(void* param)
 #endif
 
 #if defined(FIELD_801CB180_RANGE_801CBA84)
-void fn_801CBA84(void)
+void std_clearFlag8047B3C8(void)
 {
     lbl_8047B3C8 = 0;
 }
@@ -827,7 +827,7 @@ s32 memcardSaveSetup(void)
     switch (lbl_8047B3D4->task_kind) {
     case 9:
         data = savedataGetStatus(save->header.fields.savedata, 14);
-        if (fn_8006A718(save->header.fields.savedata) == 1) {
+        if (savedataBattleGetHeroSpecies(save->header.fields.savedata) == 1) {
             savedataBattleSetSavedHero(data, NULL);
         }
         /* fallthrough */
@@ -995,11 +995,11 @@ scan_done:
     case 0:
         lbl_8047B3D4->dialog_result = 1;
         if (GSgetVersionMinor() == 4) {
-            lbl_8047B3D4->disk_id = fn_800B01AC(lbl_8047B3D4->card_channel);
+            lbl_8047B3D4->disk_id = CARDGetChanWord108(lbl_8047B3D4->card_channel);
             lbl_8047B3D4->mounted_disk_id = *lbl_8047B3D4->disk_id;
             lbl_8047B3D4->mounted_disk_id.game_code = lbl_8047E168;
             lbl_8047B3D4->mounted_disk_id.company_code = lbl_8047E170;
-            fn_800B01C4(lbl_8047B3D4->card_channel,
+            CARDSetChanWord108(lbl_8047B3D4->card_channel,
                        &lbl_8047B3D4->mounted_disk_id);
         }
 

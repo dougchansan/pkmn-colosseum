@@ -125,9 +125,9 @@
 #define HSD_JObjSetMtxDirty HSD_JObjSetMtxDirty
 #define iref_INC iref_INC_801A0C9C
 #define hsdDelete hsdDelete_801A0CE8
-#define iref_CNT fn_801A0D3C
+#define iref_CNT HSD_JObjGetRefCount
 #define ref_DEC ref_DEC_801A0D48
-#define HSD_CObjGetViewingMtxPtrDirect fn_801A1980
+#define HSD_CObjGetViewingMtxPtrDirect HSD_JObjGetCameraPos
 #define HSD_JObjSetupMatrix HSD_JObjSetupMatrix_801A1988
 
 #include "crt/math_ppc.h"

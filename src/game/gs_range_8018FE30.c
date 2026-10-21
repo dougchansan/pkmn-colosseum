@@ -74,14 +74,14 @@ extern u32 std092_getCurrentRoomID(void);
 extern void* savedataGetStatus(u8* data, u16 index);
 extern s32 heroItemDecItemDataId(u8* ptr, u32 itemId, u32 count, s32 arg4);
 extern s32 heroItemAddItemDataId(u8* ptr, u32 itemId, u32 count, s32 arg4);
-extern void fn_8012F1FC(s32 slot);
-extern void fn_8012F40C(s32 slot);
+extern void partnerSetFollowing(s32 slot);
+extern void partnerSetFollowState(s32 slot);
 extern s32 heroMoveDismissMember(s32 idx);
 extern void heroBiosSetPokedoru(u8* ptr, s32 value);
 extern void floorChangePos(u32 floorId, s16 direction, f32 x, f32 y, f32 z);
 
 
-/* GSflagClear, fn_801909A8 (XD GSflagInit) and GSflagInitBitPos, 0x801908D4 -
+/* GSflagClear, GSflagInit (XD GSflagInit) and GSflagInitBitPos, 0x801908D4 -
  * 0x80190E34, are linked from gs_flag_exact_801908D4.c. */
 
 /* fn_801902E0 (XD GSflagTest) is linked from gs_flag_test_exact_801902E0.c. */
@@ -188,7 +188,7 @@ static inline s32 flagMemberSlot(s32 i)
     return -1;
 }
 
-void fn_8018FE30(int flagId)
+void dbgFlagApplyPreset(int flagId)
 {
     extern FlagConfig* lbl_80478F98;
     extern u32* lbl_80478ED4;
@@ -237,13 +237,13 @@ void fn_8018FE30(int flagId)
         event = lbl_80478F9C[flagId].event;
         members = lbl_80478EFC[event].memberFlags;
         if (members != 0) {
-            fn_8012F1FC(0);
-            fn_8012F40C(0);
+            partnerSetFollowing(0);
+            partnerSetFollowState(0);
             heroMoveDismissMember(1);
             for (i = 0; i < 2; i++) {
                 slot = flagMemberSlot(i);
                 if (slot >= 0 && lbl_80478EE4[members][i] != 0) {
-                    fn_8012F1FC(slot);
+                    partnerSetFollowing(slot);
                 }
             }
         }

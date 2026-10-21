@@ -37,7 +37,7 @@ extern s32 GSdvdClose(u32 fileInfo);
 extern void fsysStartPendingLoad(void);
 
 /* Address: 0x8017D960 | size: 0x158 */
-void fn_8017D960(FSYSSlot* slot)
+void fsysSlotFinish(FSYSSlot* slot)
 {
     u32 i;
     FSYSFileEntry* entry;

@@ -26,7 +26,7 @@
 extern u8 lbl_80452FC8[0x1000];
 extern u32 lbl_80453FDC[];
 
-void fn_8017F2C4(u8* destination, u8* source, u32 size)
+void fsysLZSSDecode(u8* destination, u8* source, u32 size)
 {
     u32 inPos;
     u8* in;

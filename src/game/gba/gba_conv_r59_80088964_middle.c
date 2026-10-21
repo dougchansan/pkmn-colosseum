@@ -11,8 +11,8 @@
 
 /* ===== External function declarations ===== */
 extern void fn_8001E074();
-extern void fn_8005CF2C();
-extern void fn_8006A76C();
+extern void menuColosseumShowPartyError();
+extern void memcardIsUnavailable();
 extern void savedataBattleClearFlagC98B();
 extern void savedataBattleSetFlagC98B();
 extern void savedataBattleGetFlagC98B();
@@ -22,7 +22,7 @@ extern void savedataBattleGetSavedHeroKind();
 extern void menuCommonFree();
 extern void menuCommonAlloc();
 extern void menuRuleCheckPartyAndRule();
-extern void fn_8008ABA0();
+extern void gbaCommIsReady();
 extern void gbaCommStartTransferA();
 extern void gbaCommStartTransferB();
 extern void gbaCommStartTransferC();
@@ -65,7 +65,7 @@ extern void windowGetKeyInfo();
 extern void winMsgCheck();
 extern void winMsgClose();
 extern void winMsgOpen();
-extern void fn_801081F8();
+extern void winSeqSetItem();
 extern void winSpriteSetDisp();
 extern void floorGetPrevFloorID();
 extern void wazaDataBiosGetDoc();
@@ -114,7 +114,7 @@ void cardeTransferUI(void);
 void cardeGbaTransfer(void);
 void cardeWaitMessage(void);
 void cardeGridPrompt(void);
-void fn_80088428(void);
+void cardeGridPromptScene(void);
 void dnaKeyCodeCheck(void);
 void menuSaveLoadReceiveGift(void);
 s32 menuMemcardTaskA(void);
@@ -123,13 +123,13 @@ void menuSaveLoadSaveGame(void);
 void menuSaveLoadCommitA(void);
 void menuSaveLoadCommitB(void);
 void menuSaveLoadStorePosition(u8* p);
-s32 fn_80088F58(void);
-s32 fn_80088F74(void);
-s32 fn_80088F88(void);
+s32 debugCounterNextA(void);
+s32 debugCounterIncA(void);
+s32 debugCounterNextB(void);
 s32 dbgMenuGBAAddCoupon(void);
 s32 dbgToolBattleDebugSetAGBConnectionMode(s32 a, s32 b);
-s32 fn_80089028(void);
-void fn_80089030(u8 x);
+s32 gbaGetConnectionMode(void);
+void gbaSetConnectionMode(u8 x);
 
 /* ===== Function implementations ===== */
 

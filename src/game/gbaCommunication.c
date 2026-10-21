@@ -43,10 +43,10 @@ extern void* windowSearchID(u32 id);
 extern void OSLockMutex(void *p);
 extern void OSUnlockMutex(void *p);
 extern void OSSetThreadPriority(void *p, u32 b);
-extern void fn_800716E8(u32 port, u32 val);
+extern void gbaCommSetChannelResult(u32 port, u32 val);
 extern void OSSignalCond(void *p);
 extern void fn_800A1E54(void *p, u32 v);
-extern void fn_800716C8(u32 port, void *a, void *b);
+extern void gbaCommSetChannelBuffer(u32 port, void *a, void *b);
 extern u32 GSmemGetHandleByPtr(void *p);
 extern void __assert(const u8 *file, u32 line, const u8 *msg);
 extern void fn_800E24B0(u32 status);
@@ -338,7 +338,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
 {
     extern u32 pokemonGetStatus();
     extern u32 wazaGetStatus(u32, u16, u32, u32);
-    extern u16 fn_8010C46C(u16 type);
+    extern u16 wazaDataGetName(u16 type);
     extern u8 pokemonWazaGetMaxPP(u32 pokemon, u16 slot);
     extern u16 darkPokemonGetTableEntry(u16 id);
     extern u32 darkPokemonEntryGet4(u16 id);
@@ -475,7 +475,7 @@ void menuStatusDrawMoveDetail(u8* context, u8* sprite)
             icon = 0x5D;
             break;
         default:
-            icon = fn_8010C46C(wazaGetStatus(0, move, 3, 0));
+            icon = wazaDataGetName(wazaGetStatus(0, move, 3, 0));
             break;
         }
         if (icon != 0) {
@@ -819,7 +819,7 @@ static inline u8 menuStatusIsOriginalTrainer(u8* pokemon)
     extern u32 fightTrainer_GetHeroPtr(u32 trainer);
     extern u32 std082_flagGetValue(u32 flag);
     extern void* savedataGetStatus();
-    extern u32 fn_8006AEEC(void);
+    extern u32 savedataBattleGetHeroParty(void);
     extern u32 heroBiosGetNamePtr(u32 hero);
     extern u32 heroBiosGetRnd(u32 hero);
     extern s32 GScharCmp(u32 a, u32 b);
@@ -844,7 +844,7 @@ static inline u8 menuStatusIsOriginalTrainer(u8* pokemon)
     } else if (std082_flagGetValue(0x8AE) == 0) {
         hero = (u32)savedataGetStatus(0, 2);
     } else {
-        hero = fn_8006AEEC();
+        hero = savedataBattleGetHeroParty();
     }
     name = heroBiosGetNamePtr(hero);
     hero = heroBiosGetRnd(hero);
@@ -861,7 +861,7 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
     extern u32 pokemonGetStatus();
     extern void* pokemonDataBiosGetPtr();
     extern u8 pokemonDataBiosGetZokuseiDataId(void* data, s32 index);
-    extern u16 fn_8010C46C();
+    extern u16 wazaDataGetName();
     extern u8 pokemonGetDarkPokemonLevel(u8* pokemon);
     extern void* pokemonSeikakuDataBiosGetPtr(u8 seikaku);
     extern u32 pokemonSeikakuDataBiosGetName(void* data);
@@ -921,14 +921,14 @@ void menuStatusDrawPokemonInfo(u8* context, u8* sprite)
     case 0x13B:
     case 0x57B:
         windowDrawSprite(0, 0, context,
-                         fn_8010C46C((u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0)), 0);
+                         wazaDataGetName((u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0)), 0);
         break;
     case 0x13C:
     case 0x57D:
         value = (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 0);
         message = (u8)pokemonDataBiosGetZokuseiDataId(pokemon_data, 1);
         if (value != message) {
-            windowDrawSprite(0, 0, context, fn_8010C46C(message), 0);
+            windowDrawSprite(0, 0, context, wazaDataGetName(message), 0);
         }
         break;
     case 0x142:
@@ -1254,7 +1254,7 @@ s32 gbaCommStartTransferB(s32 channel, void* requestValue, void* requestContext)
             work = *(u8**)(lbl_803FB328 + slot);
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
-            fn_800716C8(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
+            gbaCommSetChannelBuffer(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
             OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
@@ -1334,7 +1334,7 @@ s32 gbaCommStartTransferC(s32 channel, void* requestValue)
             work = *(u8**)(lbl_803FB328 + slot);
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
-            fn_800716C8(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
+            gbaCommSetChannelBuffer(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
             OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
@@ -1417,7 +1417,7 @@ s32 gbaCommStartTransferFile(s32 channel, const char* primary, const char* secon
             work = *(u8**)(lbl_803FB328 + slot);
             *(u32*)(work + GBA_STATE_PHASE) = 0;
             *(s32*)(work + GBA_STATE_PORT) = channel;
-            fn_800716C8(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
+            gbaCommSetChannelBuffer(channel, work + GBA_DATA_OFFSET, _gbaCommYield);
             OSInitMutex(work);
             OSInitCond(work + 0x18);
             OSCreateThread(work + GBA_DATA_OFFSET, _gbaCommThread, work,
@@ -1575,7 +1575,7 @@ s32 gbaCommEnd(s32 channel)
         return 1;
     }
 
-    fn_800716E8(*(s32*)(work + GBA_STATE_PORT), 1);
+    gbaCommSetChannelResult(*(s32*)(work + GBA_STATE_PORT), 1);
     while (1) {
         OSLockMutex(work);
         status = *(u32*)(work + GBA_STATE_TIMEOUT);
@@ -1595,8 +1595,8 @@ s32 gbaCommEnd(s32 channel)
     OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     OSSignalCond(work + 0x18);
     fn_800A1E54(work + GBA_DATA_OFFSET, 0);
-    fn_800716C8(*(s32*)(work + GBA_STATE_PORT), NULL, NULL);
-    fn_800716E8(*(s32*)(work + GBA_STATE_PORT), 0);
+    gbaCommSetChannelBuffer(*(s32*)(work + GBA_STATE_PORT), NULL, NULL);
+    gbaCommSetChannelResult(*(s32*)(work + GBA_STATE_PORT), 0);
 
     status = GSmemGetHandleByPtr(*(u8**)((u8*)lbl_803FB328 + slot));
     if ((status & 0xFFFF) == 0) {
@@ -1620,7 +1620,7 @@ s32 _gbaCommThread(void* arg0)
 {
     extern void OSWaitCond();
     extern s32 pkjbPrepare();
-    extern s32 fn_80073E84();
+    extern s32 gbaCommReturnTrue();
     extern s32 pkjbResetLink();
     extern s32 pkjbUploadStep();
     extern s32 gbaCmdRecv99Locked();
@@ -1628,8 +1628,8 @@ s32 _gbaCommThread(void* arg0)
     extern s32 gbaCmdRecv33Locked();
     extern void pokeconvCheck();
     extern s32 gbaPortUpload22();
-    extern s32 fn_80089CA8();
-    extern s32 fn_80089C84();
+    extern s32 gbaCommWaitReadyA();
+    extern s32 gbaCommHandshakeA();
     extern u64 OSGetTime(void);
     extern f32 lbl_8047C1F0;
 
@@ -1672,7 +1672,7 @@ s32 _gbaCommThread(void* arg0)
             }
             status = pkjbPrepare(p + 0x4344, arg);
             if (status == 0) {
-                while (fn_80073E84() == 0) {
+                while (gbaCommReturnTrue() == 0) {
                     OSSetThreadPriority((void*)OSGetCurrentThread(), 0x10);
                     OSYieldThread();
                 }
@@ -1747,9 +1747,9 @@ s32 _gbaCommThread(void* arg0)
                                   p + 0x4344);
             if (status == 0) {
                 for (;;) {
-                    status = fn_80089CA8(*(s32*)(p + GBA_STATE_PORT) + 1);
+                    status = gbaCommWaitReadyA(*(s32*)(p + GBA_STATE_PORT) + 1);
                     if (status == 0) {
-                        status = fn_80089C84(*(s32*)(p + GBA_STATE_PORT) + 1);
+                        status = gbaCommHandshakeA(*(s32*)(p + GBA_STATE_PORT) + 1);
                     }
                     if (status >= 0) {
                         break;
@@ -2726,17 +2726,17 @@ void menuPokemonStatus(void) {
 #pragma scheduling on
 
 /* 0x80097FCC | size: 0x4 */
-void fn_80097FCC(void) {
+void gbaNop_80097FCC(void) {
 }
 
 /* 0x80097FD0 | size: 0x28 */
-void fn_80097FD0(void) {
+void gbaRoomGetModel(void) {
     extern int std093_getCurrentGroupID();
     GSresGetResource(std093_getCurrentGroupID(), 0x12670000);
 }
 
 /* 0x80097FF8 | size: 0x4 */
-void fn_80097FF8(void) {
+void gbaNop_80097FF8(void) {
 }
 
 /* 0x80097A38 | size: 0xCC */

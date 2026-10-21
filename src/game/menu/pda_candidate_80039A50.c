@@ -21,7 +21,7 @@ extern s32 lbl_8047A4BC;
 extern f32 lbl_8047A4C0;
 extern f32 lbl_8047BAB0;
 extern void* pcboxGetItem(s32 box, s16 slot);
-extern u8 fn_801429E8(void* item);
+extern u8 itemSlotIsValid(void* item);
 
 /* The data id / count of the target-th listed item in PC box 0. */
 static inline s32 pdaBoxItemId(s32 target)
@@ -38,7 +38,7 @@ static inline s32 pdaBoxItemId(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetItemDataId(item);
@@ -62,7 +62,7 @@ static inline s32 pdaBoxItemIdFirst(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetItemDataId(item);
@@ -119,7 +119,7 @@ s32 itemStorageListKey(void)
     }
     countTotal = pcboxGetNbItemSlot(0);
     for (target = 0; target < countTotal; target++) {
-        fn_801429E8(pcboxGetItem(0, (s16)target));
+        itemSlotIsValid(pcboxGetItem(0, (s16)target));
     }
     target = lbl_8047A4A8 + lbl_8047A4AC;
     if (lbl_8047A4B8 < 0) {
@@ -149,7 +149,7 @@ s32 itemStorageListKey(void)
     countTotal = 0;
     countSlots = pcboxGetNbItemSlot(0);
     for (countIndex = 0; countIndex < countSlots; countIndex++) {
-        if ((u8)fn_801429E8(pcboxGetItem(0, (s16)countIndex)) != 0) {
+        if ((u8)itemSlotIsValid(pcboxGetItem(0, (s16)countIndex)) != 0) {
             countTotal++;
         }
     }

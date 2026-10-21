@@ -402,8 +402,8 @@ extern s32 lbl_80312960[];
 extern s32 CARDCheckExAsync(s32 chan, s32* xferBytes, CARDCallback callback);
 extern s32 CARDUnmount(s32 chan);
 extern s32 __CARDFormatRegionAsync(s32 chan, u16 encode, CARDCallback callback);
-extern s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry);
-extern s32 fn_800B588C(s32 chan, s32 fileNo, CARDDirEntry* entry,
+extern s32 __CARDGetStatusEx(s32 chan, s32 fileNo, CARDDirEntry* entry);
+extern s32 __CARDSetStatusExAsync(s32 chan, s32 fileNo, CARDDirEntry* entry,
                        CARDCallback callback);
 extern void __ARQInterruptServiceRoutine(void);
 extern void __ARHandler(__OSInterrupt interrupt, OSContext* context);
@@ -556,7 +556,7 @@ s32 CARDGetStatus(s32 chan, s32 fileNo, CARDStat* stat)
     return __CARDPutControlBlock(card, result);
 }
 
-s32 fn_800B588C(s32 chan, s32 fileNo, CARDDirEntry* input,
+s32 __CARDSetStatusExAsync(s32 chan, s32 fileNo, CARDDirEntry* input,
                 CARDCallback callback)
 {
     CARDControl* card;
@@ -1012,7 +1012,7 @@ error:
     callback(chan, result);
 }
 
-s32 fn_800B4C7C(CARDFileInfo* fileInfo, void* buffer, s32 length, s32 offset,
+s32 CARDReadAsync(CARDFileInfo* fileInfo, void* buffer, s32 length, s32 offset,
                 CARDCallback callback)
 {
     CARDControl* card;
@@ -1567,7 +1567,7 @@ u32 ARQGetChunkSize(void) {
     return lbl_8047A948;
 }
 
-u32 fn_800AE794(void) {
+u32 DSPCheckMailFromDSPFlag(void) {
     return (DSP_REGS->mailToDspHi >> 15) & 1;
 }
 
@@ -1658,7 +1658,7 @@ void __DSP_debug_printf(char* fmt, ...) {
    whole object, 0x800AE9FC - 0x800AF280, with its strings). */
 #if defined(DSP_TASK_ONLY)
 /* dsp.c, defined above outside this build. */
-u32 fn_800AE794(void);
+u32 DSPCheckMailFromDSPFlag(void);
 u32 DSPCheckMailFromDSP(void);
 u32 DSPReadMailFromDSP(void);
 void DSPSendMailToDSP(u32 mail);
@@ -1700,7 +1700,7 @@ void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
         if (lbl_8047A958) {
             if (lbl_8047A96C == lbl_8047A95C) {
                 DSPSendMailToDSP(0xCDD10003);
-                while (fn_800AE794() != 0) {
+                while (DSPCheckMailFromDSPFlag() != 0) {
                 }
                 lbl_8047A95C = NULL;
                 lbl_8047A958 = 0;
@@ -1709,7 +1709,7 @@ void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
                 }
             } else {
                 DSPSendMailToDSP(0xCDD10001);
-                while (fn_800AE794() != 0) {
+                while (DSPCheckMailFromDSPFlag() != 0) {
                 }
                 __DSP_exec_task(lbl_8047A96C, lbl_8047A95C);
                 lbl_8047A96C->state = 2;
@@ -1720,14 +1720,14 @@ void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
         } else if (lbl_8047A96C->next == NULL) {
             if (lbl_8047A96C == lbl_8047A968) {
                 DSPSendMailToDSP(0xCDD10003);
-                while (fn_800AE794() != 0) {
+                while (DSPCheckMailFromDSPFlag() != 0) {
                 }
                 if (lbl_8047A96C->res_cb != NULL) {
                     lbl_8047A96C->res_cb(lbl_8047A96C);
                 }
             } else {
                 DSPSendMailToDSP(0xCDD10001);
-                while (fn_800AE794() != 0) {
+                while (DSPCheckMailFromDSPFlag() != 0) {
                 }
                 __DSP_exec_task(lbl_8047A96C, lbl_8047A968);
                 lbl_8047A96C->state = 2;
@@ -1735,7 +1735,7 @@ void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
             }
         } else {
             DSPSendMailToDSP(0xCDD10001);
-            while (fn_800AE794() != 0) {
+            while (DSPCheckMailFromDSPFlag() != 0) {
             }
             __DSP_exec_task(lbl_8047A96C, lbl_8047A96C->next);
             lbl_8047A96C->state = 2;
@@ -1748,7 +1748,7 @@ void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
                 lbl_8047A96C->done_cb(lbl_8047A96C);
             }
             DSPSendMailToDSP(0xCDD10001);
-            while (fn_800AE794() != 0) {
+            while (DSPCheckMailFromDSPFlag() != 0) {
             }
             __DSP_exec_task(NULL, lbl_8047A95C);
             __DSP_remove_task(lbl_8047A96C);
@@ -1761,7 +1761,7 @@ void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
                     lbl_8047A96C->done_cb(lbl_8047A96C);
                 }
                 DSPSendMailToDSP(0xCDD10002);
-                while (fn_800AE794() != 0) {
+                while (DSPCheckMailFromDSPFlag() != 0) {
                 }
                 lbl_8047A96C->state = 3;
                 __DSP_remove_task(lbl_8047A96C);
@@ -1770,7 +1770,7 @@ void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
                     lbl_8047A96C->done_cb(lbl_8047A96C);
                 }
                 DSPSendMailToDSP(0xCDD10001);
-                while (fn_800AE794() != 0) {
+                while (DSPCheckMailFromDSPFlag() != 0) {
                 }
                 lbl_8047A96C->state = 3;
                 __DSP_exec_task(NULL, lbl_8047A968);
@@ -1782,7 +1782,7 @@ void __DSPHandler(__OSInterrupt interrupt, OSContext* context)
                 lbl_8047A96C->done_cb(lbl_8047A96C);
             }
             DSPSendMailToDSP(0xCDD10001);
-            while (fn_800AE794() != 0) {
+            while (DSPCheckMailFromDSPFlag() != 0) {
             }
             lbl_8047A96C->state = 3;
             __DSP_exec_task(NULL, lbl_8047A96C->next);
@@ -1806,61 +1806,61 @@ void __DSP_exec_task(DSPTaskInfo* current, DSPTaskInfo* next)
 {
     if (current != NULL) {
         DSPSendMailToDSP((u32) current->dram_mmem_addr);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(current->dram_length);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(current->dram_addr);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
     } else {
         DSPSendMailToDSP(0);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(0);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(0);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
     }
 
     DSPSendMailToDSP((u32) next->iram_mmem_addr);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(next->iram_length);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(next->iram_addr);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
 
     if (next->state == 0) {
         DSPSendMailToDSP(next->dsp_init_vector);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(0);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(0);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(0);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
     } else {
         DSPSendMailToDSP(next->dsp_resume_vector);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP((u32) next->dram_mmem_addr);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(next->dram_length);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
         DSPSendMailToDSP(next->dram_addr);
-        while (fn_800AE794() != 0) {
+        while (DSPCheckMailFromDSPFlag() != 0) {
         }
     }
 }
@@ -1874,34 +1874,34 @@ void __DSP_boot_task(DSPTaskInfo* task)
     mail = DSPReadMailFromDSP();
 
     DSPSendMailToDSP(0x80F3A001);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP((u32) task->iram_mmem_addr);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(0x80F3C002);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(task->iram_addr & 0xFFFF);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(0x80F3A002);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(task->iram_length);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(0x80F3B002);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(0);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(0x80F3D001);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(task->dsp_init_vector);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
 
     __DSP_debug_printf("DSP is booting task: 0x%08X\n", (u32)task);
@@ -2544,10 +2544,10 @@ void InitCallback(void* task) {
     }
     workArea = (u32)card->workArea;
     DSPSendMailToDSP(0xff000000);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
     DSPSendMailToDSP(workArea);
-    while (fn_800AE794() != 0) {
+    while (DSPCheckMailFromDSPFlag() != 0) {
     }
 }
 
@@ -3073,11 +3073,11 @@ void __CARDSetDiskID(void* diskId) {
     card[1].diskId = diskId ? diskId : (void*)&card[2];
 }
 
-void* fn_800B01AC(s32 chan) {
+void* CARDGetChanWord108(s32 chan) {
     return lbl_803FC620[chan].diskId;
 }
 
-s32 fn_800B01C4(s32 chan, void* diskId) {
+s32 CARDSetChanWord108(s32 chan, void* diskId) {
     CARDControl* card = &lbl_803FC620[chan];
     void* id;
     BOOL enabled;
@@ -3211,7 +3211,7 @@ s32 CARDGetAttributes(s32 chan, s32 fileNo, u8* attr) {
     s32 result;
     CARDDirEntry entry;
 
-    result = fn_800B57D0(chan, fileNo, &entry);
+    result = __CARDGetStatusEx(chan, fileNo, &entry);
     if (result == 0) {
         *attr = entry.permission;
     }
@@ -3267,7 +3267,7 @@ s32 CARDSetStatusAsync(s32 chan, s32 fileNo, CARDStat* stat,
     return result;
 }
 
-s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry) {
+s32 __CARDGetStatusEx(s32 chan, s32 fileNo, CARDDirEntry* entry) {
     CARDControl* card;
     s32 result;
     CARDDirEntry* dirEntry;
@@ -3295,19 +3295,19 @@ s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry) {
     return __CARDPutControlBlock(card, result);
 }
 
-s32 fn_800B5BE4(s32 chan, s32 fileNo, u8 attr, void* callback) {
+s32 CARDSetAttributes(s32 chan, s32 fileNo, u8 attr, void* callback) {
     s32 result;
     CARDDirEntry entry;
 
-    result = fn_800B57D0(chan, fileNo, &entry);
+    result = __CARDGetStatusEx(chan, fileNo, &entry);
     if (result < 0) {
         return result;
     }
     entry.permission = attr;
-    return fn_800B588C(chan, fileNo, &entry, callback);
+    return __CARDSetStatusExAsync(chan, fileNo, &entry, callback);
 }
 
-void* fn_800B5C5C(void* object) {
+void* __GXDefaultTexRegionCallback(void* object) {
     extern GXData* gx;
     s32 format;
     u32 count;
@@ -3416,7 +3416,7 @@ void __GXInitGX(void) {
     extern GXRenderModeObj lbl_80313294;
     extern u8 lbl_80312AB4[];
     extern u8 lbl_803129E4[];
-    extern void fn_800B5C5C();
+    extern void __GXDefaultTexRegionCallback();
     extern void GXSetCopyClear(GXColor, u32);
     extern void GXSetTexCoordGen2();
     extern void GXSetNumTexGens();
@@ -3432,7 +3432,7 @@ void __GXInitGX(void) {
     extern void GXSetCurrentMtx();
     extern void GXLoadTexMtxImm();
     extern void GXSetViewport(f32, f32, f32, f32, f32, f32);
-    extern void fn_800BD394();
+    extern void GXSetProjectionv();
     extern void GXSetCoPlanar();
     extern void GXSetCullMode();
     extern void GXSetClipMode();
@@ -3485,8 +3485,8 @@ void __GXInitGX(void) {
     extern void GXPokeAlphaRead();
     extern void GXPokeDstAlpha();
     extern void GXPokeZMode();
-    extern void fn_800BD91C();
-    extern void fn_800BE30C();
+    extern void GXSetGPMetric();
+    extern void GXClearGPMetric();
 
     f32 identity[3][4];
     GXColor clear = { 64, 64, 64, 255 };
@@ -3562,7 +3562,7 @@ void __GXInitGX(void) {
 
     GXSetViewport(0.0f, 0.0f, (f32)rmode->fbWidth,
                 (f32)rmode->xfbHeight, 0.0f, 1.0f);
-    fn_800BD394(lbl_80312AB4);
+    GXSetProjectionv(lbl_80312AB4);
     GXSetCoPlanar(0);
     GXSetCullMode(2);
     GXSetClipMode(0);
@@ -3582,7 +3582,7 @@ void __GXInitGX(void) {
         gxState->nextTexRgn = 0;
         gxState->nextTexRgnCI = 0;
     }
-    GXSetTexRegionCallback(fn_800B5C5C);
+    GXSetTexRegionCallback(__GXDefaultTexRegionCallback);
     GXSetTlutRegionCallback(__GXDefaultTlutRegionCallback);
 
     GXSetTevOrder(0, 0, 0, 4);
@@ -3654,8 +3654,8 @@ void __GXInitGX(void) {
     GXPokeAlphaRead(1);
     GXPokeDstAlpha(0, 0);
     GXPokeZMode(1, 7, 1);
-    fn_800BD91C(0x23, 0x16);
-    fn_800BE30C();
+    GXSetGPMetric(0x23, 0x16);
+    GXClearGPMetric();
 }
 #endif
 

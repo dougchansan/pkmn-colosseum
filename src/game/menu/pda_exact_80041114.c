@@ -10,14 +10,14 @@ extern u8 lbl_803A67FC[];
 extern u8 lbl_803A6818[];
 extern void GSscene_SetMode(s32 mode);
 extern void pdaReadPadInput(void* scene);
-extern s32 fn_80041E48(void* work, s32 mode);
+extern s32 pdaMemoUpdateScroll(void* work, s32 mode);
 extern s32 pdaModelViewerControl(void* work, s32 mode);
 
 void pdaSceneEnter0(void* work)
 {
     GSscene_SetMode(4);
     pdaReadPadInput(lbl_803A67FC);
-    fn_80041E48(work, 0);
+    pdaMemoUpdateScroll(work, 0);
 }
 
 void pdaSceneEnter1(void* work)

@@ -32,7 +32,7 @@ extern HSD_ClassInfo* fn_80193748(const char* class_name);
 /* hsdNew */
 extern void* fn_80193828(HSD_ClassInfo* info);
 /* HSD_PObjCountVertices */
-extern void fn_801ACDAC(HSD_PObj* pobj, s32* total_a, s32* total_b);
+extern void HSD_DObjCountVerticesSub(HSD_PObj* pobj, s32* total_a, s32* total_b);
 extern void __assert(const char* file, u32 line, const char* expr);
 
 extern HSD_DObjInfo lbl_8036C7A0;  /* hsdDObj */
@@ -118,7 +118,7 @@ void HSD_DObjCountVertices(HSD_DObj* dobj, s32* total_a, s32* total_b)
         s32 a;
         s32 b;
 
-        fn_801ACDAC(dobj->pobj, &a, &b);
+        HSD_DObjCountVerticesSub(dobj->pobj, &a, &b);
         sum_a += a;
         sum_b += b;
     }

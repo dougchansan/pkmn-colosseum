@@ -705,7 +705,7 @@ void wsCmd90(void)
 {
     extern u16 GSrand();
     extern u32 GSmsgGetGSchar();
-    extern void fn_8010C4D4();
+    extern void wazaDataGetDesc();
     extern void msgctrlSetValue();
     extern u32 wazaGetStatus();
     extern u8 pokemonWazaCheckValid();
@@ -782,7 +782,7 @@ failed:
     for (index = 0; (u8)index < 2; index++) {
         fightOutPokemonSetZokuseiDataId(attacker, index, state.count);
     }
-    fn_8010C4D4(state.count);
+    wazaDataGetDesc(state.count);
     msgctrlSetValue(0xd, GSmsgGetGSchar());
     lbl_8047B610 += 5;
 done:

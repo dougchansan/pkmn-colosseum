@@ -246,7 +246,7 @@ u32 fightActionFlowSyuuryouPost(void* action)
 u32 fightActionFlowSyuuryou(void* ctx)
 {
     extern u32 fightGetResult80478960();
-    extern u32 fn_800896C0();
+    extern u32 cardeGetEncounterParam8047A674();
     extern void _threadSwitch();
     extern void msgctrlSetValue();
     extern void std130_soundUnk_801653cc();
@@ -291,7 +291,7 @@ u32 fightActionFlowSyuuryou(void* ctx)
     uVar4 = fightTrainerGetStatus(uVar2, 0, 0x4c, 0);
     iVar5 = fightTrainerGetStatus(0, uVar3, 8, 1);
     if (uVar3 == fightGetResult80478960()) {
-        iVar7 = (0, fn_800896C0());
+        iVar7 = (0, cardeGetEncounterParam8047A674());
         if (0 == iVar7) {
             iVar7 = 0;
         } else {

@@ -644,7 +644,7 @@ void wazaSequenceOwnerDrawAttached(void* entry, u32 drawFlags, u8 modelID) {
             switch (*(s32*)(node + 4)) {
             case 2:
                 if (modelID ==
-                    (u8)fn_800E3CBC(
+                    (u8)GSmodelGetFlag200(
                         *(struct GSmodel**)(node + 0xA4))) {
                     GSmodelDrawModel(
                         *(struct GSmodel**)(node + 0xA4), drawFlags);

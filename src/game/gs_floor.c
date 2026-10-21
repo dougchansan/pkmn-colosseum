@@ -5,7 +5,7 @@
  *
  * Address range: 0x800FF788 - 0x80101910
  *   GSfloorOpen   request a floor (idle worker only)
- *   fn_800FF81C   install the floor table
+ *   floorSetEnterCallbacks   install the floor table
  *   floorSystemStart   allocate the floor-context stack and the three resource
  *                 pools, then start _floorManagerThread as a GS thread
  *   _floorManagerThread   the cooperative floor worker: a state machine over
@@ -46,7 +46,7 @@ extern const char lbl_802719E0[];  /* "loadParticlePtr(): can't alloc %d bytes o
 
 
 /**
- * One entry of the floor table installed by fn_800FF81C (stride 0x4C). Only
+ * One entry of the floor table installed by floorSetEnterCallbacks (stride 0x4C). Only
  * the fields this unit reads are named: the top three bits of the first byte
  * select which resource handlers snapshot state across a nested floor, and
  * the word at 0x0C is the floor index the table is searched by.
@@ -89,13 +89,13 @@ extern const char       lbl_80271814[]; /* "not find floor %d\n" */
 
 extern void  _threadSwitch(void);
 extern void  floorLoadResidentArchives(void* entry, s32 mode);
-extern void  fn_8010D064(void);
-extern void  fn_8010CC54(void);
-extern void  fn_8010CD6C(u32 groupId);
-extern void  fn_8010D038(void);
+extern void  GScolsys2PushFloor(void);
+extern void  GScolsys2ClearHitFlags(void);
+extern void  GScolsys2CopyTriangles(u32 groupId);
+extern void  GScolsys2PopFloor(void);
 extern u32   floorDataBiosGetFileGroupID(void* entry);
 extern u32   floorDataBiosGetGroupID(void* entry);
-extern void  fn_8017B3E4(u32 fileGroupId);
+extern void  fsysStartLoad(u32 fileGroupId);
 extern s32   GSresGroupGetState(u32 fileGroupId);
 extern void  GSresReleaseById(u32 fileGroupId);
 extern u8    floorStartScripts(GSFloorContext* ctx);
@@ -117,8 +117,8 @@ extern void  psRemoveParticle(void);
 extern void  psRemoveGenerator(void);
 extern void  psRemoveAppSRT(void);
 extern void  GSmodelFreeAllShadowTextures(void);
-extern void  fn_80112780(void);
-extern void  fn_801127BC(void);
+extern void  floorRunMainScript(void);
+extern void  floorStartFrameScript(void);
 extern u16   _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u16 handle);
 extern void  fn_800E24B0(u16 handle);
@@ -280,12 +280,12 @@ static inline void floorLoadData(void* entry, s32 mode) {
 
     floorLoadResidentArchives(entry, mode);
     if (mode == 0) {
-        fn_8010D064();
+        GScolsys2PushFloor();
     }
     if (mode == 2) {
-        fn_8010CC54();
+        GScolsys2ClearHitFlags();
     }
-    fn_8017B3E4(floorDataBiosGetFileGroupID(entry));
+    fsysStartLoad(floorDataBiosGetFileGroupID(entry));
     while (TRUE) {
         rc = GSresGroupGetState(floorDataBiosGetFileGroupID(entry));
         if (rc < 0) {
@@ -298,7 +298,7 @@ static inline void floorLoadData(void* entry, s32 mode) {
     }
     groupId = floorDataBiosGetGroupID(entry);
     if (mode != 1) {
-        fn_8010CD6C(groupId);
+        GScolsys2CopyTriangles(groupId);
     }
     _threadSwitch();
     _threadSwitch();
@@ -569,7 +569,7 @@ void GSfloorOpen(u32 floorId) {
 }
 
 /* 0x800FF81C | 0xC */
-void fn_800FF81C(GSFloorTableEntry* table, u32 count) {
+void floorSetEnterCallbacks(GSFloorTableEntry* table, u32 count) {
     lbl_8047ACD0 = table;
     lbl_8047ACD4 = count;
 }
@@ -695,7 +695,7 @@ void _floorManagerThread(void) {
         }
 
         case GSFLOOR_STATE_TRANSITIONING: {
-            fn_80112780();
+            floorRunMainScript();
             lbl_8047ACC8->doFadeIn = 1;
             lbl_8047ACC8->doFadeOut = 0;
             lbl_8047ACC8->resMemHandle = floorSaveResourceState();
@@ -729,7 +729,7 @@ void _floorManagerThread(void) {
             floorReleaseResources(1, lbl_8047ACC8->floorId, GSFLOOR_RES_LOADED);
             floorReleaseResources(2, lbl_8047ACC8->floorId, GSFLOOR_RES_LOADED);
             floorUnloadData(lbl_8047ACC8->floorDataEntry, 1);
-            fn_8010D038();
+            GScolsys2PopFloor();
             psRemoveParticle();
             psRemoveGenerator();
             psRemoveAppSRT();
@@ -792,7 +792,7 @@ u8 floorStartScripts(GSFloorContext* ctx) {
                 floorSetResourcesBlocked(2, ctx->floorId, GSFLOOR_RES_LOADED, 0);
                 ctx->isActive = 4;
             }
-            fn_801127BC();
+            floorStartFrameScript();
         }
         break;
 
@@ -808,7 +808,7 @@ u8 floorStartScripts(GSFloorContext* ctx) {
         break;
 
     case 5:
-        fn_80112780();
+        floorRunMainScript();
         floorStartResources(ctx, 5);
         ctx->isActive = 6;
         break;
@@ -842,7 +842,7 @@ void loadParticle(void* dst, u32 size, void* callback, void* callbackArg) {
 void loadCamera(void* archive, u32 resourceArg, u32 callbackArg) {
     extern void* GScameraCreateFromDesc(void*);
     extern void GSresRegisterResource(void*, u32, u32, void*);
-    extern void fn_80101A28(void);
+    extern void sceneFreeCamera(void);
     const char* messages = lbl_802717F0;
     void** publicData;
     void* resource;
@@ -861,7 +861,7 @@ void loadCamera(void* archive, u32 resourceArg, u32 callbackArg) {
         GSlogWrite(messages + 0x358);
     }
     GSresRegisterResource(resource, resourceArg, callbackArg,
-                          (void*)fn_80101A28);
+                          (void*)sceneFreeCamera);
 }
 
 /* 0x801013A0 | 0xDC */

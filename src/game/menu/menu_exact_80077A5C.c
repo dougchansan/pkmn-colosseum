@@ -21,7 +21,7 @@
 
 extern s32 pokemonGetStatus(void* pokemon, s32 index, s32 field, s32 subindex);
 extern s32* savedataGetStatus(s32 side, s32 slotType);
-extern u8 fn_80142984(u16 item);
+extern u8 itemIdIsValid(u16 item);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern s32 memcmp(const void* s1, const void* s2, u32 size);
 
@@ -82,7 +82,7 @@ u8 menuCBRule_CheckValidItem(u16 item) {
     case 0xAF:
         return 0;
     default:
-        return fn_80142984(item);
+        return itemIdIsValid(item);
     }
 }
 
@@ -123,8 +123,8 @@ u8 menuRuleApplyItemRestriction(u16 item) {
     }
 }
 
-/* fn_80077D88 (0x80077D88): bounds-checked table lookup. */
-u16 fn_80077D88(s32 index) {
+/* menuTaisenGetHeldItem (0x80077D88): bounds-checked table lookup. */
+u16 menuTaisenGetHeldItem(s32 index) {
     if (index < 0 || lbl_80478928 <= (u32)index) {
         return 0;
     }

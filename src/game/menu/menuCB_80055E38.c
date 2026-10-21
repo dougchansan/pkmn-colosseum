@@ -21,8 +21,8 @@ extern void* windowSearchID(s32);
 extern u8 fn_80123FBC(void*);
 extern void* fn_8012A5B0(void*, u32, u32);
 extern void* fn_80134EF0(void*, s32, s32);
-extern u8 fn_80107170(u32, u16);
-extern void fn_801081F8(void*, u16, u16);
+extern u8 windowItemSeqPlaying(u32, u16);
+extern void winSeqSetItem(void*, u16, u16);
 extern void fn_80109220(void*, u32);
 extern void winSpriteSetDisp(void*, u32);
 
@@ -68,13 +68,13 @@ extern void* heroGetStatus(void* hero, s32 selector, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
 extern s32 pcBoxIsShadowPokemon(void* pokemon);
 extern void* pcBoxGetIconResource(void* pokemon);
-extern void fn_800FE6D0(s16 x, s16 y);
+extern void spriteSetOrigin(s16 x, s16 y);
 extern void spriteSetEnv(void);
 extern void gfxSetFlags(u32 flags);
-extern void fn_800DC0D4(s32, s32, s32, s32, s32);
-extern void fn_800DC14C(s32, s32, s32, s32, s32, s32);
-extern void fn_800DBFD4(s32, s32, s32, s32, s32);
-extern void fn_800DC04C(s32, s32, s32, s32, s32, s32);
+extern void gfxSetTevAlphaIn(s32, s32, s32, s32, s32);
+extern void gfxSetTevAlphaOp(s32, s32, s32, s32, s32, s32);
+extern void gfxSetTevColorIn(s32, s32, s32, s32, s32);
+extern void gfxSetTevColorOp(s32, s32, s32, s32, s32, s32);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
 extern void gfxSetVtxDesc(void* resource);
@@ -133,7 +133,7 @@ extern void* getPokemon__5PCBOXFScSc(void* pcbox, s8 box, s8 slot);
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-u32 fn_80055E38(s32 idx) {
+u32 pcBoxTabMenuIdle(s32 idx) {
     extern s32 winSeqCheckMove(s32 param);
     extern u8 lbl_8026768C[];
     s32 val;
@@ -154,10 +154,10 @@ u32 fn_80055E38(s32 idx) {
 
 /* 0x80055EB8 | 0xD0 */
 u32 pcBoxGridDrawSprite(s8* ctx, u8* p) {
-    extern s32 fn_80057A08(void);
+    extern s32 pcBoxHeldWindowOpen(void);
     extern void* windowSearchID(s32);
-    extern s32 fn_80055194(u32*, s32);
-    extern void fn_80057094(s16*, s16*);
+    extern s32 pcBoxGetGridCell(u32*, s32);
+    extern void pcBoxGetCursorPos(s16*, s16*);
     extern void winSpriteSetDisp(void*, u32);
     extern u8 lbl_802EF0A8[];
     u8 result;
@@ -166,12 +166,12 @@ u32 pcBoxGridDrawSprite(s8* ctx, u8* p) {
     s16 y;
 
     result = 0;
-    if (fn_80057A08() != 0) {
+    if (pcBoxHeldWindowOpen() != 0) {
         ctx = (s8*)windowSearchID(0x93);
         if (ctx != 0) {
-            if (fn_80055194(&out, ctx[0x95]) == 0) {
+            if (pcBoxGetGridCell(&out, ctx[0x95]) == 0) {
                 result = 1;
-                fn_80057094(&x, &y);
+                pcBoxGetCursorPos(&x, &y);
                 *(s16*)(p + 0x50) =
                     (s16)(x + *(s16*)(lbl_802EF0A8 + *(s16*)(p + 6) * 0x1c + 2));
                 *(s16*)(p + 0x52) =
@@ -328,10 +328,10 @@ s32 pcBoxDrawBoxIcons(MenuCBPane* pane, MenuCBPane* sprite) {
         y = sprite->height;
         x = sprite->width;
         gfxSetFlags(0x80000002);
-        fn_800DC0D4(0, 0xf, 0xb, 0xa, 8);
-        fn_800DC14C(0, 0, 0, 0, 1, 0);
-        fn_800DBFD4(0, 7, 7, 7, 4);
-        fn_800DC04C(0, 0, 0, 0, 1, 0);
+        gfxSetTevAlphaIn(0, 0xf, 0xb, 0xa, 8);
+        gfxSetTevAlphaOp(0, 0, 0, 0, 1, 0);
+        gfxSetTevColorIn(0, 7, 7, 7, 4);
+        gfxSetTevColorOp(0, 0, 0, 0, 1, 0);
 
         scaleS0 = 0.0f / (f32)GStextureGetXsize(texture);
         scaleS1 = (f32)x / (f32)GStextureGetXsize(texture);
@@ -391,18 +391,18 @@ u32 pcBoxGridCtrl(u8* p)
 }
 #pragma pop
 
-u32 fn_800566B4(void)
+u32 pcBoxCommandFadeDone(void)
 {
     return !(lbl_8047A570 >= 0.8f);
 }
 
-void fn_800566D8(u32 a)
+void pcBoxCommandFadeStart(u32 a)
 {
     lbl_8047A56C = a;
     lbl_8047A570 = 0.0f;
 }
 
-u32 fn_800566E8(void)
+u32 pcBoxTabIsMoving(void)
 {
     return 0.0f != lbl_8047A578;
 }
@@ -410,7 +410,7 @@ u32 fn_800566E8(void)
 /* RULE-EXCEPTION(user-approved): inherited nopeephole mode; see docs/RULE_EXCEPTIONS.md. */
 #pragma push
 #pragma peephole off
-u32 fn_80056704(void)
+u32 pcBoxTabPrev(void)
 {
     u32 tbl[3];
     u32 cur;
@@ -440,7 +440,7 @@ u32 fn_80056704(void)
     return lbl_8047A584;
 }
 
-u32 fn_800567AC(void)
+u32 pcBoxTabNext(void)
 {
     u32 tbl[3];
     u32 cur;
@@ -471,7 +471,7 @@ u32 fn_800567AC(void)
 }
 #pragma pop
 
-void fn_80056854(void)
+void pcBoxTabUpdateSlide(void)
 {
     extern void* windowSearchID(u32);
     extern void menuSetDisp(u32, u32);
@@ -555,14 +555,14 @@ void fn_80056854(void)
     }
 }
 
-u32 fn_80056A78(void)
+u32 pcBoxGetTab(void)
 {
     return lbl_8047A584;
 }
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_80056A80(void) {
+void pcBoxCloseTabs(void) {
     extern u8 lbl_8026768C[];
     extern void menuCloseSync(s32, s32);
     u32* table;
@@ -605,7 +605,7 @@ void fn_80056A80(void) {
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-/* RULE-EXCEPTION(user-approved): single-use inline helper for fn_80056B74's menu-id lookup — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper for pcBoxOpenTabs's menu-id lookup — see docs/RULE_EXCEPTIONS.md */
 static inline s32 fn_80056B74_menuId(s32 i) {
     extern u8 lbl_8026768C[];
     u32 tbl[3];
@@ -622,7 +622,7 @@ static inline s32 fn_80056B74_menuId(s32 i) {
 /* RULE-EXCEPTION(user-approved): local opt_loop_invariants off keeps the table copy inside the loop as retail does — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma opt_loop_invariants off
-u32 fn_80056B74(u32 idx, s32 mode) {
+u32 pcBoxOpenTabs(u32 idx, s32 mode) {
     extern u8 lbl_8026768C[];
     extern s32 lbl_8047A568;
     extern u32 lbl_8047A580;

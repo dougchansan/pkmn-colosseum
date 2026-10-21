@@ -42,7 +42,7 @@
  * Dolphin PAD calls that have no symbol name yet, identified by their order
  * in the SDK's Pad.c and by their arguments here:
  *   fn_800AAD34 PADReset(mask)            PADRecalibrate PADRecalibrate(mask)
- *   PADInit PADInit()                 fn_800AB4FC PADControlAllMotors(cmds)
+ *   PADInit PADInit()                 PADControlAllMotors PADControlAllMotors(cmds)
  */
 
 #include "game/input/input.h"
@@ -54,11 +54,11 @@ extern void* memcpy(void* dst, const void* src, u32 n);
 extern void GSlogWritef(const char* fmt, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);   /* GSmemAllocRaw */
 extern void* GSmemLock(u16 handle);         /* GSmemGetPtr */
-extern u32 fn_800D3094(void);
+extern u32 GSgfxGetRetraceCount(void);
 extern void fn_800AAD34(u32 mask);            /* PADReset */
 extern BOOL PADRecalibrate(u32 mask);            /* PADRecalibrate */
 extern BOOL PADInit(void);                /* PADInit */
-extern void fn_800AB4FC(const u32* commands); /* PADControlAllMotors */
+extern void PADControlAllMotors(const u32* commands); /* PADControlAllMotors */
 extern void PADSetAnalogMode(u32 mode);
 extern u32 PADRead(PADStatus* status);    /* PADRead */
 extern u32 SIProbe(s32 chan);             /* SI type/status probe */
@@ -83,7 +83,7 @@ extern u32 lbl_8047AC48;
 /* Channels waiting for PADReset. The PAD sampling callback (inputPadCallback)
  * sets and clears these bits, so GSinputRead re-reads it on every use. */
 extern volatile u32 lbl_8047AC4C;
-/* fn_800D3094 value at the last PADReset. */
+/* GSgfxGetRetraceCount value at the last PADReset. */
 extern u32 lbl_8047AC50;
 
 static inline InputPad* InputFindPad(s32 id) {
@@ -311,7 +311,7 @@ void inputUpdateMotors(void) {
         }
     }
     if (changed) {
-        fn_800AB4FC((u32*)lbl_80401DD0);
+        PADControlAllMotors((u32*)lbl_80401DD0);
     }
 }
 
@@ -404,7 +404,7 @@ void GSinputInit(void) {
 
     PADSetAnalogMode(0);
     PADInit();
-    fn_800AB4FC((u32*)lbl_80401DD0);
+    PADControlAllMotors((u32*)lbl_80401DD0);
     PADRecalibrate(lbl_8047AC4C);
     SISetSamplingRate(11);
     PADSetSamplingCallback(inputPadCallback);
@@ -443,7 +443,7 @@ u32 GSinputRead(s32 id) {
 
     pad->prevButton = pad->current.button;
     level = OSDisableInterrupts();
-    now = fn_800D3094();
+    now = GSgfxGetRetraceCount();
     if (lbl_8047AC4C != 0 && now != lbl_8047AC50) {
         fn_800AAD34(lbl_8047AC4C);
         lbl_8047AC50 = now;

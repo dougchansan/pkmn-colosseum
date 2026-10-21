@@ -1,6 +1,6 @@
 /**
  * @file menuSub.c
- * @brief menuSub TU: 0x8001D718 - 0x8001EF78 (fn_8001D718 .. fn_8001EC08).
+ * @brief menuSub TU: 0x8001D718 - 0x8001EF78 (menuPokemonWaitSeconds .. fn_8001EC08).
  *
  * The retail translation unit, identified by its .sdata2 literal pool
  * 0x8047B7C8-0x8047B808 (0.0f, both int->float doubles, 1.0f, 255.0f, 30.0,
@@ -35,16 +35,16 @@ extern void gfxVtxColor1u32(s32 index, u32 color);
 extern void gfxSetLineWidth(f32 width);
 extern void gfxLoadTexture(s32 map, void* texture);
 extern void gfxLoadTexMatrix(s32 id, s32 type, s32 src, void* mtx);
-extern void fn_800DC1D4(s32 count);
+extern void gfxSetNumTevStages(s32 count);
 extern void gfxSetTevStage(s32 stage, s32 coord, s32 map, s32 color, s32 a);
-extern void fn_800DC14C(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
-extern void fn_800DC0D4(s32 stage, s32 a, s32 b, s32 c, s32 d);
-extern void fn_800DC04C(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
-extern void fn_800DBFD4(s32 stage, s32 a, s32 b, s32 c, s32 d);
+extern void gfxSetTevAlphaOp(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void gfxSetTevAlphaIn(s32 stage, s32 a, s32 b, s32 c, s32 d);
+extern void gfxSetTevColorOp(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void gfxSetTevColorIn(s32 stage, s32 a, s32 b, s32 c, s32 d);
 extern u8 lbl_80314E08[];
 
 /* 0x8001D718 | 0xCC */
-void fn_8001D718(f32 target) {
+void menuPokemonWaitSeconds(f32 target) {
     extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     f32 progress = 0.0f;
@@ -210,28 +210,28 @@ s32 spriteDrawBlendTexture(void* context, MenuSubSprite* sprite, f32 shift) {
         gfxLoadTexMatrix(0, 0, 4, mtx);
         gfxLoadTexMatrix(1, 0, 5, mtx);
         gfxLoadTexMatrix(2, 0, 6, mtx);
-        fn_800DC1D4(3);
+        gfxSetNumTevStages(3);
 
         gfxLoadTexture(0, texture);
         gfxSetTevStage(0, 0, 0, 0, 0);
-        fn_800DC14C(0, 0, 0, 0, 0, 1);
-        fn_800DC0D4(0, 0xF, 8, 0xA, 0xF);
-        fn_800DC04C(0, 0, 0, 0, 0, 1);
-        fn_800DBFD4(0, 7, 4, 5, 7);
+        gfxSetTevAlphaOp(0, 0, 0, 0, 0, 1);
+        gfxSetTevAlphaIn(0, 0xF, 8, 0xA, 0xF);
+        gfxSetTevColorOp(0, 0, 0, 0, 0, 1);
+        gfxSetTevColorIn(0, 7, 4, 5, 7);
 
         gfxLoadTexture(1, pattern);
         gfxSetTevStage(1, 0, 1, 1, 0);
-        fn_800DC14C(1, 1, 0, 0, 1, 0);
-        fn_800DC0D4(1, 0xF, 8, 0xD, 2);
-        fn_800DC04C(1, 0, 0, 0, 1, 0);
-        fn_800DBFD4(1, 7, 7, 7, 1);
+        gfxSetTevAlphaOp(1, 1, 0, 0, 1, 0);
+        gfxSetTevAlphaIn(1, 0xF, 8, 0xD, 2);
+        gfxSetTevColorOp(1, 0, 0, 0, 1, 0);
+        gfxSetTevColorIn(1, 7, 7, 7, 1);
 
         gfxLoadTexture(2, pattern);
         gfxSetTevStage(2, 0, 2, 2, 0);
-        fn_800DC14C(2, 1, 0, 0, 1, 0);
-        fn_800DC0D4(2, 0xF, 8, 0xD, 2);
-        fn_800DC04C(2, 0, 0, 0, 1, 0);
-        fn_800DBFD4(2, 7, 7, 7, 1);
+        gfxSetTevAlphaOp(2, 1, 0, 0, 1, 0);
+        gfxSetTevAlphaIn(2, 0xF, 8, 0xD, 2);
+        gfxSetTevColorOp(2, 0, 0, 0, 1, 0);
+        gfxSetTevColorIn(2, 7, 7, 7, 1);
 
         gfxSetVtxDesc(lbl_8047AD00);
         gfxSetPrimitive(7);
@@ -247,7 +247,7 @@ s32 spriteDrawBlendTexture(void* context, MenuSubSprite* sprite, f32 shift) {
         gfxVtxTexCoord(1, shift + u1, shift + v1);
         gfxVtxTexCoord(2, (1.0f - shift) + u1, shift + v1);
         gfxEnd();
-        fn_800DC1D4(1);
+        gfxSetNumTevStages(1);
         gfxClearFlags(0x80000000);
     }
     return 0;

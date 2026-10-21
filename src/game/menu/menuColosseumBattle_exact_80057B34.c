@@ -14,7 +14,7 @@ typedef struct ColosseumBattleConnectState {
 
 extern void _threadSwitch(void);
 extern void GSresReleaseOwner(s32);
-extern void fn_8017B3E4(s32);
+extern void fsysStartLoad(s32);
 extern s32 GSresGroupGetState(s32);
 extern void GSresReleaseById(s32);
 
@@ -24,7 +24,7 @@ extern u8 lbl_803A9A08[];
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-u32 fn_80057B34(u32 arg0, u32 arg1) {
+u32 pcBoxRunNameEntry(u32 arg0, u32 arg1) {
     u32 result;
     u8 requestedConnection;
     ColosseumBattleConnectState* state;
@@ -43,7 +43,7 @@ u32 fn_80057B34(u32 arg0, u32 arg1) {
 
     GSresReleaseById(0x70B);
     GSresReleaseOwner(0x70B);
-    fn_8017B3E4(0x670);
+    fsysStartLoad(0x670);
     while (GSresGroupGetState(0x670) == 1) {
         _threadSwitch();
     }
@@ -51,7 +51,7 @@ u32 fn_80057B34(u32 arg0, u32 arg1) {
     result = menuNameEntryCall(arg0, arg1);
     GSresReleaseById(0x670);
     GSresReleaseOwner(0x670);
-    fn_8017B3E4(0x70B);
+    fsysStartLoad(0x70B);
     while (GSresGroupGetState(0x70B) == 1) {
         _threadSwitch();
     }

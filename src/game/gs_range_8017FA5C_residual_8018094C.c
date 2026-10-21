@@ -51,7 +51,7 @@ extern void fn_800E24B0(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void fsysLZSSJobFinish(void*, void*, u32, void*);
 extern void fsysLZSSJobSetup(void*, void*, u32, void*);
-extern s32 fn_8017AC30(void);
+extern s32 fsysGetLoadMode(void);
 extern void* GSgappCreate(s32, s32, void*, void*);
 extern void _fsysJobDecodeTask(void);
 extern void _fsysJobReadS1Task(void);
@@ -149,7 +149,7 @@ void fsysJobPoolUpdate(void)
                         lbl_8047B1E4 = job;
                         fsysLZSSJobSetup(lbl_8047B1E4->slot, lbl_8047B1E4->subEntry,
                                     lbl_8047B1E4->index, lbl_8047B1E4);
-                        job->app = GSgappCreate(fn_8017AC30(), 0xC8,
+                        job->app = GSgappCreate(fsysGetLoadMode(), 0xC8,
                                                 job->slot->taskParam, _fsysJobDecodeTask);
                         if (job->app) {
                             job->active = 1;

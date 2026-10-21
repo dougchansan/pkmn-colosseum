@@ -746,7 +746,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
     extern void GSmodelGetRotation(void* model, void* out);
     extern void GSpartGetTransform(void* part, void* pos, void* rot,
                                    void* scale);
-    extern void fn_800E0108(void* dst, void* lhs, void* rhs);
+    extern void GSvecMulComponents(void* dst, void* lhs, void* rhs);
     extern void GSvecAdd(void* dst, void* lhs, void* rhs);
     extern void gsParticleSetTornadoScale(void* particleNode, u8 enabledA, u8 enabledB,
                            u8 applyToGenerator);
@@ -824,7 +824,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 (animationMode >> 8) & 1,
                 (animationMode >> 10) & 1,
                 (animationMode >> 5) & 1);
-    fn_80118F7C(*(void**)((u8*) node + 0x8C), offset);
+    GSmodelGetPositionVec(*(void**)((u8*) node + 0x8C), offset);
     *(u32*)((u8*) node + 0x90) = 0;
 
     if ((s32)(node->flags & 4) == 4) {
@@ -853,7 +853,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
             *(u32*)((u8*) node + 0x90) = 1;
 
             GSpartGetTransform(part, NULL, NULL, temp);
-            fn_800E0108(temp, temp, scale);
+            GSvecMulComponents(temp, temp, scale);
 
             switch (selector) {
             case 7:
@@ -966,11 +966,11 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
     extern void GSlerpGetLinearInterpolationVector(void* dst, void* src,
                                                    void* target, f32 t);
     extern void GSvecAdd(void* dst, void* lhs, void* rhs);
-    extern void fn_800E00E0(void* dst, void* src);
+    extern void GSvecNegate(void* dst, void* src);
     extern void GSmodelAttachToGSpart(void* model, void* part, s32 arg2,
                                       s32 arg3, s32 arg4);
     extern void GSmodelSetVisibility(void* model, u8 visible);
-    extern void fn_800E3CC8(void* model, u8 enable);
+    extern void GSmodelSetFlag200(void* model, u8 enable);
     extern void GSmodelSet60fpsAnimFlag(void* model, u8 enable);
     extern u8 GSmodelCanAnimate(void* model);
     extern void GSmodelSetAnimIndex(void* model, s32 index);
@@ -986,7 +986,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
     extern void GSmodelStartTexAnimation(void* model);
     extern void GSmodelSetShadowFlags(void* model, u32 flags);
     extern void GSmodelSetBoundCheck(void* model, u8 enable);
-    extern void fn_800E3B44(void* model, u8 enable);
+    extern void GSmodelSetFlag400(void* model, u8 enable);
     extern const char lbl_80279694[];
     extern const char lbl_802796CC[];
     extern f32 lbl_8047E348;
@@ -1056,7 +1056,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
                     temp, (u8*)bound + 0x10, (u8*)bound + 0x1C, lbl_8047E348);
                 GSvecAdd(position, position, temp);
                 GSmodelSetPosition(model, position);
-                fn_800E00E0(temp, temp);
+                GSvecNegate(temp, temp);
                 GSmodelAddNull(ownerModel, (GSvec*)temp, NULL, NULL);
                 GSmodelAttachToGSpart(ownerModel, part, selector, 0, 1);
                 node->attached = 1;
@@ -1142,7 +1142,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
     }
 
     GSmodelSetVisibility(model, 1);
-    fn_800E3CC8(model, *(u32*)((u8*)node + 0x9C) & 1);
+    GSmodelSetFlag200(model, *(u32*)((u8*)node + 0x9C) & 1);
     GSmodelSet60fpsAnimFlag(
         model, (*(u32*)((u8*)node + 0x9C) >> 2) & 1);
 
@@ -1190,7 +1190,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
             model, wazaSequenceSysGetModelShadowCount__Fv(),
             wazaSequenceSysGetModelShadowList__Fv());
         GSmodelSetBoundCheck(model, 1);
-        fn_800E3B44(model, 1);
+        GSmodelSetFlag400(model, 1);
     }
 
     return TRUE;
@@ -1396,7 +1396,7 @@ void wazaSequenceGetScaleVec(void* owner, f32* scale, s32 selector) {
  * Address: 0x801D9C1C | Size: 0x200
  */
 u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
-    extern void fn_800E3CC8(void* model, s32 enable);
+    extern void GSmodelSetFlag200(void* model, s32 enable);
     extern void GSmodelLinkTexAnimToAnim(void* model, s32 enable);
     extern void GSmodelSetAnimIndex(void* model, s32 index);
     extern void GSmodelSetAnimType(void* model, s32 type);
@@ -1424,7 +1424,7 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
         return FALSE;
     }
     if (model != NULL) {
-        fn_800E3CC8(model, enabled);
+        GSmodelSetFlag200(model, enabled);
         table = *(u8**)(owner + 0x2C) +
                 *(u16*)(owner + 0x32) * 0xD4 + 0x8C;
         if ((*(u8*)(owner + 0x18) & 8) == 8) {

@@ -64,7 +64,7 @@ extern void windowDrawSprite(s16 x, s16 y, PdaSprite* sprite, u16 id, s32 arg4);
 void pdaPeopleUpdateAlpha(PdaSprite* sprite, PdaEvent* event)
 {
     extern f32 lbl_8047BCA0;
-    extern void fn_800411FC(PdaSprite* sprite, PdaEvent* event);
+    extern void pdaMemoDrawPokemonDetail(PdaSprite* sprite, PdaEvent* event);
 
     sprite->alphaByte = lbl_8047BCA0 * *(f32*)((u8*)&lbl_803A6818 + 0x4c);
     switch (event->messageId) {
@@ -74,7 +74,7 @@ void pdaPeopleUpdateAlpha(PdaSprite* sprite, PdaEvent* event)
     case 0xfbe:
         break;
     default:
-        fn_800411FC(sprite, event);
+        pdaMemoDrawPokemonDetail(sprite, event);
         break;
     }
 }

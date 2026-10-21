@@ -144,7 +144,7 @@ extern PdaSceneWork lbl_803A6818;
 
 extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
 extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
-extern s32 fn_80041E48(void* work, s32 mode);
+extern s32 pdaMemoUpdateScroll(void* work, s32 mode);
 extern s32 pdaModelViewerControl(void* work, s32 mode);
 extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
@@ -156,7 +156,7 @@ extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #endif
 
-/* Retail places this callback immediately after fn_80037174. */
+/* Retail places this callback immediately after pdaUnlock. */
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 #endif
@@ -326,7 +326,7 @@ static inline s32 pdaBoxItemId(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetItemDataId(item);
@@ -350,7 +350,7 @@ static inline s32 pdaBoxItemNum(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetNum(item);
@@ -535,7 +535,7 @@ s32 menuAmountCtrl(PdaMenuState* state)
     return 0;
 }
 
-s32 fn_8003ACE8(s32 arg0, s32 arg1, s32 arg2)
+s32 itemStorageSelectAmount(s32 arg0, s32 arg1, s32 arg2)
 {
     extern s32 lbl_8047A4C8;
     extern s32 windowGetActiveID(void);
@@ -602,7 +602,7 @@ s32 itemStorageConfirmDrawSprite(PdaSelectionWork* work, PdaSprite* sprite)
     return 0;
 }
 
-s32 fn_8003AE84(void)
+s32 itemStorageConfirm(void)
 {
     extern s32 menuOpen(s32 menu, s32 mode);
     extern void menuClose(s32 menu);

@@ -5,7 +5,7 @@
  * XD source unit: game/pxdvs/GSAPI/GSgfxM/GSgfx.cpp
  * Address range: 0x800D3E4C - 0x800D3FA4 (4 functions)
  *
- * XD GSgfx.cpp = {RelocToScratch 0x48, Shutdown 0x24, Init 0xE0, _gfxScratchNotify 0x78}. Ours: Notify(0x78 exact) + GSgfxSetViewportJitter(0x8C~Init) + fn_800D3F50(0xC~Shutdown) + fn_800D3F5C(0x48 EXACT match RelocToScratch). Colosseum placed Notify first; same 4-function TU. Single anchor -> trivially monotonic.
+ * XD GSgfx.cpp = {RelocToScratch 0x48, Shutdown 0x24, Init 0xE0, _gfxScratchNotify 0x78}. Ours: Notify(0x78 exact) + GSgfxSetViewportJitter(0x8C~Init) + GSgfxSetInitialized(0xC~Shutdown) + GSgfxRetraceHandler(0x48 EXACT match RelocToScratch). Colosseum placed Notify first; same 4-function TU. Single anchor -> trivially monotonic.
  *
  * Split from src/game/gs_render.c (physical XD source-unit split).
  * The dead #ifdef PCPORT reference block (never defined in configure.py,
@@ -89,14 +89,14 @@ extern void _gfxEmitPos3s16(void);
 extern void _gfxEmitPos3u16(void);
 extern void gfxVtxDescClear(u8*);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
-extern void fn_800D7940(u32, u16);
+extern void gfxDrawIndexedVertices(u32, u16);
 extern void gfxLoadVtxDesc(u32);
 extern void gfxDLCaptureVertex(void);
-extern void fn_800DB758(u16);
+extern void gfxBeginPrimitive(u16);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
 extern void GSlogVPrintf(void);
 extern void GSlogFormat(void);
-extern void fn_800E09E8(void*, void*, u32);
+extern void GSsplineEvalStrip(void*, void*, u32);
 extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
@@ -192,11 +192,11 @@ extern void GXSetTevAlphaIn();
 extern void GXSetTevKColorSel();
 extern void GXSetTevKAlphaSel();
 extern void GXSetTevIndirect();
-extern void fn_800BBC7C();
-extern void fn_800BBCE0();
-extern void fn_800BBE8C();
-extern void fn_800BBF98();
-extern void fn_800BBFDC();
+extern void GXSetTevIndWarp();
+extern void GXSetTevIndTile();
+extern void GXSetTevIndBumpST();
+extern void GXSetTevIndBumpXYZ();
+extern void GXSetTevIndRepeat();
 extern void GXSetTevKColor();
 extern void GXSetTevSwapModeTable();
 extern void GXSetProjection(void*, u32);
@@ -231,7 +231,7 @@ extern void jumptable_80315320();
 extern void fn_800E24B0(u16);
 extern void GSmemFree(u16);
 extern void GXCallDisplayList(u32, u32);
-extern void fn_800E2AF8(u16);
+extern void GSmemReturnTrue(u16);
 extern u16 GSmemAlloc(u32, u32);
 extern u32 lbl_8047AAD8;
 extern u32 lbl_8047AAD4;
@@ -335,7 +335,7 @@ extern void HSD_ImageDescRemove(void);
 extern void HSD_TObjLoadDesc(void);
 extern void HSD_MObjGetTObj(void);
 extern void HSD_MObjAddTObjNext(void);
-extern void fn_801A6DA0(void);
+extern void HSD_TObjInsertNext(void);
 extern u8 lbl_803154E4[];
 extern void PSMTXMultVec(void*, void*, void*);
 extern void PSVECCrossProduct(void*, void*, void*);
@@ -471,7 +471,7 @@ void GSgfxSetViewportJitter(s32 flag, f32 p1, f32 p2, f32 p3, f32 p4, f32 p5, f3
 
 
 /* ==================================================================
- * fn_800D3F50 -- GSgfx draw-done callback
+ * GSgfxSetInitialized -- GSgfx draw-done callback
  *
  * Set a flag indicating the GX pipeline has finished drawing.
  * 12 bytes.
@@ -483,21 +483,21 @@ void GSgfxSetViewportJitter(s32 flag, f32 p1, f32 p2, f32 p3, f32 p4, f32 p5, f3
  * ================================================================== */
 extern u8 lbl_8047AA91;
 
-void fn_800D3F50(void)
+void GSgfxSetInitialized(void)
 {
     lbl_8047AA91 = 1;
 }
 
 
 /* ==================================================================
- * fn_800D3F5C -- GSgfx frame end callback
+ * GSgfxRetraceHandler -- GSgfx frame end callback
  *
  * Increment frame counter and dispatch queued operations.
  * 72 bytes.
  * ================================================================== */
 typedef void (*GSgfxFrameCallback)(u32);
 
-void fn_800D3F5C(void)
+void GSgfxRetraceHandler(void)
 {
     u8* state = (u8*)lbl_8047AA80;
     GSgfxFrameCallback callback;

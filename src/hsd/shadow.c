@@ -233,7 +233,7 @@ HSD_ObjAllocData lbl_804656E0;
 static u8 lbl_8047B310;
 
 static void makeMatrix(HSD_Shadow* shadow);
-void fn_801B06DC(HSD_Shadow* shadow);
+void modelShadowFreeTexture(HSD_Shadow* shadow);
 
 HSD_ObjAllocData* HSD_ShadowGetAllocData(void)
 {
@@ -309,7 +309,7 @@ void HSD_ShadowSetSize(HSD_Shadow* shadow, u16 width, u16 height)
     if (!idesc->image_ptr || idesc->width != width || idesc->height != height)
     {
         if (idesc->image_ptr) {
-            fn_801B06DC(shadow);
+            modelShadowFreeTexture(shadow);
         }
 
         size = GXGetTexBufferSize(width, height, 0, 0, 0);
@@ -558,7 +558,7 @@ void HSD_ShadowDeleteObject(HSD_Shadow* shadow, HSD_JObj* jobj)
 }
 
 /* HSD_ShadowFreeImage */
-void fn_801B06DC(HSD_Shadow* shadow)
+void modelShadowFreeTexture(HSD_Shadow* shadow)
 {
     u16 handle;
     HSD_ImageDesc* idesc = shadow->texture->imagedesc;
@@ -572,7 +572,7 @@ void fn_801B06DC(HSD_Shadow* shadow)
 }
 
 /* HSD_ShadowSetMultiPass */
-void fn_801B06D4(u8 multipass)
+void modelShadowSetDebug(u8 multipass)
 {
     lbl_8047B310 = multipass;
 }

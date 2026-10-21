@@ -391,7 +391,7 @@ static inline BOOL evolutionRun(EvoWork *work, u32 r5, u32 before, u32 after,
 
   bgm = std228_soundGetCurrentBackgroundMusic();
   if (bgm != 0) {
-    bgmVolume = fn_801656D8();
+    bgmVolume = soundGetSlotVoiceState();
     std104_soundSetBackgroundMusic(1,0x32,0xff);
   }
   else {
@@ -399,7 +399,7 @@ static inline BOOL evolutionRun(EvoWork *work, u32 r5, u32 before, u32 after,
   }
   se = soundGetCurrentSubSound();
   if (se != 0) {
-    seVolume = fn_801656D8();
+    seVolume = soundGetSlotVoiceState();
     scriptSoundStop(0x32);
   }
   else {

@@ -26,7 +26,7 @@ extern void shopMsgOpenB(u8* location, s32 message, s32 terminator, ...);
 extern void shopPurchaseRun(u8* location, u8 type);
 extern void shopBuyRun(s32 location, u8 type);
 extern void shopCouponRun(s32 location, u32 type);
-extern void fn_8002C284(u32 location, u8 type);
+extern void shopBuyMenu(u32 location, u8 type);
 extern void winMsgOpenWithSE(s32 kind, u32 message, s32 arg2, s32 arg3,
                              u8 format);
 extern void winMsgClose(s32 mode);
@@ -123,7 +123,7 @@ void shopRunAtLocation(u32 location_index)
                 shopBuyRun(location, type);
                 break;
             case 1:
-                fn_80018F54(3, location, 0);
+                bagMenuOpen(3, location, 0);
                 break;
             }
             message = shopFormatTextB(&text1, location, 1, -1);
@@ -151,7 +151,7 @@ void shopRunAtLocation(u32 location_index)
                 shopCouponRun(location, type);
                 break;
             case 1:
-                fn_8002C284(location, type);
+                shopBuyMenu(location, type);
                 break;
             case 2:
                 shopMsgOpenA((u8*)location, 0xB, -1);

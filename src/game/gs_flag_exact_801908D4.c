@@ -1,9 +1,9 @@
 /**
  * @file gs_flag_exact_801908D4.c
  * @brief GS flag module tail, .text 0x801908D4 - 0x80190E34: GSflagClear,
- *        fn_801909A8 (GSflagInit) and GSflagInitBitPos.
+ *        GSflagInit (GSflagInit) and GSflagInitBitPos.
  *
- * fn_801909A8 is XD's GSflagInit (GSflag.o, 0x801A06C4 in the GXXE01 map,
+ * GSflagInit is XD's GSflagInit (GSflag.o, 0x801A06C4 in the GXXE01 map,
  * StarsMmd/Colo-XD-PBR-symbol-maps @ 6b51d3af; trevor403/xd-asm @ b1087f18
  * FUN_801a06c4): it sets up the bit positions, stores the three buffers and
  * their word counts, then clears levels 1-3. XD calls GSflagClear
@@ -66,7 +66,7 @@ void GSflagClear(s32 level)
     }
 }
 
-void fn_801909A8(u32* buffer1, u32 count1, u32* buffer2, u32 count2,
+void GSflagInit(u32* buffer1, u32 count1, u32* buffer2, u32 count2,
                  u32* buffer3, u32 count3)
 {
     GSflagInitBitPos(lbl_80478F9C, *(u32*)lbl_80478F98, count1, count2,

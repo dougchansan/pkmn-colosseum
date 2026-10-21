@@ -569,7 +569,7 @@ u8 fightOutPokemonIsGcHeroFightOutPokemon(u32 slotId) {
 /* 0x80204A5C | size: 0x1AC */
 u32 fightOutPokemonIsFightActionUseItemKind(void* ctx, u8 targetSlot, u8 mode) {
     extern u32 lbl_80478BD8;
-    extern u8 fn_80142984();
+    extern u8 itemIdIsValid();
     extern void fightFloorGetStatus();
     u16 field1E;
     u16 field1F;
@@ -579,7 +579,7 @@ u32 fightOutPokemonIsFightActionUseItemKind(void* ctx, u8 targetSlot, u8 mode) {
     u32 i;
 
     for (i = 0; (u16)i < lbl_80478BD8; i++) {
-        if ((u8)fn_80142984(i) == 0) { continue; }
+        if ((u8)itemIdIsValid(i) == 0) { continue; }
         if (mode == 1) {
             if (targetSlot != (u8)itemGetStatus(0, i, 0x2, 0)) { continue; }
         } else {

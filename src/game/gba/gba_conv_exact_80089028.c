@@ -2,7 +2,7 @@
 
 extern u8 lbl_80478958;
 
-s32 fn_80089028(void)
+s32 gbaGetConnectionMode(void)
 {
     return lbl_80478958;
 }

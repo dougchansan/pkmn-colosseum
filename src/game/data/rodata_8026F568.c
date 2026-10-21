@@ -1,7 +1,7 @@
 #include "dolphin/types.h"
 
 extern u8 pokemonSetLevelBasisStatus[];
-extern u8 fn_80197C70[];
+extern u8 HSD_JObjMakeBillboardMtx[];
 extern u8 wsCmdB2[];
 extern u8 lbl_80311D38[];
 extern u8 lbl_80311DB8[];

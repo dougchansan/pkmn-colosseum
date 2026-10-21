@@ -3,7 +3,7 @@
  * @brief GSgfx video-mode selection and GSgfxInit, 0x800D37D4 - 0x800D3E4C.
  *
  * Part of the GSgfx translation unit.  Its .sbss (0x8047AA80 - 0x8047AAA8)
- * is shared by GSgfxRenderEnd ... fn_800D3F50, and its .data starts with the
+ * is shared by GSgfxRenderEnd ... GSgfxSetInitialized, and its .data starts with the
  * render-mode tables below (0x803140F8 - 0x80314188).
  *
  * The four per-TV-standard tables are file-scope statics.  MWCC pools like
@@ -81,14 +81,14 @@ extern void HSD_InitComponent(void);
 extern void HSD_SetPixelFormat(u32, u32);
 extern void HSD_VISetUserPostRetraceCallback(void*);
 extern void HSD_VISetUserGXDrawDoneCallback(void*);
-extern void fn_80196C3C(void*);
-extern void fn_800D3F5C(void);
-extern void fn_800D3F50(void);
+extern void HSD_SetViewportCallback(void*);
+extern void GSgfxRetraceHandler(void);
+extern void GSgfxSetInitialized(void);
 extern void GSgfxSetViewportJitter(void);
 extern void gfxAllocRequestBuffer(u32);
 extern void gfxMatrixStackInit(u32);
 extern void gfxVtxDescPoolInit(u32);
-extern void fn_800DB890(u32);
+extern void gfxInitDeferredPool(u32);
 extern u32 gfxVtxDescAlloc(void);
 extern void gfxSetScissor(u16, u16, u16, u16);
 extern void gfxSetViewport(u16, u16, u16, u16);
@@ -99,7 +99,7 @@ extern void gfxSetAlphaCompare(u32, u32, u32, u32, u32, u32);
 extern void gfxSetCullMode(u32);
 extern void gfxSetCoPlanar(u32);
 extern void gfxSetDither(u32);
-extern void fn_800D9ED8(u32);
+extern void gfxSetFlag1A(u32);
 extern void gfxSetTevStage(u32, u32, u32, u32, u32);
 extern void gfxSetPerspective(f32, f32, f32, f32);
 extern void GSgfxBackFBInit__Fv(void);
@@ -345,14 +345,14 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     *(u32*)((u8*)lbl_8047AA80 + 0x054) = 0;
     *(u32*)((u8*)lbl_8047AA80 + 0x058) = 1;
     *(u8*)((u8*)lbl_8047AA80 + 0x05C) = 1;
-    HSD_VISetUserPostRetraceCallback(fn_800D3F5C);
-    HSD_VISetUserGXDrawDoneCallback(fn_800D3F50);
-    fn_80196C3C(GSgfxSetViewportJitter);
+    HSD_VISetUserPostRetraceCallback(GSgfxRetraceHandler);
+    HSD_VISetUserGXDrawDoneCallback(GSgfxSetInitialized);
+    HSD_SetViewportCallback(GSgfxSetViewportJitter);
 
     gfxAllocRequestBuffer(heapSize);
     gfxMatrixStackInit(matrixSize);
     gfxVtxDescPoolInit(projectionCount);
-    fn_800DB890(lightCount);
+    gfxInitDeferredPool(lightCount);
     *(u32*)((u8*)lbl_8047AA80 + 0x20) = gfxVtxDescAlloc();
 
     display = &lbl_80466BC0;
@@ -367,7 +367,7 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     gfxSetCullMode(2);
     gfxSetCoPlanar(0);
     gfxSetDither(1);
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 
     for (i = 0; i < 0x10; i++) {
         gfxSetTevStage(i, 0, i, i, 0);

@@ -17,7 +17,7 @@
  * contradict the mangled names' implied (u32, FloorEnterMode) parameters,
  * referenced a nonexistent `battle_MainLoop` symbol, and had internally
  * inconsistent bodies (e.g. filling a 3-entry config array but only
- * passing count=2 to fn_800FF4D4) -- consistent with invented bodies
+ * passing count=2 to floorRegisterHandler) -- consistent with invented bodies
  * rather than real decompilation. All nine have been removed.
  *
  * BSS state variables (SDA21-relative):
@@ -398,7 +398,7 @@ void fightFrameUpdate(void) {
 
 /* 0x801EF5C0 | size: 0x5C | small */
 void fightGSfloorRegister(void) {
-    extern void fn_800FF4D4(void* data, u8 type);
+    extern void floorRegisterHandler(void* data, u8 type);
     u32 data[3];
 
     data[0] = lbl_80279B78[0];
@@ -408,7 +408,7 @@ void fightGSfloorRegister(void) {
     lbl_8047B5D8 = 0;
     lbl_8047B5D6 = 0;
     lbl_8047B5D0 = 0;
-    fn_800FF4D4(data, 2);
+    floorRegisterHandler(data, 2);
 }
 
 /* ===================================================================

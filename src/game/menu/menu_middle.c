@@ -59,8 +59,8 @@ extern void* menuSeqBiosGetPtr();
 extern void menuSpriteBiosGetPtr();
 extern void menuItemBiosSetSelectFlag();
 extern void menuFindLiveSaveSlot();
-extern void fn_80071208();
-extern void fn_80071318();
+extern void menuTaisenReadButtons();
+extern void windowSetSpriteRect();
 extern s32 _menuPeekStackDepth(void);
 extern void menuCB_InitMenu();
 extern void menuCBRule_CheckPokemonErrorAll();
@@ -74,7 +74,7 @@ extern void menuRuleIsEmptyPokemon();
 extern u8 savedataBattleIsModeValid(void);
 extern void menuCBRule_CheckValidItem();
 extern void menuRuleApplyItemRestriction();
-extern void fn_80077D88();
+extern void menuTaisenGetHeldItem();
 extern s32 savedataBattleGetEntryCount();
 extern void menuCBRule_ConstantRule();
 extern void menuSaveLoadStorePosition();
@@ -105,14 +105,14 @@ extern void menuSetPosition();
 extern void menuButtonNormal();
 extern void menuCursorNormal(void* menu);
 extern void* windowGetParam(void* menu, s32 idx);
-extern void fn_801044D0(s32 id, void* arg);
+extern void windowSetCursorById(s32 id, void* arg);
 extern s32 windowGetActiveID(void);
 extern void windowSearchItemID();
 extern void* windowSearchID(s32 id);
 extern void windowCreateCursorSprite();
 extern void* windowGetKeyInfo(void);
-extern void fn_80107F38();
-extern void fn_801081F8();
+extern void winSeqSetAll();
+extern void winSeqSetItem();
 extern void winSetSequence();
 /* ... and 50 more external functions */
 extern void* memset(void* dst, int val, u32 size);
@@ -453,29 +453,29 @@ extern u8 lbl_803B6D68[];
 struct MenuCBBattle;
 s32 menuCBBattleSetupFight(struct MenuCBBattle* p);
 u16 menuCBBattleReturnToMenuRoom(void);
-u16 fn_8006A718(s32 idx);
-u8 fn_8006A76C(void);
+u16 savedataBattleGetHeroSpecies(s32 idx);
+u8 memcardIsUnavailable(void);
 void savedataBattleClearFlagC98B(u8* p);
 void savedataBattleSetFlagC98B(u8* p);
 u8 savedataBattleGetFlagC98B(u8* p);
-u32 fn_8006A7C8(u32 r3);
-u16 fn_8006A7D0(u32 r3);
-u16 fn_8006A7D8(u32 r3);
-void fn_8006A7E0(void* r3, u32 r4);
-u32 fn_8006A7E8(u32 r3);
-void fn_8006A7F0(void* dst, const void* src);
-u32 fn_8006A814(u32 r3);
-void fn_8006A81C(void* r3, u32 r4);
+u32 savedataBattleGetParty(u32 r3);
+u16 savedataBattleGetHeroId(u32 r3);
+u16 savedataBattleGetPlayerId(u32 r3);
+void savedataBattleSetController(void* r3, u32 r4);
+u32 savedataBattleGetController(u32 r3);
+void savedataBattleCopyPlayer(void* dst, const void* src);
+u32 savedataBattleGetTrainerData(u32 r3);
+void savedataBattleSetTrainerData(void* r3, u32 r4);
 void menuCBBiosInitHero(u32 r3, u32 r4);
 void menuCBBiosCopyHero(void* destination, const void* heroSource, u16 trainerId);
 void menuCBBiosCreateTrainerHero(void* destination, u16 trainerId);
 void menuCBBios_InitTrainer(void* p, u16 value);
-s32 fn_8006AC6C(u32 id);
+s32 menuTaisenClassifyTrainer(u32 id);
 u8* savedataBattleFindEntryByPlayer(s32 id);
 void savedataBattleSetCouponRun(s32 value);
 s32 savedataBattleGetCouponRun(void);
 s32 savedataBattleGetSavedHeroKind(void);
-u8* fn_8006AEEC(void);
+u8* savedataBattleGetHeroParty(void);
 void savedataBattleSetSavedHero(u8* base, void* src);
 u8* savedataBattleGetSavedHero(u8* p);
 u8* savedataBattleGetEntryById(s32 id);
@@ -483,7 +483,7 @@ u8* savedataBattleGetEntryPtr(s32 index);
 u8* savedataBattleGetTeamPtr(s32 index);
 s32 menuCBBios_ControlerIDtoPortID(s32 id);
 u32 savedataBattleGetEntryId(s32 i);
-void fn_8006B1D4(void);
+void menuTaisenGetEntryCount(void);
 u32 savedataBattleGetCourseCleared(s32 index, s32 slot);
 void savedataBattleSetCourseCleared(s32 idx, s32 sub);
 void savedataBattleUnlockCourse(s32 index);
@@ -492,7 +492,7 @@ void* savedataBattleGetRulePtr(void);
 void menuSetRuleType(s32 value);
 u8* savedataBattleGetRuleSlotPtr(s32 index);
 s32 savedataBattleGetFlag1C(void);
-s32 fn_8006B5A8(void);
+s32 battleResultGetSave(void);
 void menuColosseumBattleSetup(MenuMiddleWork* work);
 void savedataBattleInit(void* saveSection);
 u8 menuColosseumBattleGetFlag(void);
@@ -514,7 +514,7 @@ void menuColoBattleBCCtrl(void* menu);
 void menuColoBattleD6Ctrl(void* arg0);
 void menuTaisenPartyCheckSeq(void* menu);
 void menuWaitFaceSprites(void);
-u32 fn_8006E128(u8* p);
+u32 menuTaisenNextPartyEntry(u8* p);
 void menuColoBattleB9Ctrl(u32 r3);
 void menuTaisenEntryCtrl3(void);
 void menuTaisenCtrl(void* menu);
@@ -925,7 +925,7 @@ s32 menuCBBattleSetupFight(MenuCBBattle* p) {
             second = menuCB_GetColosseumBattleTrainerID(p->m_eBattleType, 6, cpu[GSrand() & 7] - 1);
         } while (first == second);
         menuCBBiosCreateTrainerHero(&p->trainers[1], first);
-        fn_8006A81C(&p->trainers[1], 0);
+        savedataBattleSetTrainerData(&p->trainers[1], 0);
         for (i = 0; i < 6; i++) {
             pokemonBiosSetItemDataId(heroBiosGetPokemonPtr(p->trainers[1].hero, i), 0);
         }
@@ -944,14 +944,14 @@ s32 menuCBBattleSetupFight(MenuCBBattle* p) {
             pokemonBiosSetItemDataId(heroBiosGetPokemonPtr(hero, i), 0);
         }
         menuCBBiosCopyHero(&p->trainers[0], hero, 1);
-        fn_8006A81C(&p->trainers[0], menuCB_Get8006B1C0Entry0());
-        fn_8006A7E0(&p->trainers[0], 0);
+        savedataBattleSetTrainerData(&p->trainers[0], menuCB_Get8006B1C0Entry0());
+        savedataBattleSetController(&p->trainers[0], 0);
         break;
     case 0:
     case 1:
         menuCBBiosCreateTrainerHero(&p->players[1],
                     menuCB_GetColosseumBattleTrainerID(p->m_eBattleType, p->m_eColosseum, p->m_nBattleCount));
-        fn_8006A7F0(&p->players[0], savedataBattleGetSavedHero((u8*)p));
+        savedataBattleCopyPlayer(&p->players[0], savedataBattleGetSavedHero((u8*)p));
         if (p->m_eBattleMode == 1) {
             maxLevel = menuCB_GetMaxLevel(p->players[0].rental);
             rental = p->players[1].rental;
@@ -968,10 +968,10 @@ s32 menuCBBattleSetupFight(MenuCBBattle* p) {
             }
             heroBiosCopy(p->players[1].hero, rental);
         }
-        fn_8006A7F0(&p->trainers[0], &p->players[0]);
-        fn_8006A7F0(&p->trainers[1], &p->players[1]);
-        fn_8006A81C(&p->trainers[0], menuCB_Get8006B1C0Entry0());
-        fn_8006A7E0(&p->trainers[0], 0);
+        savedataBattleCopyPlayer(&p->trainers[0], &p->players[0]);
+        savedataBattleCopyPlayer(&p->trainers[1], &p->players[1]);
+        savedataBattleSetTrainerData(&p->trainers[0], menuCB_Get8006B1C0Entry0());
+        savedataBattleSetController(&p->trainers[0], 0);
         p->players[0].side = 0;
         p->trainers[0].side = 0;
         p->players[1].side = 1;
@@ -985,14 +985,14 @@ s32 menuCBBattleSetupFight(MenuCBBattle* p) {
             p->players[1].slot = 1;
             p->players[2].slot = 2;
             p->players[3].slot = 3;
-            fn_8006A7F0(&p->trainers[0], &p->players[0]);
-            fn_8006A7F0(&p->trainers[1], &p->players[1]);
+            savedataBattleCopyPlayer(&p->trainers[0], &p->players[0]);
+            savedataBattleCopyPlayer(&p->trainers[1], &p->players[1]);
             break;
         case 2:
-            fn_8006A7F0(&p->trainers[0], &p->players[p->players[0].slot]);
-            fn_8006A7F0(&p->trainers[1], &p->players[p->players[1].slot]);
-            fn_8006A7F0(&p->trainers[2], &p->players[p->players[2].slot]);
-            fn_8006A7F0(&p->trainers[3], &p->players[p->players[3].slot]);
+            savedataBattleCopyPlayer(&p->trainers[0], &p->players[p->players[0].slot]);
+            savedataBattleCopyPlayer(&p->trainers[1], &p->players[p->players[1].slot]);
+            savedataBattleCopyPlayer(&p->trainers[2], &p->players[p->players[2].slot]);
+            savedataBattleCopyPlayer(&p->trainers[3], &p->players[p->players[3].slot]);
             break;
         default:
             __assert(menuCB_BattleFile, 0x291, (char*)&lbl_8047C030);
@@ -1049,7 +1049,7 @@ u16 menuCBBattleReturnToMenuRoom(void) {
 
 
 /* 0x8006A718 | size: 0x54 */
-u16 fn_8006A718(s32 idx) {
+u16 savedataBattleGetHeroSpecies(s32 idx) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     u8* p;
     u16 value;
@@ -1070,7 +1070,7 @@ u16 fn_8006A718(s32 idx) {
 
 
 /* 0x8006A76C | size: 0x30 */
-u8 fn_8006A76C(void) {
+u8 memcardIsUnavailable(void) {
     extern u8 memcardGetFlag41(void);
     return (u8)((memcardGetFlag41() & 0xFF) == 0);
 }
@@ -1091,42 +1091,42 @@ u8 savedataBattleGetFlagC98B(u8* p) {
 }
 
 /* 0x8006A7C8 | size: 0x8 */
-u32 fn_8006A7C8(u32 r3) {
+u32 savedataBattleGetParty(u32 r3) {
     return r3 + 0xb44;
 }
 
 /* 0x8006A7D0 | size: 0x8 */
-u16 fn_8006A7D0(u32 r3) {
+u16 savedataBattleGetHeroId(u32 r3) {
     return MENU_MIDDLE_U16_0000(r3)->unk_0000;
 }
 
 /* 0x8006A7D8 | size: 0x8 */
-u16 fn_8006A7D8(u32 r3) {
+u16 savedataBattleGetPlayerId(u32 r3) {
     return MENU_MIDDLE_U16_0002(r3)->unk_0002;
 }
 
 /* 0x8006A7E0 | size: 0x8 */
-void fn_8006A7E0(void* r3, u32 r4) {
+void savedataBattleSetController(void* r3, u32 r4) {
     MENU_MIDDLE_U32_0004(r3)->unk_0004 = r4;
 }
 
 /* 0x8006A7E8 | size: 0x8 */
-u32 fn_8006A7E8(u32 r3) {
+u32 savedataBattleGetController(u32 r3) {
     return MENU_MIDDLE_U32_0004(r3)->unk_0004;
 }
 
 /* 0x8006A7F0 | size: 0x24 */
-void fn_8006A7F0(void* dst, const void* src) {
+void savedataBattleCopyPlayer(void* dst, const void* src) {
     memcpy(dst, src, 0x1660);
 }
 
 /* 0x8006A814 | size: 0x8 */
-u32 fn_8006A814(u32 r3) {
+u32 savedataBattleGetTrainerData(u32 r3) {
     return MENU_MIDDLE_U32_0024(r3)->unk_0024;
 }
 
 /* 0x8006A81C | size: 0x8 */
-void fn_8006A81C(void* r3, u32 r4) {
+void savedataBattleSetTrainerData(void* r3, u32 r4) {
     MENU_MIDDLE_U32_0024(r3)->unk_0024 = r4;
 }
 #endif
@@ -1185,7 +1185,7 @@ void menuCBBiosInitHero(u32 r28, u32 r29) {
 #endif
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_RESIDUAL_8006A990_ONLY)
-/* The trainer kind fn_8006AC6C reports, expanded inline here. */
+/* The trainer kind menuTaisenClassifyTrainer reports, expanded inline here. */
 static inline s32 menuMiddleTrainerKind(u16 id)
 {
     if (*(u32*)*(u32*)&lbl_80478F20 <= id) {
@@ -1294,7 +1294,7 @@ void menuCBBios_InitTrainer(void* p, u16 value) {
 
 
 /* 0x8006AC6C | size: 0x60 */
-s32 fn_8006AC6C(u32 r3) {
+s32 menuTaisenClassifyTrainer(u32 r3) {
     u32 r0;
     u32 r4;
 
@@ -1428,7 +1428,7 @@ s32 savedataBattleGetSavedHeroKind(void) {
 
 #if defined(MENU_MIDDLE_ALL) || defined(MENU_MIDDLE_EXACT_8006AEEC_ONLY)
 /* 0x8006AEEC | size: 0x58 */
-u8* fn_8006AEEC(void) {
+u8* savedataBattleGetHeroParty(void) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     u8* p;
 
@@ -1546,7 +1546,7 @@ u32 savedataBattleGetEntryId(s32 i) {
 }
 
 /* 0x8006B1D4 | size: 0x20 */
-void fn_8006B1D4(void) {
+void menuTaisenGetEntryCount(void) {
     savedataBattleGetEntryCount();
 }
 
@@ -1719,7 +1719,7 @@ s32 savedataBattleGetFlag1C(void) {
 }
 
 /* 0x8006B5A8 | size: 0x28 */
-s32 fn_8006B5A8(void) {
+s32 battleResultGetSave(void) {
     extern s32 savedataGetStatus(s32 idx, s32 type);
     return savedataGetStatus(0x0, 0xe);
 }
@@ -1847,7 +1847,7 @@ void menu105Ctrl(u32 r3) {
 void menuColoBattleD0Button(void* menu) {
     extern u8* savedataGetStatus(s32 idx, s32 type);
     extern s32 menuFindLiveSaveSlot(void);
-    extern u32 fn_80071208(u32 flags);
+    extern u32 menuTaisenReadButtons(u32 flags);
     u32 flags;
 
     if (menuFindLiveSaveSlot() != 0) {
@@ -1857,7 +1857,7 @@ void menuColoBattleD0Button(void* menu) {
     }
 
     flags = MENU_MIDDLE_U32_59CC(savedataGetStatus(0, 0xE))->unk_59CC;
-    flags = fn_80071208(flags);
+    flags = menuTaisenReadButtons(flags);
     if ((flags & 0x1000) != 0) {
         MENU_MIDDLE_U8_0098(menu)->unk_0098 = 1;
         return;
@@ -1879,7 +1879,7 @@ void menuColoBattleD0Button(void* menu) {
 void menuTaisenButton(void* menu) {
     extern u8* savedataGetStatus(s32 index, s32 type);
     extern s32 menuFindLiveSaveSlot(void);
-    extern u32 fn_80071208(u32 flags);
+    extern u32 menuTaisenReadButtons(u32 flags);
     extern void soundStartSE(s32 sound);
     s32 player;
     s32 playerCount;
@@ -1908,8 +1908,8 @@ void menuTaisenButton(void* menu) {
         }
 
         for (player = 0; player < playerCount; player++) {
-            flags = fn_80071208(
-                fn_8006A814((u32)(savedataGetStatus(0, 0xE) + player * 0x1660 + 0x59A8)));
+            flags = menuTaisenReadButtons(
+                savedataBattleGetTrainerData((u32)(savedataGetStatus(0, 0xE) + player * 0x1660 + 0x59A8)));
 
             if ((flags & 0x100) != 0) {
                 if (savedataGetStatus(0, 0xE)[player * 0x1660 + 0x7005] == 0) {
@@ -2006,7 +2006,7 @@ void menuColoBattleC1Cursor(void* menu) {
         srcA.cursor = (s8)c;
         srcA.pad = 0;
         argA = srcA;
-        fn_801044D0(m->menuId, &argA);
+        windowSetCursorById(m->menuId, &argA);
         return;
     }
 
@@ -2112,7 +2112,7 @@ void menuColoBattleC1Cursor(void* menu) {
             s32 c = menuGetCursorFromItemID(m->menuId, 0x9FB);
             srcB.cursor = (s8)c;
             argB = srcB;
-            fn_801044D0(m->menuId, &argB);
+            windowSetCursorById(m->menuId, &argB);
             return;
         }
         if (dec) return;
@@ -2301,7 +2301,7 @@ void menuColoBattleC0Cursor(void* menu) {
             src.cursor = (s8)menuGetCursorFromItemID(MENU_MIDDLE_U32_0004(menu)->unk_0004, 0x9D2);
             src.pad = 0;
             arg = src;
-            fn_801044D0(MENU_MIDDLE_U32_0004(menu)->unk_0004, &arg);
+            windowSetCursorById(MENU_MIDDLE_U32_0004(menu)->unk_0004, &arg);
         }
         return;
     }
@@ -2385,7 +2385,7 @@ void menuColoBattleC0Cursor(void* menu) {
             cursor.cursor++;
         }
         move = cursor;
-        fn_801044D0(MENU_MIDDLE_U32_0004(menu)->unk_0004, &move);
+        windowSetCursorById(MENU_MIDDLE_U32_0004(menu)->unk_0004, &move);
         return;
     case 0x9CC:
         if (horizontal != 0) {
@@ -2546,7 +2546,7 @@ static inline u8* fn_8006C7D4_GetHero(s32 index) {
 static inline s32 fn_8006C7D4_GetKind(MenuMiddleTrainer_8006C7D4* trainer) {
     extern u8 heroBiosGetSexDataId(void* hero);
 
-    switch ((s32)fn_8006A7E8((u32)trainer)) {
+    switch ((s32)savedataBattleGetController((u32)trainer)) {
     case 0:
         return 0;
     case 1:
@@ -2579,7 +2579,7 @@ void menuTaisenDrawTrainerCard(void* arg0, void* item) {
     extern void* heroBiosGetNamePtr(void* hero);
     extern void msgctrlSetValue(s32 id, void* value);
     extern void* menuSpriteBiosGetPtr(u32 spriteId);
-    extern void fn_80071318(void* widget, void* sprite);
+    extern void windowSetSpriteRect(void* widget, void* sprite);
     extern void GSmsgPrintColor(s32 a, s32 b, u32 window, s32 c);
     extern s32 sprintf(char* buffer, const char* format, ...);
     extern void GScharMakeFromSJIS(u16* dst, const char* src);
@@ -2776,7 +2776,7 @@ void menuTaisenDrawTrainerCard(void* arg0, void* item) {
         if (spriteId != 0) {
             void* sprite = menuSpriteBiosGetPtr(spriteId);
 
-            fn_80071318(item, sprite);
+            windowSetSpriteRect(item, sprite);
         }
         break;
     case 3:
@@ -3201,7 +3201,7 @@ typedef struct MenuMiddleTrainer_8006D550 {
 static inline s32 fn_8006D550_GetTrainerType(MenuMiddleTrainer_8006D550* trainer) {
     extern u8 heroBiosGetSexDataId(void* hero);
 
-    switch ((s32)fn_8006A7E8((u32)trainer)) {
+    switch ((s32)savedataBattleGetController((u32)trainer)) {
     case 0:
         return 0;
     case 1:
@@ -3247,7 +3247,7 @@ void menuTaisenDrawPlayerCard(void* window, MenuMiddleSprite_8006CCC0* sprite) {
     extern int sprintf(char* buf, const char* fmt, ...);
     extern void GScharMakeFromSJIS(u16* dst, char* src);
     extern void* menuSpriteBiosGetPtr(u32 spriteId);
-    extern void fn_80071318(void* sprite, void* data);
+    extern void windowSetSpriteRect(void* sprite, void* data);
     extern void __assert(const char* file, s32 line, const char* expr);
     u8 digits[5];
     char text[0x80];
@@ -3369,7 +3369,7 @@ void menuTaisenDrawPlayerCard(void* window, MenuMiddleSprite_8006CCC0* sprite) {
             break;
         }
         if (spriteId != 0) {
-            fn_80071318(sprite, menuSpriteBiosGetPtr(spriteId));
+            windowSetSpriteRect(sprite, menuSpriteBiosGetPtr(spriteId));
         }
         break;
     default:
@@ -3405,7 +3405,7 @@ void menuColoBattleBCCtrl(void* menu) {
     } MenuDisplayEntry;
     extern void* windowGetParam(void* menu, s32 index);
     extern void* windowSearchItemID(void* menu, s32 itemId);
-    extern void fn_801081F8(void* menu, u16 itemId, u16 messageId);
+    extern void winSeqSetItem(void* menu, u16 itemId, u16 messageId);
     extern void menuTaisenSetSequence(void* menu, void* table, s32 count);
     MenuDisplayEntry* entry;
     s32 messageIndex;
@@ -3428,7 +3428,7 @@ void menuColoBattleBCCtrl(void* menu) {
 
             node = (void*)MENU_MIDDLE_U32_001C(menu)->unk_001C;
             while (node != NULL) {
-                fn_801081F8(menu, *(s16*)((u8*)node + 6),
+                winSeqSetItem(menu, *(s16*)((u8*)node + 6),
                            *(u16*)(lbl_80267EA8 + messageIndex * 4));
                 node = *(void**)node;
             }
@@ -3438,7 +3438,7 @@ void menuColoBattleBCCtrl(void* menu) {
         if (*(s8*)((u8*)menu + 2) == 0) {
             void* n = (void*)MENU_MIDDLE_U32_001C(menu)->unk_001C;
             while (n != NULL) {
-                fn_801081F8(menu, *(s16*)((u8*)n + 6),
+                winSeqSetItem(menu, *(s16*)((u8*)n + 6),
                            *(u16*)(lbl_80267EA8 + messageIndex * 4 + 2));
                 n = *(void**)n;
             }
@@ -3545,10 +3545,10 @@ void menuTaisenPartyCheckSeq(void* menu) {
     extern u8 pokemonIsDarkPokemon(void* pokemon);
     extern u8 pokemonCheckValid(void* pokemon);
     extern void* heroBiosGetPokemonPtr(void* hero, u16 index);
-    extern u32 fn_8006E128(u8* p);
+    extern u32 menuTaisenNextPartyEntry(u8* p);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void* menuSpriteBiosGetPtr(s32 spriteId);
-    extern void fn_80071318(void* widget, void* sprite);
+    extern void windowSetSpriteRect(void* widget, void* sprite);
     extern u8 menuRuleCheckPokemon(void* pokemon, s32 kind);
     extern u8 menuCBRule_CheckPokemonErrorAll(void* pokemon);
     extern u8 menuRuleCheckPokemonAllModes(void* pokemon, void* rule);
@@ -3578,7 +3578,7 @@ void menuTaisenPartyCheckSeq(void* menu) {
         u16 (*itemIds)[4];
 
         menuMiddleCollectPokemon(hero);
-        menuFaceRequestPokemonFace(0, fn_8006E128);
+        menuFaceRequestPokemonFace(0, menuTaisenNextPartyEntry);
 
         itemIds = (u16 (*)[4])lbl_8026858C;
         for (i = 0; (u32)i < 12; i++) {
@@ -3597,9 +3597,9 @@ void menuTaisenPartyCheckSeq(void* menu) {
             widget = windowSearchItemID(menu, itemIds[i][0]);
             if (widget != NULL) {
                 if (empty != 0) {
-                    fn_80071318(widget, menuSpriteBiosGetPtr(0x375));
+                    windowSetSpriteRect(widget, menuSpriteBiosGetPtr(0x375));
                 } else if (error != 0) {
-                    fn_80071318(widget, menuSpriteBiosGetPtr(0x25B));
+                    windowSetSpriteRect(widget, menuSpriteBiosGetPtr(0x25B));
                 }
             }
 
@@ -3613,7 +3613,7 @@ void menuTaisenPartyCheckSeq(void* menu) {
                 if (pokemonIsDarkPokemon(pokemon) != 0) {
                     spriteId = 0x341;
                 }
-                fn_80071318(widget, menuSpriteBiosGetPtr(spriteId));
+                windowSetSpriteRect(widget, menuSpriteBiosGetPtr(spriteId));
             }
 
             widget = windowSearchItemID(menu, itemIds[i][2]);
@@ -3699,7 +3699,7 @@ void menuWaitFaceSprites(void) {
 
 
 /* 0x8006E128 | size: 0x38 */
-u32 fn_8006E128(u8* p) {
+u32 menuTaisenNextPartyEntry(u8* p) {
     u32 index;
 
     if (p == NULL) {
@@ -3730,7 +3730,7 @@ void menuTaisenCtrl(void* menu) {
     extern void winSpriteSetDisp(void* widget, s32 flag);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern s32 menuFindLiveSaveSlot(void);
-    extern void fn_80107F38(s32 param, u32 key);
+    extern void winSeqSetAll(s32 param, u32 key);
     typedef struct Entry_8006E18C {
         u16 itemId;
         u8 threshold;
@@ -3761,7 +3761,7 @@ void menuTaisenCtrl(void* menu) {
     switch (flags) {
     case 2:
         if (menuFindLiveSaveSlot() != 0) {
-            fn_80107F38(MENU_MIDDLE_U32_0004(menu)->unk_0004, 0x1CE);
+            winSeqSetAll(MENU_MIDDLE_U32_0004(menu)->unk_0004, 0x1CE);
             MENU_MIDDLE_U8_0098(menu)->unk_0098 = 1;
             MENU_MIDDLE_U8_0099(menu)->unk_0099 = 1;
             return;
@@ -3824,7 +3824,7 @@ static inline void fn_8006E338_Update(void* obj) {
     extern void winSetSequence(void* widget, s32 sequence);
     extern MenuMiddleStatus_8006E338* savedataGetStatus(s32 idx, s32 type);
     extern void* menuSpriteBiosGetPtr(s32 spriteId);
-    extern void fn_80071318(void* widget, void* sprite);
+    extern void windowSetSpriteRect(void* widget, void* sprite);
     extern void winSpriteSetDisp(void* widget, u8 flag);
     extern void menuTaisenSetSequence(void* menu, void* table, s32 count);
     extern void __assert(const char* file, s32 line, const char* expr);
@@ -3877,9 +3877,9 @@ static inline void fn_8006E338_Update(void* obj) {
             for (col = 0; col < 14u; col++) {
                 playerWidgets[col] = windowSearchItemID(obj, ((u16(*)[14])(data + 0x628))[port][col]);
             }
-            fn_80071318(playerWidgets[4],
-                        menuSpriteBiosGetPtr((s32)fn_8006A7E8((u32)&savedataGetStatus(0, 0xE)->players[player]) != 0 ? 0x2B2 : 0x2AE));
-            fn_80071318(playerWidgets[5], menuSpriteBiosGetPtr(((u16*)&lbl_8047C058)[player]));
+            windowSetSpriteRect(playerWidgets[4],
+                        menuSpriteBiosGetPtr((s32)savedataBattleGetController((u32)&savedataGetStatus(0, 0xE)->players[player]) != 0 ? 0x2B2 : 0x2AE));
+            windowSetSpriteRect(playerWidgets[5], menuSpriteBiosGetPtr(((u16*)&lbl_8047C058)[player]));
             color = ((u32*)(data + 0x6A8))[player];
             MENU_MIDDLE_U32_0064(playerWidgets[0])->unk_0064 =
                 (MENU_MIDDLE_U32_0064(playerWidgets[0])->unk_0064 & 0xFF) | color;
@@ -3922,7 +3922,7 @@ static inline void fn_8006E338_Update(void* obj) {
     if (savedataGetStatus(0, 0xE)->players[0].controllerId != 1) {
         sprite = menuSpriteBiosGetPtr(0x2AE);
         widget = windowSearchItemID(obj, ((u16(*)[14])(data + 0x628))[0][4]);
-        fn_80071318(widget, sprite);
+        windowSetSpriteRect(widget, sprite);
         winSpriteSetDisp(widget, 1);
         winSpriteSetDisp(windowSearchItemID(obj, ((u16(*)[14])(data + 0x628))[0][6]), 1);
     }
@@ -3981,7 +3981,7 @@ void menuBattleModeRefreshRules(void* menu) {
         displaySet = 2;
         break;
     }
-    displaySet += (s32)fn_8006A7E8((u32)(savedataGetStatus(0, 0xE) + 0x59A8)) ? 1 : 0;
+    displaySet += (s32)savedataBattleGetController((u32)(savedataGetStatus(0, 0xE) + 0x59A8)) ? 1 : 0;
 
     node = windowSearchItemID(menu, 0x99B);
     for (j = 0; j < 8; j++) {
@@ -4228,11 +4228,11 @@ void menuTaisenDrawHeldItems2(void* arg0) {
     extern void* windowGetParam(void* menu, s32 index);
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void winSpriteSetDisp(void* widget, u8 flag);
-    extern u16 fn_80077D88(s32 index);
-    extern u8 fn_80142984(u16 item);
+    extern u16 menuTaisenGetHeldItem(s32 index);
+    extern u8 itemIdIsValid(u16 item);
     extern void* itemDataBiosGetPtr(u16 item);
     extern u32 itemDataBiosGetName(void* item);
-    extern void fn_801081F8(void* menu, u16 itemId, u16 sequence);
+    extern void winSeqSetItem(void* menu, u16 itemId, u16 sequence);
     u8* menu;
     u8* owned;
     Entry_8006EFF8* entries;
@@ -4262,8 +4262,8 @@ void menuTaisenDrawHeldItems2(void* arg0) {
             MENU_MIDDLE_U32_004C(nameWidget)->unk_004C = 0x43E6;
             MENU_MIDDLE_U32_004C(ownedWidget)->unk_004C = 0;
         } else {
-            item = fn_80077D88(index);
-            if (fn_80142984(item) != 0) {
+            item = menuTaisenGetHeldItem(index);
+            if (itemIdIsValid(item) != 0) {
                 MENU_MIDDLE_U32_004C(nameWidget)->unk_004C = itemDataBiosGetName(itemDataBiosGetPtr(item));
             } else {
                 MENU_MIDDLE_U32_004C(nameWidget)->unk_004C = 0x12E;
@@ -4287,7 +4287,7 @@ void menuTaisenDrawHeldItems2(void* arg0) {
             node = (u8*)MENU_MIDDLE_U32_001C(menu)->unk_001C;
             sequence = ((u16*)lbl_80267EA8)[12];
             while (node != NULL) {
-                fn_801081F8(menu, *(s16*)(node + 6), sequence);
+                winSeqSetItem(menu, *(s16*)(node + 6), sequence);
                 node = *(u8**)node;
             }
             MENU_MIDDLE_U32_004C(windowSearchItemID(menu, 0xE4C))->unk_004C = 0x424A;
@@ -4298,7 +4298,7 @@ void menuTaisenDrawHeldItems2(void* arg0) {
             node = (u8*)MENU_MIDDLE_U32_001C(menu)->unk_001C;
             sequence = ((u16*)lbl_80267EA8)[13];
             while (node != NULL) {
-                fn_801081F8(menu, *(s16*)(node + 6), sequence);
+                winSeqSetItem(menu, *(s16*)(node + 6), sequence);
                 node = *(u8**)node;
             }
             MENU_MIDDLE_U8_0002(menu)->unk_0002 = 1;
@@ -4319,7 +4319,7 @@ void menuColoBattleC1Ctrl(void* menu) {
     extern void winSpriteSetDisp(void* widget, u8 flag);
     extern void menuItemBiosSetSelectFlag(s32 itemId, u8 flag);
     extern void windowCreateCursorSprite(void* menu);
-    extern void fn_801081F8(void* menu, u16 itemId, u16 sequence);
+    extern void winSeqSetItem(void* menu, u16 itemId, u16 sequence);
     typedef struct Entry_8006F284 {
         u16 itemId;
         u8 pad2[2];
@@ -4361,7 +4361,7 @@ void menuColoBattleC1Ctrl(void* menu) {
             src.cursor = (s8)menuGetCursorFromItemID(MENU_MIDDLE_U32_0004(menu)->unk_0004, 0x9FD);
             src.pad = 0;
             arg = src;
-            fn_801044D0(MENU_MIDDLE_U32_0004(menu)->unk_0004, &arg);
+            windowSetCursorById(MENU_MIDDLE_U32_0004(menu)->unk_0004, &arg);
             windowCreateCursorSprite(menu);
         }
         break;
@@ -4410,7 +4410,7 @@ void menuColoBattleC1Ctrl(void* menu) {
         widget = windowSearchItemID(menu, itemIds[i]);
         winSpriteSetDisp(widget, selected == (s32)i && savedataBattleIsModeValid() == 0);
         if (*(void**)((u8*)widget + 0xC) != menuSeqBiosGetPtr(0x191)) {
-            fn_801081F8(menu, itemIds[i], 0x191);
+            winSeqSetItem(menu, itemIds[i], 0x191);
         }
     }
 
@@ -4466,7 +4466,7 @@ void menuColoBattleC0Ctrl(void* menu) {
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void winSpriteSetDisp(void* widget, u8 flag);
     extern s32* savedataGetStatus(s32 idx, s32 type);
-    extern void fn_801081F8(void* menu, u16 itemId, u16 sequence);
+    extern void winSeqSetItem(void* menu, u16 itemId, u16 sequence);
     typedef struct Entry_8006F720 {
         u16 itemId;
         u8 pad2[2];
@@ -4561,7 +4561,7 @@ void menuColoBattleC0Ctrl(void* menu) {
             widget = windowSearchItemID(menu, itemIds[i]);
             winSpriteSetDisp(widget, selected == (s32)i);
             if (*(void**)((u8*)widget + 0xC) != menuSeqBiosGetPtr(0x191)) {
-                fn_801081F8(menu, itemIds[i], 0x191);
+                winSeqSetItem(menu, itemIds[i], 0x191);
             }
         }
     }
@@ -4616,7 +4616,7 @@ void menuColoBattleC0Ctrl(void* menu) {
                 src.cursor = (s8)menuGetCursorFromItemID(MENU_MIDDLE_U32_0004(menu)->unk_0004, 0x9D2);
                 src.pad = 0;
                 arg = src;
-                fn_801044D0(MENU_MIDDLE_U32_0004(menu)->unk_0004, &arg);
+                windowSetCursorById(MENU_MIDDLE_U32_0004(menu)->unk_0004, &arg);
             } else {
                 MENU_MIDDLE_U8_0098(menu)->unk_0098 =
                     (s8)*((u8*)menu + 0x95) == 3 && param->mode == 2;
@@ -4805,7 +4805,7 @@ void menuColoBattleAEButton(void* menu) {
 void menuBattleModeCourseSelectCtrl(void* menu) {
     extern void* windowSearchItemID(void* menu, s32 itemId);
     extern void* menuSpriteBiosGetPtr(u32 spriteId);
-    extern void fn_80071318(void* sprite, void* data);
+    extern void windowSetSpriteRect(void* sprite, void* data);
     extern void winSpriteSetDisp(void* sprite, u8 visible);
     extern u8 savedataBattleGetCourseCleared(s32 index, s32 slot);
     extern void winSetSequence(void* seq, u16 seqId);
@@ -4828,7 +4828,7 @@ void menuBattleModeCourseSelectCtrl(void* menu) {
     if (window != NULL) {
         void* sprite = menuSpriteBiosGetPtr(
             (u8)ready != 0 ? lbl_802680C0[*(s32*)&lbl_8047A5FC] : 0x26C);
-        fn_80071318(window, sprite);
+        windowSetSpriteRect(window, sprite);
     }
 
     entry = lbl_80268070;
@@ -4959,7 +4959,7 @@ void menuColoBattleBECtrl(void* menu) {
         u16 open;
         u16 close;
     } Sequence_80070318;
-    extern void fn_801081F8(void* menu, u16 itemId, u16 sequence);
+    extern void winSeqSetItem(void* menu, u16 itemId, u16 sequence);
     Entry_80070318* entries;
     u32 i;
 
@@ -4968,7 +4968,7 @@ void menuColoBattleBECtrl(void* menu) {
         if ((s8)MENU_MIDDLE_U8_0002(menu)->unk_0002 == 0) {
             entries = (Entry_80070318*)lbl_80267F68;
             for (i = 0; i < 16; i++) {
-                fn_801081F8(menu, entries[i].itemId, ((Sequence_80070318*)lbl_80267EA8)[entries[i].index].open);
+                winSeqSetItem(menu, entries[i].itemId, ((Sequence_80070318*)lbl_80267EA8)[entries[i].index].open);
             }
         }
         break;
@@ -4976,7 +4976,7 @@ void menuColoBattleBECtrl(void* menu) {
         if ((s8)MENU_MIDDLE_U8_0002(menu)->unk_0002 == 0) {
             entries = (Entry_80070318*)lbl_80267F68;
             for (i = 0; i < 16; i++) {
-                fn_801081F8(menu, entries[i].itemId, ((Sequence_80070318*)lbl_80267EA8)[entries[i].index].close);
+                winSeqSetItem(menu, entries[i].itemId, ((Sequence_80070318*)lbl_80267EA8)[entries[i].index].close);
             }
             MENU_MIDDLE_U8_0002(menu)->unk_0002 = 1;
         }
@@ -5369,7 +5369,7 @@ void menuColoBattleBEDrawSprite3(void* menu, void* sprite) {
 /* 0x80070D84 | size: 0x318 */
 s32 menuTaisenSetSequence(MenuMiddleMenu* mm, MenuMiddleEntry* list, u32 count)
 {
-    extern void fn_801081F8(MenuMiddleMenu* menu, u16 id, u16 sequence);
+    extern void winSeqSetItem(MenuMiddleMenu* menu, u16 id, u16 sequence);
     extern void winSetSequence(u32* window, u16 sequence);
 
     MenuMiddleItem* item;
@@ -5401,7 +5401,7 @@ s32 menuTaisenSetSequence(MenuMiddleMenu* mm, MenuMiddleEntry* list, u32 count)
             i = 0;
             while (i < count) {
                 kind = cursor.openingEntry->kind;
-                fn_801081F8(mm, cursor.openingEntry->id, ((u16*)lbl_80267EA8)[kind * 2]);
+                winSeqSetItem(mm, cursor.openingEntry->id, ((u16*)lbl_80267EA8)[kind * 2]);
                 cursor.openingEntry++;
                 i++;
             }
@@ -5447,7 +5447,7 @@ s32 menuTaisenSetSequence(MenuMiddleMenu* mm, MenuMiddleEntry* list, u32 count)
             i = 0;
             while (i < count) {
                 kind = cursor.closingEntry->kind;
-                fn_801081F8(mm, cursor.closingEntry->id, ((u16*)lbl_80267EA8)[kind * 2 + 1]);
+                winSeqSetItem(mm, cursor.closingEntry->id, ((u16*)lbl_80267EA8)[kind * 2 + 1]);
                 cursor.closingEntry++;
                 i++;
             }

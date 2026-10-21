@@ -312,7 +312,7 @@ s32 FSYSInit(u32 numSlots, u32 param2, u32 param3, u32 param4);
 FSYSSlot* FSYSFindSlot(u32 fileHandle, u32 mode);
 
 /*
- * fn_8017AF6C: FSYSLoadArchive
+ * fsysLoadEntryInto: FSYSLoadArchive
  * Begins loading an FSYS archive by file handle and resource ID.
  *
  * @param fileHandle  DVD file handle
@@ -322,7 +322,7 @@ FSYSSlot* FSYSFindSlot(u32 fileHandle, u32 mode);
 s32 FSYSLoadArchive(u32 fileHandle, u32 requestID);
 
 /*
- * fn_8017B000: FSYSLoadArchiveEx
+ * fsysStartLoadInto: FSYSLoadArchiveEx
  * Extended archive load with callbacks.
  *
  * @param fileHandle  DVD file handle
@@ -386,7 +386,7 @@ void _fsysGetFilename(FSYSSlot* slot, u32 fileHandle,
 /* --- fsys_decomp.c --- */
 
 /*
- * fn_8017F2C4: FSYSDecompressLZSS
+ * fsysLZSSDecode: FSYSDecompressLZSS
  * Decompresses LZSS-compressed data from an FSYS archive.
  *
  * Uses a 4078-byte sliding window (gLZSSWindow). The compressed

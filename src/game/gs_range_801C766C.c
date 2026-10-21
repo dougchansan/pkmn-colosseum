@@ -34,7 +34,7 @@ extern u8 heroMoveIsMember(s32 member);
 extern void heroSetStatus(s32 hero, s32 status, u8 value);
 extern void* savedataGetStatus(s32 save, s32 status);
 extern void* gamedatasaveBiosGetPtr(void);
-extern void fn_8011418C(s32* floorId, s32* prevFloorId, u8* floorPosIndex);
+extern void floorGetSaveInfo(s32* floorId, s32* prevFloorId, u8* floorPosIndex);
 extern void gamedatasaveBiosSetFloorid(void* save, s32 floorId);
 extern void gamedatasaveBiosSetPrevfloorid(void* save, s32 floorId);
 extern void gamedatasaveBiosSetFloorposindex(void* save, u8 floorPosIndex);
@@ -73,7 +73,7 @@ extern void GSlightSetAnimType(void* light, s32 type);
 extern void GSlightSetActive(void* light, u8 active);
 extern void _threadSwitch(void);
 extern void memoDataSetMemoFlag(s32 flag);
-extern void fn_8012F1FC(s32 member);
+extern void partnerSetFollowing(s32 member);
 extern void heroMoveDismissMember(s32 member);
 extern u32 _fadeEffectGetRandom__FUl(u32 limit);
 extern s32 GSgfxGetVsyncRate(void);
@@ -115,8 +115,8 @@ u32 fadeEffectGetRandom(u32 limit);
 void std157_sleep(f32 frames);
 u16 fieldStartEncount(u32 arg0, u8 arg1, s32 arg2);
 void std239_playerGetCouponsEarnedInLastArea(void);
-s32 fn_801CA728(s32 count);
-void fn_801CA7AC(s32 value);
+s32 std_couponAddRun(s32 count);
+void std_couponSetRun(s32 value);
 s32 std236_playerGetCouponsEarnedOnCurrentRun(void);
 s32 std232_characterApproachPlayer(s32 side, s32 slot);
 s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode, u8 direction);
@@ -280,7 +280,7 @@ u8 std235_menuShowSaveMenu(void)
     heroSetStatus(0, 0x18, isMember);
     savedataGetStatus(0, 1);
     save = gamedatasaveBiosGetPtr();
-    fn_8011418C(&floorId, &prevFloorId, &floorPosIndex);
+    floorGetSaveInfo(&floorId, &prevFloorId, &floorPosIndex);
     gamedatasaveBiosSetFloorid(save, floorId);
     gamedatasaveBiosSetPrevfloorid(save, prevFloorId);
     gamedatasaveBiosSetFloorposindex(save, floorPosIndex);
@@ -1038,7 +1038,7 @@ s32 floorElevatorSetupCharacters(s32 floorDataId, u32 actorIndex, u16 mode, u8 d
 
 u8 floorElevatorIsHeroInside(void)
 {
-    extern u8 fn_8012B19C(s32 member, Vec3* start, Vec3* target,
+    extern u8 partnerCheckBlocked(s32 member, Vec3* start, Vec3* target,
                           f32 extraRadius);
     extern void std172_characterGetPosition(s32 arg0, s32 arg1, Vec3* out);
     extern f32 PSVECDistance(const Vec3* a, const Vec3* b);
@@ -1072,7 +1072,7 @@ u8 floorElevatorIsHeroInside(void)
 
     std172_characterGetPosition(0, 0x65, &vA);
     std172_characterGetPosition(0, 0x64, &vB);
-    if (fn_8012B19C(1, 0, &vB, lbl_8047E148)) {
+    if (partnerCheckBlocked(1, 0, &vB, lbl_8047E148)) {
         lbl_8047B3C0 = 1;
         lbl_80467090[0].x = vB.x;
         lbl_80467090[0].y = vB.y;
@@ -1099,11 +1099,11 @@ u8 floorElevatorIsHeroInside(void)
     for (i = 0; i < 10; i++, speed += lbl_8047E100) {
         PSVECScale(speed, &dir, &offset);
         PSVECAdd(&sum, &offset, &candidate);
-        if (fn_8012B19C(1, 0, &candidate, lbl_8047E148)) {
+        if (partnerCheckBlocked(1, 0, &candidate, lbl_8047E148)) {
             lbl_80467090[0].x = candidate.x;
             lbl_80467090[0].y = candidate.y;
             lbl_80467090[0].z = candidate.z;
-            if (fn_8012B19C(1, &candidate, &vB, lbl_8047E148)) {
+            if (partnerCheckBlocked(1, &candidate, &vB, lbl_8047E148)) {
                 lbl_8047B3C0 = 2;
                 lbl_80467090[1].x = vB.x;
                 lbl_80467090[1].y = vB.y;
@@ -1233,7 +1233,7 @@ void std035_setPartnerFollowing(s32 active)
 
     if (enabled != 0) {
         heroSetStatus(0, 0x18, 1);
-        fn_8012F1FC(1);
+        partnerSetFollowing(1);
     } else {
         heroSetStatus(0, 0x18, 0);
         heroMoveDismissMember(1);
@@ -1474,7 +1474,7 @@ void std239_playerGetCouponsEarnedInLastArea(void)
     couponCalcEarned();
 }
 
-s32 fn_801CA728(s32 count)
+s32 std_couponAddRun(s32 count)
 {
     s32 base;
     s32 value;
@@ -1487,7 +1487,7 @@ s32 fn_801CA728(s32 count)
     return value;
 }
 
-void fn_801CA7AC(s32 value)
+void std_couponSetRun(s32 value)
 {
     savedataBattleSetCouponRun(value);
 }

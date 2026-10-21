@@ -20,10 +20,10 @@
  *   openingdemo  fn_80035EE4 / openingDemoPlay / openingDemoFinish
  *   staffroll    staffrollStart / staffrollPlay / staffrollFinish
  *   autodemo01   fn_80036360 / autodemo01Play / autodemo01Finish
- *   (none)       fn_800363B8 / fn_800363B4 / fn_800363B0
+ *   (none)       cardeNop_800363B8 / cardeNop_800363B4 / cardeNop_800363B0
  *   gs_logo      fn_800364C8 / fn_80036468 / gsLogoFinish
  *   tpc          fn_80036640 / fn_800365E0 / tpcFinish
- *   (none)       fn_800366A4 / fn_800366A0 / fn_8003669C
+ *   (none)       cardeNop_800366A4 / cardeNop_800366A0 / cardeNop_8003669C
  */
 
 #include "dolphin/types.h"
@@ -49,8 +49,8 @@ extern void _threadSwitch(void);                        /* GSthread yield / step
 extern void std104_soundSetBackgroundMusic(u32 sndId, u32 fade, u32 vol); /* sndPlay (BGM start) */
 extern void std138_soundPlayEffectEx(u32, u32, u32, u32);
 extern void soundStartSE(u32 soundId);
-extern void fn_80165F40(void);
-extern void fn_80165F84(void);
+extern void soundLoadStreamBuffer(void);
+extern void soundAllocBuffers(void);
 extern void soundOpenWaveArchive(u32 index);
 extern void soundInit(u32 a, u32 b, u32 c, u32 d, u32 e);
 extern void fadeSet(u32 mode, f32 speed);
@@ -70,13 +70,13 @@ extern void winMsgOpen(u32 a, u32 b, u32 c, u32 d);
 extern void winMsgClose(u32 id);
 extern s8   menuSubOpenYesNo(u8 menuType, s16 x, s16 y, s32 initialValue);
 extern s32  memcardWaitTask2(u32 a, u32 b, u32 c);
-extern s32  fn_8017B1AC(void);
+extern s32  fsysCheckDrive(void);
 extern u32  GSinputButtonsChanged(u32);
 extern u32  GSinputGetButtons(u32);
 extern void GSinputRead(u32);
 extern u32  menuOpen(u32 sceneId, u32 arg);
 extern void menuClose(u32 sceneId);
-extern void fn_8017B370(u32 arg);
+extern void fsysStartLoadExclusive(u32 arg);
 extern s32  GSresGroupGetState(u32 arg);
 extern u32  GSgetFrameStep(void);                         /* frames since the last call */
 extern s32  GSgfxGetVsyncRate(void);                         /* frames per second */
@@ -292,7 +292,7 @@ void bootWaitLogo(void)
     }
 
     soundInit(2, 1, 0x20, 1, 0x10);
-    fn_80165F84();
+    soundAllocBuffers();
 
     lbl_8047A460++;
     sWaveArgs[0] = 1;
@@ -326,7 +326,7 @@ void bootMain(void)
         _threadSwitch();
     }
 
-    fn_8017B370(0xA);
+    fsysStartLoadExclusive(0xA);
     memset((void*)0x80001801, 0, 0x17FF);
     bootWaitLogo();
 
@@ -364,7 +364,7 @@ void bootMain(void)
  * movieSelectProgressive and movieWait are ordinary static helpers that
  * MWCC auto-inlines into fn_8003686C (twice and seven times) while still
  * emitting an unreferenced copy, which the linker dead-strips. The copies
- * are what order the literal pool: they are generated after fn_800366A4
+ * are what order the literal pool: they are generated after cardeNop_800366A4
  * and before bootMain, so their 2.0f, int-to-float doubles and 10.0f
  * precede bootMain's 0.5f and 1.5f, exactly as in retail
  * (0x8047BA30: 0, 2, s32 bias, u32 bias, 10, 0.5, 1.5).
@@ -422,11 +422,11 @@ static void movieWait(void)
     }
 }
 
-void fn_800366A4(void) {}
+void cardeNop_800366A4(void) {}
 
-void fn_800366A0(void) {}
+void cardeNop_800366A0(void) {}
 
-void fn_8003669C(void) {}
+void cardeNop_8003669C(void) {}
 
 /* tpc: start */
 void movieTpcStart(void)
@@ -442,7 +442,7 @@ void movieTpcStart(void)
 void movieTpcWait(void)
 {
     if (lbl_8047A468 != 1) {
-        fn_80165F40();
+        soundLoadStreamBuffer();
         while ((u8)GSmovieIsActive() == 1) {
             _threadSwitch();
         }
@@ -517,11 +517,11 @@ void gsLogoFinish(void)
     }
 }
 
-void fn_800363B8(void) {}
+void cardeNop_800363B8(void) {}
 
-void fn_800363B4(void) {}
+void cardeNop_800363B4(void) {}
 
-void fn_800363B0(void) {}
+void cardeNop_800363B0(void) {}
 
 /* autodemo01: start */
 void movieStartAttract(void)
@@ -552,7 +552,7 @@ void autodemo01Play(void)
     s32 state;
 
     while ((u32)(GSmovieIsActive() & 0xFF) == THP_STATE_PLAYING) {
-        state = fn_8017B1AC();
+        state = fsysCheckDrive();
         if (state == 11 || state == 5) {
             _threadSwitch();
             continue;

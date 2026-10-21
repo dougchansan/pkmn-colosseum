@@ -6,7 +6,7 @@
  *
  * A separate unit from people.c: it owns .sdata2 0x8047D8A8-0x8047D8B8
  * (0.0f, the degree factor and 1.0f, all of which people.c's pool also
- * holds), .sbss 0x8047B1F8-0x8047B208 and fn_8018F4C8's switch table at
+ * holds), .sbss 0x8047B1F8-0x8047B208 and peopleInfoGetMotion's switch table at
  * .data 0x8036C540, and people.c calls even its eight-byte getters.
  *
  * Most of its functions are linked from their own carved units; this file

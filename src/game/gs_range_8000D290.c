@@ -10,7 +10,7 @@
 #include "dolphin/types.h"
 
 /* 0x8000D290 */
-u32 fn_8000D290(void) {
+u32 dbgMenuReturnTrue_8000D290(void) {
     return 1;
 }
 
@@ -63,7 +63,7 @@ typedef struct MenuSequenceMessageState {
 s32 fieldMenuCtrl(MenuSequenceMessageState* state)
 {
     extern void winSeqSetMenu(s32 menuId, s32 state);
-    extern void fn_801081F8(void* context, u32 messageId, s32 action);
+    extern void winSeqSetItem(void* context, u32 messageId, s32 action);
 
     switch (state->mode) {
     case 0:
@@ -72,28 +72,28 @@ s32 fieldMenuCtrl(MenuSequenceMessageState* state)
             if (state->menuId == 0x41) {
                 switch (state->selection) {
                 case 0:
-                    fn_801081F8(state, 0x65, 0x10);
+                    winSeqSetItem(state, 0x65, 0x10);
                     break;
                 case 1:
-                    fn_801081F8(state, 0xDB0, 0x10);
+                    winSeqSetItem(state, 0xDB0, 0x10);
                     break;
                 case 2:
-                    fn_801081F8(state, 0xDB1, 0x10);
+                    winSeqSetItem(state, 0xDB1, 0x10);
                     break;
                 case 3:
-                    fn_801081F8(state, 0xDB2, 0x10);
+                    winSeqSetItem(state, 0xDB2, 0x10);
                     break;
                 }
             } else if (state->menuId == 0x109) {
                 switch (state->selection) {
                 case 0:
-                    fn_801081F8(state, 0x12A9, 0x10);
+                    winSeqSetItem(state, 0x12A9, 0x10);
                     break;
                 case 1:
-                    fn_801081F8(state, 0x12AA, 0x10);
+                    winSeqSetItem(state, 0x12AA, 0x10);
                     break;
                 case 2:
-                    fn_801081F8(state, 0x12AB, 0x10);
+                    winSeqSetItem(state, 0x12AB, 0x10);
                     break;
                 }
             }
@@ -105,53 +105,53 @@ s32 fieldMenuCtrl(MenuSequenceMessageState* state)
             if (state->menuId == 0x41) {
                 switch (state->selection) {
                 case 0:
-                    fn_801081F8(state, 0x65, 0x10);
+                    winSeqSetItem(state, 0x65, 0x10);
                     break;
                 case 1:
-                    fn_801081F8(state, 0xDB0, 0x10);
+                    winSeqSetItem(state, 0xDB0, 0x10);
                     break;
                 case 2:
-                    fn_801081F8(state, 0xDB1, 0x10);
+                    winSeqSetItem(state, 0xDB1, 0x10);
                     break;
                 case 3:
-                    fn_801081F8(state, 0xDB2, 0x10);
+                    winSeqSetItem(state, 0xDB2, 0x10);
                     break;
                 }
                 switch (state->previousSelection) {
                 case 0:
-                    fn_801081F8(state, 0x65, 0x15);
+                    winSeqSetItem(state, 0x65, 0x15);
                     break;
                 case 1:
-                    fn_801081F8(state, 0xDB0, 0x15);
+                    winSeqSetItem(state, 0xDB0, 0x15);
                     break;
                 case 2:
-                    fn_801081F8(state, 0xDB1, 0x15);
+                    winSeqSetItem(state, 0xDB1, 0x15);
                     break;
                 case 3:
-                    fn_801081F8(state, 0xDB2, 0x15);
+                    winSeqSetItem(state, 0xDB2, 0x15);
                     break;
                 }
             } else if (state->menuId == 0x109) {
                 switch (state->selection) {
                 case 0:
-                    fn_801081F8(state, 0x12A9, 0x10);
+                    winSeqSetItem(state, 0x12A9, 0x10);
                     break;
                 case 1:
-                    fn_801081F8(state, 0x12AA, 0x10);
+                    winSeqSetItem(state, 0x12AA, 0x10);
                     break;
                 case 2:
-                    fn_801081F8(state, 0x12AB, 0x10);
+                    winSeqSetItem(state, 0x12AB, 0x10);
                     break;
                 }
                 switch (state->previousSelection) {
                 case 0:
-                    fn_801081F8(state, 0x12A9, 0x15);
+                    winSeqSetItem(state, 0x12A9, 0x15);
                     break;
                 case 1:
-                    fn_801081F8(state, 0x12AA, 0x15);
+                    winSeqSetItem(state, 0x12AA, 0x15);
                     break;
                 case 2:
-                    fn_801081F8(state, 0x12AB, 0x15);
+                    winSeqSetItem(state, 0x12AB, 0x15);
                     break;
                 }
             }
@@ -199,8 +199,8 @@ s32 heroMoveRunEvent(u8 mode)
     extern void menuClose(s32 menuId);
     extern void menuPokemonOpen(s32, s32, s32);
     extern void menuPdaOpen(void);
-    extern u16 fn_80018F88(s32, u32* value, s32);
-    extern u32 fn_80019070(u16 handle);
+    extern u16 bagMenuRunInMenuRoom(s32, u32* value, s32);
+    extern u32 bagTakeResultForItem(u16 handle);
     extern void heroMoveAddAutoEvent(u32 eventId, u32 handle, u32 value,
                                      s32, s32);
     extern s32 std223_askYesNoThenWarp395(void);
@@ -273,10 +273,10 @@ s32 heroMoveRunEvent(u8 mode)
                 } else if (lbl_8047A2B0 == 2) {
                     menuClose(menuId);
                     GSmodelAllUnpauseAnimation();
-                    selectionHandle = fn_80018F88(0, &eventValue, 0);
+                    selectionHandle = bagMenuRunInMenuRoom(0, &eventValue, 0);
                     GSmodelAllPauseAnimation();
                     if (selectionHandle != 0) {
-                        eventId = fn_80019070(selectionHandle);
+                        eventId = bagTakeResultForItem(selectionHandle);
                         if (eventId != -1) {
                             heroMoveAddAutoEvent(eventId, selectionHandle,
                                                  eventValue, 0, 0);
@@ -316,9 +316,9 @@ s32 heroMoveRunEvent(u8 mode)
         }
         break;
     case 1:
-        selectionHandle = fn_80018F88(0, &eventValue, 0);
+        selectionHandle = bagMenuRunInMenuRoom(0, &eventValue, 0);
         if (selectionHandle != 0) {
-            eventId = fn_80019070(selectionHandle);
+            eventId = bagTakeResultForItem(selectionHandle);
             if (eventId != -1) {
                 heroMoveAddAutoEvent(eventId, selectionHandle, eventValue,
                                      0, 0);
@@ -329,7 +329,7 @@ s32 heroMoveRunEvent(u8 mode)
         break;
     }
 
-    fn_80019070(selectionHandle);
+    bagTakeResultForItem(selectionHandle);
     soundUnduck(0x1F4, 1, 1);
     menuClose(menuId);
     menuReleaseOffScreen(lbl_8047B6F0 / (f32)GSgfxGetVsyncRate());

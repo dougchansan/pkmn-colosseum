@@ -174,7 +174,7 @@ void evolutionSequenceEnd(void)
     extern u32 lbl_8047B680;
     extern int soundGetCurrentSubSound();
     extern int std228_soundGetCurrentBackgroundMusic();
-    extern u32 fn_801656D8(u32 id);
+    extern u32 soundGetSlotVoiceState(u32 id);
     extern u32 std104_soundSetBackgroundMusic(u32 id, u32 volume, u32 priority);
     extern void scriptSoundStop();
     extern u32 std105_soundPlayEffect(u32 id, u32 volume, u32 priority);
@@ -190,14 +190,14 @@ void evolutionSequenceEnd(void)
     uVar5 = lbl_8047B680;
     iVar1 = std228_soundGetCurrentBackgroundMusic();
     if (iVar1 != 0) {
-        uVar3 = fn_801656D8(iVar1) & 0xFFFFFFFFFFFFFFFFu;
+        uVar3 = soundGetSlotVoiceState(iVar1) & 0xFFFFFFFFFFFFFFFFu;
         std104_soundSetBackgroundMusic(1, 0x32, 0xff);
     } else {
         uVar3 = 0;
     }
     iVar2 = soundGetCurrentSubSound();
     if (iVar2 != 0) {
-        uVar4 = fn_801656D8(iVar2) & 0xFFFFFFFFFFFFFFFFu;
+        uVar4 = soundGetSlotVoiceState(iVar2) & 0xFFFFFFFFFFFFFFFFu;
         scriptSoundStop(0x32);
     } else {
         uVar4 = 0;

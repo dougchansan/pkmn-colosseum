@@ -271,7 +271,7 @@ u8 menuRuleCheckPokemon(void* pokemon, s32 check)
     extern u8 pokemonIsDarkPokemon(void*);
     extern u8 pokemonBiosGetTamagoFlag(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
-    extern u8 fn_80142984(void);
+    extern u8 itemIdIsValid(void);
     extern void* wazaDataBiosGetPtr(u16);
     extern u8 pokemonCheckValid(void*);
     extern void __assert(const char*, s32, const char*);
@@ -337,7 +337,7 @@ u8 menuRuleCheckPokemon(void* pokemon, s32 check)
         case 0xAF:
             return 0;
         default:
-            return fn_80142984();
+            return itemIdIsValid();
         }
 
     case 4:
@@ -381,8 +381,8 @@ s32 _menuPeekStackDepth(void) {
 
 
 
-/* fn_8007169C (0x8007169C): fixed diagnostic-log call, always returns 0. */
-s32 fn_8007169C(void) {
+/* menuLinkFloor385 (0x8007169C): fixed diagnostic-log call, always returns 0. */
+s32 menuLinkFloor385(void) {
     floorLink(0x385, 0);
     return 0;
 }
@@ -440,8 +440,8 @@ s32 menuCommonAlloc(s32 size) {
 /* menuFindLiveSaveSlot (0x80071160): scan the 4 save slots for a live, valid entry. */
 s32 menuFindLiveSaveSlot(void) {
     extern u8* savedataGetStatus(s32 side, s32 slotType);
-    extern s32 fn_8006A7E8(u8* p);
-    extern u8 fn_8008ABA0(s32 v);
+    extern s32 savedataBattleGetController(u8* p);
+    extern u8 gbaCommIsReady(s32 v);
     s32 off;
     u32 i;
     s32 v;
@@ -449,8 +449,8 @@ s32 menuFindLiveSaveSlot(void) {
     for (i = 0, off = 0; i < 4; off += 0x1660, i++) {
         v = *(s32*)(savedataGetStatus(0, 0xE) + off + 0x59CC);
         if (v != 0) {
-            if (fn_8006A7E8(savedataGetStatus(0, 0xE) + off + 0x59A8) != 0) {
-                if (fn_8008ABA0(v) == 0) {
+            if (savedataBattleGetController(savedataGetStatus(0, 0xE) + off + 0x59A8) != 0) {
+                if (gbaCommIsReady(v) == 0) {
                     return v;
                 }
             }
@@ -461,7 +461,7 @@ s32 menuFindLiveSaveSlot(void) {
 
 extern u32 GSinputButtonsChanged(s32);
 extern u32 GSinputGetButtons(s32);
-extern u8 fn_8008ABA0(s32);
+extern u8 gbaCommIsReady(s32);
 extern s32 menuCBBios_ControlerIDtoPortID(s32);
 extern s32 gbaCmdReadKeys(s32, u16*);
 extern s32 windowGetActiveID(void);
@@ -472,14 +472,14 @@ extern u8 lbl_803B6DE0[];
 extern int SIProbe();
 extern f64 sin(f64);
 
-u32 fn_80071208(s32 controller)
+u32 menuTaisenReadButtons(s32 controller)
 {
     u16 buttons;
     u32 input;
     s32 port;
 
     input = GSinputGetButtons(controller) & GSinputButtonsChanged(controller);
-    if (input == 0 && fn_8008ABA0(controller) != 0) {
+    if (input == 0 && gbaCommIsReady(controller) != 0) {
         port = menuCBBios_ControlerIDtoPortID(controller);
         if (gbaCmdReadKeys(port, &buttons) == 0) {
             if (buttons & 0x001) {
@@ -517,7 +517,7 @@ u32 fn_80071208(s32 controller)
 /* RULE-EXCEPTION(user-approved): local peephole pragma; the carve builds with -opt nopeephole and only this function needs peephole on (it removes the extsh after the volatile read) — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole on
-void fn_80071318(u8* dst, u8* src) {
+void windowSetSpriteRect(u8* dst, u8* src) {
     s16 upperX;
     s16 upperY;
     u32 entryWord;
@@ -552,7 +552,7 @@ void _menuReopenTop(void) {
 
 /* _menuPop (0x800714C8): close the top menu and pop the call stack. */
 /* Linked from game/menu/menu_r56b_800714C8_suffix.c (lane D18) with
- * _menuPush, _menuPeekStackDepth, menuCB_InitMenu and fn_8007169C; keep in step. */
+ * _menuPush, _menuPeekStackDepth, menuCB_InitMenu and menuLinkFloor385; keep in step. */
 s32 _menuPop(void) {
     extern s32 windowGetActiveID(void);
     extern u32 windowSearchID(s32 id);
@@ -1219,7 +1219,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
 {
     extern u8 pokemonBiosGetLevel(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
-    extern u8 fn_80142984(u16);
+    extern u8 itemIdIsValid(u16);
     extern u8* savedataBattleGetRulePtr(void);
     MenuRuleItemRestrictions* restrictions;
     u16 item;
@@ -1242,7 +1242,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
             valid = 0;
             break;
         default:
-            valid = fn_80142984(item);
+            valid = itemIdIsValid(item);
             break;
         }
         if (valid == 0) {
@@ -1547,7 +1547,7 @@ u8 savedataBattleIsModeValid(void) {
 
 /* menuCBRule_CheckValidItem (0x80077C1C): handle sentinel item ids locally. */
 u8 menuCBRule_CheckValidItem(u16 item) {
-    extern u8 fn_80142984(u16 item);
+    extern u8 itemIdIsValid(u16 item);
 
     switch (item) {
     case 0:
@@ -1555,7 +1555,7 @@ u8 menuCBRule_CheckValidItem(u16 item) {
     case 0xAF:
         return 0;
     default:
-        return fn_80142984(item);
+        return itemIdIsValid(item);
     }
 }
 
@@ -1586,8 +1586,8 @@ u8 menuRuleApplyItemRestriction(u16 item) {
     }
 }
 
-/* fn_80077D88 (0x80077D88): bounds-checked table lookup. */
-u16 fn_80077D88(s32 index) {
+/* menuTaisenGetHeldItem (0x80077D88): bounds-checked table lookup. */
+u16 menuTaisenGetHeldItem(s32 index) {
     if (index < 0 || lbl_80478928 <= (u32)index) {
         return 0;
     }
@@ -2581,7 +2581,7 @@ void exDiscCelebiEvent(void* backup)
         u8 bytes[0x1DFD0];
     } MenuSaveSnapshot;
     extern void* savedataGetStatus(u32, u32);
-    extern s32 fn_80075BFC(void);
+    extern s32 exDiscSetFlagAB1(void);
     extern void* floorDataBiosGetCurrentPtr(void);
     extern u32 floorDataBiosGetFloorID(void*);
     extern void heroPokemonGetCelebi(void*, u32);
@@ -2642,7 +2642,7 @@ void exDiscCelebiEvent(void* backup)
 
     *savedataBackup =
         *(MenuSaveSnapshot*)savedataGetStatus(0, 0);
-    fn_80075BFC();
+    exDiscSetFlagAB1();
     heroPokemonGetCelebi(
         hero, floorDataBiosGetFloorID(floorDataBiosGetCurrentPtr()));
 
@@ -2683,8 +2683,8 @@ void exDiscSceneRun(void)
     extern void memcardFreeBuffer();
     extern void* std093_getCurrentGroupID();
     extern void cameraPlayAnime();
-    extern u8 fn_80075C44();
-    extern u8 fn_80075C20();
+    extern u8 exDiscCheckFlagA14();
+    extern u8 exDiscCheckFlagAB1();
     extern u8 darkPokemonAllFlag14Set();
     extern u32 exShrineGetRemaining();
     extern void winMsgOpenField();
@@ -2720,7 +2720,7 @@ void exDiscSceneRun(void)
             model = std093_getCurrentGroupID();
             cameraPlayAnime(model, 0x10951800, 0, 0);
             std115_mapObjectPlayAnimation(0x104F1000, 6, 0, 1);
-            if (fn_80075C44() == 1) {
+            if (exDiscCheckFlagA14() == 1) {
                 lbl_8047A620 = 2;
             } else {
                 lbl_8047A620 = 3;
@@ -2736,7 +2736,7 @@ void exDiscSceneRun(void)
             fadeCheck(1);
             winMsgOpenField(0x43C3, 1, 0);
             winMsgClose(1);
-            if (fn_80075C20() == 1) {
+            if (exDiscCheckFlagAB1() == 1) {
                 lbl_8047A620 = 5;
             } else {
                 lbl_8047A620 = 4;
@@ -3070,9 +3070,9 @@ void exDiscCouponMenu(void* backup)
         return;
     }
 
-    lbl_8047A635 = fn_80075AC0();
-    lbl_8047A634 = fn_80075B08();
-    lbl_8047A633 = fn_80075B50();
+    lbl_8047A635 = exDiscCheckFlagAB5();
+    lbl_8047A634 = exDiscCheckFlagAB4();
+    lbl_8047A633 = exDiscCheckFlagAB3();
     heroValue = (u32)heroGetStatus(0, 0xE, 0);
     if (exDiscCouponSelect(1, heroValue) == 0) {
         return;
@@ -3110,16 +3110,16 @@ party_capacity_done:
 
     if (lbl_8047A632 != 0) {
         pcboxDelItem(pcbox, 0x47, 1);
-        fn_80075A9C();
+        exDiscSetFlagAB5();
     }
     if (lbl_8047A631 != 0) {
         heroPokemonGetPikachu(
             hero, floorDataBiosGetFloorID(floorDataBiosGetCurrentPtr()));
-        fn_80075AE4();
+        exDiscSetFlagAB4();
     }
     if (lbl_8047A630 != 0) {
         pcboxDelItem(pcbox, 1, 1);
-        fn_80075B2C();
+        exDiscSetFlagAB3();
     }
 
     if (memcardWaitTask2(4, 2, 0) != 4) {
@@ -3295,7 +3295,7 @@ int exDiscCouponGive(s32 arg0, int arg1, int arg2, s32 arg3) {
  * update is one expression, so the rate's conversion is a temporary
  * rather than a named local. The remaining difference is the two
  * int->float biases (lbl_8047C118/lbl_8047C120 in retail, private pool
- * entries here), as in fn_8007A850. Contained: no expansion of either
+ * entries here), as in exDiscCouponRoomRun. Contained: no expansion of either
  * macro follows this function. */
 #undef WAIT_MENU_TIME
 #define WAIT_MENU_TIME(limit_)                                \
@@ -3478,11 +3478,11 @@ void exDiscDrawCouponRank(s32 unused, MenuRankSprite* sprite) {
     }
 }
 
-s32 fn_8007A82C(void) {
+s32 exDiscWaitFade(void) {
     return fadeCheck(1);
 }
 
-/* fn_8007A850 (0x8007A850): GBA-link e-card shop top loop.
+/* exDiscCouponRoomRun (0x8007A850): GBA-link e-card shop top loop.
  *
  * lbl_8047C108 is `SDATA2 const f32` in src/game/data/sdata2_8047C0A0.c, and
  * retail hoists its load out of the wait loop; the file-scope declaration has
@@ -3496,7 +3496,7 @@ s32 fn_8007A82C(void) {
  * "private unowned sdata2 constants" class recorded in
  * docs/CAMPAIGN_OPERATIONS.md; no C construct emits `fsubs` against a named
  * external double (a union spelling yields fsub+frsp). */
-void fn_8007A850(void)
+void exDiscCouponRoomRun(void)
 {
     extern void* memcardAllocBuffer(void);
     extern void memcardFreeBuffer(void*);
@@ -4065,7 +4065,7 @@ extern const f32 lbl_8047C0C4;
 extern u8 menuModelCheck(void*, s32);
 extern void* menuModelRender(void*);
 extern void* wazaSequenceOwnerGetModel(void*);
-extern void fn_800E3DC4(void*, f32*);
+extern void GSmodelTranslate(void*, f32*);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetPrimitive(s32);
@@ -4093,7 +4093,7 @@ extern u32 lbl_8047A610;
 extern u8 menuModelCheck(void*, s32);
 extern void* menuModelRender(void*);
 extern void* wazaSequenceOwnerGetModel(void*);
-extern void fn_800E3DC4(void*, f32*);
+extern void GSmodelTranslate(void*, f32*);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetPrimitive(s32);
@@ -4143,7 +4143,7 @@ void exShrineMenuCtrl(void)
             *(f32*)(lbl_8047A610 + 8) += delta;
             direction[2] = direction[0] = 0.0f;
             direction[1] = delta;
-            fn_800E3DC4(object, direction);
+            GSmodelTranslate(object, direction);
         }
     }
 
@@ -4266,11 +4266,11 @@ void menuToolBattleRun(void)
 {
     extern s32 _menuPop_80071398(s32);
     extern u8* savedataGetStatus(s32, s32);
-    extern void fn_8005E750(void*);
+    extern void menuTaisenBattleOpen(void*);
     extern s32 menuTaisenSetupBattle(void*);
     extern s32 menuCB_Battle(void*);
     extern s32 menuTaisenRun(void*);
-    extern u8 fn_800FF52C(void);
+    extern u8 floorIsLinking(void);
     extern void floorBattleEndTerminateScripts(void);
     extern void floorRequestChange(s32);
     extern void floorSetFadeScript(s32, u32);
@@ -4287,7 +4287,7 @@ void menuToolBattleRun(void)
     running = 1;
     result = 0;
     while (running) {
-        fn_8005E750(savedataGetStatus(0, 0xE));
+        menuTaisenBattleOpen(savedataGetStatus(0, 0xE));
         result = menuTaisenSetupBattle(savedataGetStatus(0, 0xE));
         switch (result) {
         case 0xB3:
@@ -4330,7 +4330,7 @@ void menuToolBattleRun(void)
     }
 done:
 
-    if (fn_800FF52C() != 0) {
+    if (floorIsLinking() != 0) {
         if (*(s32*)savedataGetStatus(0, 0xE) != 1) {
             __assert(lbl_802688F8, 0xA7, lbl_8026890C);
         }

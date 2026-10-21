@@ -22,7 +22,7 @@
  *
  * Functions (4, per config/GC6E01/symbols.txt):
  *   fn_80175F6C          (0x80175F6C, not yet decompiled -- "GSgfxCaptureUpdate")
- *   fn_80175FFC          (0x80175FFC, sda21 getter, matched)
+ *   movieCaptureIsActive          (0x80175FFC, sda21 getter, matched)
  *   GSgfxCaptureMovieStop  (0x80176004, was fn_80176004)
  *   GSgfxCaptureMovieStart (0x80176030, was fn_80176030)
  */
@@ -57,7 +57,7 @@ void GSgfxCaptureUpdate(void) {
     }
 }
 
-u8 fn_80175FFC(void) {
+u8 movieCaptureIsActive(void) {
     return lbl_8047B1A0;
 }
 #if 0

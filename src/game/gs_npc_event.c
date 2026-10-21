@@ -13,7 +13,7 @@
  * or triggers location-based events.
  *
  * Key functions:
- *   fn_80030170  GSnpcEvt_PopEventQueue      -- 0x38 bytes, dequeue next event
+ *   gbaTradeNextPartyEntry  GSnpcEvt_PopEventQueue      -- 0x38 bytes, dequeue next event
  *   menuDCDrawItem  GSnpcEvt_NopA               -- 4 bytes, blr stub
  *   menuDCCtrl  GSnpcEvt_NopB               -- 4 bytes, blr stub
  *   tradeEvoMenuDrawModel  GSnpcEvt_ProcessTrainerSprite -- 0x120 bytes, trainer sprite display
@@ -101,7 +101,7 @@ extern void  msgctrlSetValue(s32 paramId, s32 value);
 extern void  GSmsgPrintColor(s32, s32, u32, u16);
 
 /* Event queue */
-/* The event queue is a simple array-based queue where fn_80030170 pops
+/* The event queue is a simple array-based queue where gbaTradeNextPartyEntry pops
  * the next pending event. Events are enqueued by the scene system when
  * NPC interactions or location triggers fire. */
 
@@ -461,11 +461,11 @@ extern u32 menuFaceIsAnyLoading(void);
 extern void std113_mapObjectUnk_8018db68(u32);
 extern u32 lbl_8047A418;
 #if 0
-asm void fn_80031B10(void) {
+asm void cardeWaitFaceLoadAndStopObject(void) {
 #include "src/game/gs_npc_event_fn_80031B10.inc"
 }
 #else
-void fn_80031B10(void) {
+void cardeWaitFaceLoadAndStopObject(void) {
     while ((u8)menuFaceIsAnyLoading() != 0) {
         _threadSwitch();
     }
@@ -477,7 +477,7 @@ void fn_80031B10(void) {
 extern void memcardAllocBuffer(void);
 extern void cardeTransferUI(void);
 extern void gbaTradeSelectParty(void);
-extern void fn_801021F8(void);
+extern void windowSetAllSpritesDisp(void);
 extern void windowGetActiveID(void);
 extern void menuOpenCustom(void);
 extern void windowSearchID(void);
@@ -511,8 +511,8 @@ extern void stateFunctionEvolution(void);
 extern void stateFunctionSaveReport(void);
 extern void fn_8001E074(void);
 extern void memcardFreeBuffer(void);
-extern void fn_801024E8(void);
-extern void fn_800FF52C(void);
+extern void windowCloseAll4(void);
+extern void floorIsLinking(void);
 extern void floorBattleEndTerminateScripts(void);
 extern void floorGetPrevFloorID(void);
 extern void floorLink(void);
@@ -611,13 +611,13 @@ void gbaTradeRun(void) {
     extern s32 cardeTransferUI(s32 mode, s32 command, void* input, void* output);
     extern void menuPokemonStatusOpenA(s32, s32, s32);
     extern void GSmodelSetVisibility(u32, s32);
-    extern u8 fn_800FF52C();
+    extern u8 floorIsLinking();
     extern void floorBattleEndTerminateScripts();
     extern s32 menuGetLastError();
-    extern void fn_801021F8(s32, s32);
+    extern void windowSetAllSpritesDisp(s32, s32);
     extern void menuSetDisp(s32, s32);
     extern s32 menuGetCursor(s32);
-    extern void fn_801024E8();
+    extern void windowCloseAll4();
     extern void menuClose();
     extern void menuOpen();
     extern s32 menuOpenCustom(s32, u32, void*, s32, s32, s32, ...);
@@ -672,7 +672,7 @@ void gbaTradeRun(void) {
                 gbaTradeSelectParty();
                 break;
             case 3:
-                fn_801021F8(0xD9, 0);
+                windowSetAllSpritesDisp(0xD9, 0);
                 work0 = NpcEventRunChoiceMenu(0x43E4, 0x43E5);
                 switch (work0) {
                 case 1:
@@ -687,7 +687,7 @@ void gbaTradeRun(void) {
                 }
                 break;
             case 4:
-                fn_801021F8(0xD9, 0);
+                windowSetAllSpritesDisp(0xD9, 0);
                 NpcEventShowMenuSprite(0xD9, 0x10B2, 0x43DB);
                 work3 = NpcEventRunChoiceMenu(0x43D4, 0x43D5);
                 NpcEventHideMenuSprite(0xD9, 0x10B2);
@@ -872,8 +872,8 @@ void gbaTradeRun(void) {
         } else {
             lbl_8047A40A = 1;
         }
-        fn_801024E8(1);
-        if (fn_800FF52C()) {
+        windowCloseAll4(1);
+        if (floorIsLinking()) {
             floorBattleEndTerminateScripts();
         } else {
             floorLink(floorGetPrevFloorID(), 0);
@@ -906,7 +906,7 @@ extern u8 lbl_8047A40A;
 extern u32 lbl_8047A418;
 extern u32 lbl_8047A414;
 #if 0
-asm void fn_800324A0(void) {
+asm void cardeBattleSetupScene(void) {
 #include "src/game/gs_npc_event_fn_800324A0.inc"
 }
 #else
@@ -914,7 +914,7 @@ asm void fn_800324A0(void) {
 #endif
 #if !defined(GS_NPC_EVENT_ONLY_800324A0)
 #endif
-void fn_800324A0(void) {
+void cardeBattleSetupScene(void) {
     u32 handle;
     s32 minus_one;
 
@@ -1341,9 +1341,9 @@ extern void fightTrainerSet00(s32, u8);
 extern void fightTrainerDataBiosSetKindDataId(s32, s32);
 extern void fightTrainerSet06(s32, u16);
 extern void fightTrainerSet10(s32, u8);
-extern void fn_800896E0(s32);
-extern void fn_800896D8(s32);
-extern void fn_800896D0(s32);
+extern void cardeSetEncounterParam8047A670(s32);
+extern void cardeSetEncounterParam8047A674(s32);
+extern void cardeSetEncounterParam80478960(s32);
 extern void fightTrainerSetU16Arr14(s32, u8, u16);
 extern void fightTrainerDataBiosGetStatus05(s32);
 extern u8*  fightTrainerPokemonDataBiosGetPtr(void);
@@ -1386,9 +1386,9 @@ u8* cardeBuildTrainerEncounter(s32 arg0, s32 arg1, u8* arg2) {
     fightTrainerSet06(ctx, *(u16*)(arg0 + 0x20));
     fightTrainerSet10(ctx, *(u8*)(arg0 + 0x24));
 
-    fn_800896E0(arg0);
-    fn_800896D8(0);
-    fn_800896D0(9);
+    cardeSetEncounterParam8047A670(arg0);
+    cardeSetEncounterParam8047A674(0);
+    cardeSetEncounterParam80478960(9);
 
     for (i = 0; i < 4; i++) {
         fightTrainerSetU16Arr14(ctx, (u8)i, *(u16*)(arg0 + i * 2 + 0x12));
@@ -1470,11 +1470,11 @@ void fn_80032ED8_legacy_disabled(void) {
     r3 = r27;
     fightTrainerSet10();
     r3 = r29;
-    fn_800896E0();
+    cardeSetEncounterParam8047A670();
     r3 = 0x0;
-    fn_800896D8();
+    cardeSetEncounterParam8047A674();
     r3 = 0x9;
-    fn_800896D0();
+    cardeSetEncounterParam80478960();
     r28 = r29;
     r26 = 0x0;
     do {
@@ -1623,13 +1623,13 @@ void cardeBuildTrainerPokemon(s32 arg0, u8* arg1) {
 
 /* ===== Phase 2 recovery stubs ===== */
 
-/* fn_80030170 - 0x80030170 | size: 0x38 */
+/* gbaTradeNextPartyEntry - 0x80030170 | size: 0x38 */
 typedef struct GSnpcEventQueue {
     void* items[13];
     u32 idx;
 } GSnpcEventQueue;
 
-void* fn_80030170(GSnpcEventQueue* q) {
+void* gbaTradeNextPartyEntry(GSnpcEventQueue* q) {
     u32 idx;
     if (q == NULL) {
         return NULL;
@@ -2198,48 +2198,48 @@ void gbaTradeMenuDrawSprite2(u8* arg0, u8* arg1) {
 }
 #endif
 
-/* fn_800347B8 - 0x800347B8 | size: 0xc */
+/* cardeSetRecordFlag - 0x800347B8 | size: 0xc */
 extern u32 lbl_8047A440;
 #if 0
-asm void fn_800347B8(void) {
+asm void cardeSetRecordFlag(void) {
 #include "src/game/gs_npc_event_fn_800347B8.inc"
 }
 #else
-void fn_800347B8(void) {
+void cardeSetRecordFlag(void) {
     *(u8*)&lbl_8047A440 = 1;
 }
 #endif
 
-/* fn_800347C4 - 0x800347C4 | size: 0x24 */
+/* cardeBuzzer_800347C4 - 0x800347C4 | size: 0x24 */
 extern void soundStartSE(s32);
 #if 0
-asm void fn_800347C4(void) {
+asm void cardeBuzzer_800347C4(void) {
 #include "src/game/gs_npc_event_fn_800347C4.inc"
 }
 #else
-void fn_800347C4(void) {
+void cardeBuzzer_800347C4(void) {
     soundStartSE(0x26);
 }
 #endif
 
-/* fn_800347E8 - 0x800347E8 | size: 0x24 */
+/* cardeBuzzer_800347E8 - 0x800347E8 | size: 0x24 */
 #if 0
-asm void fn_800347E8(void) {
+asm void cardeBuzzer_800347E8(void) {
 #include "src/game/gs_npc_event_fn_800347E8.inc"
 }
 #else
-void fn_800347E8(void) {
+void cardeBuzzer_800347E8(void) {
     soundStartSE(0x26);
 }
 #endif
 
-/* fn_8003480C - 0x8003480C | size: 0x24 */
+/* cardeBuzzer_8003480C - 0x8003480C | size: 0x24 */
 #if 0
-asm void fn_8003480C(void) {
+asm void cardeBuzzer_8003480C(void) {
 #include "src/game/gs_npc_event_fn_8003480C.inc"
 }
 #else
-void fn_8003480C(void) {
+void cardeBuzzer_8003480C(void) {
     soundStartSE(0x26);
 }
 #endif

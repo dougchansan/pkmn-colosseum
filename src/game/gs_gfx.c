@@ -2,8 +2,8 @@
  * @file gs_gfx.c
  * @brief GSgfx -- Genius Sonority graphics subsystem.
  *
- * Only the fn_-named leaf functions below (fn_800D3094, fn_800D30A0,
- * gfxFlush, GSgfxRenderEnd, GSgfxRenderLayer, GSgfxSetFogColor, fn_800D377C) are
+ * Only the fn_-named leaf functions below (GSgfxGetRetraceCount, GSgfxSetRetraceCallback,
+ * gfxFlush, GSgfxRenderEnd, GSgfxRenderLayer, GSgfxSetFogColor, GSgfxSetPixelFormatMode) are
  * real members of this unit; several are already byte-matched.
  *
  * This file previously also carried a second, parallel implementation of
@@ -43,10 +43,10 @@ u32 GSgetFrameStep(void) {
     return lbl_8047AA80->frameDelta;
 }
 
-u32 fn_800D3094(void) {
+u32 GSgfxGetRetraceCount(void) {
     return *(u32*)((u8*)lbl_8047AA80 + 0x4C);
 }
-void fn_800D30A0(u32 val) {
+void GSgfxSetRetraceCallback(u32 val) {
     *(u32*)((u8*)lbl_8047AA80 + 0x48) = val;
 }
 extern void gfxRecordCommand(s32 arg0, ...);
@@ -68,9 +68,9 @@ void gfxFlush(void) {
 #endif
 extern void GXSetDrawDone(void);
 extern void OSYieldThread(void);
-extern void fn_8019C6FC(void);
+extern void HSD_ShadowNop(void);
 extern void GSgfxBackFBDoFrame(void);
-extern void fn_801BF8A0(s32 a);
+extern void HSD_VICopyEFB2XFBWait(s32 a);
 extern void GSmovieUpdate(void);
 extern void HSD_VIFinishDrawXFB(void);
 extern void GStextureConvertFromHW(void* a, s32 b);
@@ -94,7 +94,7 @@ void GSgfxSwapBuffers(u32 flag)
 
     if (lbl_8047AA80->progressiveFlag == 0) {
         GSgfxBackFBDoFrame();
-        fn_801BF8A0(0);
+        HSD_VICopyEFB2XFBWait(0);
         GSmovieUpdate();
         HSD_VIFinishDrawXFB();
     } else {
@@ -156,7 +156,7 @@ void GSgfxRenderEnd(void) {
         }
     }
 
-    fn_8019C6FC();
+    HSD_ShadowNop();
 
     s4 = (u32*)lbl_8047AA80;
     sc = s4[0xC / 4];
@@ -166,7 +166,7 @@ void GSgfxRenderEnd(void) {
         if (chk != 0xFEFEU) {
             if (((u8*)s4)[0x49D] == 0) {
                 GSgfxBackFBDoFrame();
-                fn_801BF8A0(0);
+                HSD_VICopyEFB2XFBWait(0);
                 GSmovieUpdate();
                 HSD_VIFinishDrawXFB();
             } else {
@@ -229,8 +229,8 @@ void GSgfxRenderEnd(void) {
     }
 }
 #endif
-extern void fn_800D13C4(void* a);
-extern void fn_800DC874(void* a);
+extern void GSgfxRenderLayerNop(void* a);
+extern void GSgfxRenderLayerNop2(void* a);
 extern void gsParticleUpdate(void* a);
 extern void modelShadowRender__FP10GSgfxLayer(void);
 extern void HSD_StartRender(s32 a);
@@ -266,7 +266,7 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
             if ((u32)(sc + 0x01020000U) != 0xFEFEU) {
                 if (((u8*)s4)[0x49D] == 0) {
                     GSgfxBackFBDoFrame();
-                    fn_801BF8A0(0);
+                    HSD_VICopyEFB2XFBWait(0);
                     GSmovieUpdate();
                     HSD_VIFinishDrawXFB();
                 } else {
@@ -291,12 +291,12 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
     if (arg1 != 0) {
         /* reload state sub ptr and timing base inline each call (matches target) */
         startTick = OSGetTick();
-        fn_800D13C4((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
+        GSgfxRenderLayerNop((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
         tick = OSGetTick();
         ((u32*)&lbl_804001F0)[0x2C / 4] = tick - startTick;
 
         startTick = OSGetTick();
-        fn_800DC874((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
+        GSgfxRenderLayerNop2((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
         tick = OSGetTick();
         ((u32*)&lbl_804001F0)[0x30 / 4] = tick - startTick;
 
@@ -372,7 +372,7 @@ void GSgfxWaitRetrace(u8 mode) {
 
 /* GSgfxSetFogColor (fog colour setter) is linked from gs_gfx_range_800D2B90.c. */
 extern void HSD_SetPixelFormat();
-void fn_800D377C(s32 mode) {
+void GSgfxSetPixelFormatMode(s32 mode) {
     switch (mode) {
     case 1:
         HSD_SetPixelFormat(0, 0);

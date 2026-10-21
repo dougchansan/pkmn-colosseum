@@ -97,14 +97,14 @@ extern void _gfxEmitPos3s16(void);
 extern void _gfxEmitPos3u16(void);
 extern void gfxVtxDescClear(u8*);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
-extern void fn_800D7940(u32, u16);
+extern void gfxDrawIndexedVertices(u32, u16);
 extern void gfxLoadVtxDesc(u32);
 extern void gfxDLCaptureVertex(void);
-extern void fn_800DB758(u16);
+extern void gfxBeginPrimitive(u16);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
 extern void GSlogVPrintf(void);
 extern void GSlogFormat(void);
-extern void fn_800E09E8(void*, void*, u32);
+extern void GSsplineEvalStrip(void*, void*, u32);
 extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
@@ -200,11 +200,11 @@ extern void GXSetTevAlphaIn();
 extern void GXSetTevKColorSel();
 extern void GXSetTevKAlphaSel();
 extern void GXSetTevIndirect();
-extern void fn_800BBC7C();
-extern void fn_800BBCE0();
-extern void fn_800BBE8C();
-extern void fn_800BBF98();
-extern void fn_800BBFDC();
+extern void GXSetTevIndWarp();
+extern void GXSetTevIndTile();
+extern void GXSetTevIndBumpST();
+extern void GXSetTevIndBumpXYZ();
+extern void GXSetTevIndRepeat();
 extern void GXSetTevKColor();
 extern void GXSetTevSwapModeTable();
 extern void GXSetProjection(void*, u32);
@@ -239,7 +239,7 @@ extern void jumptable_80315320();
 extern void fn_800E24B0(u16);
 extern void GSmemFree(u16);
 extern void GXCallDisplayList(u32, u32);
-extern void fn_800E2AF8(u16);
+extern void GSmemReturnTrue(u16);
 extern u16 GSmemAlloc(u32, u32);
 extern u32 lbl_8047AAD8;
 extern u32 lbl_8047AAD4;
@@ -343,7 +343,7 @@ extern void HSD_ImageDescRemove(void);
 extern void HSD_TObjLoadDesc(void);
 extern void HSD_MObjGetTObj(void);
 extern void HSD_MObjAddTObjNext(void);
-extern void fn_801A6DA0(void);
+extern void HSD_TObjInsertNext(void);
 extern u8 lbl_803154E4[];
 extern void PSMTXMultVec(void*, void*, void*);
 extern void PSVECCrossProduct(void*, void*, void*);
@@ -535,11 +535,11 @@ void GSmtxFromQuat(void)
 
 extern u8 lbl_80315568[];
 #if 0
-asm void fn_800E042C(void) {
+asm void GSmtxMakeScaleVec(void) {
 #include "src/game/gs_render_fn_800E042C.inc"
 }
 #else
-void fn_800E042C(u8* dst, f32* src) {
+void GSmtxMakeScaleVec(u8* dst, f32* src) {
     memcpy(dst, lbl_80315568, 0x30);
     *(f32*)(dst + 0x00) = src[0];
     *(f32*)(dst + 0x14) = src[1];
@@ -585,11 +585,11 @@ void GSmtxMakeXRotation(void* a) { PSMTXRotRad(a, 0x58); }
 #endif
 
 #if 0
-asm void fn_800E0560(void) {
+asm void GSmtxMakeTranslate(void) {
 #include "src/game/gs_render_fn_800E0560.inc"
 }
 #else
-void fn_800E0560(u8* dst, f32* src) {
+void GSmtxMakeTranslate(u8* dst, f32* src) {
     memcpy(dst, lbl_80315568, 0x30);
     *(f32*)(dst + 0x0c) = src[0];
     *(f32*)(dst + 0x1c) = src[1];

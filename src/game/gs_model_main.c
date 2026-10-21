@@ -184,7 +184,7 @@ extern void modelShadowInit__Fv(void);
 extern void GSmodelApplyAnimation(GSmodel* model);
 extern void gsParticleKill(void* bank, u32 destroyChildren);
 extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
-extern u32 fn_80191118(GSbound* bound);
+extern u32 GSboundIsVisible(GSbound* bound);
 extern u32 GSmaterialGetEnabledExtensions(void* material);
 extern void GSmaterialGetModulate(void* material, GScolor* color);
 extern void GSmaterialSetModulate(void* material, const GScolor* color);
@@ -318,7 +318,7 @@ void GSmodelDrawModel(GSmodel* model, u32 flags)
             HSD_CObjEndCurrent();
         }
         if ((model->flags.raw & 0x200000) != 0) {
-            fn_80190E60(&model->bound);
+            GSboundDebugDraw(&model->bound);
         }
     }
     _gfxSetFlagsImm(-1);

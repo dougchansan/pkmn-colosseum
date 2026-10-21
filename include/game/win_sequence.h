@@ -5,7 +5,7 @@
  * the winSeq/winSprite TU (win_sprite.c) and its head carves. The move blocks
  * are expanded six and two times in retail with no out-of-line copy
  * (find_inline_expansions.py block 0x801072A4 0x8010739C scores 1.000 at
- * fn_80106F98, winSeqMoveMenu and fn_80107F38; block 0x801071EC 0x801072A0
+ * winSeqUpdateAll, winSeqMoveMenu and winSeqSetAll; block 0x801071EC 0x801072A0
  * scores 0.911 at winSeqSetMenu with the same four calls). */
 
 #include "dolphin/types.h"

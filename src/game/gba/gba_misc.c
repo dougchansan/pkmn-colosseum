@@ -143,10 +143,10 @@ typedef struct GbaPokemon {
  */
 #define GbaMisc_GetMappedContextByte std213_gbaGetLinkedGameId
 #define GbaMisc_HasActiveContextState std212_gbaIsLinkActive
-#define GbaMisc_PollEntryStatusA fn_80089CA8
+#define GbaMisc_PollEntryStatusA gbaCommWaitReadyA
 #define GbaMisc_ResetEntryStatusA gbaPortUpload22
 #define GbaMisc_GetEntryStatus gbaEntryCheckStatus
-#define GbaMisc_SendPackedEntryStatus fn_8008AB20
+#define GbaMisc_SendPackedEntryStatus gbaCommSendCmd77
 #define GbaMisc_SetEntryState gbaCommandSetKeyState
 #define GbaMisc_RunFlagDispatch demoScenePlayNext
 
@@ -185,7 +185,7 @@ extern void gbaCmdSend77();
 extern void gbaCmdUpload88();
 extern void gbaCmdKeepAlive();
 extern void gbaCmdReadKeys();
-extern void fn_800830A4();
+extern void cardeSaveCompact();
 extern void cardeArenaCountRecords();
 extern GbaMiscContext* cardeArenaGetPtr();
 extern void cardeEncodePartyMoveText();
@@ -262,42 +262,42 @@ extern s32 lbl_803FB318[];
 /* ===== Forward declarations ===== */
 void gbaReceiveHero(void);
 u32 fightGetResult80478960(void);
-u32 fn_800896C0(void);
-u32 fn_800896C8(void);
-void fn_800896D0(u32 v);
-void fn_800896D8(u32 v);
-void fn_800896E0(u32 v);
+u32 cardeGetEncounterParam8047A674(void);
+u32 cardeGetEncounterParam8047A670(void);
+void cardeSetEncounterParam80478960(u32 v);
+void cardeSetEncounterParam8047A674(u32 v);
+void cardeSetEncounterParam8047A670(u32 v);
 s32 std215_battleStartTrainerWithPrompt(void* work, void* arg);
 u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry);
 u8 GbaMisc_GetMappedContextByte(void);
 s32 GbaMisc_HasActiveContextState(void);
 s32 std220_gbaUnk_80083bf8(void);
-void fn_80089C84(s32 param);
+void gbaCommHandshakeA(s32 param);
 s32 GbaMisc_PollEntryStatusA(s32 r31);
 s32 GbaMisc_ResetEntryStatusA(s32 param);
-void fn_80089D74(s32 param);
-s32 fn_80089D98(s32 r31);
-s32 fn_80089E20(s32 idx, void* obj, u32 packedStatus, u32 highHalf);
-u32 fn_80089F58(u32 v);
-u32 fn_80089F60(u32 v);
-u32 fn_80089F68(u32 v);
-u32 fn_80089F70(u32 v);
+void gbaCommHandshakeB(s32 param);
+s32 gbaCommWaitReadyB(s32 r31);
+s32 gbaCommSendPokemon(s32 idx, void* obj, u32 packedStatus, u32 highHalf);
+u32 gbaKeyGetWord(u32 v);
+u32 gbaKeyGetHighByte(u32 v);
+u32 gbaKeyGetByte(u32 v);
+u32 gbaKeyGetHighHalf(u32 v);
 u32 gbaSendBattleSnapshot(u32 port, u32 trainer, u32 slot, s32 irekae);
-s32 fn_8008A99C(void);
+s32 gbaSetSnapshotSent(void);
 int gbaCommandEntryPokemon(u32 r3, u8* r4);
 s32 GbaMisc_GetEntryStatus(s32 idx, u32* out);
 void GbaMisc_SendPackedEntryStatus(s32 param0, u32 param1, u32 param2);
 void gbaCommandSendWazaText(s32 param0, s32 param1);
-s32 fn_8008AB8C(s32 r3);
-u8 fn_8008ABA0(s32 idx);
+s32 gbaCommGetKeys(s32 r3);
+u8 gbaCommIsReady(s32 idx);
 s32 GbaMisc_SetEntryState(s32 idx, s32 value);
 void gbaPollPort(void);
 void pokeconvPokemonToGBA(void* src, void* dst);
 void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src);
 u16 gbaPokemonConditonFromGC(void* pokemon);
-void fn_8008C6FC(void);
+void gbaNop_8008C6FC(void);
 void GbaMisc_RunFlagDispatch(void);
-s32 fn_8008C78C(void);
+s32 demoGetFlagB5D(void);
 void demoScene30(void);
 void demoScene29(void);
 void demoScene28(void);
@@ -432,27 +432,27 @@ u32 fightGetResult80478960(void) {
 }
 
 /* 0x800896C0 | size: 0x8 */
-u32 fn_800896C0(void) {
+u32 cardeGetEncounterParam8047A674(void) {
     return *(u32*)&lbl_8047A674;
 }
 
 /* 0x800896C8 | size: 0x8 */
-u32 fn_800896C8(void) {
+u32 cardeGetEncounterParam8047A670(void) {
     return *(u32*)&lbl_8047A670;
 }
 
 /* 0x800896D0 | size: 0x8 */
-void fn_800896D0(u32 v) {
+void cardeSetEncounterParam80478960(u32 v) {
     *(u32*)&lbl_80478960 = v;
 }
 
 /* 0x800896D8 | size: 0x8 */
-void fn_800896D8(u32 v) {
+void cardeSetEncounterParam8047A674(u32 v) {
     *(u32*)&lbl_8047A674 = v;
 }
 
 /* 0x800896E0 | size: 0x8 */
-void fn_800896E0(u32 v) {
+void cardeSetEncounterParam8047A670(u32 v) {
     *(u32*)&lbl_8047A670 = v;
 }
 
@@ -546,7 +546,7 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
             s32 j;
             u8 kind;
 
-            fn_800830A4(ctx);
+            cardeSaveCompact(ctx);
             cur = cardeArenaGetPtr(0);
             if (cur != NULL) {
                 key = cur->tableKey_4136;
@@ -678,7 +678,7 @@ s32 std220_gbaUnk_80083bf8(void) {
 }
 
 /* 0x80089C84 | size: 0x24 */
-void fn_80089C84(s32 param) {
+void gbaCommHandshakeA(s32 param) {
     extern void gbaCmdHandshakeA(s32);
     gbaCmdHandshakeA(param - 1);
 }
@@ -722,13 +722,13 @@ s32 GbaMisc_ResetEntryStatusA(s32 param) {
 }
 
 /* 0x80089D74 | size: 0x24 */
-void fn_80089D74(s32 param) {
+void gbaCommHandshakeB(s32 param) {
     extern void gbaCmdHandshakeB(s32);
     gbaCmdHandshakeB(param - 1);
 }
 
 /* 0x80089D98 | size: 0x88 */
-s32 fn_80089D98(s32 r31) {
+s32 gbaCommWaitReadyB(s32 r31) {
     extern s32 gbaCmdWaitReadyB(s32);
     s32 n;
     n = gbaCmdWaitReadyB(r31 - 1);
@@ -753,7 +753,7 @@ s32 fn_80089D98(s32 r31) {
 #if !defined(GBA_MISC_80089B8C_ONLY) && !defined(GBA_MISC_80089F78_ONLY)
 
 /* 0x80089E20 | size: 0x138 */
-s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
+s32 gbaCommSendPokemon(s32 r30, void* r31, u32 r5, u32 r29) {
     extern u8 pokemonBiosGetTokuseiFlag(void*);
     extern u16 pokemonBiosGetPokemonDataId(void*);
     extern u8 exribbonGetNo(s32);
@@ -818,22 +818,22 @@ s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
 #if !defined(GBA_MISC_80089F78_ONLY)
 
 /* 0x80089F58 | size: 0x8 */
-u32 fn_80089F58(u32 v) {
+u32 gbaKeyGetWord(u32 v) {
     return v & 0xFFFF;
 }
 
 /* 0x80089F60 | size: 0x8 */
-u32 fn_80089F60(u32 v) {
+u32 gbaKeyGetHighByte(u32 v) {
     return (v >> 8) & 0xFF;
 }
 
 /* 0x80089F68 | size: 0x8 */
-u32 fn_80089F68(u32 v) {
+u32 gbaKeyGetByte(u32 v) {
     return v & 0xFF;
 }
 
 /* 0x80089F70 | size: 0x8 */
-u32 fn_80089F70(u32 v) {
+u32 gbaKeyGetHighHalf(u32 v) {
     return v >> 16;
 }
 
@@ -1095,7 +1095,7 @@ u32 gbaSendBattleSnapshot(u32 port, u32 trainer, u32 slot, s32 irekae) {
         wazaId = pokemonBiosGetPokemonWazaDataId(outPokemon, j);
         snap.moves[j] = GbaSwap16(wazaId);
         snap.pp[j] = pokemonBiosGetPokemonWazaPp(outPokemon, j);
-        fightSeqSelectTarget(out, wazaId, fightType, fn_8008A99C, 1, 0, -1);
+        fightSeqSelectTarget(out, wazaId, fightType, gbaSetSnapshotSent, 1, 0, -1);
         if (lbl_8047A678 != 0) {
             moveFlags |= 8 << (j * 4);
         }
@@ -1167,7 +1167,7 @@ u32 gbaSendBattleSnapshot(u32 port, u32 trainer, u32 slot, s32 irekae) {
 #if !defined(GBA_MISC_80089F78_ONLY)
 
 /* 0x8008A99C | size: 0x10 */
-s32 fn_8008A99C(void) {
+s32 gbaSetSnapshotSent(void) {
     lbl_8047A678 = 1;
     return 0;
 }
@@ -1232,13 +1232,13 @@ void gbaCommandSendWazaText(s32 param0, s32 param1) {
 }
 
 /* 0x8008AB8C | size: 0x14 */
-s32 fn_8008AB8C(s32 r3) {
+s32 gbaCommGetKeys(s32 r3) {
     u16 *base = (u16*)&lbl_8047A67C;
     return base[r3 - 1];
 }
 
 /* 0x8008ABA0 | size: 0x44 */
-u8 fn_8008ABA0(s32 idx) {
+u8 gbaCommIsReady(s32 idx) {
     u32 ret = 0;
     if (GbaMisc_EntryState(idx) != 0) {
         if (GbaMisc_EntryCachedStatus(idx) == 0) {
@@ -1961,7 +1961,7 @@ u16 gbaPokemonConditonFromGC(void* pokemon) {
 }
 
 /* 0x8008C6FC | size: 0x4 */
-void fn_8008C6FC(void) {
+void gbaNop_8008C6FC(void) {
 }
 
 /* 0x8008C700 | size: 0x8C */
@@ -1991,7 +1991,7 @@ void GbaMisc_RunFlagDispatch(void) {
 }
 
 /* 0x8008C78C | size: 0x24 */
-s32 fn_8008C78C(void) {
+s32 demoGetFlagB5D(void) {
     extern s32 std082_flagGetValue(s32);
     return std082_flagGetValue(0xb5d);
 }

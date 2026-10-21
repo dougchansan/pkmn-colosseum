@@ -2008,7 +2008,7 @@ extern void HSD_JObjRef(HSD_JObj* jobj);
 extern void* HSD_IDGetData(u32 key, s32* found);
 extern void fn_801A0B9C(HSD_JObj* jobj);
 extern void* fn_801A0BF0(u32 key, u32* found);
-extern s32 fn_801A0D3C();
+extern s32 HSD_JObjGetRefCount();
 extern void fn_801A0744(HSD_JObj* jobj, HSD_Joint* joint);
 extern void HSD_JObjResolveRefs(HSD_JObj* jobj, HSD_Joint* joint);
 extern void fn_801AEBE4(HSD_RObj* robj, HSD_RObjDesc* desc);
@@ -2114,12 +2114,12 @@ void hsdDelete_801A0CE8(void* object)
 #pragma optimization_level 0
 #pragma optimizewithasm off
 #if 0
-asm s32 fn_801A0D3C(void) {
+asm s32 HSD_JObjGetRefCount(void) {
 #include "src/hsd/hsd_jobj_fn_801A0D3C.inc"
 }
 #else
 #pragma optimization_level 4
-s32 fn_801A0D3C(HSD_Obj* obj) {
+s32 HSD_JObjGetRefCount(HSD_Obj* obj) {
     return obj->ref_count_individual - 1;
 }
 #endif
@@ -2530,7 +2530,7 @@ void HSD_JObjDispAll(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
     extern void PSMTXInverse(f32 src[3][4], f32 dst[3][4]);
     extern void PSMTXConcat(f32 a[3][4], f32 b[3][4], f32 dst[3][4]);
     extern void* HSD_CObjGetCurrent(void);
-    extern f32* fn_801A1980(void*);
+    extern f32* HSD_JObjGetCameraPos(void*);
     extern void HSD_JObjSetupMatrix_801A1988(HSD_JObj*);
     extern void JObjSetupInstanceMtx(f32 src[3][4], HSD_JObj* jobj, f32 dst[3][4]);
     extern void HSD_JObjDisp(HSD_JObj*, f32 mtx[3][4], u32 flags, u32 rendermode);
@@ -2661,7 +2661,7 @@ void HSD_JObjDispAll(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
                     } else {
                         void* cobj = HSD_CObjGetCurrent();
                         if (cobj != NULL) {
-                            PSMTXConcat((f32 (*)[4])fn_801A1980(cobj), mtx3, mtx3);
+                            PSMTXConcat((f32 (*)[4])HSD_JObjGetCameraPos(cobj), mtx3, mtx3);
                         }
                     }
 
@@ -2728,11 +2728,11 @@ void HSD_JObjDispAll(HSD_JObj* jobj, f32 vmtx[3][4], u32 flags, u32 rendermode)
 #pragma optimization_level 0
 #pragma optimizewithasm off
 #if 0
-asm void fn_801A1980(void) {
+asm void HSD_JObjGetCameraPos(void) {
 #include "src/hsd/hsd_jobj_fn_801A1980.inc"
 }
 #else
-f32* fn_801A1980(HSD_JObj* jobj) {
+f32* HSD_JObjGetCameraPos(HSD_JObj* jobj) {
     return jobj->mtx[1];
 }
 #endif

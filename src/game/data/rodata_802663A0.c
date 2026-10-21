@@ -2,14 +2,14 @@
 
 typedef void (*FuncPtr)(void);
 
-extern void fn_80013744(void);
+extern void menuReturnTrue_80013744(void);
 extern void itemStorageWithdraw(void);
-extern void fn_800138B4(void);
+extern void bagUseKindItemAt(void);
 extern void bagItemToss(void);
 extern void bagItemGive(void);
 extern void bagItemUse(void);
-extern void fn_8001501C(void);
-extern void fn_800150E4(void);
+extern void pocketDrawMessage(void);
+extern void pocketDrawKindItemList(void);
 extern void menuPocketDrawNameList(void);
 extern void bagDrawBerryList(void);
 extern void bagDrawTMList(void);

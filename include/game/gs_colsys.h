@@ -56,7 +56,7 @@ typedef struct Vec3f {
  * Stored in the static table at lbl_8035B500. Contains surface
  * type attributes and a type-vs-type interaction matrix.
  *
- * Fields recovered from fn_8010C46C..zokuseiDataBiosGetAisyou:
+ * Fields recovered from wazaDataGetName..zokuseiDataBiosGetAisyou:
  *   0x00: u8   surfaceFlags
  *   0x02: u16  surfaceId
  *   0x04: u32  surfaceParam
@@ -72,7 +72,7 @@ typedef struct GSColSurfaceType {
 
 /**
  * Per-floor copy of one CCD object's placement -- 0x28 bytes.
- * fn_8010CD6C fills trans/rot/scale from the loaded CCD records and
+ * GScolsys2CopyTriangles fills trans/rot/scale from the loaded CCD records and
  * clears the flags; GScolsys2Get/SetObjEnable test and toggle bit 0.
  */
 typedef struct GSColFloorObj {

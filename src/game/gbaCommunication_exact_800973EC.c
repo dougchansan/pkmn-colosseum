@@ -2,7 +2,7 @@
  * @file gbaCommunication_exact_800973EC.c
  * @brief gbaCommunication carve, 0x800973EC - 0x80097FFC (13 functions:
  *        the Pokemon-status submenu sync, menuPokemonStatus and the status
- *        menu callbacks, menuPokemonStatusPageSync .. fn_80097FF8, in address order).
+ *        menu callbacks, menuPokemonStatusPageSync .. gbaNop_80097FF8, in address order).
  *
  * Split from gbaCommunication_candidate_80096C48.c so these exact functions
  * link while menuPokemonStatusMoveConfirm and menuPokemonStatusMoveKey (which own the unit's jump tables)
@@ -412,15 +412,15 @@ s32 menuPokemonStatusOpenC(u32 arg0, u32 arg1, u32 arg2) {
 }
 
 /* 0x80097FCC | size: 0x4 */
-void fn_80097FCC(void) {
+void gbaNop_80097FCC(void) {
 }
 
 /* 0x80097FD0 | size: 0x28 */
-void fn_80097FD0(void) {
+void gbaRoomGetModel(void) {
     extern int std093_getCurrentGroupID();
     GSresGetResource(std093_getCurrentGroupID(), 0x12670000);
 }
 
 /* 0x80097FF8 | size: 0x4 */
-void fn_80097FF8(void) {
+void gbaNop_80097FF8(void) {
 }

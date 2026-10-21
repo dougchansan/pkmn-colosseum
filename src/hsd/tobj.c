@@ -32,7 +32,7 @@
  *
  * Colosseum's HAL version differs from Melee's in these places (all read
  * from retail):
- *  - the class has an init method (TObjInit, fn_801BBCE0) that sets
+ *  - the class has an init method (TObjInit, TObjInit) that sets
  *    anim_id to 0xFFFF, and an `update` method slot (TObjUpdateFunc);
  *  - the authored texture id lives in anim_id (0x4A), so TObjLoad stores
  *    td->id there and lookupTextureAnim compares against it; TObjLoad ends
@@ -56,7 +56,7 @@
  * HSD_TObjAddAnimAll, HSD_TObjReqAnimAllByFlags HSD_TObjReqAnimAllByFlags, TObjUpdateFunc
  * TObjUpdateFunc, HSD_TObjAnimAll HSD_TObjAnimAll, fn_801BDA58
  * HSD_TObjSetupTextureCoordGen, fn_801BD8D0 HSD_TObjSetupVolatileTev,
- * fn_801BBE3C HSD_TObjInsert, fn_801BBCE0 TObjInit.
+ * fn_801BBE3C HSD_TObjInsert, TObjInit TObjInit.
  */
 
 #include "dolphin/mtx.h"
@@ -1716,7 +1716,7 @@ void HSD_ImageDescFree(HSD_ImageDesc* idesc)
 }
 
 /* TObjInit: the class `init` method. */
-int fn_801BBCE0(HSD_TObj* tobj)
+int TObjInit(HSD_TObj* tobj)
 {
     int result = TOBJ_PARENT_INFO->init((HSD_Class*) tobj);
     if (result >= 0) {
@@ -1761,7 +1761,7 @@ static void TObjInfoInit(void)
                      "sysdolphin_base_library", "hsd_tobj",
                      sizeof(HSD_TObjInfo), sizeof(HSD_TObj));
 
-    HSD_CLASS_INFO(&hsdTObj)->init = (int (*)(HSD_Class*)) fn_801BBCE0;
+    HSD_CLASS_INFO(&hsdTObj)->init = (int (*)(HSD_Class*)) TObjInit;
     HSD_CLASS_INFO(&hsdTObj)->release = TObjRelease;
     HSD_CLASS_INFO(&hsdTObj)->amnesia = TObjAmnesia;
     HSD_TOBJ_INFO(&hsdTObj)->load = TObjLoad;

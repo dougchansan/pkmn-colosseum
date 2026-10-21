@@ -7,8 +7,8 @@
  */
 #include "dolphin/types.h"
 
-/* fn_80035C48 - 0x80035C48 | size: 0x128 */
-void fn_80035C48(void) {
+/* cardeArenaRoomInit - 0x80035C48 | size: 0x128 */
+void cardeArenaRoomInit(void) {
     extern u8 lbl_803A3288[];
     extern u32 lbl_8047A430;
     extern u8 lbl_8047A438;
@@ -78,8 +78,8 @@ void std202_warpToMenuRoom393(void) {
     _threadSwitch();
 }
 
-/* fn_80035DA0 - 0x80035DA0 | size: 0x34 */
-void fn_80035DA0(void) {
+/* cardeArenaRoomExit - 0x80035DA0 | size: 0x34 */
+void cardeArenaRoomExit(void) {
     extern void floorLink(u32, s32);
     extern void _threadSwitch(void);
     extern u8 lbl_8047A439;

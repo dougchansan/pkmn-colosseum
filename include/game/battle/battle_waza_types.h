@@ -221,7 +221,7 @@ extern void  gsParticleSetRandomVelocityScale(void* particleNode, u8 enabled);
  * physically next to. */
 extern void  GSscene_SetMode(s32 arg);
 extern void  cameraStopAnime(void* arg);
-extern void  fn_801765F4(s32 arg);
+extern void  battleCameraSetFlag3(s32 arg);
 extern s32   GSgetVersionMinor(void);
 extern void  _threadSwitch(void);
 extern s32   GSresGroupGetState(s32 id);
@@ -235,10 +235,10 @@ extern void  GSmodelRemoveNull(struct GSmodel* model);
 extern void  GSmodelStopAnimation(struct GSmodel* model);
 extern void  GSmodelSetVisibility(struct GSmodel* model, u8 visible);
 extern void  GSmodelForceAnimTransformUpdate(struct GSmodel* model);
-extern u32   fn_800E3CBC(struct GSmodel* model);
+extern u32   GSmodelGetFlag200(struct GSmodel* model);
 extern void  GSmodelDrawModel(struct GSmodel* model, u32 flags);
 extern void  GSmodelLinkToGSparticleBank(struct GSmodel* model, void* bank);
-extern void  fn_800E3CC8(struct GSmodel* model, u8 enable);
+extern void  GSmodelSetFlag200(struct GSmodel* model, u8 enable);
 extern void  gsParticleKill(u8* resource, u32 notify);
 
 /* Data symbols (lbl_*, in .sdata/.sdata2/.bss of neighboring TUs) referenced

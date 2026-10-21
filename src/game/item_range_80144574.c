@@ -2,7 +2,7 @@
  * @file item_range_80144574.c
  * @brief item-use game code, 0x80144574 - 0x8014635C (1 fn).
  *
- * Split out of the misnamed people_field.c unit (2026-07-02). fn_80144574
+ * Split out of the misnamed people_field.c unit (2026-07-02). itemUseApply
  * (size 0x1DE8) is item-use-on-Pokemon logic (calls hpRecover__FP20...);
  * it ends exactly at seqGetPrivateId (0x8014635C), the first MusyX seq.c
  * function. The range name stays until the real function name is known.
@@ -496,7 +496,7 @@ static inline s16 itemUseFriendUp(
     return gained;
 }
 
-s16 fn_80144574(
+s16 itemUseApply(
     ItemUsePokemonLog* log, void* pokemon, void* fightPokemon,
     u16 itemDataId, u8 moveSlot)
 {

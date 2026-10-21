@@ -283,7 +283,7 @@ u8 menuRuleCheckPokemon(void* pokemon, s32 check)
     extern u8 pokemonIsDarkPokemon(void*);
     extern u8 pokemonBiosGetTamagoFlag(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
-    extern u8 fn_80142984(void);
+    extern u8 itemIdIsValid(void);
     extern void* wazaDataBiosGetPtr(u16);
     extern u8 pokemonCheckValid(void*);
     extern void __assert(const char*, s32, const char*);
@@ -349,7 +349,7 @@ u8 menuRuleCheckPokemon(void* pokemon, s32 check)
         case 0xAF:
             return 0;
         default:
-            return fn_80142984();
+            return itemIdIsValid();
         }
 
     case 4:
@@ -395,7 +395,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
 {
     extern u8 pokemonBiosGetLevel(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
-    extern u8 fn_80142984(u16);
+    extern u8 itemIdIsValid(u16);
     extern u8* savedataBattleGetRulePtr(void);
     MenuRuleItemRestrictions* restrictions;
     u16 item;
@@ -418,7 +418,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
             valid = 0;
             break;
         default:
-            valid = fn_80142984(item);
+            valid = itemIdIsValid(item);
             break;
         }
         if (valid == 0) {

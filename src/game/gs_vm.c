@@ -248,7 +248,7 @@ extern void GSlogWritef(const char* fmt, ...);
 extern u32 cms_CallStdTrampoline(void);
 extern u32 GSgetFrameStep(void);
 extern void _threadSwitch(void);
-extern u32 fn_800F0374(GSThread* thread);
+extern u32 GSvmGetOwner(GSThread* thread);
 extern void GSthreadTerminate(GSThread* thread);
 extern u32 floorGetCurrentContext(void);
 extern void GSthreadSetArgs(void* thread, s32 count, ...);
@@ -1416,13 +1416,13 @@ GSThread* GSvmGetThreadByKey(u16 key)
 }
 
 /* 0x800F716C | 0x108: stop every script running on a thread of `group`
- * (the thread's +0x0C field, read by fn_800F0374; floor teardown passes
+ * (the thread's +0x0C field, read by GSvmGetOwner; floor teardown passes
  * the floor id).
  * The thread's group is read into its own variable before the compare:
  * retail compares "cmplw r3,r30" (the group read, then the argument).
  * MWCC (GC/1.3 through 2.7, -O4,p/-O4,s/-O3/-O2) turns an integer equality
- * with a call on either side, fn_800F0374(t) == group or
- * group == fn_800F0374(t), into "cmplw r30,r3"; the call-first order only
+ * with a call on either side, GSvmGetOwner(t) == group or
+ * group == GSvmGetOwner(t), into "cmplw r30,r3"; the call-first order only
  * comes out when the call's value is a named variable (or when both sides
  * are pointers, as in fight_target.c's (void*)fightTrainerGetStatus(...)
  * == (void*)target, which is not the case for a floor id). */
@@ -1435,7 +1435,7 @@ s32 GSvmStopGroup(u32 group)
     for (i = 0; i < lbl_80478B00->count; i++) {
         ctx = &lbl_80478B00->contexts[i];
         if (ctx->status != 0 && ctx->thread != NULL) {
-            threadGroup = fn_800F0374(ctx->thread);
+            threadGroup = GSvmGetOwner(ctx->thread);
             if (threadGroup == group) {
                 GSvmStopByKey(ctx->key);
             }

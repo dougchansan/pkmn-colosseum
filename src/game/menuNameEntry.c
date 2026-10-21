@@ -1700,7 +1700,7 @@ extern void menuItemBiosGetPtr(void);
 extern void menuModelInit(void);
 extern void menuPokemonModelRequestById(void);
 extern void peopleInfoBiosGetPtr(void);
-extern void fn_8018F4C8(void);
+extern void peopleInfoGetMotion(void);
 extern void menuPokemonModelRequest(void);
 extern void menuModelCheck(void);
 extern void fadeSet(void);
@@ -1761,7 +1761,7 @@ void menuNameEntry(void) {
     extern void menuModelInit(void* handle, s16 a, s16 b);
     extern void menuPokemonModelRequestById(void* handle, s32 v);
     extern void* peopleInfoBiosGetPtr(s32 v);
-    extern void fn_8018F4C8(void* info, s32 a, s32* outA, s32* outB);
+    extern void peopleInfoGetMotion(void* info, s32 a, s32* outA, s32* outB);
     extern void menuModelSetMotion(void* handle, s32 motion);
     extern void menuPokemonModelRequest(void* handle, u32 v);
     extern void menuModelCheck(void* handle, s32 v);
@@ -1804,8 +1804,8 @@ void menuNameEntry(void) {
     u16 nameBuf[12];
     s32 menuArg[2];
     s32 listArg[2];
-    s32 motOut;     /* fn_8018F4C8 out word @ sp+0xc        */
-    s32 motTmp;     /* fn_8018F4C8 out word @ sp+0x8        */
+    s32 motOut;     /* peopleInfoGetMotion out word @ sp+0xc        */
+    s32 motTmp;     /* peopleInfoGetMotion out word @ sp+0x8        */
     s32 ans;
 
     data = lbl_80266DC0;
@@ -1879,7 +1879,7 @@ void menuNameEntry(void) {
     case 1:
         sel = entryBuf[mode];
         menuPokemonModelRequestById(lbl_803A2094, sel);
-        fn_8018F4C8(peopleInfoBiosGetPtr(sel), 1, &motOut, &motTmp);
+        peopleInfoGetMotion(peopleInfoBiosGetPtr(sel), 1, &motOut, &motTmp);
         menuModelSetMotion(lbl_803A2094, motOut);
         break;
     case 2:

@@ -29,7 +29,7 @@ extern void menuClose();
 extern s32 menuCloseSync(s32, s32);
 extern s32 menuOpen(s32, s32);
 extern s8 pcboxGetNbPokemonBox(void);
-extern s8 fn_801347D8(void);
+extern s8 pcBoxGetSlotCount(void);
 extern u8 pokemonCheckValid(void*);
 extern u8 pokemonIsDarkPokemon(void*);
 extern u32 pokemonBiosGetPokemonDataId(void*);
@@ -38,10 +38,10 @@ extern u32 pokemonGetAnnonKatati(u32);
 extern void scriptStoreTemochiPokemon(s32);
 extern u8 scriptCheckTemochiPokemon(s32);
 extern u32 floorGetCurrentContext(void);
-extern void fn_80057E70(void);
+extern void pcBoxStreamModels(void);
 extern void pcBoxOpen(s32);
 extern void GSresReleaseOwner(s32);
-extern void fn_8017B3E4(s32);
+extern void fsysStartLoad(s32);
 extern s32 GSresGroupGetState(s32);
 extern void GSresReleaseById(s32);
 extern void std078_flagSetFalse(s32);
@@ -113,7 +113,7 @@ static inline s32 colosseumBattleCountPokemon(void) {
     }
 
     for (box = 0; box < pcboxGetNbPokemonBox(); box++) {
-        for (slot = 0; slot < fn_801347D8(); slot++) {
+        for (slot = 0; slot < pcBoxGetSlotCount(); slot++) {
             pokemon = getPokemon__5PCBOXFScSc(0, (s8)box, (s8)slot);
             if (pokemon != NULL && pokemonCheckValid(pokemon) != 0) {
                 count++;
@@ -137,7 +137,7 @@ void pcBoxStorageMain(void) {
     s32 shouldSkipWait;
 
     scriptStoreTemochiPokemon(0);
-    fn_8017B3E4(0x70B);
+    fsysStartLoad(0x70B);
     while (GSresGroupGetState(0x70B) == 1) {
         _threadSwitch();
     }
@@ -161,7 +161,7 @@ void pcBoxStorageMain(void) {
             }
 
             for (box = 0; box < pcboxGetNbPokemonBox(); box++) {
-                for (slot = 0; slot < fn_801347D8(); slot++) {
+                for (slot = 0; slot < pcBoxGetSlotCount(); slot++) {
                     pokemon = getPokemon__5PCBOXFScSc(0, (s8)box, (s8)slot);
                     if (pokemon != NULL && pokemonCheckValid(pokemon) != 0) {
                         id = colosseumBattleGetMenuPokemonId(pokemon);
@@ -177,7 +177,7 @@ void pcBoxStorageMain(void) {
         lbl_8047A590 = NULL;
     }
 
-    GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, fn_80057E70);
+    GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, pcBoxStreamModels);
     menuClose(0x19);
     menuClose(0x1A);
     menuClose(0x1B);

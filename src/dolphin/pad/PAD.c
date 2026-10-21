@@ -489,7 +489,7 @@ void SPEC2_MakeStatus(s32 chan, PADStatus *status, u32 data[2]);
 
 #include "dolphin/pad/PAD_spec_inline.h"
 
-void fn_800AB4FC(const u32 *commandArray) {
+void PADControlAllMotors(const u32 *commandArray) {
     BOOL enabled = OSDisableInterrupts();
     s32 chan;
     BOOL commit = FALSE;

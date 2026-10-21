@@ -10,7 +10,7 @@
  * compiled and dead-stripped by the linker as in retail.
  *
  * Colosseum's cobj routes every viewport through a replaceable callback
- * (lbl_80478C58, set by fn_80196C3C, default fn_80196C54), and its eye
+ * (lbl_80478C58, set by HSD_SetViewportCallback, default HSD_DefaultViewport), and its eye
  * vector / up vector helpers report success as TRUE instead of Melee's
  * 0 / -1.
  *
@@ -159,7 +159,7 @@ HSD_CObjInfo lbl_8036C678 = { CObjInfoInit };
 s32 lbl_80478C50 = 640;
 s32 lbl_80478C54 = 480;
 
-void fn_80196C54(BOOL jitter, f32 left, f32 top, f32 width, f32 height,
+void HSD_DefaultViewport(BOOL jitter, f32 left, f32 top, f32 width, f32 height,
                  f32 nearz, f32 farz)
 {
     if (jitter) {
@@ -169,12 +169,12 @@ void fn_80196C54(BOOL jitter, f32 left, f32 top, f32 width, f32 height,
     }
 }
 
-HSD_CObjViewportFunc lbl_80478C58 = fn_80196C54;
+HSD_CObjViewportFunc lbl_80478C58 = HSD_DefaultViewport;
 
-void fn_80196C3C(HSD_CObjViewportFunc func)
+void HSD_SetViewportCallback(HSD_CObjViewportFunc func)
 {
     if (func == NULL) {
-        func = fn_80196C54;
+        func = HSD_DefaultViewport;
     }
     lbl_80478C58 = func;
 }

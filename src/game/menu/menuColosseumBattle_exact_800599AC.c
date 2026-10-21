@@ -24,7 +24,7 @@ extern const ColosseumRosterRow lbl_802677D0[7];
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_800599AC(s32 initialSlot) {
+void pcBoxPokemonMenu(s32 initialSlot) {
     s32 firstIndex;
     s32 secondIndex;
     const ColosseumRosterRow* table;

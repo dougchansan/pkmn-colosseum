@@ -6,7 +6,7 @@
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma scheduling off
-void fn_800388C4(void)
+void pcCloseAllMenus(void)
 {
     extern void menuCloseCustom(s32 slot, s32 arg1, s32 arg2);
 

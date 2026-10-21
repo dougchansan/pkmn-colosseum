@@ -4,7 +4,7 @@
  *        0x800EE150 - 0x800EE3BC.
  *
  * The head of the GSpart range: GSmodelGetPart and its traversal callback
- * jobjWalkFindNthCB, GSpartGetJObjIndex, fn_800EE288 and GSpartRegisterRotation.
+ * jobjWalkFindNthCB, GSpartGetJObjIndex, characterClearLookTarget and GSpartRegisterRotation.
  * It is linked on its own while GSpartGetTransform (gs_part.c, the only
  * function between this head and gs_part_exact_800EE6B4.c) is still being
  * matched.
@@ -98,7 +98,7 @@ u32 GSpartGetJObjIndex(void* jobj, void* root)
     return lbl_8047ABCC;
 }
 
-void fn_800EE288(GSpart* part)
+void characterClearLookTarget(GSpart* part)
 {
     u8* model = part->model;
     s32 count = 4;

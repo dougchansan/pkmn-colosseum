@@ -236,12 +236,12 @@ extern s32 GSgetVersionMinor(void);
 extern u8 mainSetPauseFlag(u8 value);
 extern u8 mainTakePauseFlag(void);
 extern void gbaCmdPing60(s32 port);
-extern s32 fn_80089D74(s32 port);
-extern u8 fn_8008ABA0(s32 port);
+extern s32 gbaCommHandshakeB(s32 port);
+extern u8 gbaCommIsReady(s32 port);
 extern void* gamedatasaveBiosGetPtr(void* ptr);
 extern void gamedatasaveBiosSetMemcardID(void* ptr, u64 id);
 extern u64 gamedatasaveBiosGetMemcardID(void* ptr);
-extern u16 fn_8006A718(void* data);
+extern u16 savedataBattleGetHeroSpecies(void* data);
 extern void savedataBattleSetSavedHero(void* data, void* arg);
 extern u32 gamedatasaveGetStatus(void* data, s32 kind);
 extern void gamedatasaveSetStatus(void* data, s32 kind, s32 value);
@@ -266,7 +266,7 @@ extern s32 CARDCreateAsync(s32 chan, const char* file_name, u32 size, void* file
 extern s32 CARDOpen(s32 chan, s32 file_no, void* file_info);
 extern s32 CARDClose(void* file_info);
 extern s32 CARDCancel(void* file_info);
-extern s32 fn_800B4C7C(void* file_info, void* buffer, s32 length, s32 offset,
+extern s32 CARDReadAsync(void* file_info, void* buffer, s32 length, s32 offset,
                        CARDCallback callback);
 extern s32 CARDWriteAsync(void* file_info, const void* buffer, s32 length, s32 offset,
                           CARDCallback callback);
@@ -274,10 +274,10 @@ extern s32 CARDGetStatus(s32 chan, s32 file_no, MemcardFileStatus* stat);
 extern s32 CARDSetStatusAsync(s32 chan, s32 file_no, MemcardFileStatus* stat,
                               CARDCallback callback);
 extern s32 CARDGetAttributes(s32 chan, s32 file_no, u8* attributes);
-extern s32 fn_800B5BE4(s32 chan, s32 file_no, u8 attributes, CARDCallback callback);
+extern s32 CARDSetAttributes(s32 chan, s32 file_no, u8 attributes, CARDCallback callback);
 extern s32 CARDGetSerialNo(s32 chan, u64* serial);
-extern MemcardDiskId* fn_800B01AC(s32 chan);
-extern s32 fn_800B01C4(s32 chan, MemcardDiskId* disk_id);
+extern MemcardDiskId* CARDGetChanWord108(s32 chan);
+extern s32 CARDSetChanWord108(s32 chan, MemcardDiskId* disk_id);
 
 void memcardTaskMain(void);
 s32 memcardSaveSetup(void);
@@ -1317,12 +1317,12 @@ static inline s32 memcardCheckLastWrite(void)
     case CARD_RESULT_BUSY:
         lbl_8047B3D4->write_ticks--;
         if (lbl_8047B3D4->field_3d == 0) {
-            if (fn_8008ABA0(2) == 0) {
+            if (gbaCommIsReady(2) == 0) {
                 CARDCancel(&lbl_8047B3D4->file_info);
                 return 0x2B;
             }
             if ((s32)lbl_8047B3D4->write_ticks < 3) {
-                if (fn_80089D74(2) != 0) {
+                if (gbaCommHandshakeB(2) != 0) {
                     CARDCancel(&lbl_8047B3D4->file_info);
                     return 0x2B;
                 }
@@ -1332,7 +1332,7 @@ static inline s32 memcardCheckLastWrite(void)
         return 42;
     case CARD_RESULT_READY:
         if (lbl_8047B3D4->field_3d == 0) {
-            fn_80089D74(2);
+            gbaCommHandshakeB(2);
         }
         status = gamedatasaveGetStatus(savedataGetStatus(NULL, 1), 4);
         gamedatasaveSetStatus(savedataGetStatus(NULL, 1), 4, status + 1);
@@ -1354,7 +1354,7 @@ static inline s32 memcardEndAccess(void)
 
     if (lbl_8047B3D4->dialog_result != 0) {
         if (GSgetVersionMinor() == 4) {
-            fn_800B01C4(lbl_8047B3D4->card_channel, lbl_8047B3D4->disk_id);
+            CARDSetChanWord108(lbl_8047B3D4->card_channel, lbl_8047B3D4->disk_id);
         }
         CARDGetSerialNo(lbl_8047B3D4->card_channel, &serial);
         CARDClose(&lbl_8047B3D4->file_info);
@@ -1917,11 +1917,11 @@ scan_done:
     case 0:
         lbl_8047B3D4->dialog_result = 1;
         if (GSgetVersionMinor() == 4) {
-            lbl_8047B3D4->disk_id = fn_800B01AC(lbl_8047B3D4->card_channel);
+            lbl_8047B3D4->disk_id = CARDGetChanWord108(lbl_8047B3D4->card_channel);
             lbl_8047B3D4->mounted_disk_id = *lbl_8047B3D4->disk_id;
             lbl_8047B3D4->mounted_disk_id.game_code = *(u32*)"GC6J";
             lbl_8047B3D4->mounted_disk_id.company_code = *(u16*)"01";
-            fn_800B01C4(lbl_8047B3D4->card_channel,
+            CARDSetChanWord108(lbl_8047B3D4->card_channel,
                        &lbl_8047B3D4->mounted_disk_id);
         }
 
@@ -2243,7 +2243,7 @@ s32 memcardSaveSetup(void)
     switch (lbl_8047B3D4->task_kind) {
     case 9:
         data = savedataGetStatus(save->header.fields.savedata, 14);
-        if (fn_8006A718(save->header.fields.savedata) == 1) {
+        if (savedataBattleGetHeroSpecies(save->header.fields.savedata) == 1) {
             savedataBattleSetSavedHero(data, NULL);
         }
         /* fallthrough */
@@ -2501,7 +2501,7 @@ void memcardTaskMain(void)
             CARDGetAttributes(lbl_8047B3D4->card_channel, lbl_8047B3D4->file_info.file_no,
                               &attributes);
             attributes |= 0x18;
-            memcardSetRequestResult(fn_800B5BE4(lbl_8047B3D4->card_channel,
+            memcardSetRequestResult(CARDSetAttributes(lbl_8047B3D4->card_channel,
                                                 lbl_8047B3D4->file_info.file_no, attributes,
                                                 NULL));
             lbl_8047B3D4->state = 16;
@@ -2679,7 +2679,7 @@ void memcardTaskMain(void)
             break;
 
         case 26:
-            memcardSetRequestResult(fn_800B4C7C(&lbl_8047B3D4->file_info,
+            memcardSetRequestResult(CARDReadAsync(&lbl_8047B3D4->file_info,
                                                 lbl_8047B3D4->work_buffer, 0x4000, 0, NULL));
             lbl_8047B3D4->state = 27;
             break;
@@ -2714,7 +2714,7 @@ void memcardTaskMain(void)
             break;
 
         case 29:
-            memcardSetRequestResult(fn_800B4C7C(&lbl_8047B3D4->file_info,
+            memcardSetRequestResult(CARDReadAsync(&lbl_8047B3D4->file_info,
                                                 (u8*)lbl_8047B3D4->work_buffer +
                                                     (lbl_8047B3D4->field_20 * 0x200 + 0x1E000),
                                                 0x200, memcardSaveOffset(lbl_8047B3D4->field_20),
@@ -2731,7 +2731,7 @@ void memcardTaskMain(void)
             break;
 
         case 33:
-            memcardSetRequestResult(fn_800B4C7C(&lbl_8047B3D4->file_info,
+            memcardSetRequestResult(CARDReadAsync(&lbl_8047B3D4->file_info,
                                                 lbl_8047B3D4->work_buffer, 0x1E000,
                                                 memcardSaveOffset(lbl_8047B3D4->field_20),
                                                 NULL));
@@ -2796,7 +2796,7 @@ void memcardTaskMain(void)
             break;
 
         case 41:
-            if (fn_8008ABA0(2) == 0) {
+            if (gbaCommIsReady(2) == 0) {
                 next = 0x2B;
             } else {
                 memcardSetRequestResult(CARDWriteAsync(&lbl_8047B3D4->file_info,

@@ -451,7 +451,7 @@ void HSD_StartRender(HSD_RenderPass pass)
 
 /* Melee: HSD_Init_803755A8. Retail loads and compares the render pass and
  * returns; the body after the test is compiled out. */
-void fn_8019C6FC(void)
+void HSD_ShadowNop(void)
 {
     if (current_render_pass == HSD_RP_OFFSCREEN) {
         return;

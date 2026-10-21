@@ -34,7 +34,7 @@ extern u32 GSinputGetButtons(u32 flags);
 extern u8 menuSelectInput(u32 index, u32* out);
 extern void floorLink(u32 floorId, u32 arg);
 
-extern u8 fn_800FF52C(void);
+extern u8 floorIsLinking(void);
 extern void soundStartSE(u32 id);
 extern void GSmsgPrintf(u32 x, u32 y, s32 color, ...);
 extern void _threadSwitch(void);
@@ -45,7 +45,7 @@ extern s32 menuOpenCustom(s32 menuId, ...);
 extern void menuSetPosition(s32 menuId, s32 x, s32 y);
 extern s32 menuOpen(s32 menuId, s32 arg);
 
-extern u8 fn_80175FFC(void);
+extern u8 movieCaptureIsActive(void);
 extern void GSgfxCaptureMovieStop(void);
 extern void GSgfxCaptureMovieStart(u32 mode);
 
@@ -74,8 +74,8 @@ extern void winMsgCloseField(u32 id);
 
 extern u32 std092_getCurrentRoomID(void);
 extern FloorDebugData* floorDataBiosGetPtr(u32 id);
-extern u8 fn_801174C4(void);
-extern void fn_80117500(void);
+extern u8 cameraReturnPending(void);
+extern void cameraSetReturnDone(void);
 extern void threadReqUnblock(u32 id);
 extern void std136_fieldClearFlag_8047ad71(void);
 extern void threadReqBlock(u32 id);
@@ -136,7 +136,7 @@ s32 dbgMenuWarpSelect(void) {
     u32 floorId;
     s32 i;
 
-    if (fn_800FF52C() != 0) {
+    if (floorIsLinking() != 0) {
         soundStartSE(0x26);
         i = 0;
         do {
@@ -160,7 +160,7 @@ s32 dbgMenuWarpSelect(void) {
     return 1;
 }
 
-s32 fn_8000C06C(void) {
+s32 dbgMenuToggleMenu08(void) {
     if (menuIsCheck(8) != 0) {
         menuClose(8);
     } else {
@@ -176,7 +176,7 @@ void dbgMovieCaptureUpdate(void) {
         return;
     }
 
-    if (fn_80175FFC() == 1) {
+    if (movieCaptureIsActive() == 1) {
         GSgfxCaptureMovieStop();
     } else if (lbl_8047A299 == 0) {
         GSgfxCaptureMovieStart(0);
@@ -191,7 +191,7 @@ s32 dbgMenuMovieCaptureToggle(void) {
         lbl_8047A298 = 1;
     } else {
         lbl_8047A298 = 0;
-        if (fn_80175FFC() == 1) {
+        if (movieCaptureIsActive() == 1) {
             GSgfxCaptureMovieStop();
         }
     }
@@ -200,13 +200,13 @@ s32 dbgMenuMovieCaptureToggle(void) {
     return 0;
 }
 
-s32 fn_8000C1A8(void) {
+s32 dbgMenuToggleVtrDisp(void) {
     if (lbl_8047A298 == 0) {
         lbl_8047A299 = 0;
         lbl_8047A298 = 1;
     } else {
         lbl_8047A298 = 0;
-        if (fn_80175FFC() == 1) {
+        if (movieCaptureIsActive() == 1) {
             GSgfxCaptureMovieStop();
         }
     }
@@ -250,11 +250,11 @@ s32 dbgMenuGSvtrChangeActive(void) {
     return 0;
 }
 
-s32 fn_8000C318(void) {
+s32 dbgMenuReturnFalse_8000C318(void) {
     return 0;
 }
 
-s32 fn_8000C320(void) {
+s32 dbgMenuReturnFalse_8000C320(void) {
     return 0;
 }
 
@@ -322,7 +322,7 @@ s32 dbgMenuMsgCheck(void) {
     return 1;
 }
 
-s32 fn_8000C518(void) {
+s32 dbgMenuToggleMenu0C(void) {
     if (menuIsCheck(0xC) != 0) {
         menuClose(0xC);
     } else {
@@ -333,14 +333,14 @@ s32 fn_8000C518(void) {
     return 0;
 }
 
-s32 fn_8000C588(void) {
+s32 dbgMenuToggleMenu0A(void) {
     FloorDebugData* data;
 
     data = floorDataBiosGetPtr(std092_getCurrentRoomID());
 
     if (menuIsCheck(0xA) != 0) {
-        if (fn_801174C4() != 0) {
-            fn_80117500();
+        if (cameraReturnPending() != 0) {
+            cameraSetReturnDone();
         }
 
         menuClose(0xA);
@@ -367,7 +367,7 @@ s32 dbgMenuSoundVolume(s32 arg) {
     return 0;
 }
 
-s32 fn_8000C688(s32 arg) {
+s32 dbgMenuSetMasterVolume(s32 arg) {
     switch (arg) {
     case 0xD1:
         soundSetMasterVolume(0x7F, 0, 1, 0);

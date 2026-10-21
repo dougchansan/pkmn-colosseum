@@ -1,6 +1,6 @@
 /**
  * @file gapp_exact_80101B90.c
- * @brief gapp load meter: gappLoadMeterDraw (frame-time bar), fn_80101D5C and
+ * @brief gapp load meter: gappLoadMeterDraw (frame-time bar), gappIssueDrawSync and
  *        gappLoadMeterDrawFrame (meter frame and scale lines), 0x80101B90 - 0x80101FB8.
  *
  * One object because gappLoadMeterDraw and gappLoadMeterDrawFrame share this translation
@@ -24,8 +24,8 @@ extern u8 lbl_80478B28;
 
 extern u32 OSGetTick(void);
 extern void GXSetDrawSync(s32);
-extern void fn_800BE30C(void);
-extern void fn_800D9ED8(s32);
+extern void GXClearGPMetric(void);
+extern void gfxSetFlag1A(s32);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetOrtho(f32, f32, f32, f32);
@@ -48,7 +48,7 @@ void gappLoadMeterDraw(u32 color) {
 
     if ((s32)lbl_8047ACF0 != 0) {
         tick = OSGetTick();
-        fn_800D9ED8(1);
+        gfxSetFlag1A(1);
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetOrtho(0.0f, 0.0f, 640.0f, 480.0f);
@@ -76,7 +76,7 @@ void gappLoadMeterDraw(u32 color) {
     }
 }
 
-void fn_80101D5C(void) {
+void gappIssueDrawSync(void) {
     if ((s32)lbl_8047ACF0 != 0) {
         GXSetDrawSync(3);
     }
@@ -129,5 +129,5 @@ void gappLoadMeterDrawFrame(void)
     tick = OSGetTick();
     lbl_8047ACE8 = tick;
     lbl_8047ACEC = tick;
-    fn_800BE30C();
+    GXClearGPMetric();
 }

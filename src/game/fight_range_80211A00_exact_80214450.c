@@ -340,7 +340,7 @@ void wsCmdEB(void)
 
 {
     extern u32 fn_800FA280();
-    extern void fn_8010C4D4();
+    extern void wazaDataGetDesc();
     extern void fn_80132A38();
     extern u8 fn_80136428();
     extern u32 fn_801F025C();
@@ -362,7 +362,7 @@ void wsCmdEB(void)
     for (uVar5 = 0; (uVar5 & 0xff) < 2; uVar5 = uVar5 + 1) {
       fn_80207B5C(uVar1,uVar5,uVar3);
     }
-    fn_8010C4D4(uVar3);
+    wazaDataGetDesc(uVar3);
     uVar1 = fn_800FA280();
     fn_80132A38(0xd,uVar1);
     lbl_8047B610 = lbl_8047B610 + 5;
@@ -1359,7 +1359,7 @@ void wsCmdD2(void)
     extern s32 fightFloorGetStatus();
     extern u8 fightOutPokemonIsGcHeroFightOutPokemon();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
-    extern u8 fn_80142984();
+    extern u8 itemIdIsValid();
     extern void fightOutPokemonDoItemSoubi();
     extern void pokemonSetStatus();
     extern u8 fightOutPokemonIsUseHensinBuff();
@@ -1420,8 +1420,8 @@ second_check_done:
 
     if (!(((u16)attackerItem != 0 || (u16)defenderItem != 0) &&
           (u16)attackerItem != 0xaf && (u16)defenderItem != 0xaf &&
-          ((u16)attackerItem == 0 || fn_80142984(attackerItem) != 0) &&
-          ((u16)defenderItem == 0 || fn_80142984(defenderItem) != 0))) {
+          ((u16)attackerItem == 0 || itemIdIsValid(attackerItem) != 0) &&
+          ((u16)defenderItem == 0 || itemIdIsValid(defenderItem) != 0))) {
         lbl_8047B610 = *(u8**)(lbl_8047B610 + 1);
         return;
     }

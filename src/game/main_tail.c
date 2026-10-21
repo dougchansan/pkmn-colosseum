@@ -12,11 +12,11 @@ extern void OSSetErrorHandler(u32 error, void* handler);
 extern void OSLoadContext(void* context);
 extern void OSEnableScheduler(void);
 extern void GSthreadExecuteAll(void);
-extern u8 fn_8000DAA8(void);
+extern u8 dbgGetFlag8047A2A0(void);
 extern void peopleMain(u32 a, u32 b);
 extern u8 GSinputIsConnected(u32 padIdx);
 extern void gbaPollPort(u32 padIdx);
-extern u8 fn_8008ABA0(u32 padIdx);
+extern u8 gbaCommIsReady(u32 padIdx);
 extern void GSinputRead(u32 padIdx);
 extern void* soundSetListener(void* color);
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg);
@@ -75,7 +75,7 @@ extern int sprintf(char* buf, const char* fmt, ...);
 void mainLogicTask(u32 a, u32 b)
 {
     GSthreadExecuteAll();
-    if (fn_8000DAA8() == 0) {
+    if (dbgGetFlag8047A2A0() == 0) {
         peopleMain(a, b);
     }
 }
@@ -104,7 +104,7 @@ void mainPadPollTask(void) {
  *  Address: 0x8000604C, Size: 0x50
  *
  *  Controller rumble update task. Iterates pads 1-4:
- *  if a pad is NOT responding to fn_8008ABA0 (motor check),
+ *  if a pad is NOT responding to gbaCommIsReady (motor check),
  *  it calls GSinputRead to reset that pad's rumble state.
  * =========================================================================
  */
@@ -112,14 +112,14 @@ void mainPadReadTask(void) {
     s32 i;
 
     for (i = 1; i <= 4; i++) {
-        if (fn_8008ABA0(i) == 0) {
+        if (gbaCommIsReady(i) == 0) {
             GSinputRead(i);
         }
     }
 }
 
 /* =========================================================================
- *  InitBackgroundColor / fn_8000609C
+ *  InitBackgroundColor / mainRegisterSoundListener
  *  Address: 0x8000609C, Size: 0x54
  *
  *  Copies the default background color from rodata (lbl_80266438) into
@@ -127,7 +127,7 @@ void mainPadReadTask(void) {
  *  Also configures a render schedule with a 2000-tick timeout.
  * =========================================================================
  */
-void fn_8000609C(void) {
+void mainRegisterSoundListener(void) {
     struct BgColor12 { u32 c[3]; } buf;
     buf = *(struct BgColor12*)lbl_80266438;
     GSresRegisterResource(soundSetListener(&buf), 0, 0x7D0, 0);

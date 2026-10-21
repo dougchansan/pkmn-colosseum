@@ -3,7 +3,7 @@
 /* Retail stores this six-entry retry table in small uninitialized data. */
 extern u16 lbl_8047A684[6] __attribute__((section(".sdata")));
 
-s32 fn_80089D98(s32 index)
+s32 gbaCommWaitReadyB(s32 index)
 {
     extern s32 gbaCmdWaitReadyB(s32);
     s32 status;

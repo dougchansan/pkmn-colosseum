@@ -153,7 +153,7 @@ void dbgFlagMenuCursor2(GsMenuNumberInput* input)
     input->result = gsMenuGetValidEntry(cursor.row + cursor.column);
 }
 
-s32 fn_800093D0(void)
+s32 dbgMenuFlagEdit(void)
 {
     extern u32 GSinputGetButtons(s32 padId);
     extern s32 menuOpen(s32 menuId, s32 arg);
@@ -161,7 +161,7 @@ s32 fn_800093D0(void)
     extern u8 menuSelectInput(u32 value, u32* out);
     extern void _flagSet(s32 flagId, u32 value);
     extern void menuClose(s32 menuId);
-    extern void fn_8018FE30(s32 value);
+    extern void dbgFlagApplyPreset(s32 value);
     s32 result;
     u32 selected;
     u32 value;
@@ -187,7 +187,7 @@ s32 fn_800093D0(void)
         result = menuOpen(0xB, 1);
         menuClose(0xB);
         if (result >= 0) {
-            fn_8018FE30(result);
+            dbgFlagApplyPreset(result);
         } else if (result == -1) {
             return -1;
         }

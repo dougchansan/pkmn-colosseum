@@ -266,7 +266,7 @@ void save_SHA1Process(void* ctx);
  * ========================================================================= */
 
 /**
- * fn_80082650: Validate card e-Reader level data.
+ * cardeSaveClearIfEmpty: Validate card e-Reader level data.
  * Checks that the card series data pointer is non-null and that
  * the level count is positive. Scans the card matrix grid for
  * any entry with a valid flag set at offset 0x82.

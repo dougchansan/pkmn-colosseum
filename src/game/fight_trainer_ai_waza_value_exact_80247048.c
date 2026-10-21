@@ -236,7 +236,7 @@ s32 fightTrainerAiWazaValueHatakiotosu(void* ctx, void* param1, u32 param2, u32 
 }
 /* Address: 0x802477B0 | Size: 0x158 (344 bytes) */
 u32 fightTrainerAiWazaValueDouguUbau(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u8 fn_80142984(u32);
+    extern u8 itemIdIsValid(u32);
     extern u32 fightOutPokemonGetPokemonPtr(u32);
     extern u8 fightAiCanStealItem(u32);
     extern u8 fightTrainerAiIsTokusei(void*, u32, u32);
@@ -259,7 +259,7 @@ u32 fightTrainerAiWazaValueDouguUbau(void* ctx, u32 param1, u32 param2, u32 para
         canSteal = 0;
     }
     if ((ownItem & 0xFFFF) != 0 || (targetItem & 0xFFFF) == 0xAF || (targetItem & 0xFFFF) == 0 ||
-        fn_80142984(targetItem) == 0) {
+        itemIdIsValid(targetItem) == 0) {
         canSteal = 0;
     }
     if (canSteal == 1) {

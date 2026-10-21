@@ -30,7 +30,7 @@ extern u16 _toolentryAlloc__FUl(u32 size);
 extern void threadSaveGPRRegisters(void);
 extern void threadSaveFPRRegisters(void);
 extern void threadExecute(void);
-extern void fn_800F02F4(void);
+extern void GSthreadGetArg(void);
 extern void _threadSwitch(void);
 extern void GSscratchFree(void*);
 extern u8 GSscratchIsPtr(void*);
@@ -461,7 +461,7 @@ void _GSthreadDispatch(arg0, arg1)
         lbl_8047AC00 = (u32)thread;
         thread->pad0 = 1;
         ctx->gpr[1] = (u32)(scratchStack + ctx->gpr[1]);
-        ((GSThreadCtx *)lbl_804019F0)->ctr = (u32)fn_800F02F4;
+        ((GSThreadCtx *)lbl_804019F0)->ctr = (u32)GSthreadGetArg;
         lbl_8047AC24 = (u32)&lbl_804019F0;
         lbl_8047AC20 = (u32)ctx;
         lbl_8047AC10 = thread->usesFPU;

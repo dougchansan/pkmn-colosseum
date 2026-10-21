@@ -2,7 +2,7 @@
  * @file gs_range_80033278.c
  * @brief gs-engine code, 0x80033278 - 0x80035C48 (16 fns).
  *
- * fn_80035C48, fn_80035D70 and fn_80035DA0 live in game/gs_exact_80035C48.c.
+ * cardeArenaRoomInit, fn_80035D70 and cardeArenaRoomExit live in game/gs_exact_80035C48.c.
  *
  * openingDemoFinish (formerly the last function here) is the opening-demo
  * finish callback of the movie TU and now lives in game/movie.c.
@@ -46,8 +46,8 @@ extern char lbl_80266FAC[];
 extern char lbl_80266FB8[];
 extern char lbl_8047BA20[];
 
-extern void fn_8007C764(u8);
-extern void fn_8007C7A8(s32);
+extern void cardeMatrixSetFlagC9(u8);
+extern void cardeMatrixSetFlagC8(s32);
 
 extern s32 menuOpen(s32, s32);
 extern void menuClose(s32);
@@ -60,7 +60,7 @@ extern void* fightFloorDataBiosGetPtr(u16);
 extern void* fightFloorDataBiosGetName(void*);
 extern void* GSmsgGetGSchar(void*);
 
-extern void fn_8007CB54(void*);
+extern void cardeMatrixSetTitle(void*);
 
 /*
  * The repository elsewhere declares this as two fixed 32-bit arguments.
@@ -74,15 +74,15 @@ extern void winMsgClose(s32);
 
 extern void __assert(const char*, s32, const char*);
 
-extern void fn_8007CAB0(void);
+extern void cardeMatrixUpdateSortKeys(void);
 extern void* cardeGridGetRecord(s32, void*, s32);
-extern void fn_8007C7EC(void);
+extern void cardeMatrixLoadEntries(void);
 
 extern u8* cardeSaveGetCard(void*, s32, s32, s32);
 extern u8* cardeSaveGetLevel(void*, s32);
 
 extern void menuCardEMatrixSetTarget(s32, s32, s32, s32, s32);
-extern void fn_8007C414(void);
+extern void cardeMatrixClearAnimTimer(void);
 
 extern void cardeSaveSetCard(void*, void*, s32);
 extern void cardeSaveSetSummary(void*, void*, s32);
@@ -105,8 +105,8 @@ extern s32 windowGetActiveID(void);
 extern void menuCardEMatrixSelectCard(s32, s32);
 
 extern u8 cardeSaveRemoveCard(void*, void*, s32);
-extern void fn_8007C634(void);
-extern void fn_80082650(void*);
+extern void cardeMatrixCommitEntry(void);
+extern void cardeSaveClearIfEmpty(void*);
 
 extern void soundStartRaw(s32, s32, s32);
 extern void heroAddPokecoupon(s32, s32);
@@ -187,15 +187,15 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(
 
     /*
      * Original:
-     *   fn_8007C764(lbl_8047A439 == 0);
-     *   fn_8007C7A8(1);
+     *   cardeMatrixSetFlagC9(lbl_8047A439 == 0);
+     *   cardeMatrixSetFlagC8(1);
      *   menuOpen(0xA6, 1);
      */
-    fn_8007C764(lbl_8047A439 == 0);
+    cardeMatrixSetFlagC9(lbl_8047A439 == 0);
 
-    fn_8007C7A8(1);
+    cardeMatrixSetFlagC8(1);
     state = menuOpen(0xA6, 1);
-    fn_8007C7A8(0);
+    cardeMatrixSetFlagC8(0);
 
     if (state != 0) {
         return 1;
@@ -245,7 +245,7 @@ restart:
             }
         }
 
-        fn_8007CB54(name);
+        cardeMatrixSetTitle(name);
 
         msgctrlSetValue(0x4D, (u32)name);
 
@@ -259,11 +259,11 @@ restart:
         __assert(lbl_80266FAC, 0x6C8, lbl_80266FB8);
     }
 
-    fn_8007CAB0();
+    cardeMatrixUpdateSortKeys();
 
     lbl_8047A434 = cardeGridGetRecord(0, base + 0xBC, 1);
 
-    fn_8007C7EC();
+    cardeMatrixLoadEntries();
 
     if (lbl_8047A434 == NULL) {
         __assert(lbl_80266FAC, 0x6DB, lbl_8047BA20);
@@ -472,7 +472,7 @@ restart:
         winMsgOpen(8, 0x3B5B, 1, 0);
         winMsgClose(1);
 
-        fn_8007C414();
+        cardeMatrixClearAnimTimer();
 
         return 2;
 
@@ -592,22 +592,22 @@ first_menu:
 
         sysvarsWaitForTransfer();
 
-        fn_8007CAB0();
+        cardeMatrixUpdateSortKeys();
 
         if (cardeSaveRemoveCard(
                 lbl_8047A434,
                 base + 0xBC,
                 (u8)lbl_8047A448) != 0) {
 
-            fn_8007C414();
-            fn_8007C634();
+            cardeMatrixClearAnimTimer();
+            cardeMatrixCommitEntry();
 
-            fn_8007CAB0();
-            fn_80082650(lbl_8047A434);
+            cardeMatrixUpdateSortKeys();
+            cardeSaveClearIfEmpty(lbl_8047A434);
         }
 
-        fn_8007C414();
-        fn_8007C7EC();
+        cardeMatrixClearAnimTimer();
+        cardeMatrixLoadEntries();
 
         return 2;
     }
@@ -747,26 +747,26 @@ first_menu:
 
         sysvarsWaitForTransfer();
 
-        fn_8007CAB0();
+        cardeMatrixUpdateSortKeys();
 
         if (cardeSaveRemoveCard(
                 lbl_8047A434,
                 base + 0xBC,
                 (u8)lbl_8047A448) != 0) {
 
-            fn_8007C414();
-            fn_8007C634();
+            cardeMatrixClearAnimTimer();
+            cardeMatrixCommitEntry();
 
-            fn_8007CAB0();
-            fn_80082650(lbl_8047A434);
+            cardeMatrixUpdateSortKeys();
+            cardeSaveClearIfEmpty(lbl_8047A434);
         }
 
-        fn_8007C414();
-        fn_8007C7EC();
+        cardeMatrixClearAnimTimer();
+        cardeMatrixLoadEntries();
 
         winMsgOpen(8, 0x3B78, 1, 0);
 
-        fn_8007C414();
+        cardeMatrixClearAnimTimer();
 
         heroPartyHealAll(0);
         save = savedataGetStatus(0, 2);
@@ -858,7 +858,7 @@ first_menu:
             0);
     }
 
-    fn_8007C414();
+    cardeMatrixClearAnimTimer();
 
 post_validate:
 
@@ -898,7 +898,7 @@ post_validate:
 validation_done:
 
     if (valid == 0) {
-        fn_8007C414();
+        cardeMatrixClearAnimTimer();
 
         heroPartyHealAll(0);
         save = savedataGetStatus(0, 2);
@@ -1131,37 +1131,37 @@ void cardeMenuDrawSprite2(void* unused, u8* sprite) {
 }
 #pragma pop
 
-/* fn_800347B8 - 0x800347B8 | size: 0xC */
-void fn_800347B8(void) {
+/* cardeSetRecordFlag - 0x800347B8 | size: 0xC */
+void cardeSetRecordFlag(void) {
     extern u8 lbl_8047A440;
 
     lbl_8047A440 = 1;
 }
 
-/* fn_800347C4 - 0x800347C4 | size: 0x24 */
+/* cardeBuzzer_800347C4 - 0x800347C4 | size: 0x24 */
 #pragma push
 #pragma scheduling off
-void fn_800347C4(void) {
+void cardeBuzzer_800347C4(void) {
     extern void soundStartSE(u32);
 
     soundStartSE(0x26);
 }
 #pragma pop
 
-/* fn_800347E8 - 0x800347E8 | size: 0x24 */
+/* cardeBuzzer_800347E8 - 0x800347E8 | size: 0x24 */
 #pragma push
 #pragma scheduling off
-void fn_800347E8(void) {
+void cardeBuzzer_800347E8(void) {
     extern void soundStartSE(u32);
 
     soundStartSE(0x26);
 }
 #pragma pop
 
-/* fn_8003480C - 0x8003480C | size: 0x24 */
+/* cardeBuzzer_8003480C - 0x8003480C | size: 0x24 */
 #pragma push
 #pragma scheduling off
-void fn_8003480C(void) {
+void cardeBuzzer_8003480C(void) {
     extern void soundStartSE(u32);
 
     soundStartSE(0x26);
@@ -1233,7 +1233,7 @@ typedef struct SysvarsSaveWork {
  */
 #pragma push
 #pragma peephole off
-void fn_80034830(u8 enabled, s32 selection,
+void cardeArenaRecordResult(u8 enabled, s32 selection,
                  SysvarsOpponentSource* source)
 {
     extern u8 lbl_803A3334[];
@@ -1321,7 +1321,7 @@ static inline u8 sysvarsGroupMaxLevel(u8* group)
 
 #pragma push
 #pragma peephole off
-void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut)
+void cardeSelectOpponentLevel(u8* valid, s8* selectionOut, u8* valueOut)
 {
     extern u8 lbl_803A3334[];
     extern void* lbl_8047A434;
@@ -1488,8 +1488,8 @@ void cardeSubMenuDrawText3(void) {
 #pragma optimize_for_size reset
 #pragma pop
 
-/* fn_80034FB0 - 0x80034FB0 | size: 0x4 */
-void fn_80034FB0(void) {
+/* cardeNop_80034FB0 - 0x80034FB0 | size: 0x4 */
+void cardeNop_80034FB0(void) {
 }
 #endif
 
@@ -1520,7 +1520,7 @@ void cardeBattleRun(void)
     extern void cardeBattleSelectCard(void);
     extern void* cardeSaveGetCard(void*, s8, u8, u8);
     extern void* cardeGridGetRecord(void*, void*, s32);
-    extern u8 fn_800FF52C(void);
+    extern u8 floorIsLinking(void);
     extern void floorBattleEndTerminateScripts(void);
     extern s32 menuOpen(s32, s32);
     extern void menuClose(s32);
@@ -1875,8 +1875,8 @@ void cardeBattleRun(void)
             break;
 
         case 10:
-            fn_80034B5C(&valid, (void*)&selection, &value);
-            fn_80034830(valid, selection,
+            cardeSelectOpponentLevel(&valid, (void*)&selection, &value);
+            cardeArenaRecordResult(valid, selection,
                         (SysvarsOpponentSource*)(menuData + 0x3AC +
                                                  (s8)value * 0x28));
             amount = lbl_8047A450 + 1;
@@ -1979,7 +1979,7 @@ void cardeBattleRun(void)
         }
     }
 
-    if (fn_800FF52C() != 0) {
+    if (floorIsLinking() != 0) {
         floorBattleEndTerminateScripts();
     } else {
         floorLink(0x80, 0);

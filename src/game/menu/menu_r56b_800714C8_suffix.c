@@ -1,7 +1,7 @@
 /**
  * @file menu_r56b_800714C8_suffix.c
  * @brief menuCB_Common.c tail 0x800714C8 - 0x800716C8: _menuPop, _menuPush,
- *        _menuPeekStackDepth, menuCB_InitMenu and fn_8007169C.
+ *        _menuPeekStackDepth, menuCB_InitMenu and menuLinkFloor385.
  *
  * Function-boundary carve, text only (GC/1.3 -O4,p with the peephole pass
  * off for the whole unit). The bodies are menu_range_8007109C.c's (the
@@ -89,8 +89,8 @@ void menuCB_InitMenu(s32 id) {
     *(u32*)(lbl_803B6D88 + 0x40) = 0;
 }
 
-/* fn_8007169C (0x8007169C): fixed diagnostic-log call, always returns 0. */
-s32 fn_8007169C(void) {
+/* menuLinkFloor385 (0x8007169C): fixed diagnostic-log call, always returns 0. */
+s32 menuLinkFloor385(void) {
     floorLink(0x385, 0);
     return 0;
 }

@@ -227,7 +227,7 @@ void _prolog(void)
     /* tableResBiosGetResPtr */
     lbl_80478E0C = lbl_125_data_8BCB4;
     lbl_80478E08 = &lbl_125_data_14A664;
-    /* fn_8018FE30 */
+    /* dbgFlagApplyPreset */
     lbl_80478EF4 = lbl_125_rodata_0;
     lbl_80478EF0 = &lbl_125_data_14A668;
     /* GSflagClear */
@@ -236,10 +236,10 @@ void _prolog(void)
     /* cameraFindFloorEntry */
     lbl_80478FBC = lbl_125_data_8BCF4;
     lbl_80478FB8 = &lbl_125_data_14A670;
-    /* fn_8018FE30 */
+    /* dbgFlagApplyPreset */
     lbl_80478ED4 = lbl_125_rodata_8;
     lbl_80478ED0 = &lbl_125_data_14A674;
-    /* fn_8018FE30 */
+    /* dbgFlagApplyPreset */
     lbl_80478EE4 = lbl_125_rodata_24;
     lbl_80478EE0 = &lbl_125_data_14A678;
     lbl_80478EDC = lbl_125_rodata_2C;

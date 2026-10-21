@@ -152,7 +152,7 @@ extern void GSmodelStartAnimation(void* model);
 extern u8 GSmodelIsAnimating(void* model);
 extern void GSmodelSetVisibility(void* model, s32 visible);
 extern void GSmodelFree(void* model);
-extern u32 fn_801662E8(u32 arg0, u32 arg1);
+extern u32 soundFindOwnerWrapper(u32 arg0, u32 arg1);
 extern void soundPauseSong(u32 handle, u32 volume, u32 arg2);
 extern void soundResumeMusic(u32 handle);
 extern void soundPlayFanfare(s32 id, s32 fade, s32 volume);
@@ -231,7 +231,7 @@ void pokemonCenterBallMachineSequence(s32 peopleGroup, s32 peopleId)
             break;
         case 3:
             {
-                u32 se = fn_801662E8(0, 0x406);
+                u32 se = soundFindOwnerWrapper(0, 0x406);
 
                 if (se != -1) {
                     soundPauseSong(se, 0x1068, 0);

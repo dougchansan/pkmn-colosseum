@@ -634,7 +634,7 @@ void fn_801AE50C(HSD_RObj* robj)
  * fobj.c shows the same pattern (fobjNullCB with "fobj: alloc"), so HAL
  * keeps it in a shared header; its name is not recoverable from the binary.
  */
-static inline void fn_801AEBE0(HSD_ObjAllocData* data, char* name)
+static inline void HSD_RObjLoadNop(HSD_ObjAllocData* data, char* name)
 {
 }
 
@@ -642,7 +642,7 @@ static inline void fn_801AEBE0(HSD_ObjAllocData* data, char* name)
 HSD_RObj* HSD_RObjAlloc(void)
 {
     HSD_RObj* new = HSD_ObjAlloc(&lbl_804656B4);
-    fn_801AEBE0(&lbl_804656B4, "robj: alloc");
+    HSD_RObjLoadNop(&lbl_804656B4, "robj: alloc");
     HSD_ASSERT(965, new);
     memset(new, 0, sizeof(*new));
     return new;

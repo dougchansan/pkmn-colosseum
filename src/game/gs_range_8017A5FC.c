@@ -17,9 +17,9 @@
 
 /* Address: 0x8017A5FC | size: 0x28 */
 extern FSYSManager lbl_80453FEC;
-void fn_8017A5FC(void);
+void fsysSetReadStatus12F(void);
 #if !defined(GS_RANGE_8017A5FC_SPLIT) || defined(GS_RANGE_8017A5FC_PREFIX)
-void fn_8017A5FC(void)
+void fsysSetReadStatus12F(void)
 {
     FSYSSlot* slot;
 
@@ -76,14 +76,14 @@ s32 fsysSlotReadTOC(FSYSSlot* slot)
     if (archive->flags & 1) {
         if (!slot->tocBuffer) {
             GSdvdReadAsync((void*)slot->fileInfo0, dvdBuf, slot->dmaChunkSize,
-                        slot->dmaDstOffset, fn_8017A5FC);
+                        slot->dmaDstOffset, fsysSetReadStatus12F);
         } else {
             GSdvdReadAsync(slot->tocBuffer, dvdBuf, slot->dmaChunkSize,
-                        slot->dmaDstOffset, fn_8017A5FC);
+                        slot->dmaDstOffset, fsysSetReadStatus12F);
         }
     } else {
         GSdvdReadAsync((void*)slot->fileInfo0, dvdBuf, slot->dmaChunkSize,
-                    slot->dmaDstOffset, fn_8017A5FC);
+                    slot->dmaDstOffset, fsysSetReadStatus12F);
     }
     return 0;
 }

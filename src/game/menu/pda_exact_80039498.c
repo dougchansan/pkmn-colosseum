@@ -16,7 +16,7 @@ extern void winSpriteSetDisp(void* sprite, s32 disp);
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_80039498(s32 value)
+s32 itemStorageSelectAction(s32 value)
 {
     extern u32 windowGetActiveID(void);
     extern s32 menuOpenCustom(s32 menuId, ...);
@@ -64,7 +64,7 @@ s32 itemStorageListDrawSprite(void* window, void* sprite)
 {
     extern u16 pcboxGetNbItemSlot(s32 box);
     extern void* pcboxGetItem(s32 box, s16 slot);
-    extern u8 fn_801429E8(void* item);
+    extern u8 itemSlotIsValid(void* item);
     s32 count;
     s32 slot;
     s32 slotCount;
@@ -78,7 +78,7 @@ s32 itemStorageListDrawSprite(void* window, void* sprite)
     slotCount = pcboxGetNbItemSlot(0);
     boundedSlotCount = slotCount;
     for (slot = 0; slot < boundedSlotCount; slot++) {
-        if (fn_801429E8(pcboxGetItem(0, slot))) {
+        if (itemSlotIsValid(pcboxGetItem(0, slot))) {
             count++;
         }
     }

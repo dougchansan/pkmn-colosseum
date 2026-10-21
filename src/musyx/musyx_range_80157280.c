@@ -285,8 +285,8 @@ extern void  GSmodelSetVisibility(void* param);
 /* People data layer (people_data.c) */
 extern void* itemDataBiosGetPtr(u16 index);   /* peopleFieldGetByIndex */
 extern void* fn_80142CF4(u32 a, u32 b, u32 c, u32 d);  /* peopleFieldAlloc */
-extern void  fn_801429E8(void* entry);  /* peopleFieldGetEntry */
-extern void  fn_80142984(u32 id);       /* peopleFieldGetByID */
+extern void  itemSlotIsValid(void* entry);  /* peopleFieldGetEntry */
+extern void  itemIdIsValid(u32 id);       /* peopleFieldGetByID */
 
 /* Script system */
 
@@ -594,7 +594,7 @@ static void fn_8015DEC0_apply_fade(MusyxStudioEmitter* emitter)
     }
 }
 
-void fn_8015DEC0(void)
+void s3dUpdateStudios(void)
 {
     MusyxEmitterListener* listener;
     MusyxStudioEmitter* emitter;
@@ -744,7 +744,7 @@ static inline f32 musyxEmitterSqrtPositive(f32 value) {
     return value;
 }
 
-void fn_8015E374(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
+void s3dCalcEmitterParams(MusyxEmitter* emitter, f32* outVolume, f32* outDoppler,
                  f32* outX, f32* outY, f32* outCone) {
     MusyxEmitterListener* listener;
     u32 count;
@@ -1367,7 +1367,7 @@ u32 s3dSetListener(SndListener* listener, SndVec3* position,
     return 0;
 }
 
-u32 fn_8015F124(SndServiceVoice* voice, f32 value, f32 pan, f32 volume,
+u32 s3dAddStartVoice(SndServiceVoice* voice, f32 value, f32 pan, f32 volume,
                 f32 surround, f32 pitch) { /* AddStartingEmitter */
     s32 i;
     SndServiceStartNode* node;
@@ -1473,7 +1473,7 @@ static inline void s3dSetFXParameters(SndServiceVoice* voice, f32 value,
     }
 }
 
-void fn_8015F270(void) { /* StartContinousEmitters */
+void s3dStartQueuedVoices(void) { /* StartContinousEmitters */
     s32 i;
     SndServiceStartNode* start;
     SndServiceVoice* voice;
@@ -1582,7 +1582,7 @@ void s3dHandle(void)
         }
 
         if (flags & 0x20001) {
-            fn_8015E374((MusyxEmitter*)voice, &value, &pitch, &pan,
+            s3dCalcEmitterParams((MusyxEmitter*)voice, &value, &pitch, &pan,
                         &surround, &volume);
         }
 
@@ -1617,7 +1617,7 @@ void s3dHandle(void)
                 voice = next;
                 continue;
             } else if (flags & 1) {
-                if (fn_8015F124(voice, value, pan, surround, volume, pitch) != 0) {
+                if (s3dAddStartVoice(voice, value, pan, surround, volume, pitch) != 0) {
                     voice = next;
                     continue;
                 }
@@ -1759,8 +1759,8 @@ void s3dHandle(void)
         voice = next;
     }
 
-    fn_8015F270();
-    fn_8015DEC0();
+    s3dStartQueuedVoices();
+    s3dUpdateStudios();
 
     pair = lbl_8047B03C;
     while (pair != 0) {
@@ -2386,7 +2386,7 @@ extern u32  OSGetTick(void);
 extern void PPCSync(void);
 extern void AIStartDMA(void);
 extern void AIStopDMA(void);
-extern u32  fn_800AE794(void);
+extern u32  DSPCheckMailFromDSPFlag(void);
 extern void DSPSendMailToDSP(u32 a);
 extern void DSPInit(void);
 extern void DSPReset(void);
@@ -4286,9 +4286,9 @@ void salCtrlDsp(u32 arg) {
     lbl_8047B098 = 0;
     PPCSync();
     DSPSendMailToDSP((u32)lbl_8047B00C | 0xBABE0000);
-    while (fn_800AE794() != 0) {}
+    while (DSPCheckMailFromDSPFlag() != 0) {}
     DSPSendMailToDSP(arg);
-    while (fn_800AE794() != 0) {}
+    while (DSPCheckMailFromDSPFlag() != 0) {}
 }
 #endif
 #pragma pop
@@ -4633,11 +4633,11 @@ u32 ReverbHIModify(_SND_REVHI_WORK* rev, f32 coloration, f32 time, f32 mix, f32 
 #pragma optimization_level 0
 #pragma optimizewithasm off
 #if 0
-asm void fn_80164C40(void) {
+asm void ReverbHIFilterBlock(void) {
 #include "src/game/people/people_field_fn_80164C40.inc"
 }
 #else
-void fn_80164C40(s32* a, s32* b, f32 scaleA, f32 scaleB) {
+void ReverbHIFilterBlock(s32* a, s32* b, f32 scaleA, f32 scaleB) {
     u32 i;
 
     if (a == NULL || b == NULL) {
@@ -7926,7 +7926,7 @@ void sndSetSampleDataUploadCallback(u8* ptr, u32 size) {
 
 
 
-u8 fn_8015E890(void* emitter) {
+u8 s3dIsEmitterActive(void* emitter) {
     extern u8 lbl_8047AF18;
     if (lbl_8047AF18 != 0) {
         return (((u32*)emitter)[4] >> 16) & 1;
@@ -7974,7 +7974,7 @@ u32 s3dAddEmitter(MusyxEmitter* emitterBuffer, const MusyxVec3* position,
             hwEnableIrq();
             return -1;
         }
-        fn_8015E374(emitter, &volume, &pitch, &pan, &unusedPan, &surround);
+        s3dCalcEmitterParams(emitter, &volume, &pitch, &pan, &unusedPan, &surround);
         if (volume == lbl_8047D468) {
             hwEnableIrq();
             return -1;
@@ -8100,7 +8100,7 @@ void s3dExit(void) { }
 extern void seqInit(void);
 extern void synthInit(u32 mixFrq, u8 numVoices);
 
-s32 fn_8015FE88(u8 voicesArg, u8 music, u8 sfx, u8 studios, u32 flags,
+s32 sndInit(u8 voicesArg, u8 music, u8 sfx, u8 studios, u32 flags,
                 u32 aramSize) {
     extern u32 hwInit(u32 mixFrq, u16 numVoices, u32 numStudios, u32 flags);
     extern void dataInitStack(void);
@@ -8153,7 +8153,7 @@ void sndQuit(void) {
 }
 #pragma dont_inline reset
 
-u8 fn_8015FFD4(void) {
+u8 sndIsInitialized(void) {
     extern u8 lbl_8047AF18;
     return lbl_8047AF18;
 }

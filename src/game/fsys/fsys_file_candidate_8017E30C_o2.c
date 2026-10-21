@@ -78,7 +78,7 @@ extern u8 GSdvdConvertPathToEntrynum(const char* path);
 extern u32 GSdvdOpen(const char* path);
 extern u32 GSdvdGetLength(u32 fileInfo);
 extern s32 GSdvdClose(u32 fileInfo);
-extern void fn_8017F2C4(void* dst, const void* src, u32 size);
+extern void fsysLZSSDecode(void* dst, const void* src, u32 size);
 extern u32 fsysCacheLookup(u32 fileHandle, u32 groupID, u32 nameHash);
 extern void fsysARAMToMainSync(void* main, void* aram, u32 size);
 
@@ -152,7 +152,7 @@ static inline void fsysDecodeLZSS(void* dst, void* src)
 
     decoded = 0;
     fsysLZSSInit(src);
-    fn_8017F2C4(dst, src, lbl_80453FDC.decompSize);
+    fsysLZSSDecode(dst, src, lbl_80453FDC.decompSize);
     DCFlushRange(dst, lbl_80453FDC.decompSize);
     decoded = 1;
 }

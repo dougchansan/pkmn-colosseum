@@ -826,7 +826,7 @@ s32 fightTrainerAiSelectFightActionItem(void *ctx, u32 param1, u32 param2, u32 p
   extern u16 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void *, u32 *, u32, u32);
   extern u8 fightOutPokemonCheckFightOut(u32 pokemon);
   extern u8 fightTrainerAiIsAbiCntAbove(void *ctx, u32 pokemon);
-  extern u8 fn_80142984(u32 item);
+  extern u8 itemIdIsValid(u32 item);
   extern u8 fightSeqGetItemType(u32 item, u32 pokemon);
   extern s16 itemUse2PokemonSimulation(void *work, u32 zero, void *status, u32 item, u32 flag);
   extern u8 fightTrainerAiGetHpRatio(void *ctx, u32 pokemon);
@@ -903,7 +903,7 @@ s32 fightTrainerAiSelectFightActionItem(void *ctx, u32 param1, u32 param2, u32 p
     {
       continue;
     }
-    if (!fn_80142984(item))
+    if (!itemIdIsValid(item))
     {
       continue;
     }

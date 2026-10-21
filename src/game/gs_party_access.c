@@ -46,7 +46,7 @@ extern f32 lbl_8047B6E8;
 #pragma peephole off
 
 /* 0x8000CA34 */
-s32 fn_8000CA34(void) {
+s32 dbgMenuToggleMenu09(void) {
     u32 r;
     r = menuIsCheck(0x9);
     if ((u8)r != 0) {
@@ -80,7 +80,7 @@ typedef struct {
 
 
 /* 0x8000CAA4 */
-s32 fn_8000CAA4(void) {
+s32 dbgMenuToggleDispFlag4(void) {
 #ifdef PCPORT
     lbl_804673F8[8] ^= 0x10;
 #else
@@ -91,7 +91,7 @@ s32 fn_8000CAA4(void) {
 }
 
 /* 0x8000CAD0 */
-s32 fn_8000CAD0(void) {
+s32 dbgMenuToggleDispFlag5(void) {
 #ifdef PCPORT
     lbl_804673F8[8] ^= 0x20;
 #else
@@ -102,7 +102,7 @@ s32 fn_8000CAD0(void) {
 }
 
 /* 0x8000CAFC */
-s32 fn_8000CAFC(void) {
+s32 dbgMenuToggleDispFlag6(void) {
 #ifdef PCPORT
     lbl_804673F8[8] ^= 0x40;
 #else
@@ -113,7 +113,7 @@ s32 fn_8000CAFC(void) {
 }
 
 /* 0x8000CB28 */
-s32 fn_8000CB28(void) {
+s32 dbgMenuToggleDispFlag7(void) {
 #ifdef PCPORT
     lbl_804673F8[8] ^= 0x80;
 #else
@@ -183,13 +183,13 @@ s32 dbgMenuMemoInitDebug(void) {
 }
 
 /* 0x8000CCF8 */
-s32 fn_8000CCF8(void) {
+s32 dbgMenuSetFlag3F0(void) {
     std078_flagSetFalse(0x3F0);
     return 1;
 }
 
 /* 0x8000CD20 */
-s32 fn_8000CD20(void) {
+s32 dbgMenuCheckDnaKeyCode(void) {
     dnaKeyCodeCheck(0x99, 0x9C, 0x9F);
     return 0;
 }
@@ -348,7 +348,7 @@ s32 dbgMenuWazaDebugStop(void) {
 }
 
 /* 0x8000D154 */
-s32 fn_8000D154(void) {
+s32 dbgMenuToggleMenuCF(void) {
     u32 r;
     r = menuIsCheck(0xCF);
     if ((u8)r != 0) {
@@ -361,7 +361,7 @@ s32 fn_8000D154(void) {
 }
 
 /* 0x8000D1C4 */
-s32 fn_8000D1C4(void) {
+s32 dbgMenuToggleMenu78(void) {
     u32 r;
     r = menuIsCheck(0x78);
     if ((u8)r != 0) {

@@ -2,14 +2,14 @@
 
 typedef void (*FuncPtr)(void);
 
-extern void fn_80013744(void);
+extern void menuReturnTrue_80013744(void);
 extern void itemStorageWithdraw(void);
-extern void fn_800138B4(void);
+extern void bagUseKindItemAt(void);
 extern void bagItemToss(void);
 extern void bagItemGive(void);
 extern void bagItemUse(void);
-extern void fn_8001501C(void);
-extern void fn_800150E4(void);
+extern void pocketDrawMessage(void);
+extern void pocketDrawKindItemList(void);
 extern void menuPocketDrawNameList(void);
 extern void bagDrawBerryList(void);
 extern void bagDrawTMList(void);
@@ -61,7 +61,7 @@ const SubEntry lbl_802667B0[5] = {
     { 0x00000131, bagItemUse, 0x00000000 },
     { 0x00000132, bagItemGive, 0x00080000 },
     { 0x00000133, bagItemToss, 0x00000000 },
-    { 0x00002B01, fn_800138B4, 0x00050000 },
+    { 0x00002B01, bagUseKindItemAt, 0x00050000 },
     { 0x00000134, NULL, 0x00000000 },
 };
 const SubEntry lbl_802667EC[3] = {
@@ -86,7 +86,7 @@ const SubEntry lbl_80266864[2] = {
 };
 const SubEntry lbl_8026687C[4] = {
     { 0x00002B12, itemStorageWithdraw, 0x00000000 },
-    { 0x00002B3F, fn_80013744, 0x00000000 },
+    { 0x00002B3F, menuReturnTrue_80013744, 0x00000000 },
     { 0x00000131, bagItemUse, 0x00000000 },
     { 0x00000134, NULL, 0x00000000 },
 };
@@ -130,22 +130,22 @@ typedef struct BigEntry {
 } BigEntry;
 
 const BigEntry lbl_80266918[6] = {
-    { 0x96969600, 0xFFFFFFFF, 0x00000001, 0x00000203, 0x0000020B, fn_800150E4, fn_8001501C,
+    { 0x96969600, 0xFFFFFFFF, 0x00000001, 0x00000203, 0x0000020B, pocketDrawKindItemList, pocketDrawMessage,
       0x00000008, 0x00002B01, lbl_8026687C, 0x00000004, lbl_8026690C, 0x00000001,
       { 0, 0, 0, 0, 0, 0 } },
-    { 0xB4AED300, 0x00000005, 0x00000001, 0x00000204, 0x0000020C, menuPocketDrawNameList, fn_8001501C,
+    { 0xB4AED300, 0x00000005, 0x00000001, 0x00000204, 0x0000020C, menuPocketDrawNameList, pocketDrawMessage,
       0x00000007, 0x00002AFD, lbl_80266864, 0x00000002, lbl_80266900, 0x00000001,
       { 0, 0, 0, 0, 0, 0 } },
-    { 0xAECCD300, 0x00000003, 0x00000000, 0x00000205, 0x0000020D, bagDrawBerryList, fn_8001501C,
+    { 0xAECCD300, 0x00000003, 0x00000000, 0x00000205, 0x0000020D, bagDrawBerryList, pocketDrawMessage,
       0x00000006, 0x00002AFC, lbl_80266834, 0x00000004, lbl_802668E8, 0x00000002,
       { 0, 0, 0, 0, 0, 0 } },
-    { 0xAED3B200, 0x00000004, 0x00000000, 0x00000206, 0x0000020E, bagDrawTMList, fn_8001501C,
+    { 0xAED3B200, 0x00000004, 0x00000000, 0x00000206, 0x0000020E, bagDrawTMList, pocketDrawMessage,
       0x00000005, 0x00002AFB, lbl_80266810, 0x00000003, lbl_802668DC, 0x00000001,
       { 0, 0, 0, 0, 0, 0 } },
-    { 0xD3C4AE00, 0x00000001, 0x00000001, 0x00000207, 0x0000020F, menuPocketDrawItemList, fn_8001501C,
+    { 0xD3C4AE00, 0x00000001, 0x00000001, 0x00000207, 0x0000020F, menuPocketDrawItemList, pocketDrawMessage,
       0x00000004, 0x00002AFA, lbl_802667EC, 0x00000003, lbl_802668C4, 0x00000002,
       { 0, 0, 0, 0, 0, 0 } },
-    { 0xC0C0C000, 0x00000002, 0x00000001, 0x00000208, 0x00000210, menuPocketDrawItemList, fn_8001501C,
+    { 0xC0C0C000, 0x00000002, 0x00000001, 0x00000208, 0x00000210, menuPocketDrawItemList, pocketDrawMessage,
       0x00000003, 0x00002AF9, lbl_802667B0, 0x00000005, lbl_802668AC, 0x00000002,
       { 0, 0, 0, 0, 0, 0 } },
 };

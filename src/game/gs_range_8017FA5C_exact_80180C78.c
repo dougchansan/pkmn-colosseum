@@ -4,7 +4,7 @@
  *
  * fsysQueueJob queues a job for an archive entry (fsys calls it from
  * fsysAllocLZSSJob for "LZSS" images, mode 0): take a free job record (pool
- * exhausted -> fn_80179F4C(1)), fill it in, and either append it to the
+ * exhausted -> fsysShowLoadingMenu(1)), fill it in, and either append it to the
  * running job's chain or start it at once. Mode 0 jobs decode the entry
  * (fsysLZSSJobSetup sets them up, task _fsysJobDecodeTask); mode 1 jobs run the
  * entry's group callback (task _fsysJobGroupCallbackTask).
@@ -38,10 +38,10 @@ extern void GSdvdRead(u32 file, void* dst, u32 size, u32 offset);
 extern s32 fsysFlushLoadedEntry(GsRangeSlotInfo* slot, FSYSFileEntry* entry);
 extern void* fsysLZSSDecodeJob(GsRangeSlotInfo* slot, u32 nameHash,
                          void* compressed, FSYSSubEntry* sub);
-extern void fn_80179F4C(s32 error);
+extern void fsysShowLoadingMenu(s32 error);
 extern void fsysLZSSJobSetup(GsRangeSlotInfo* slot, FSYSSubEntry* sub, u32 index,
                         GsRangePoolElem* job);
-extern s32 fn_8017AC30(void);
+extern s32 fsysGetLoadMode(void);
 extern void* GSgappCreate(s32 a, s32 b, void* param, void (*task)(void));
 
 void _fsysJobDecodeTask(void);
@@ -124,7 +124,7 @@ static inline GsRangePoolElem* jobFindFree(void)
         }
         job++;
     }
-    fn_80179F4C(1);
+    fsysShowLoadingMenu(1);
     return NULL;
 }
 
@@ -166,7 +166,7 @@ static inline void jobStartDecode(GsRangePoolElem* job)
     lbl_8047B1E4 = job;
     fsysLZSSJobSetup(lbl_8047B1E4->slot, lbl_8047B1E4->subEntry, lbl_8047B1E4->index,
                 lbl_8047B1E4);
-    job->app = GSgappCreate(fn_8017AC30(), 0xC8, job->slot->taskParam, _fsysJobDecodeTask);
+    job->app = GSgappCreate(fsysGetLoadMode(), 0xC8, job->slot->taskParam, _fsysJobDecodeTask);
     if (job->app) {
         job->active = 1;
         job->state = 1;

@@ -46,11 +46,11 @@ extern void GSmodelSetTextureChange(void* model, void* texture);
 
 extern void GSmodelApplyAnimation(void* model);
 extern void* GScameraGetActiveCamera(void);
-extern void fn_800D4604(s32 mode);
-extern void fn_800D377C(s32 mode);
+extern void gfxSetRecordMode(s32 mode);
+extern void GSgfxSetPixelFormatMode(s32 mode);
 extern void GSgfxRenderLayer(void* texture, s32 arg1);
-extern void fn_800D9B24(u16* x, u16* y, u16* width, u16* height);
-extern void fn_800D9AF0(u16* x, u16* y, u16* width, u16* height);
+extern void gfxGetScissorBox(u16* x, u16* y, u16* width, u16* height);
+extern void gfxGetViewportBox(u16* x, u16* y, u16* width, u16* height);
 extern void GScameraSetCurrent(void* camera);
 extern void gfxSetScissor(u16 x, u16 y, u16 width, u16 height);
 extern void gfxSetViewport(u16 x, u16 y, u16 width, u16 height);
@@ -165,21 +165,21 @@ void tvRender(void)
     }
     GSmodelApplyAnimation(lbl_8047AD90);
     camera = GScameraGetActiveCamera();
-    fn_800D4604(2);
-    fn_800D377C(1);
+    gfxSetRecordMode(2);
+    GSgfxSetPixelFormatMode(1);
     GSgfxRenderLayer(lbl_8047AD8C, 0);
-    fn_800D9B24(&viewportX, &viewportY, &viewportWidth, &viewportHeight);
-    fn_800D9AF0(&scissorX, &scissorY, &scissorWidth, &scissorHeight);
+    gfxGetScissorBox(&viewportX, &viewportY, &viewportWidth, &viewportHeight);
+    gfxGetViewportBox(&scissorX, &scissorY, &scissorWidth, &scissorHeight);
     GScameraSetCurrent(lbl_8047AD94);
     gfxSetScissor(0, 0, lbl_8047AD88->width - 1, lbl_8047AD88->height - 1);
     gfxSetViewport(0, 0, lbl_8047AD88->width - 1, lbl_8047AD88->height - 1);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     GSmodelDrawModel(lbl_8047AD90, 0x3010);
     GSgfxRenderEnd();
-    fn_800D377C(1);
+    GSgfxSetPixelFormatMode(1);
     GScameraSetCurrent(camera);
     gfxSetScissor(viewportX, viewportY, viewportWidth, viewportHeight);
     gfxSetViewport(scissorX, scissorY, scissorWidth, scissorHeight);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    fn_800D4604(1);
+    gfxSetRecordMode(1);
 }

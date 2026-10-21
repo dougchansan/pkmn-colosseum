@@ -16,12 +16,12 @@ extern u8 lbl_8047A634;
 extern u8 lbl_8047A635;
 extern u32 lbl_8047A638;
 extern s32 std011_dialogDisplayYesNoMenu(void);
-extern s32 fn_80075A9C(void);
-extern u8 fn_80075AC0(void);
-extern s32 fn_80075AE4(void);
-extern u8 fn_80075B08(void);
-extern s32 fn_80075B2C(void);
-extern u8 fn_80075B50(void);
+extern s32 exDiscSetFlagAB5(void);
+extern u8 exDiscCheckFlagAB5(void);
+extern s32 exDiscSetFlagAB4(void);
+extern u8 exDiscCheckFlagAB4(void);
+extern s32 exDiscSetFlagAB3(void);
+extern u8 exDiscCheckFlagAB3(void);
 extern u8 exDiscCouponSelect(s32, u32);
 extern s32 memcardWaitTask2(u32, u32, u32);
 extern u32 exDiscCouponGive();
@@ -64,9 +64,9 @@ void exDiscCouponMenu(void* backup)
         return;
     }
 
-    lbl_8047A635 = fn_80075AC0();
-    lbl_8047A634 = fn_80075B08();
-    lbl_8047A633 = fn_80075B50();
+    lbl_8047A635 = exDiscCheckFlagAB5();
+    lbl_8047A634 = exDiscCheckFlagAB4();
+    lbl_8047A633 = exDiscCheckFlagAB3();
     heroValue = (u32)heroGetStatus(0, 0xE, 0);
     if (exDiscCouponSelect(1, heroValue) == 0) {
         return;
@@ -104,16 +104,16 @@ party_capacity_done:
 
     if (lbl_8047A632 != 0) {
         pcboxDelItem(pcbox, 0x47, 1);
-        fn_80075A9C();
+        exDiscSetFlagAB5();
     }
     if (lbl_8047A631 != 0) {
         heroPokemonGetPikachu(
             hero, floorDataBiosGetFloorID(floorDataBiosGetCurrentPtr()));
-        fn_80075AE4();
+        exDiscSetFlagAB4();
     }
     if (lbl_8047A630 != 0) {
         pcboxDelItem(pcbox, 1, 1);
-        fn_80075B2C();
+        exDiscSetFlagAB3();
     }
 
     if (memcardWaitTask2(4, 2, 0) != 4) {

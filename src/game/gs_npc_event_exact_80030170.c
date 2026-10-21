@@ -5,7 +5,7 @@ typedef struct GSnpcEventQueue {
     u32 index;
 } GSnpcEventQueue;
 
-void* fn_80030170(GSnpcEventQueue* queue)
+void* gbaTradeNextPartyEntry(GSnpcEventQueue* queue)
 {
     u32 index;
 

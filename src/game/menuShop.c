@@ -275,7 +275,7 @@ void shopBagSetItem(s32 price, s32 item_id, s32 quantity, ShopInventory* invento
 #endif
 
 /* shopBagSortItems - 0x80029CC0 | size: 0x234 */
-extern void fn_80142A88(void*, s32);
+extern void itemSlotsClear(void*, s32);
 extern s32 cardeTransferUI(s32, s32, s32, void*);
 typedef struct WorldMapEntry {
     u16 id;
@@ -302,8 +302,8 @@ s32 shopBagSortItems(u8* r30) {
     WorldMapBuf buf;
     s32 i;
 
-    fn_80142A88(r30, 0xeb);
-    fn_80142A88(r30 + 0x3ac, 0xeb);
+    itemSlotsClear(r30, 0xeb);
+    itemSlotsClear(r30 + 0x3ac, 0xeb);
     *(u32*)(r30 + 0x758) = 0;
     *(u32*)(r30 + 0x75c) = 0;
     if (cardeTransferUI(0, 0x40, 0, &buf) < 0) {
@@ -1575,7 +1575,7 @@ void menuShopDrawMarqueeDot(void* ctx, u8* data, u32 sprite_id, u32 color_byte, 
 #endif /* guard split */
 #if !defined(MENUSHOP_ISLAND_ONLY) || defined(MENUSHOP_ISLAND_8002B880_ONLY)
 /* menuShopDrawMarqueeFrame - 0x8002B880 | size: 0x468 */
-extern void fn_800FE6D0(void);
+extern void spriteSetOrigin(void);
 extern void spriteSetEnv(void);
 extern f64 lbl_8047B998;
 extern f32 lbl_8047B98C;
@@ -1598,7 +1598,7 @@ asm void fn_8002B880(void) {
  * panel context), r4 = the draw/sprite entity. Only runs when the context's
  * primary flag word (*(u16*)*(void**)ctx) is zero. It first computes a sprite
  * column/alpha exactly like shopMenuDrawItem10 (5-entry lbl_802E4F68 lookup table,
- * keyed on entity->0x6), positions the panel via fn_800FE6D0/spriteSetEnv, then
+ * keyed on entity->0x6), positions the panel via spriteSetOrigin/spriteSetEnv, then
  * draws four 45-step radial rings of icons by calling menuShopDrawMarqueeDot in a loop,
  * each ring starting from a different phase offset and advancing by a fixed
  * per-step increment that wraps at lbl_8047B97C.
@@ -1614,7 +1614,7 @@ asm void fn_8002B880(void) {
 s32 menuShopDrawMarqueeFrame(u8* state, u8* entity)
 {
     /* Cross-TU callees (real arg lists inferred from register state at each bl). */
-    extern void fn_800FE6D0(s32 x, s32 y);
+    extern void spriteSetOrigin(s32 x, s32 y);
     extern void spriteSetEnv(void);
     extern void menuShopDrawMarqueeDot(void* panel, u8* entity, u32 mode, s32 step, f32 phase);
 
@@ -1691,7 +1691,7 @@ s32 menuShopDrawMarqueeFrame(u8* state, u8* entity)
     }
 
     /* ---- Position the panel ---- */
-    fn_800FE6D0((s32)(s16)(*(s16*)(state + 0x84) + *(s16*)(entity + 0x50)),
+    spriteSetOrigin((s32)(s16)(*(s16*)(state + 0x84) + *(s16*)(entity + 0x50)),
                 (s32)(s16)(*(s16*)(state + 0x86) + *(s16*)(entity + 0x52)));
     spriteSetEnv();
 
@@ -2173,7 +2173,7 @@ static inline void shopOpenTravelList(ShopListMenu* params, u32 loc, u8 mode)
 
 #endif /* guard split */
 #if !defined(MENUSHOP_ISLAND_ONLY)
-/* fn_8002C284 - 0x8002C284 | size: 0x184 */
+/* shopBuyMenu - 0x8002C284 | size: 0x184 */
 extern void menuCloseCustom(void);
 extern u32 lbl_804788A8;
 extern u16 lbl_8047A3F8;
@@ -2182,12 +2182,12 @@ extern u32 lbl_80478E44;
 extern u16 lbl_8047A3F4;
 extern u16 lbl_8047A3EC;
 #if 0
-asm void fn_8002C284(void) {
+asm void shopBuyMenu(void) {
 #include "src/game/gs_worldmap_fn_8002C284.inc"
 }
 #else
 /*
- * fn_8002C284  GSmap_ShowTravelDialog  0x8002C284 | 0x184 bytes
+ * shopBuyMenu  GSmap_ShowTravelDialog  0x8002C284 | 0x184 bytes
  *
  * Shows the "Travel to <location>?" confirmation dialog for the world map.
  *
@@ -2197,7 +2197,7 @@ asm void fn_8002C284(void) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8002C284(u32 loc_idx, u8 mode)
+void shopBuyMenu(u32 loc_idx, u8 mode)
 {
     extern void   shopMsgOpenA(u8* r3, s32 r4, s32 r5, ...); /* GSmap_FormatText2 */
     extern void*  windowGetActiveID(void);
@@ -2309,7 +2309,7 @@ static inline u32 shopGetMoney(u8 mode, ShopWork* work)
 #pragma peephole off
 void shopCouponRun(s32 mapIdx, u32 mode)
 {
-    extern void  fn_80142A88(void* buf, s32 v);
+    extern void  itemSlotsClear(void* buf, s32 v);
     extern s32   shopBagSortItems(u8* buf);
     extern u32   savedataGetStatus(u8* obj, u16 sel);
     extern u32   heroGetStatus(u8* ptr, u32 selector, u32 idx);
@@ -2405,8 +2405,8 @@ void shopCouponRun(s32 mapIdx, u32 mode)
     switch (type) {
     case 2:
         work = &params.work;
-        fn_80142A88(work, 0xeb);
-        fn_80142A88(work->head + 0x3ac, 0xeb);
+        itemSlotsClear(work, 0xeb);
+        itemSlotsClear(work->head + 0x3ac, 0xeb);
         params.work.credit0 = 0;
         params.work.credit1 = 0;
         params.work.exitFlag = 0;
@@ -3020,7 +3020,7 @@ void std026_unkMenuSequence26(void)
                 shopBuyRun(location, type);
                 break;
             case 1:
-                fn_80018F54(3, location, 0);
+                bagMenuOpen(3, location, 0);
                 break;
             }
             message = shopFormatTextB(&text1, location, 1, -1);
@@ -3048,7 +3048,7 @@ void std026_unkMenuSequence26(void)
                 shopCouponRun(location, type);
                 break;
             case 1:
-                fn_8002C284(location, type);
+                shopBuyMenu(location, type);
                 break;
             case 2:
                 shopMsgOpenA((ShopLocationArgument*)location, 0xB, -1);
@@ -3128,7 +3128,7 @@ void shopRunAtLocation(u32 arg0)
                 shopBuyRun(location, type);
                 break;
             case 1:
-                fn_80018F54(3, location, 0);
+                bagMenuOpen(3, location, 0);
                 break;
             }
             message = shopFormatTextB(&text1, location, 1, -1);
@@ -3156,7 +3156,7 @@ void shopRunAtLocation(u32 arg0)
                 shopCouponRun(location, type);
                 break;
             case 1:
-                fn_8002C284(location, type);
+                shopBuyMenu(location, type);
                 break;
             case 2:
                 shopMsgOpenA((ShopLocationArgument*)location, 0xB, -1);

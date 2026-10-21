@@ -16,7 +16,7 @@ void wazaSequenceApplyStop(void* obj)
             if (owner->animationActive == 0) {
                 wazaSequenceOwnerPlayIdle(owner, 1, 0);
             }
-            fn_800E3CC8(owner->model, 0);
+            GSmodelSetFlag200(owner->model, 0);
             if ((sequence->flags & 0x08000000) != 0) {
                 GSmodelLinkToGSparticleBank(owner->model, owner->particleBank);
             }
@@ -59,7 +59,7 @@ void fn_801DBC30(void* obj)
             if (sequence->cameraActive != 0) {
                 battleCameraWazaStopIfOwner(owner);
             }
-            fn_800E3CC8(owner->model, 0);
+            GSmodelSetFlag200(owner->model, 0);
             owner->currentSequence = NULL;
         }
     }

@@ -7,7 +7,7 @@
 
 extern f32 lbl_8047A494;
 
-void fn_80038990(void)
+void pcFrameStepTask(void)
 {
     extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);

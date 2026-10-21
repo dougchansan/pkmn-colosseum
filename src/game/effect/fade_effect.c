@@ -198,7 +198,7 @@ typedef struct FadeColor {
     u8 a;
 } FadeColor;
 
-extern void fn_800D9ED8(u32 enable);
+extern void gfxSetFlag1A(u32 enable);
 extern void gfxSetFlags(u32 mask);
 extern void gfxClearFlags(u32 mask);
 extern void gfxSetOrtho(f32 left, f32 top, f32 right, f32 bottom);
@@ -258,7 +258,7 @@ u8 fadeEffectHookFunction_Doku(u8 pending, f32 elapsed, f32 duration,
     level = 255.0f * out.x;
     alpha = level * (1.0f - fade);
 
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     gfxSetFlags(1);
     gfxClearFlags(6);
     gfxSetOrtho(0.0f, 0.0f, 640.0f, 480.0f);
@@ -274,7 +274,7 @@ u8 fadeEffectHookFunction_Doku(u8 pending, f32 elapsed, f32 duration,
     gfxVtxPos(640.0f, 480.0f, 0.0f);
     gfxVtxColor4u8(0, color.r, color.g, color.b, alpha);
     gfxEnd();
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 
     if (t >= 1.0f) {
         fadeEffectDokuStop();

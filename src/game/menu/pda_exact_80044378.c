@@ -40,7 +40,7 @@ extern const f32 lbl_8047BCF4;
 extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
 extern void fn_800FE35C(void);
-extern void fn_800492CC(u8* context, PdaSprite* sprite);
+extern void pdaMemoDrawModelSprite(u8* context, PdaSprite* sprite);
 
 static inline u32 pdaLoadRowPokemon(s32 offset)
 {
@@ -119,8 +119,8 @@ void pdaMemoDrawSpeciesColumn(u8* context, PdaSprite* sprite)
     extern void msgctrlSetValue(s32 id, u32 value);
     extern u16 memoDataGetCount(s32 a);
     extern u32 GSmsgGetGSchar(u32 msg);
-    extern s8 fn_8004BDEC(void);
-    extern s8 fn_8004BDFC(void);
+    extern s8 pdaStrategyMemoGetSelection0(void);
+    extern s8 pdaStrategyMemoGetSelection1(void);
     u8* entry;
     s16 messageId;
 
@@ -142,8 +142,8 @@ void pdaMemoDrawSpeciesColumn(u8* context, PdaSprite* sprite)
     case 0x31E:
         break;
     case 0x119B:
-        if (fn_8004BDEC() == 1 && fn_8004BDFC() >= 1) {
-            fn_800492CC(context, sprite);
+        if (pdaStrategyMemoGetSelection0() == 1 && pdaStrategyMemoGetSelection1() >= 1) {
+            pdaMemoDrawModelSprite(context, sprite);
         }
         break;
     case 0x76D:

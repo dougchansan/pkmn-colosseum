@@ -38,26 +38,26 @@ void soundReadStreamFile(const char* path, void* buffer, u32 capacity)
     GSdvdClose(file);
 }
 
-void fn_80165EE0(void* wave, void* buffer, u32 size)
+void soundLoadGroupBuffer(void* wave, void* buffer, u32 size)
 {
     memset(buffer, 0xE0, size);
     lbl_8047B0B0 = size;
     lbl_8047B0B4 = buffer;
-    fn_8017AF6C(0x99, wave);
+    fsysLoadEntryInto(0x99, wave);
 }
 
-void fn_80165F40(void)
+void soundLoadStreamBuffer(void)
 {
     lbl_8047B0B4 = GSresGetResource(0, 0x406);
     lbl_8047B0B0 = 0x10000;
-    fn_8017B370(0x99);
+    fsysStartLoadExclusive(0x99);
     soundWaitGroup(0x99);
 }
 
-void fn_80165F84(void)
+void soundAllocBuffers(void)
 {
-    GSresRegisterResource(fn_8016604C(0x10000), 0, 0x406, 0);
-    GSresRegisterResource(fn_8016604C(0x2000), 0, 0x407, 0);
+    GSresRegisterResource(soundAllocLocked(0x10000), 0, 0x406, 0);
+    GSresRegisterResource(soundAllocLocked(0x2000), 0, 0x407, 0);
     lbl_8047B0AC = 0;
     lbl_8047B0A8 = 0;
 }

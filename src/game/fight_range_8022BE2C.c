@@ -91,7 +91,7 @@ u32 fightOutPokemonDoSoubiItemCheck(u32 ctx, u8 mode) {
     extern u16 GSrand(void);
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8  fightOutPokemonIsJoutaiNormal();
-    extern void fn_80119F50();
+    extern void itemDataGetHoldEffect();
     extern u32 pokemonInitJoutai();
     extern void fightOutPokemonResetSeqStatus();
     extern void wsRunScript();
@@ -605,33 +605,33 @@ u32 fightOutPokemonDoSoubiItemCheck(u32 ctx, u8 mode) {
         t2 = 0;
         lbl_80478D78[5] = 0;
         if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 3) == 1 || fightOutPokemonIsPokemonJoutaiDataId(ctx, 4) == 1) {
-            fn_80119F50(3);
+            itemDataGetHoldEffect(3);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2 = 1;
         }
         if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1) {
             fightOutPokemonWriteJoutaiDataId(ctx, 0x17);
-            fn_80119F50(8);
+            itemDataGetHoldEffect(8);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
         if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 5) == 1) {
-            fn_80119F50(5);
+            itemDataGetHoldEffect(5);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
         if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 6) == 1) {
-            fn_80119F50(6);
+            itemDataGetHoldEffect(6);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
         if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 7) == 1) {
-            fn_80119F50(7);
+            itemDataGetHoldEffect(7);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
         if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 9) == 1) {
-            fn_80119F50(9);
+            itemDataGetHoldEffect(9);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             t2++;
         }
@@ -654,7 +654,7 @@ u32 fightOutPokemonDoSoubiItemCheck(u32 ctx, u8 mode) {
         if (t1 == 0) {
             break;
         }
-        fn_80119F50(0xA);
+        itemDataGetHoldEffect(0xA);
         msgctrlSetValue(0xD, GSmsgGetGSchar());
         lbl_80478D78[5] = 0;
         result = 2;

@@ -124,7 +124,7 @@ extern void GSvecTransform(void* out, void* sphere, void* ray);
 extern void GXProject(void* sphere, void* center, void* radii, f32 x, f32 y, f32 z, void* outA, void* outB, void* outC);
 extern void* HSD_FogLoadDesc(void* ctx);
 extern void HSD_FogSet(u32 zero);
-extern void fn_8016EA88(void);
+extern void HSD_FogReleaseCurrent(void);
 extern void psSetFog(void);
 
 /* Forward declarations for functions defined later in this file */
@@ -247,10 +247,10 @@ void cameraObjectAnimUpdate(u32 dtUnk) {
 #if defined(GS_RENDER_UTIL_EXACT_800D13C4)
 
 /* ==================================================================
- * fn_800D13C4 - Empty function (likely stripped debug)
+ * GSgfxRenderLayerNop - Empty function (likely stripped debug)
  * Address: 0x800D13C4, Size: 0x4
  * ================================================================== */
-void fn_800D13C4(void) {
+void GSgfxRenderLayerNop(void) {
     /* 4 bytes -- likely just blr (empty function) */
 }
 
@@ -400,10 +400,10 @@ void GScameraStartAnimation(GSRenderCamera* camera) {
 }
 
 /* ==================================================================
- * fn_800D1858 - GS render: set object fields 0x10c and 0x114
+ * cameraSetAnimHandle - GS render: set object fields 0x10c and 0x114
  * Address: 0x800D1858, Size: 0xC
  * ================================================================== */
-void fn_800D1858(GSRenderCamera* camera, u32 val) {
+void cameraSetAnimHandle(GSRenderCamera* camera, u32 val) {
     camera->animMode = val;
 }
 

@@ -62,9 +62,9 @@ extern void* menuSpriteBiosGetPtr(s32);
 extern int   soundStartSE(u16);
 extern s32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
 extern void  _threadSwitch(void);    /* yield */
-extern u32   fn_800BE31C(void);    /* rand or tick */
+extern u32   gappReadGPMetric0(void);    /* rand or tick */
 extern u32   GXSetDrawSyncCallback(void*);   /* register fn, returns handle */
-extern void  fn_800BD91C(s32, s32);
+extern void  GXSetGPMetric(s32, s32);
 extern void  GXSetDrawSync(s32);
 extern void  GSgfxBeginBackFBCapture(u32, void*, void*);
 extern u32   GStextureCreate(s32, s32, s32, s32, s32);
@@ -119,7 +119,7 @@ extern u8  lbl_8035B3F0[];  /* module name string */
 
 /* Additional external functions (not already declared above) */
 extern void fn_800BF74C(void);
-extern void fn_800D9ED8(s32);
+extern void gfxSetFlag1A(s32);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetOrtho(f32, f32, f32, f32);
@@ -140,10 +140,10 @@ extern void GSmodelResetPEdescr(u32 model);
 extern void GSmodelDrawModel(u32 model, u32 flags);
 extern void GSlightSetActive(u32 light, u32 active);
 extern u32 GScameraGetActiveCamera(void);
-extern void fn_800D4604(u32 layer);
-extern void fn_800D377C(u32 state);
-extern void fn_800D9B24(u16* left, u16* top, u16* right, u16* bottom);
-extern void fn_800D9AF0(u16* left, u16* top, u16* right, u16* bottom);
+extern void gfxSetRecordMode(u32 layer);
+extern void GSgfxSetPixelFormatMode(u32 state);
+extern void gfxGetScissorBox(u16* left, u16* top, u16* right, u16* bottom);
+extern void gfxGetViewportBox(u16* left, u16* top, u16* right, u16* bottom);
 extern void GScameraSetCurrent(u32 camera);
 extern u32 GStextureGetXsize(u32 texture);
 extern u32 GStextureGetYsize(u32 texture);
@@ -179,7 +179,7 @@ extern void  menuOpenCustom(void* p, u32 r4, s32 r5, s32 r6, void* r7, s32 r8, .
 extern u8    menuOffScreenSetPriority(u8 val);
 extern u8    menuOffScreenSetDisp(u8 val);
 extern u32   GSgetFrameStep(void);
-extern u8    lbl_80404B68[];  /* scratch table for fn_80107F38, fn_801081F8 */
+extern u8    lbl_80404B68[];  /* scratch table for winSeqSetAll, winSeqSetItem */
 extern u8    lbl_80404B8C[];  /* scratch table for winSeqSetMenu */
 extern u8    lbl_8047AD10;     /* resource request gate byte (sda21) - authoritative decl, use as-is */
 
@@ -189,10 +189,10 @@ extern void wazaSequenceSysClearWork(void);
 extern void* kaisuuBiosGetMax(u32 index);
 extern void* kaisuuBiosGetMin(u32 index);
 extern u32 kaisuuGetKaisuu(u32 param);
-extern void fn_80101B34(u32 param);
-extern void fn_80101B88(u32 val);
+extern void gappDrawSyncCallback(u32 param);
+extern void gappSetDrawSyncEnable(u32 val);
 extern void gappLoadMeterDraw(void);
-extern void fn_80101D5C(void);
+extern void gappIssueDrawSync(void);
 extern void gappLoadMeterDrawFrame(void);
 extern void gappLoadMeterInit(u8 param);
 extern void menuGetOffScreenFlag(void);
@@ -200,14 +200,14 @@ extern void menuReleaseOffScreen(f32 f1);
 extern void menuCreateOffScreen(f32 param);
 extern s32 menuGetSelectItemNum(void);
 extern s32 menuGetCursorFromItemID(void* unused, u32 param);
-extern void fn_801021F8(void* p, u32 val);
+extern void windowSetAllSpritesDisp(void* p, u32 val);
 extern void menuSetDisp(void* p, u32 enable);
 extern void* menuGetCursorItemID(void* p, u32 target);
 extern s32 menuSetCursor(void* p, u32 val);
 extern s32 menuGetCursor(void* p);
 extern s32 menuCloseSync(void* p, u8 flag);
 extern void menuCloseFloor(void);
-extern void fn_801024E8(void);
+extern void windowCloseAll4(void);
 extern void menuClose(s32 p);
 extern s32 menuCloseCustom(void* p, u32 mode, u8 wait);
 extern s32 menuIsCheck(s32 param);
@@ -226,7 +226,7 @@ extern void menuInit(void);
 extern u32 cursorBiosGetPos(u16 idx);
 extern u32 cursorBiosSetPos(u16 idx, u16* out);
 extern void cursorBiosInit(void);
-extern void fn_80103F74(void* head, u16 key, u32 data);
+extern void windowSetItemDisp(void* head, u16 key, u32 data);
 extern void* windowGetAllocPtr(void* ptr);
 extern void* windowAllocMemory(void* p, s32 size);
 extern void* windowGetFreeWork(void* ptr);
@@ -236,7 +236,7 @@ extern void windowDrawSprite(void* p, void* a, void* b, u16 key, u32 data);
 extern void windowDrawSprite2(void* r3, void* r4, s16 r5, s16 r6, s32 r7, s32 r8, s32 r9, s32 r10);
 extern u8* windowGetCursorToItem(u8* arg);
 extern void windowGetValue(s32 param);
-extern s32 fn_801044D0(s32 param, u16* val);
+extern s32 windowSetCursorById(s32 param, u16* val);
 extern void windowGetCursor(void);
 extern void windowCheckCursor(void* p, u8 flags);
 extern u32 windowGetActiveID(void);
@@ -269,15 +269,15 @@ extern void winMsgCheck(void);
 extern void winMsgClose(void);
 extern void winMsgOpenWithSE(void);
 extern void winMsgOpen(void);
-extern void fn_80106F98(void);
+extern void winSeqUpdateAll(void);
 extern s32 winSeqCheckMove(s32 param);
-extern s32 fn_80107170(s32 r3, s32 r31);
+extern s32 windowItemSeqPlaying(s32 r3, s32 r31);
 extern void winSeqMoveMenu(void);
-extern s32 fn_80107E78(void* r3, s32 r4, u16 r30);
+extern s32 windowItemSeqIs(void* r3, s32 r4, u16 r30);
 extern s32 winSeqIsCheck(s32 r3, u16 r30);
-extern void fn_80107F38(s32 param, u32 key);
+extern void winSeqSetAll(s32 param, u32 key);
 extern void winSeqSetMenu(s32 param, u32 key);
-extern void fn_801081F8(void* r3_arg, u16 r4, u16 r5);
+extern void winSeqSetItem(void* r3_arg, u16 r4, u16 r5);
 extern void winSetSequence(void* out, u32 idx);
 extern s32 winSpriteGetDisp(void* ptr);
 extern void winSpriteSetDisp(void* node, u32 enable);
@@ -379,10 +379,10 @@ u32 menuModelRender(u8* work) {
         }
     }
     previousCamera = GScameraGetActiveCamera();
-    fn_800D4604(2);
-    fn_800D377C(2);
-    fn_800D9B24(&viewLeft, &viewTop, &viewRight, &viewBottom);
-    fn_800D9AF0(&scissorLeft, &scissorTop, &scissorRight, &scissorBottom);
+    gfxSetRecordMode(2);
+    GSgfxSetPixelFormatMode(2);
+    gfxGetScissorBox(&viewLeft, &viewTop, &viewRight, &viewBottom);
+    gfxGetViewportBox(&scissorLeft, &scissorTop, &scissorRight, &scissorBottom);
     GScameraSetCurrent(*(u32*)(work + 0x38));
     GScameraSetCurrent(*(u32*)(work + 0x38));
     width = (u16)(GStextureGetXsize(*(u32*)(work + 0x34)) - 1);
@@ -402,12 +402,12 @@ u32 menuModelRender(u8* work) {
         GSmodelDrawModel(*(u32*)(work + 0x24), 0x3010);
     }
     GSgfxRenderEnd();
-    fn_800D377C(1);
+    GSgfxSetPixelFormatMode(1);
     GScameraSetCurrent(previousCamera);
     gfxSetScissor(viewLeft, viewTop, viewRight, viewBottom);
     gfxSetViewport(scissorLeft, scissorTop, scissorRight, scissorBottom);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-    fn_800D4604(1);
+    gfxSetRecordMode(1);
     {
         lightCursor = work;
         for (i = 0; i < 3; lightCursor += 4, i++) {

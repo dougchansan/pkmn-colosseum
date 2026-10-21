@@ -53,7 +53,7 @@ extern void  OSSetIdleFunction(void* func, void* arg,
                           void* stackTop, u32 stackSize); /* OSCreateFiber-like */
 extern void  OSDisableInterrupts(void);
 extern void  OSRestoreInterrupts(void);
-extern void  fn_800D30A0(void* callback);                 /* GSgfx register swap callback */
+extern void  GSgfxSetRetraceCallback(void* callback);                 /* GSgfx register swap callback */
 extern void  threadSaveGPRRegisters(void);                /* GSthread context init */
 extern void  threadSaveFPRRegisters(void);                           /* GSthread FPU context init */
 /* renamed symbols referenced by asm incs (symbolmap port) */
@@ -68,14 +68,14 @@ extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
 extern void _GSthreadExitTrampoline(u32 arg);          /* GSthread trampoline / entry wrapper */
 extern void PADRead(void* buf);
 extern u32 SIProbe(u32 buttonIdx);
-extern void fn_800AB4FC(void*);
+extern void PADControlAllMotors(void*);
 extern void GSmemFree(u16 handle);
 extern void* fn_800E24B0(u16 handle);
 extern void* GSmemLock(u16 handle);
 extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern u32 SJIStoGSchar(u16* destination, const u8* source);
-extern void fn_800DBEB4(u32 index, GXColor color);
+extern void gfxSetTevKColor(u32 index, GXColor color);
 extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, s32 e);
 extern void gfxVtxPos2s16(s16 x, s16 y);
 extern void gfxEnd(void);
@@ -85,17 +85,17 @@ extern void gfxSetVtxDesc(void* ptr);
 extern void gfxLoadTexture(void);
 extern void gfxClearFlags(u32 mask);
 extern void gfxSetFlags(u32 mask);
-extern void fn_800D9ED8(void);
-extern void fn_800DC1D4(s32 a);
+extern void gfxSetFlag1A(void);
+extern void gfxSetNumTevStages(s32 a);
 extern void logVsnprintf_float(char* output, u32 capacity, const char* format, void* arguments);
 extern void soundStopSE(u32 type);
 extern void fn_800CDBE0(void);
 extern u32 GSgetFrameStep(void);
-extern void fn_800DBF78(void);
-extern void fn_800DBFD4(void);
-extern void fn_800DC04C(void);
-extern void fn_800DC0D4(void);
-extern void fn_800DC14C(void);
+extern void gfxSetTevKColorSel(void);
+extern void gfxSetTevColorIn(void);
+extern void gfxSetTevColorOp(void);
+extern void gfxSetTevAlphaIn(void);
+extern void gfxSetTevAlphaOp(void);
 extern void gfxSetTevStage(void);
 extern void windowDrawSprite(s32 x, s32 y, s32 context, u32 key, u32 flags);
 extern void soundStartSE(void);
@@ -323,9 +323,9 @@ extern s32 _msgGetSize__FPCUs(const u16* text);
 extern void fn_800FE35C(void);
 extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
 extern void spriteSetEnv(void);
-extern void fn_800FE6A0(f32 a, f32 b);
-extern void fn_800FE6AC(s16* outA, s16* outB);
-extern void fn_800FE6D0(s32 a, s32 b);
+extern void spriteSetScale(f32 a, f32 b);
+extern void spriteGetOrigin(s16* outA, s16* outB);
+extern void spriteSetOrigin(s32 a, s32 b);
 extern void GSgappUnblock(u32 taskId);
 extern void GSgappBlock(u32 taskId);
 extern void GSgappTerminate(u32 taskId);
@@ -792,7 +792,7 @@ void GSmsgSetColor(void* obj) {
     clr.g = (color >> 16) & 0xFF;
     clr.b = (color >> 8) & 0xFF;
     clr.a = color & 0xFF;
-    fn_800DBEB4(0, clr);
+    gfxSetTevKColor(0, clr);
 }
 
 /* XD keeps this task-record reset as the dead-stripped
@@ -1114,7 +1114,7 @@ void GSmsgInitRuby(arg0)
 static inline void msgSetChar(u8* work, u16 code) {
     extern u8 lbl_80314E08[];
     extern u8 lbl_80314F98[];
-    extern void fn_800D9ED8(s32 arg);
+    extern void gfxSetFlag1A(s32 arg);
     extern void gfxSetFlags(s32 arg);
     extern void gfxClearFlags(u32 mask);
     extern void gfxSetVtxDesc(void* tex);
@@ -1124,7 +1124,7 @@ static inline void msgSetChar(u8* work, u16 code) {
     extern void gfxVtxPos2s16(s16 x, s16 y);
     extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, u32 color);
     extern void gfxEnd(void);
-    extern void fn_800DC1D4(s32 arg);
+    extern void gfxSetNumTevStages(s32 arg);
     u8* glyph;
     void* outNode;
     s16 drawX0;
@@ -1155,7 +1155,7 @@ static inline void msgSetChar(u8* work, u16 code) {
         gfxEnd();
         gfxSetFlags(0x80000002u);
         gfxSetVtxDesc(lbl_80314F98);
-        fn_800DC1D4(1);
+        gfxSetNumTevStages(1);
         advance = (f32)work[0x22] * *(f32*)(work + 0x60);
         *(f32*)(work + 0x14) = 2.0f + advance;
     } else {
@@ -1195,7 +1195,7 @@ s32 GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...) {
     } GSVaList;
 
     extern u8 lbl_80314F98[];
-    extern void fn_800D9ED8(s32 arg);
+    extern void gfxSetFlag1A(s32 arg);
     extern void gfxSetFlags(s32 arg);
     extern void gfxClearFlags(u32 mask);
     extern void gfxSetVtxDesc(void* tex);
@@ -1205,7 +1205,7 @@ s32 GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...) {
     extern void gfxVtxPos2s16(s16 x, s16 y);
     extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, u32 color);
     extern void gfxEnd(void);
-    extern void fn_800DC1D4(s32 arg);
+    extern void gfxSetNumTevStages(s32 arg);
 
     u8* work;
     u16 code;
@@ -1227,7 +1227,7 @@ s32 GSmsgPrintf(s32 x, s32 y, u32 color, const char* fmt, ...) {
     msgSetFontInfo(work);
 
     spriteSetEnv();
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     gfxSetFlags(3);
     gfxClearFlags(4);
     gfxSetVtxDesc(lbl_80314F98);
@@ -1650,11 +1650,11 @@ s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3)
 {
     extern void gfxLoadTexture(s32, u32);
     extern void gfxSetTevStage(s32, s32, s32, s32, s32);
-    extern void fn_800DBF78(s32, s32);
-    extern void fn_800DC0D4(s32, s32, s32, s32, s32);
-    extern void fn_800DC14C(s32, s32, s32, s32, s32, s32);
-    extern void fn_800DBFD4(s32, s32, s32, s32, s32);
-    extern void fn_800DC04C(s32, s32, s32, s32, s32, s32);
+    extern void gfxSetTevKColorSel(s32, s32);
+    extern void gfxSetTevAlphaIn(s32, s32, s32, s32, s32);
+    extern void gfxSetTevAlphaOp(s32, s32, s32, s32, s32, s32);
+    extern void gfxSetTevColorIn(s32, s32, s32, s32, s32);
+    extern void gfxSetTevColorOp(s32, s32, s32, s32, s32, s32);
     u8 *mgr;
     u16 *cursor;
     u16 *savedCursor;
@@ -1695,14 +1695,14 @@ s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3)
 
     mgr = (u8*)lbl_80478B08;
     gfxLoadTexture(0, (u32)lbl_80478B08->textures[lbl_80478B08->textureIndex]);
-    fn_800DC1D4(1);
+    gfxSetNumTevStages(1);
     gfxSetTevStage(0, 0, 0, 0, 0);
-    fn_800DBEB4(0, color);
-    fn_800DBF78(0, 0x0C);
-    fn_800DC0D4(0, 0x0F, 0x0E, 0x0A, 0x0F);
-    fn_800DC14C(0, 0, 0, 0, 1, 0);
-    fn_800DBFD4(0, 7, 4, 5, 7);
-    fn_800DC04C(0, 0, 0, 0, 1, 0);
+    gfxSetTevKColor(0, color);
+    gfxSetTevKColorSel(0, 0x0C);
+    gfxSetTevAlphaIn(0, 0x0F, 0x0E, 0x0A, 0x0F);
+    gfxSetTevAlphaOp(0, 0, 0, 0, 1, 0);
+    gfxSetTevColorIn(0, 7, 4, 5, 7);
+    gfxSetTevColorOp(0, 0, 0, 0, 1, 0);
 
     lbl_80478B08->image = GStextureLockImage(lbl_80478B08->textures[lbl_80478B08->textureIndex], 0);
 
@@ -1834,7 +1834,7 @@ s32 msgTaskDraw(u8* arg0, u32 arg1, u32 arg2, u32 arg3)
         windowDrawSprite(drawX, drawY, 0, 0xB9, 0);
         gfxSetFlags(0x80000000);
         gfxSetVtxDesc(lbl_80314F98);
-        fn_800DC1D4(1);
+        gfxSetNumTevStages(1);
     }
 
     *(u32*)(arg0 + 0x30) = (u32)savedCursor;
@@ -1913,7 +1913,7 @@ void msgDrawRuby(u8* arg0)
                 gfxEnd();
                 gfxSetFlags(0x80000002);
                 gfxSetVtxDesc(lbl_80314F98);
-                fn_800DC1D4(1);
+                gfxSetNumTevStages(1);
 
                 scaleX = arg0[0x22] * *(f32 *)(arg0 + 0x60);
                 *(f32 *)(arg0 + 0x14) = 2.0f + scaleX;

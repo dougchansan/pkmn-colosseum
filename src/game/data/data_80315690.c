@@ -8,8 +8,8 @@ extern u8 lbl_803254E0[];
 extern u8 lbl_803357E0[];
 extern u8 lbl_803381EA[];
 
-extern u8 fn_80007B30[];
-extern u8 fn_8000804C[];
+extern u8 dbgMenuFightSettings[];
+extern u8 dbgMenuFightStartEncount[];
 
 /* Auto-carved .data unit 0x80315690..0x8035B060 (5 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
 
@@ -2651,7 +2651,7 @@ void* lbl_803156E0[16256] = {
     (void*)0xFF85E553,
     (void*)0xB727950B,
     (void*)0xB82B8804,
-    (void*)((u8*)fn_80007B30 + 0x1D0),
+    (void*)((u8*)dbgMenuFightSettings + 0x1D0),
     (void*)0x7F007A00,
     (void*)0x75007000,
     (void*)0x75006D00,
@@ -8252,7 +8252,7 @@ void* lbl_803156E0[16256] = {
     (void*)0xFFBFFFC0,
     (void*)0xF055FB5E,
     (void*)0xFB5EFF61,
-    (void*)((u8*)fn_8000804C + 0xB4),
+    (void*)((u8*)dbgMenuFightStartEncount + 0xB4),
     (void*)0x82008200,
     (void*)0x72007400,
     (void*)0x75007600,

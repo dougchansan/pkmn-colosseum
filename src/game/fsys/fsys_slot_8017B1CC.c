@@ -100,7 +100,7 @@ s32 GSresGroupGetState(u32 fileHandle)
 }
 
 /* Address: 0x8017B370 | size: 0x74 */
-s32 fn_8017B370(u32 fileHandle)
+s32 fsysStartLoadExclusive(u32 fileHandle)
 {
     FSYSSlot* slot;
 
@@ -114,7 +114,7 @@ s32 fn_8017B370(u32 fileHandle)
 }
 
 /* Address: 0x8017B3E4 | size: 0x64 */
-s32 fn_8017B3E4(u32 fileHandle)
+s32 fsysStartLoad(u32 fileHandle)
 {
     FSYSSlot* slot;
 

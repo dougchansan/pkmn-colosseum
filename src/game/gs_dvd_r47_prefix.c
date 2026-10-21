@@ -60,7 +60,7 @@ extern void gfxSetBlendMode(u32, u32, u32);
 extern void gfxSetUpdates(u32, u32, u32);
 extern void gfxSetAlphaCompare(u32, u32, u32, u32, u32, u32);
 extern void gfxSetZMode(u32, u32, u32);
-extern void fn_800D9ED8(u32);
+extern void gfxSetFlag1A(u32);
 extern void gfxSetCullMode(u32);
 extern void gfxSetVtxDesc(u32);
 extern void gfxSetPrimitive(u32);
@@ -219,7 +219,7 @@ void GSfilterDraw(void)
             gfxSetUpdates(1, 1, 0);
             gfxSetAlphaCompare(0, 7, 0, 0, 7, 0);
             gfxSetZMode(1, 1, 1);
-            fn_800D9ED8(1);
+            gfxSetFlag1A(1);
             gfxSetCullMode(0);
             gfxSetVtxDesc(lbl_804526E0.renderState);
             gfxSetPrimitive(6);
@@ -237,7 +237,7 @@ void GSfilterDraw(void)
                 }
             }
             gfxEnd();
-            fn_800D9ED8(0);
+            gfxSetFlag1A(0);
         }
     }
 }

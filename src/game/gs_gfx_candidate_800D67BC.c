@@ -16,7 +16,7 @@
  */
 #include "dolphin/types.h"
 
-extern void fn_800DB758(u16 vertCount);
+extern void gfxBeginPrimitive(u16 vertCount);
 extern void gfxRecordCommand(u32, u32, ...);
 extern void gfxVtxDescClear(u8*);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
@@ -41,7 +41,7 @@ inline void gfxCountPrims(u16 vertCount, s32 type, u32* totalVerts, u32* totalPr
 
 void gfxBegin(u16 vertCount) {
     if (*(u8*)(lbl_8047AA80 + 0x47e) == 1) {
-        fn_800DB758(vertCount);
+        gfxBeginPrimitive(vertCount);
         return;
     }
     if (*(s32*)lbl_8047AA80 == 1) {

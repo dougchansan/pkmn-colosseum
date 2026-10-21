@@ -79,7 +79,7 @@ extern s32 menuOpenCustom(s32 menuId, ...);
 extern void menuClose(s32 menuId);
 extern void menuCloseSync(s32 menuId, s32 flag);
 extern void* GSresFindById(u32 resourceId);
-extern void fn_800E3CC8(void* model, s32 value);
+extern void GSmodelSetFlag200(void* model, s32 value);
 extern void cameraPlayAnime(s32 camera, u32 resourceId, s32 startFrame, s32 flags);
 extern void GSmodelSetAnimIndex(void* model, s32 index);
 extern void GSmodelSetAnimFrame(void* model, f32 frame);
@@ -96,7 +96,7 @@ extern void GSlightStartAnimation(void* light);
 extern void GSlightSetActive(void* light, s32 active);
 extern void soundStartRaw(s32 soundId, s32 arg1, s32 arg2);
 extern void cameraWaitSyncAnime(s32 camera);
-extern void fn_8004A47C(void);
+extern void pdaTrainerDataLayout(void);
 extern void pdaSnagListRun(void);
 extern void pdaStrategyMemoRun(void);
 extern u8 std081_flagCheckTrue(s32 id);
@@ -149,7 +149,7 @@ void std027_unkMenuSequence27(void)
     menuOffScreenSetPriority(0);
     model = GSresFindById(0x0C541000);
     light = GSresFindById(0x0C541601);
-    fn_800E3CC8(model, 1);
+    GSmodelSetFlag200(model, 1);
     cameraPlayAnime(0x17, 0x0C541800, 0, 0);
     if (model != 0) {
         GSmodelSetAnimIndex(model, 0);
@@ -175,7 +175,7 @@ void std027_unkMenuSequence27(void)
     GSlightSetActive(GSresFindById(0x0C541602), 0);
     GSresFindById(0x0C540200);
     GSresFindById(0x0C541800);
-    fn_8004A47C();
+    pdaTrainerDataLayout();
 
     config.message = &lbl_8047A4FC;
     config.first = 0;
@@ -1288,7 +1288,7 @@ void pdaMailAttachRun(s32 mailId)
     extern void GSresReleaseOwner(u32 group);
     extern void GSresReleaseById(u32 group);
     extern s32 GSresGroupGetState(u32 group);
-    extern void fn_8017B3E4(u32 group);
+    extern void fsysStartLoad(u32 group);
     extern u32 mailGetAttachFileGroup(s32 mailId);
     PdaMailAttachmentConfig config;
     u32 group;
@@ -1306,7 +1306,7 @@ void pdaMailAttachRun(s32 mailId)
         return;
     }
     file = group;
-    fn_8017B3E4(file);
+    fsysStartLoad(file);
     config.mailId = mailId;
     config.status = &lbl_8047A538;
     config.y = lbl_8047A534;
@@ -1558,7 +1558,7 @@ extern void soundStart(s32 id, s32 a, s32 b, s32 c);
 extern u32 mailGetEntryField0(u8 index);
 extern void GSsndGetStatus(u32 id);
 extern void soundKill(u32 id);
-extern void fn_801654E0(u32 id, u32 buffer, u32 size);
+extern void soundLoadGroupForSlot(u32 id, u32 buffer, u32 size);
 extern void soundAttachWork(u32 id, u32 arg1, u32 arg2);
 extern s32 mailGetMailCount(void);
 extern void soundStopRaw(u32 id, u32 arg1, u32 arg2);
@@ -1588,7 +1588,7 @@ u32 pdaMailPickerKey(u8* context)
         lbl_8047A524 = *(s8*)(context + 0x95);
         soundId = mailGetEntryField0(lbl_8047A524);
         if (soundId != 0) {
-            fn_801654E0(soundId, lbl_8047A52C, 0x10000);
+            soundLoadGroupForSlot(soundId, lbl_8047A52C, 0x10000);
             soundAttachWork(soundId, 0, 0x408);
             soundStart(soundId, 0, 0xFF, 0);
             lbl_8047A528 = 0;
@@ -1645,7 +1645,7 @@ u8 pdaMailPickerRun(u8 initialSelection)
     lbl_8047A524 = initialSelection;
     soundId = mailGetEntryField0(initialSelection);
     if (soundId != 0) {
-        fn_801654E0(soundId, lbl_8047A52C, 0x10000);
+        soundLoadGroupForSlot(soundId, lbl_8047A52C, 0x10000);
         soundAttachWork(soundId, 0, 0x408);
         soundStart(soundId, 0, 0xFF, 0);
         lbl_8047A528 = 0;

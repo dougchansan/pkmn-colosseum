@@ -2,7 +2,7 @@
 #include "dolphin/types.h"
 #include "game/effect/effect_util_types.h"
 
-u32 fn_80133050(void)
+u32 dbgMenuSetVideoModePal(void)
 {
     fn_800D37D4(3, 2, 0, 2, 0, 0);
     return 0;

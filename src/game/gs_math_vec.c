@@ -96,14 +96,14 @@ extern void _gfxEmitPos3s16(void);
 extern void _gfxEmitPos3u16(void);
 extern void gfxVtxDescClear(u8*);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
-extern void fn_800D7940(u32, u16);
+extern void gfxDrawIndexedVertices(u32, u16);
 extern void gfxLoadVtxDesc(u32);
 extern void gfxDLCaptureVertex(void);
-extern void fn_800DB758(u16);
+extern void gfxBeginPrimitive(u16);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
 extern void GSlogVPrintf(void);
 extern void GSlogFormat(void);
-extern void fn_800E09E8(void*, void*, u32);
+extern void GSsplineEvalStrip(void*, void*, u32);
 extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
@@ -199,11 +199,11 @@ extern void GXSetTevAlphaIn();
 extern void GXSetTevKColorSel();
 extern void GXSetTevKAlphaSel();
 extern void GXSetTevIndirect();
-extern void fn_800BBC7C();
-extern void fn_800BBCE0();
-extern void fn_800BBE8C();
-extern void fn_800BBF98();
-extern void fn_800BBFDC();
+extern void GXSetTevIndWarp();
+extern void GXSetTevIndTile();
+extern void GXSetTevIndBumpST();
+extern void GXSetTevIndBumpXYZ();
+extern void GXSetTevIndRepeat();
 extern void GXSetTevKColor();
 extern void GXSetTevSwapModeTable();
 extern void GXSetProjection(void*, u32);
@@ -238,7 +238,7 @@ extern void jumptable_80315320();
 extern void fn_800E24B0(u16);
 extern void GSmemFree(u16);
 extern void GXCallDisplayList(u32, u32);
-extern void fn_800E2AF8(u16);
+extern void GSmemReturnTrue(u16);
 extern u16 GSmemAlloc(u32, u32);
 extern u32 lbl_8047AAD8;
 extern u32 lbl_8047AAD4;
@@ -342,7 +342,7 @@ extern void HSD_ImageDescRemove(void);
 extern void HSD_TObjLoadDesc(void);
 extern void HSD_MObjGetTObj(void);
 extern void HSD_MObjAddTObjNext(void);
-extern void fn_801A6DA0(void);
+extern void HSD_TObjInsertNext(void);
 extern u8 lbl_803154E4[];
 extern void PSMTXMultVec(void*, void*, void*);
 extern void PSVECCrossProduct(void*, void*, void*);
@@ -536,19 +536,19 @@ void vecNormalize(void* a, void* b, f32 scale) {
 #endif
 
 #if 0
-asm void fn_800E00E0(void) {
+asm void GSvecNegate(void) {
 #include "src/game/gs_render_fn_800E00E0.inc"
 }
 #else
-void fn_800E00E0(f32* dst, f32* src) { dst[0] = -src[0]; dst[1] = -src[1]; dst[2] = -src[2]; }
+void GSvecNegate(f32* dst, f32* src) { dst[0] = -src[0]; dst[1] = -src[1]; dst[2] = -src[2]; }
 #endif
 
 #if 0
-asm void fn_800E0108(void) {
+asm void GSvecMulComponents(void) {
 #include "src/game/gs_render_fn_800E0108.inc"
 }
 #else
-void fn_800E0108(f32* dst, f32* a, f32* b) {
+void GSvecMulComponents(f32* dst, f32* a, f32* b) {
     dst[0] = a[0] * b[0];
     dst[1] = a[1] * b[1];
     dst[2] = a[2] * b[2];

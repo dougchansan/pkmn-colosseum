@@ -511,7 +511,7 @@ extern void GSmodelSetShadowDebug(u32 val);
 
 extern u8   lbl_8047AED8;
 
-extern void fn_800D4610(u32 val);
+extern void GSgfxSetFlag49C(u32 val);
 
 extern u32  lbl_8047AED4;
 
@@ -533,7 +533,7 @@ extern u32 GSmsgGetRect(u32 val);
 
 extern void GSgetVersionMinor(void);
 
-extern void fn_80140A9C(void);
+extern void itemSwapSlots(void);
 
 extern u8 pokemonCheckValid(u8* ptr);
 
@@ -547,7 +547,7 @@ extern void GSmsgGetText(void);
 
 extern void pokemonInitAry(void);
 
-extern void fn_80142A88(void);
+extern void itemSlotsClear(void);
 
 extern f64 lbl_8047D108;
 
@@ -679,6 +679,6 @@ extern void heroMoveIsMember(void);
 
 extern void heroMoveDismissMember(void);
 
-extern void fn_8012F1FC(void);
+extern void partnerSetFollowing(void);
 
 #endif /* GAME_EFFECT_EFFECT_UTIL_TYPES_H */

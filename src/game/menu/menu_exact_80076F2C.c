@@ -406,7 +406,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
 {
     extern u8 pokemonBiosGetLevel(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
-    extern u8 fn_80142984(u16);
+    extern u8 itemIdIsValid(u16);
     extern u8* savedataBattleGetRulePtr(void);
     MenuRuleItemRestrictions* restrictions;
     u16 item;
@@ -429,7 +429,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
             valid = 0;
             break;
         default:
-            valid = fn_80142984(item);
+            valid = itemIdIsValid(item);
             break;
         }
         if (valid == 0) {

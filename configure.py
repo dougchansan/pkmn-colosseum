@@ -185,12 +185,12 @@ config.force_active_symbols["main"] = [
     "lbl_8047A904",
     "lbl_8047B1A1",
     # Present in retail, but its caller is not yet linked from source.
-    "fn_800093D0",
+    "dbgMenuFlagEdit",
     # game/gba/gba_conv_candidate_80088F58.c: debug-tool callbacks with no
     # reference in main.dol; compiled from source they would be dead-stripped.
-    "fn_80088F58",
-    "fn_80088F74",
-    "fn_80088F88",
+    "debugCounterNextA",
+    "debugCounterIncA",
+    "debugCounterNextB",
     "dbgMenuGBAAddCoupon",
     "dbgToolBattleDebugSetAGBConnectionMode",
     # game/menu/menu_debug_exact_8005DBC4.c / 8005DC24.c: callbacks referenced
@@ -200,10 +200,10 @@ config.force_active_symbols["main"] = [
     # game/data/rodata_802798F0.c: retail padding before lbl_802799C8 is
     # otherwise dead-stripped from the standalone matching data unit.
     "gap_04_802799C4_rodata",
-    # game/menu/menu_r56b_800714C8_suffix.c: fn_8007169C has no reference
+    # game/menu/menu_r56b_800714C8_suffix.c: menuLinkFloor385 has no reference
     # in main.dol but is present in retail; compiled from source it would be
     # dead-stripped.
-    "fn_8007169C",
+    "menuLinkFloor385",
     # game/menu/menu_candidate_80075390.c: exShrineModelToggle has no reference in
     # main.dol but is present in retail.
     "exShrineModelToggle",
@@ -224,24 +224,24 @@ config.force_active_symbols["main"] = [
     # game/dbgMenu_r61_middle_80133510.c: the same, for the no-draw area,
     # party member and memory-info entries.
     "debugMenuNodrawArea",
-    "fn_8013356C",
+    "dbgMenuTogglePartner",
     "debugMenuChangeMemInfo",
     # game/dbgMenu_r61_prefix_80132C6C.cpp: menu callbacks referenced only from
     # unlinked data; compiled from source they would be dead-stripped.
-    "fn_80132F7C",
+    "dbgMenuToggleMenuAB",
     "dbgMenuMovieTest",
     "dbgMenuColisionDisp",
-    "fn_80133050",
-    "fn_8013308C",
-    "fn_801330C8",
+    "dbgMenuSetVideoModePal",
+    "dbgMenuSetVideoModeEurgb60",
+    "dbgMenuDrawTestTriangle",
     "dbgMenuGSmemOptimize",
     "debugMenuColorBarDisp",
-    "fn_801334DC",
-    "fn_80133630",
-    "fn_80006724",
-    "fn_8000677C",
-    "fn_800067D4",
-    "fn_8000682C",
+    "dbgMenuToggleGfxFlag49C",
+    "dbgMenuToggleDrawSync",
+    "dbgMenuFightShowTrainerMsg3",
+    "dbgMenuFightShowTrainerMsg2",
+    "dbgMenuFightShowTrainerMsg1",
+    "dbgMenuFightShowTrainerMsg0",
     "sprintf",
     "vsprintf",
     "vprintf",
@@ -258,21 +258,21 @@ config.force_active_symbols["main"] = [
     "autodemo01Finish",
     "autodemo01Play",
     "movieStartAttract",
-    "fn_800363B0",
-    "fn_800363B4",
-    "fn_800363B8",
+    "cardeNop_800363B0",
+    "cardeNop_800363B4",
+    "cardeNop_800363B8",
     "gsLogoFinish",
     "movieGsLogoWait",
     "movieGsLogoStart",
     "tpcFinish",
     "movieTpcWait",
     "movieTpcStart",
-    "fn_8003669C",
-    "fn_800366A0",
-    "fn_800366A4",
-    # game/gs_range_8000D290.c: fn_8000D290 has no reference in main.dol but
+    "cardeNop_8003669C",
+    "cardeNop_800366A0",
+    "cardeNop_800366A4",
+    # game/gs_range_8000D290.c: dbgMenuReturnTrue_8000D290 has no reference in main.dol but
     # is present in retail; compiled from source it would be dead-stripped.
-    "fn_8000D290",
+    "dbgMenuReturnTrue_8000D290",
     # game/gs_range_800096B4.c: the ten functions after dbgMenuPokemonEdit have no
     # reference in main.dol but are present in retail; compiled from source
     # they would be dead-stripped.
@@ -2723,7 +2723,7 @@ config.libs = [
                 )
                 for status, path in [
                     (Matching, "game/gapp_exact_80101B34.c"),
-                    # gappLoadMeterDraw, fn_80101D5C and gappLoadMeterDrawFrame share the
+                    # gappLoadMeterDraw, gappIssueDrawSync and gappLoadMeterDrawFrame share the
                     # TU's literal pool (.sdata2 0x8047CD80-0x8047CDC0).
                     (Matching, "game/gapp_exact_80101B90.c"),
                     (Matching, "game/gapp_exact_80101FB8.c"),
@@ -2851,7 +2851,7 @@ config.libs = [
                 ]
             ],
             # winSeq tail + winSprite TU (XD's winSprite.cpp) from
-            # fn_80107170 to the menuOffScreen TU, with its literal pool,
+            # windowItemSeqPlaying to the menuOffScreen TU, with its literal pool,
             # jump table and .bss work area; GC/1.3.2, peephole off like the
             # winMsg TU, and -inline auto,deferred (functions are defined in
             # reverse address order). See the source header.
@@ -2970,7 +2970,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt nopeephole"],
                 progress_category="game",
             ),
-            # fieldCameraDebugReload / fn_8011791C: the field camera TU's flags
+            # fieldCameraDebugReload / fieldCameraDebugUpdate: the field camera TU's flags
             # (-opt nopeephole), plus -inline noauto so fieldCameraLoadList stays a
             # call as in retail. Each wrapper sets a FIELD_CAMERA_<addr>_ONLY
             # guard so it compiles just its own function.
@@ -3952,7 +3952,7 @@ config.libs = [
                 extra_cflags=["-str reuse,readonly", "-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt nopeephole"],
                 progress_category="game",
             ),
-            # The Card-e grid TU: fn_80082650 - cardeGridGetRecord with its own
+            # The Card-e grid TU: cardeSaveClearIfEmpty - cardeGridGetRecord with its own
             # string pool (.rodata 0x8026F1C8, .sdata2 "series"/"lv").
             # Deferred inlining emits the functions in reverse source order
             # and lets cardeSaveRemoveCard/cardeSaveSetCard inline their later callees.
@@ -5280,7 +5280,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # fn_8010C220 (an empty function) links as a carve; the rest of
+            # mainNop_8010C220 (an empty function) links as a carve; the rest of
             # the range is scored from the whole-range candidate.
             *[
                 Object(
@@ -8122,7 +8122,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-opt nopeephole"],
                 progress_category="game",
             ),
-            # menuFightCloseTop / fn_80011A1C: standalone data-free carve.
+            # menuFightCloseTop / menuFightOpenCommandMenu: standalone data-free carve.
             Object(
                 Matching,
                 "game/menuFight_exact_800119A8.c",
@@ -8612,7 +8612,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),
-            # menuFight prefix: fn_8000DAA8/menuFightOpenAndWake, the timer window
+            # menuFight prefix: dbgGetFlag8047A2A0/menuFightOpenAndWake, the timer window
             # functions (0x8000DC88-0x8000DE24), the target draw callback
             # (0x8000DEC4-0x8000DFF0), the target button callback
             # (0x8000DFF0-0x8000E204) and the secret-Pokemon draw callback
@@ -10473,7 +10473,7 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8", "-inline auto,deferred", "-str reuse,readonly"],
                 progress_category="game",
             ),
-            # fn_80179F4C: level-0 code (parameter homed on the stack), exact
+            # fsysShowLoadingMenu: level-0 code (parameter homed on the stack), exact
             # with the unit-wide `-opt level=0` and no local pragmas; carved
             # from the fsysInitTOC candidate below.
             Object(
@@ -10962,7 +10962,7 @@ config.libs = [
                     (Matching, "game/gs_dvd_r47_prefix.c"),
                 ]
             ],
-            # Function-boundary carve of fn_80168638 (no jump tables or pooled
+            # Function-boundary carve of GSgappInitPools (no jump tables or pooled
             # constants; data extern), same GC/1.3 flags as the prefix owner.
             Object(
                 Matching,

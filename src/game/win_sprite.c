@@ -5,7 +5,7 @@
  * XD's winSprite.cpp holds both the winSeq sequence code and the winSprite
  * draw/alloc code (TeamOrre/xd-decomp config/GXXE01/symbols.txt @4989794,
  * _winSeqMoveSub through winSpriteGetLayerID). This unit is that TU from
- * fn_80107170 on; its head (fn_80106F98 .. 0x80107170) links as the
+ * windowItemSeqPlaying on; its head (winSeqUpdateAll .. 0x80107170) links as the
  * win_sequence.c / win_sequence_exact_801070F4.c carves, which reference the
  * two move targets defined here.
  *
@@ -26,7 +26,7 @@
  * fields into the shared target, run _winSeqMoveSub fn_800D3088() times,
  * copy back) are static inline helpers in win_sequence.h.
  *
- * windowSearchItemID, fn_801081F8 and fn_80107170 take u16 item ids and
+ * windowSearchItemID, winSeqSetItem and windowItemSeqPlaying take u16 item ids and
  * winSetSequence a u16 id (windowSearchItemID and winSetSequence extend
  * their own argument; the callers pass the register through).
  * gfxVtxColor4u8 takes u8 colour components.
@@ -188,7 +188,7 @@ s32 winSpriteGetDisp(void* ptr) {
 void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
 {
     extern void gfxSetAlphaCompare(s32, s32, s32, s32, s32, s32);
-    extern void fn_800FE6D0(s16, s16);
+    extern void spriteSetOrigin(s16, s16);
     extern void spriteSetEnv(void);
     extern void windowDrawPanel(s16, s16, s16, s16);
     extern void windowDrawFrame(s16, s16, s16, s16, u8);
@@ -222,11 +222,11 @@ void winSpriteDraw(u8* context, WinSpriteDrawNode* sprite)
 
     drawFlag = sprite->drawFlags & 8;
     if (drawFlag != 0) {
-        fn_800FE6D0((s16)(*(s16*)(context + 0x84) + sprite->x),
+        spriteSetOrigin((s16)(*(s16*)(context + 0x84) + sprite->x),
                     (s16)(*(s16*)(context + 0x86) + sprite->y));
         spriteSetEnv();
         sprite->drawCallback(context, sprite);
-        fn_800FE6D0(*(s16*)(context + 0x84), *(s16*)(context + 0x86));
+        spriteSetOrigin(*(s16*)(context + 0x84), *(s16*)(context + 0x86));
         spriteSetEnv();
         switch (sprite->kind) {
         case 0:
@@ -447,7 +447,7 @@ void winSetSequence(WinSeqState* state, u16 id) {
 }
 
 /* 0x801081F8 */
-void fn_801081F8(tagWINDOW_WORK* window, u16 itemId, u16 seqId) {
+void winSeqSetItem(tagWINDOW_WORK* window, u16 itemId, u16 seqId) {
     tagSPRITE_WORK* sprite;
     s32 i;
 
@@ -481,7 +481,7 @@ void winSeqSetMenu(s32 id, u32 seqId) {
 }
 
 /* 0x80107F38 */
-void fn_80107F38(s32 id, u32 seqId) {
+void winSeqSetAll(s32 id, u32 seqId) {
     tagWINDOW_WORK* window = windowSearchID(id);
     tagSPRITE_WORK* sprite;
 
@@ -505,7 +505,7 @@ s32 winSeqIsCheck(s32 id, u32 seqId) {
 }
 
 /* 0x80107E78 */
-s32 fn_80107E78(tagWINDOW_WORK* window, u16 itemId, u32 seqId) {
+s32 windowItemSeqIs(tagWINDOW_WORK* window, u16 itemId, u32 seqId) {
     tagSPRITE_WORK* sprite = windowSearchItemID(window, itemId);
 
     if (sprite != NULL && sprite->sequence.commands == menuSeqBiosGetPtr((u16)seqId)) {
@@ -750,7 +750,7 @@ void winSeqMoveMenu(tagWINDOW_WORK* window) {
 }
 
 /* 0x80107170 */
-s32 fn_80107170(s32 id, u16 itemId) {
+s32 windowItemSeqPlaying(s32 id, u16 itemId) {
     tagSPRITE_WORK* sprite = windowSearchItemID(windowSearchID(id), itemId);
 
     if (sprite != NULL && sprite->sequence.commands != NULL && sprite->sequence.enabled == 0) {

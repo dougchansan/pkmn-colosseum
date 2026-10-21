@@ -12,7 +12,7 @@ extern u32 lbl_8047AB84;
 extern u32 lbl_8047AB80;
 extern f32 lbl_8047AB88;
 
-extern void fn_801B06DC(void* object);
+extern void modelShadowFreeTexture(void* object);
 extern void HSD_ShadowSetActive(void* object, u32 flags);
 
 void GSmodelFreeAllShadowTextures(void)
@@ -20,7 +20,7 @@ void GSmodelFreeAllShadowTextures(void)
     u32 i;
 
     for (i = 0; i < 6; i++) {
-        fn_801B06DC(lbl_80401490[i].object);
+        modelShadowFreeTexture(lbl_80401490[i].object);
         HSD_ShadowSetActive(lbl_80401490[i].object, 0);
         lbl_80401490[i].active = 0;
     }

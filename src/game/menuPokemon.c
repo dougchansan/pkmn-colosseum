@@ -40,7 +40,7 @@
 extern void  heroItemGetItemKindToItemAryPtr(void* pokeData, u8 fieldId, u16* outCount,
                           s32 p4, s32 p5, s32 p6);
 extern void  heroHizukiItemGetItemAryPtr(void* pokeData, u16* outCount, s32 p3, s32 p4, s32 p5);
-extern u8    fn_801429E8(void* fieldData);
+extern u8    itemSlotIsValid(void* fieldData);
 extern u16   itemBiosGetNum(void* fieldData);
 extern u16   itemDataBiosGetPtr(u16 speciesId);
 extern u16   itemDataBiosGetPrice(void);
@@ -73,7 +73,7 @@ typedef struct MenuPokemonStatus {
 static inline void* menuPokemonGetHero(s32 mode, void* trainer) {
     extern void* std082_flagGetValue(s32 id);
     extern void* savedataGetStatus(s32, s32);
-    extern void* fn_8006AEEC(void);
+    extern void* savedataBattleGetHeroParty(void);
     extern void* fightFloorGetGcHeroFightTrainerPtr(s32);
     extern void* fightTrainerGetStatus(void*, s32, s32, s32);
 
@@ -84,7 +84,7 @@ static inline void* menuPokemonGetHero(s32 mode, void* trainer) {
         if (std082_flagGetValue(0x8AE) == 0) {
             hero = savedataGetStatus(0, 2);
         } else {
-            hero = fn_8006AEEC();
+            hero = savedataBattleGetHeroParty();
         }
         break;
     case 1:
@@ -179,7 +179,7 @@ static inline u16 menuPokemonGetStatusIcon(void* pokemon) {
 /* 0x8001C064 | 0x754 */
 extern u32 std082_flagGetValue();
 extern void savedataGetStatus();
-extern u32 fn_8006AEEC();
+extern u32 savedataBattleGetHeroParty();
 extern u32 fightFloorGetGcHeroFightTrainerPtr();
 extern u32 fightTrainerGetStatus();
 extern u32 heroBiosGetPokemonPtr();
@@ -332,9 +332,9 @@ extern s32 menuGetCursorItemID();
 extern u32 _threadSwitch(void);
 extern void winSeqCheckMove(void);
 extern void pokemonReplace(void);
-extern u32 fn_80019064(void);
-extern void fn_80018F54();
-extern void fn_8001D718(f32 target);
+extern u32 bagGetResultFlag(void);
+extern void bagMenuOpen();
+extern void menuPokemonWaitSeconds(f32 target);
 extern f32 lbl_8047B7C0;
 extern u8 lbl_802E4E58[];
 static inline void menuPokemonSetSlotSeq(s8 slot, s32 right, s32 left) {
@@ -363,7 +363,7 @@ static inline void menuPokemonWaitSlot(s8 slot) {
 /* RULE-EXCEPTION(user-approved): single-call inline helper (menuPokemonCommandMenu) — see docs/RULE_EXCEPTIONS.md */
 static inline s32 menuPokemonItemMenu(s8* work, s8 slot, s32* itemArg) {
     extern s32 menuPokemonGiveTakeItem(s8 slot, s32 pocket, u16 item, u16* out);
-    extern u16 fn_80018F54(s32 a, s32 b, s32 c);
+    extern u16 bagMenuOpen(s32 a, s32 b, s32 c);
     extern s32 menuOpenCustom(s32 menuId, s32 parent, void* args, s32, s32, s32, ...);
     s32 action;
     u16 item;
@@ -377,8 +377,8 @@ static inline s32 menuPokemonItemMenu(s8* work, s8 slot, s32* itemArg) {
     switch (action) {
     case 0:
         menuClose(0x63);
-        item = fn_80018F54(2, 0, 0);
-        pocket = fn_80019064();
+        item = bagMenuOpen(2, 0, 0);
+        pocket = bagGetResultFlag();
         *itemArg = work[6];
         menuOpenCustom(0x63, 0, itemArg, 0, 0, 1, lbl_803A1C20);
         pokemon = windowSearchID(0x63);
@@ -421,7 +421,7 @@ s32 menuPokemonCommandMenu(s8 slot) {
     extern u8 pokemonGetStatus(void* pokemon, u32 a, u32 id, u32 b);
     extern void pokemonReplace(void* a, void* b);
     extern void menuPokemonStatusOpenC(void* pokemon, void* callback, s32 arg);
-    extern u16 fn_80018F54(s32 a, s32 b, s32 c);
+    extern u16 bagMenuOpen(s32 a, s32 b, s32 c);
     extern s32 menuPokemonCursorNextValid();
     s32 swapArg;
     s32 summaryArg;
@@ -488,7 +488,7 @@ s32 menuPokemonCommandMenu(s8 slot) {
                     menuPokemonWaitSlot(slot);
                     pokemonReplace(pokemon, other);
                     menuPokemonRefresh();
-                    fn_8001D718(lbl_8047B7C0);
+                    menuPokemonWaitSeconds(lbl_8047B7C0);
                     menuPokemonSetSlotSeq(slot, 0x116, 0x11E);
                     menuPokemonSetSlotSeq(target, 0x116, 0x11E);
                     menuPokemonWaitSlot(slot);
@@ -573,11 +573,11 @@ extern f32 lbl_8047B7C8;
 extern f64 lbl_8047B7D0;
 extern f64 lbl_8047B7D8;
 #if 0
-asm void fn_8001D718(void) {
+asm void menuPokemonWaitSeconds(void) {
 #include "src/game/gs_pcbox_fn_8001D718.inc"
 }
 #else
-void fn_8001D718(f32 target) {
+void menuPokemonWaitSeconds(f32 target) {
     extern void _threadSwitch();
     f32 progress = lbl_8047B7C8;
 
@@ -609,14 +609,14 @@ typedef struct MenuPokemonQuantityArgs {
 
 /* RULE-EXCEPTION(user-approved): single-function inline helper (bagSellItem) — see docs/RULE_EXCEPTIONS.md */
 static inline u16 menuPokemonGetBagItemNum(u8* items, u16* count, s32 slot) {
-    extern u8 fn_801429E8(void* item);
+    extern u8 itemSlotIsValid(void* item);
     extern u16 itemBiosGetNum(void* item);
     s32 i;
     s32 validIndex;
 
     validIndex = -1;
     for (i = 0; i < *count; i++, items += 4) {
-        if (fn_801429E8(items)) {
+        if (itemSlotIsValid(items)) {
             validIndex++;
             if (validIndex >= slot) {
                 return itemBiosGetNum(items);
@@ -646,7 +646,7 @@ s32 bagSellItem(page, itemId, itemSlot)
     extern void winMsgOpen(s32, u32, s32, s32);
     extern void winMsgClose(s32);
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
-    extern void fn_8012959C(void* hero, u16 item, u16 count, s16 slot);
+    extern void heroBoxChangeItemCount(void* hero, u16 item, u16 count, s16 slot);
     extern void heroItemDecItemDataId(void* hero, u16 item, u16 count,
                                       s16 slot);
     extern void soundStartRaw(s32 sound, s32, s32);
@@ -774,7 +774,7 @@ s32 bagSellItem(page, itemId, itemSlot)
     }
 
     if (*kind == -1) {
-        fn_8012959C(lbl_8047A2F8, itemId, selected, itemSlot);
+        heroBoxChangeItemCount(lbl_8047A2F8, itemId, selected, itemSlot);
     } else {
         heroItemDecItemDataId(lbl_8047A2F8, itemId, selected, itemSlot);
     }
@@ -794,8 +794,8 @@ s32 bagSellItem(page, itemId, itemSlot)
 /* bagUseItemOnPokemon - 0x80018594 | size: 0x34c */
 extern u32 itemDataBiosGetFieldUseFunc();
 extern u32 itemDataBiosGetBattleUseFunc();
-extern s32 fn_80017CB8();
-extern void fn_8012959C(void);
+extern s32 bagGetItemCommands();
+extern void heroBoxChangeItemCount(void);
 extern void menuCloseSync(); /* referenced by asm incs */
 extern u32 lbl_8047A2E0;
 extern u32 lbl_8047A2D8;
@@ -836,11 +836,11 @@ static inline s32 menuPokemonSelect(s32 menuId, void* arg, s32 count) {
 }
 
 static inline void menuPokemonUseItem(u32 page, u16 itemId, s32 count, u32 slot) {
-    extern void fn_8012959C(void* hero, u16 item, u16 count, s16 slot);
+    extern void heroBoxChangeItemCount(void* hero, u16 item, u16 count, s16 slot);
     extern void heroItemDecItemDataId(void* hero, u16 item, u16 count, s16 slot);
 
     if (lbl_80266918[page].kind == -1) {
-        fn_8012959C((void*)lbl_8047A2F8, itemId, count, slot);
+        heroBoxChangeItemCount((void*)lbl_8047A2F8, itemId, count, slot);
     } else {
         heroItemDecItemDataId((void*)lbl_8047A2F8, itemId, count, slot);
     }
@@ -859,7 +859,7 @@ s32 bagUseItemOnPokemon(boxIndex, itemId, slotIndex, outItem)
     extern s32 menuOpenCustom(s32, s32, s32, s32, s32, s32, void*, ...);
     extern void menuClose(s32);
     extern void* itemDataBiosGetPtr();
-    extern void fn_8012959C(void* hero, u16 item, u16 count, s16 slot);
+    extern void heroBoxChangeItemCount(void* hero, u16 item, u16 count, s16 slot);
     extern void heroItemDecItemDataId(void* hero, u16 item, u16 count, s16 slot);
     struct {
         u8 r;
@@ -911,7 +911,7 @@ s32 bagUseItemOnPokemon(boxIndex, itemId, slotIndex, outItem)
         return 1;
     }
 
-    count = fn_80017CB8(actions, 5, boxIndex, slotIndex);
+    count = bagGetItemCommands(actions, 5, boxIndex, slotIndex);
     lbl_8047A2DC = 0x135;
     page = sSummaryPageEntries + lbl_8047A2D8 * 0x4C;
     menuArg.r = page[0];
@@ -958,7 +958,7 @@ s32 bagUseItemOnPokemon(boxIndex, itemId, slotIndex, outItem)
 
 
 /* bagGiveItemCheck - 0x800188E0 | size: 0x188 */
-extern u32 fn_80143FCC();
+extern u32 itemDataGetField1();
 extern void bagItemStore();
 extern u32 lbl_8047A2B8;
 #if 0
@@ -1001,7 +1001,7 @@ s32 bagGiveItemCheck(s32 mode, u32 ptr, u32 r5, u32 r6, u16* out) {
             extern void itemDataBiosGetPtr();
             itemDataBiosGetPtr(r5);
         }
-        r0 = fn_80143FCC();
+        r0 = itemDataGetField1();
         if ((u8)r0 != 0) {
             msgctrlSetValue(0x2d, (u16)r5);
             winMsgOpen(2, 0x4262, 1, 0);
@@ -1098,7 +1098,7 @@ static inline s32 menuPokemonCountItems(s32 kind) {
     items = menuPokemonGetItemArray(kind, &count);
     n = 0;
     for (i = 0; i < count; i++, items += 4) {
-        if (fn_801429E8(items) != 0) {
+        if (itemSlotIsValid(items) != 0) {
             n++;
         }
     }
@@ -1116,7 +1116,7 @@ static inline u16 menuPokemonFindItem(s32 kind, s32 target) {
     items = menuPokemonGetItemArray(kind, &count);
     n = -1;
     for (i = 0; i < count; i++, items += 4) {
-        if (fn_801429E8(items) != 0) {
+        if (itemSlotIsValid(items) != 0) {
             n++;
             if (n >= target) {
                 return itemBiosGetItemDataId(items);
@@ -1292,17 +1292,17 @@ void std016_menuUnk_80018a68(void) {
 }
 #endif
 
-/* fn_80018F54 - 0x80018F54 | size: 0x34 */
+/* bagMenuOpen - 0x80018F54 | size: 0x34 */
 extern u32 lbl_8047A2E0;
 extern u32 lbl_8047A2F8;
 extern u32 lbl_8047A2E4;
 extern u32 lbl_8047A2BC;
 #if 0
-asm void fn_80018F54(void) {
+asm void bagMenuOpen(void) {
 #include "src/game/gs_pcbox_fn_80018F54.inc"
 }
 #else
-void fn_80018F54(u32 a, u32 b, u32 c) {
+void bagMenuOpen(u32 a, u32 b, u32 c) {
     lbl_8047A2E0 = a;
     lbl_8047A2F8 = c;
     lbl_8047A2E4 = 0;
@@ -1311,7 +1311,7 @@ void fn_80018F54(u32 a, u32 b, u32 c) {
 }
 #endif
 
-/* fn_80018F88 - 0x80018F88 | size: 0xdc */
+/* bagMenuRunInMenuRoom - 0x80018F88 | size: 0xdc */
 extern u32 fightTrainer_GetHeroPtr();
 extern void _flagSet();
 extern void std098_mapWarpToMenuRoom();
@@ -1322,11 +1322,11 @@ extern u32 lbl_8047A2E0;
 extern u32 lbl_8047A2E4;
 extern u32 lbl_8047A2F0;
 #if 0
-asm void fn_80018F88(void) {
+asm void bagMenuRunInMenuRoom(void) {
 #include "src/game/gs_pcbox_fn_80018F88.inc"
 }
 #else
-u32 fn_80018F88(s32 mode, s32* ptr, u32 val) {
+u32 bagMenuRunInMenuRoom(s32 mode, s32* ptr, u32 val) {
     if (mode == 1) {
         lbl_8047A2F4 = val;
         lbl_8047A2F8 = fightTrainer_GetHeroPtr(val);
@@ -1358,19 +1358,19 @@ u32 fn_80018F88(s32 mode, s32* ptr, u32 val) {
 }
 #endif
 
-/* fn_80019064 - 0x80019064 | size: 0xc */
+/* bagGetResultFlag - 0x80019064 | size: 0xc */
 extern u32 lbl_8047A2B8;
 #if 0
-asm void fn_80019064(void) {
+asm void bagGetResultFlag(void) {
 #include "src/game/gs_pcbox_fn_80019064.inc"
 }
 #else
-u32 fn_80019064(void) {
+u32 bagGetResultFlag(void) {
     return (u8)lbl_8047A2B8;
 }
 #endif
 
-/* fn_80019070 - 0x80019070 | size: 0x68 */
+/* bagTakeResultForItem - 0x80019070 | size: 0x68 */
 typedef struct MenuPokemonSpeciesCacheEntry {
     u16 species;
     u16 pad;
@@ -1384,11 +1384,11 @@ typedef struct MenuPokemonSpeciesCache {
 
 extern u8 lbl_803A1B90[];
 #if 0
-asm void fn_80019070(void) {
+asm void bagTakeResultForItem(void) {
 #include "src/game/gs_pcbox_fn_80019070.inc"
 }
 #else
-u32 fn_80019070(u16 species) {
+u32 bagTakeResultForItem(u16 species) {
     MenuPokemonSpeciesCache* cache;
     s32 i;
     u32 result;
@@ -1605,7 +1605,7 @@ s32 bagDrawItemRow(u8* a, u8* b) {
         sum = 0;
         entry = heroItemGetItemKindToItemAryPtr(0, itemDataBiosGetKind(itemDataBiosGetPtr(item)), &total, 0, 0, 0);
         for (n = 0; n < total; n++, entry += 4) {
-            if (fn_801429E8(entry) != 0 && itemGetStatus(entry, 0, 0x1B, 0) == item) {
+            if (itemSlotIsValid(entry) != 0 && itemGetStatus(entry, 0, 0x1B, 0) == item) {
                 sum += itemBiosGetNum(entry);
             }
         }
@@ -1971,9 +1971,9 @@ s32 menuMoveSummaryCtrl(u8* arg) {
 #pragma peephole reset
 #endif
 
-/* fn_80019B1C - 0x80019B1C | size: 0x2c */
+/* bagCloseMenu42 - 0x80019B1C | size: 0x2c */
 #if 0
-asm void fn_80019B1C(void) {
+asm void bagCloseMenu42(void) {
 #include "src/game/gs_pcbox_fn_80019B1C.inc"
 }
 #else
@@ -1981,7 +1981,7 @@ asm void fn_80019B1C(void) {
 #pragma push
 #pragma optimization_level 4
 #pragma scheduling off
-void fn_80019B1C(void) {
+void bagCloseMenu42(void) {
     extern void menuCloseCustom();
     menuCloseCustom(0x42, 0x0, 0x1);
 }
@@ -2089,8 +2089,8 @@ extern u32 pokemonIsDarkPokemon();
 extern u32 pokemonDataBiosGetWazaMcn();
 extern void GSmsgPrintRect();
 extern void menuFaceDraw();
-extern u32 fn_80107E78();
-extern void fn_801081F8();
+extern u32 windowItemSeqIs();
+extern void winSeqSetItem();
 extern void windowDrawSprite2();
 extern u32 pokemonDataBiosGetPtr();
 extern void spriteDrawBlendTexture();
@@ -2110,8 +2110,8 @@ extern u32 pokemonIsDarkPokemon();
 extern u32 pokemonDataBiosGetWazaMcn();
 extern void GSmsgPrintRect();
 extern void menuFaceDraw();
-extern u32 fn_80107E78();
-extern void fn_801081F8();
+extern u32 windowItemSeqIs();
+extern void winSeqSetItem();
 extern void windowDrawSprite2();
 extern u32 pokemonDataBiosGetPtr();
 extern void spriteDrawBlendTexture();
@@ -2345,14 +2345,14 @@ void menuPokemonDrawItem(u8* ctx, u8* pane) {
             switch (lbl_803A1D40[0x14]) {
             case 0:
             case 2:
-                if ((u8)fn_80107E78(ctx, (u16)*(s16*)(pane + 6), 0x2D) == 0) {
-                    fn_801081F8(ctx, (u16)*(s16*)(pane + 6), 0x2D);
+                if ((u8)windowItemSeqIs(ctx, (u16)*(s16*)(pane + 6), 0x2D) == 0) {
+                    winSeqSetItem(ctx, (u16)*(s16*)(pane + 6), 0x2D);
                 }
                 break;
             case 1:
             case 3:
-                if ((u8)fn_80107E78(ctx, (u16)*(s16*)(pane + 6), 0x20D) == 0) {
-                    fn_801081F8(ctx, (u16)*(s16*)(pane + 6), 0x20D);
+                if ((u8)windowItemSeqIs(ctx, (u16)*(s16*)(pane + 6), 0x20D) == 0) {
+                    winSeqSetItem(ctx, (u16)*(s16*)(pane + 6), 0x20D);
                 }
                 break;
             }

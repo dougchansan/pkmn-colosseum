@@ -32,8 +32,8 @@ extern s32 lbl_8047B1BC;             /* handle table fill count */
 
 extern void DCFlushRange(void* addr, u32 nBytes);
 extern u32 fsysCacheLookup(u32 fileHandle, u32 key1, u32 key2);
-extern void fn_8017F800(s32 handleID);
-extern u32 fn_8017FA5C(void);
+extern void fsysCacheFreeHandle(s32 handleID);
+extern u32 fsysCacheGetFreeSize(void);
 extern u32 fsysCacheReserve(u32 size, u32 fileHandle, u32 key1, u32 key2);
 extern void fsysMainToARAMSync(void* main, void* aram, u32 size);
 extern FSYSFileHandle* fsysSlotRefreshHandle(FSYSSlot* slot);
@@ -118,18 +118,18 @@ static inline void fsysCacheMakeRoom(FSYSSlot* slot, u32 size)
     s32 n;
     s32 handleID;
 
-    freeSize = fn_8017FA5C();
+    freeSize = fsysCacheGetFreeSize();
     if (size > freeSize && fsysCacheFindHandle(slot) < 0) {
         for (n = 0;; n++) {
             handleID = fsysCacheOldestHandle();
             if (handleID < 0) {
                 break;
             }
-            fn_8017F800(handleID);
+            fsysCacheFreeHandle(handleID);
             if (fsysCacheRemoveHandle(handleID) < 0) {
                 break;
             }
-            freeSize = fn_8017FA5C();
+            freeSize = fsysCacheGetFreeSize();
             if (size <= freeSize) {
                 break;
             }
@@ -144,18 +144,18 @@ static inline void fsysCacheMakeRoomTotal(FSYSSlot* slot)
     s32 n;
     s32 handleID;
 
-    freeSize = fn_8017FA5C();
+    freeSize = fsysCacheGetFreeSize();
     if (slot->totalDecompSize > freeSize && fsysCacheFindHandle(slot) < 0) {
         for (n = 0;; n++) {
             handleID = fsysCacheOldestHandle();
             if (handleID < 0) {
                 break;
             }
-            fn_8017F800(handleID);
+            fsysCacheFreeHandle(handleID);
             if (fsysCacheRemoveHandle(handleID) < 0) {
                 break;
             }
-            freeSize = fn_8017FA5C();
+            freeSize = fsysCacheGetFreeSize();
             if (slot->totalDecompSize <= freeSize) {
                 break;
             }

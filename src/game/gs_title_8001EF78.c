@@ -46,8 +46,8 @@ extern TitleMenuWork lbl_803A1F88;
 extern u8 lbl_802EF0A8[];          /* menu item data, 0x1C bytes per item id */
 extern s32 lbl_80478878;           /* current title menu page */
 extern s32 lbl_8047A310;           /* title mode */
-extern s32 lbl_8047A314;           /* paused while fn_8017B1AC reports 5 */
-extern s32 lbl_8047A318;           /* paused while fn_8017B1AC reports 4/11 */
+extern s32 lbl_8047A314;           /* paused while fsysCheckDrive reports 5 */
+extern s32 lbl_8047A318;           /* paused while fsysCheckDrive reports 4/11 */
 extern s32 lbl_8047A31C;           /* title state */
 extern s32 lbl_8047A320;           /* set when title mode 1 starts at state 7 */
 extern GSmodel* lbl_8047A324;      /* title model */
@@ -86,11 +86,11 @@ extern void GSmodelAllUnpauseAnimation(void);
 extern void cameraStartAnimation(void);
 extern void cameraStopAnimation(void);
 extern void cameraPlayAnime(u32 groupId, u32 animationId, s32 frame, u8 loop);
-extern void fn_801662E8(s32 a, s32 b);
+extern void soundFindOwnerWrapper(s32 a, s32 b);
 extern void std104_soundSetBackgroundMusic(s32 id, s32 a, s32 volume);
 extern void soundResumeMusic(void);
 extern void soundPauseMusic(void);
-extern s32 fn_8017B1AC(void);
+extern s32 fsysCheckDrive(void);
 extern void _threadSwitch(void);
 extern s32 menuOpen(s32 id, s32 arg);
 extern void fadeSet(s32 mode, f32 time);
@@ -98,7 +98,7 @@ extern s8 fadeCheck(s32 wait);
 extern s32 memcardWaitTask2(s32 a, s32 b, s32 c);
 extern void savedataCreate(s32 a, s32 b);
 extern u32 gamedatasaveGetStatus(s32 a, s32 b);
-extern void fn_800216E0(u32 value);
+extern void titleSetIntroFlag8047A358(u32 value);
 extern void floorLink(s32 floorId, s32 arg);
 extern void menuCloseCustom(s32 menuId, s32 mode, s32 force);
 extern void winMsgClose(s32 wait);
@@ -368,7 +368,7 @@ void std021_newGameIntroSequence(void)
     lbl_8047A324 = model;
     lbl_8047A33C = 0;
     lbl_8047A328 = 0;
-    fn_801662E8(0, 0x406);
+    soundFindOwnerWrapper(0, 0x406);
     std104_soundSetBackgroundMusic(0x46A, 0, 0xFF);
 
     if (lbl_8047A310 == 1) {
@@ -382,7 +382,7 @@ void std021_newGameIntroSequence(void)
     menuOpen(0x15, 0);
 
     do {
-        status = fn_8017B1AC();
+        status = fsysCheckDrive();
         if (status == 11 || status == 4) {
             if (lbl_8047A318 == 0) {
                 GSmodelAllPauseAnimation();
@@ -395,7 +395,7 @@ void std021_newGameIntroSequence(void)
         }
         if (lbl_8047A318 == 1) {
             cameraStartAnimation();
-            fn_801662E8(0, 0x406);
+            soundFindOwnerWrapper(0, 0x406);
             soundResumeMusic();
             GSmodelAllUnpauseAnimation();
             lbl_8047A318 = 0;
@@ -413,7 +413,7 @@ void std021_newGameIntroSequence(void)
         }
         if (lbl_8047A314 == 1) {
             cameraStartAnimation();
-            fn_801662E8(0, 0x406);
+            soundFindOwnerWrapper(0, 0x406);
             soundResumeMusic();
             GSmodelAllUnpauseAnimation();
             lbl_8047A314 = 0;
@@ -508,9 +508,9 @@ void std021_newGameIntroSequence(void)
                 savedataCreate(0, 0);
             }
             if (gamedatasaveGetStatus(0, 4) != 0) {
-                fn_800216E0(1);
+                titleSetIntroFlag8047A358(1);
             } else {
-                fn_800216E0(0);
+                titleSetIntroFlag8047A358(0);
             }
             lbl_8047A31C = 0x29;
             break;

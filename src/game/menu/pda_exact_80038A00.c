@@ -4,7 +4,7 @@
 extern f32 lbl_8047A484;
 extern f32 lbl_8047BA58;
 
-void fn_80038A00(void)
+void pcResetTimer8047A484(void)
 {
     lbl_8047A484 = lbl_8047BA58;
 }

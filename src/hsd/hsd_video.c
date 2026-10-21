@@ -1,11 +1,11 @@
 /**
  * @file hsd_video.c
  * @brief Legacy video.c candidate, now scored only for HSD_VICopyXFBAsync
- *        (fn_801BF8A0, 0x801BF8A0 - 0x801BFA1C).
+ *        (HSD_VICopyEFB2XFBWait, 0x801BF8A0 - 0x801BFA1C).
  *
  * HAL's video.c is src/hsd/video.c (the full TU) and is carved into
  * video_exact_801BF1F0.c, video_candidate_801BF6AC.c and
- * video_exact_801BFA1C.c. fn_801BF8A0 calls HSD_VIGetDrawDoneWaitingFlag
+ * video_exact_801BFA1C.c. HSD_VICopyEFB2XFBWait calls HSD_VIGetDrawDoneWaitingFlag
  * out of line, which the library-flag TU reproduces only with a local
  * dont_inline pragma (100% with it, 97.21% without); this older
  * non-deferred source keeps its previous 97.63% score.
@@ -215,7 +215,7 @@ void HSD_VIFinishDrawXFB(void)
 void HSD_VICopyEFB2XFB(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass);
 
 /* HSD_VICopyXFBAsync */
-void fn_801BF8A0(HSD_RenderPass rpass)
+void HSD_VICopyEFB2XFBWait(HSD_RenderPass rpass)
 {
     int idx;
 

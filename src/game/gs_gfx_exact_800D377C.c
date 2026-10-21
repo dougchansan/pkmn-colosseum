@@ -3,7 +3,7 @@
 extern void HSD_SetPixelFormat(s32 mode, s32 value);
 extern s32 GSgfxVideoVsyncRate;
 
-void fn_800D377C(s32 mode)
+void GSgfxSetPixelFormatMode(s32 mode)
 {
     switch (mode) {
     case 1:

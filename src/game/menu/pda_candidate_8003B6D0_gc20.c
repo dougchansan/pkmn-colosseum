@@ -143,7 +143,7 @@ extern PdaSceneWork lbl_803A6818;
 
 extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
 extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
-extern s32 fn_80041E48(void* work, s32 mode);
+extern s32 pdaMemoUpdateScroll(void* work, s32 mode);
 extern s32 pdaModelViewerControl(void* work, s32 mode);
 extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
@@ -155,7 +155,7 @@ extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #endif
 
-/* Retail places this callback immediately after fn_80037174. */
+/* Retail places this callback immediately after pdaUnlock. */
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 #endif
@@ -325,7 +325,7 @@ static inline s32 pdaBoxItemId(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetItemDataId(item);
@@ -349,7 +349,7 @@ static inline s32 pdaBoxItemNum(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetNum(item);
@@ -444,7 +444,7 @@ extern u32 fn_80132A38();
 extern u32 soundStartRaw(u32, u32, u32);
 extern u32 GSresReleaseById();
 extern s32 GSresGroupGetState();
-extern u32 fn_8017B3E4();
+extern u32 fsysStartLoad();
 extern u32 darkPokemonSaveGet4A4();
 extern u32 darkPokemonSaveGet4A0();
 extern u32 darkPokemonSaveGetName();
@@ -459,7 +459,7 @@ extern u32 fightTrainerDataBiosGetStatus03();
 extern u32 fightTrainerDataBiosGetPtr();
 extern u32 gamedataGetStatus();
 extern void menuCloseSync(s32, s32);
-extern u32 fn_80018F54();
+extern u32 bagMenuOpen();
 extern u32 GSresReleaseOwner();
 
 extern void windowDrawSprite(s16 x, s16 y, PdaSprite* sprite, u16 id, s32 arg4);

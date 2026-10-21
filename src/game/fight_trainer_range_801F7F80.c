@@ -1045,7 +1045,7 @@ static inline u8 fightTrainerGetTrainerDataKindInline(u16 trainerDataId) {
 void fightTrainerCreateFightTrainerDataIdToHero(
     u16 trainerDataId, s32 inputDevice, void* hero) {
     extern u32 fightGetResult80478960(void);
-    extern void* fn_800896C8(void);
+    extern void* cardeGetEncounterParam8047A670(void);
     extern void* GSmsgGetGSchar(u32);
     extern void* savedataGetStatus(u32, u32);
     extern s32 heroItemAddItemDataId(void*, u16, u32, s32);
@@ -1084,7 +1084,7 @@ void fightTrainerCreateFightTrainerDataIdToHero(
     name = GSmsgGetGSchar(
         (u32)fightTrainerGetStatus(NULL, trainerDataId, 3, 0));
     if (trainerDataId == fightGetResult80478960()) {
-        name = fn_800896C8();
+        name = cardeGetEncounterParam8047A670();
     }
     heroCreate(hero, name, sex);
 

@@ -15,7 +15,7 @@ extern ColosseumConnectJob lbl_803A9A08;
 extern void _threadSwitch(void);
 extern void GSresReleaseById(s32);
 extern s32 GSresGroupGetState(s32);
-extern void fn_8017B3E4(s32);
+extern void fsysStartLoad(s32);
 extern void GSresReleaseOwner(s32);
 extern s32 menuPokemonStatusOpenB(void*, void*, s32*);
 
@@ -30,7 +30,7 @@ static inline s32 getConnectJobState(void)
     return 2;
 }
 
-void fn_80057C9C(void* pokemon, void* callback, s32* navigation)
+void pcBoxRunStatus(void* pokemon, void* callback, s32* navigation)
 {
     u8 ownsRequest = 0;
 
@@ -44,7 +44,7 @@ void fn_80057C9C(void* pokemon, void* callback, s32* navigation)
 
     GSresReleaseById(0x70B);
     GSresReleaseOwner(0x70B);
-    fn_8017B3E4(0x66F);
+    fsysStartLoad(0x66F);
     while (GSresGroupGetState(0x66F) == 1) {
         _threadSwitch();
     }
@@ -52,7 +52,7 @@ void fn_80057C9C(void* pokemon, void* callback, s32* navigation)
     menuPokemonStatusOpenB(pokemon, callback, navigation);
     GSresReleaseById(0x66F);
     GSresReleaseOwner(0x66F);
-    fn_8017B3E4(0x70B);
+    fsysStartLoad(0x70B);
     while (GSresGroupGetState(0x70B) == 1) {
         _threadSwitch();
     }

@@ -3158,7 +3158,7 @@ s32 HSD_TExpSimplify2(ColTExpNode* texp)
 extern ColTEArg lbl_80478CA0;
 
 s32 SimplifyByMerge(ColTExpNode* tev);
-void fn_801B9048(ColTExpNode* texp);
+void HSD_TExpCalcCost(ColTExpNode* texp);
 s32 SimplifyThis(ColTExpNode* tev);
 s32 SimplifySrc(ColTExpNode* tev);
 
@@ -3201,7 +3201,7 @@ static inline s32 HSD_TExpSimplifyChild(ColTExpNode* texp)
     if (SimplifyByMerge(texp) != 0) {
         res = 1;
     }
-    fn_801B9048(texp);
+    HSD_TExpCalcCost(texp);
     return res;
 }
 
@@ -3209,7 +3209,7 @@ static inline s32 HSD_TExpSimplifyChild(ColTExpNode* texp)
  * 0x801B9048 | Size: 0x2D8
  * Propagate the clamp/range flags of the source expressions onto this node.
  */
-void fn_801B9048(ColTExpNode* texp)
+void HSD_TExpCalcCost(ColTExpNode* texp)
 {
     s32 range;
     s32 i;

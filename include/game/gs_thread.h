@@ -141,7 +141,7 @@ void GSthreadPoolConfig(u32 a, u32 b, u32 c, u32 d);
 /**
  * GSthreadSchedulerInit -- Initialise the cooperative scheduler.
  *
- * Corresponds to fn_8010D170.
+ * Corresponds to GScolsys2Init.
  */
 void GSthreadSchedulerInit(void);
 

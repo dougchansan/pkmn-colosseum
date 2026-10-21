@@ -147,8 +147,8 @@ void _modelGetAObjFunc__FP9_HSD_AObjPv(HSD_AObj* aobj, HSD_AObj** out);
 void _modelResetPartAnimMixes__FP8_GSmodel(GSmodel* model);
 void _modelSetLoopFlag__FP9_HSD_AObjUl(HSD_AObj* aobj, u32 enable);
 void _modelGetEndFrame(HSD_AObj* aobj, f32* end_frame);
-void fn_800ED6E4(GSmodel* model, u8 tex_anim);
-void fn_800ED7E4(GSmodel* model, u8 tex_anim, f32 delta);
+void GSmodelAnimEndEvent(GSmodel* model, u8 tex_anim);
+void GSmodelAnimAdvanceFrame(GSmodel* model, u8 tex_anim, f32 delta);
 GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation,
                         GSvec* scale);
@@ -156,7 +156,7 @@ void GSpartFree(GSpart* part);
 void GSquatFromEuler(GSquat* quaternion, GSvec* rotation);
 void GSvecTransformQuat(GSvec* dst, GSquat* quaternion, GSvec* src);
 void GSvecAdd(GSvec* dst, GSvec* lhs, GSvec* rhs);
-void fn_800E0108(GSvec* dst, GSvec* lhs, GSvec* rhs);
+void GSvecMulComponents(GSvec* dst, GSvec* lhs, GSvec* rhs);
 void modelSetPos(GSmodel* model, GSvec* position);
 void modelSetRot(GSmodel* model, GSvec* rotation);
 void modelSetScl(GSmodel* model, GSvec* scale);
@@ -250,7 +250,7 @@ void modelUpdateAttachments__FP8_GSmodel(GSmodel* model)
                            &model->attachment_position);
         GSvecAdd(&position, &position, &transformed_position);
         GSvecAdd(&rotation, &rotation, &model->attachment_rotation);
-        fn_800E0108(&scale, &scale, &model->attachment_scale);
+        GSvecMulComponents(&scale, &scale, &model->attachment_scale);
 
         modelSetPos(model, &model->attachment_position);
         modelSetRot(model, &model->attachment_rotation);
@@ -311,7 +311,7 @@ yes:
 no:
     return FALSE;
 }
-void fn_800ED6E4(GSmodel* model, u8 tex_anim)
+void GSmodelAnimEndEvent(GSmodel* model, u8 tex_anim)
 {
     u32 end_flag_mask;
     u32 anim_flag_mask;
@@ -362,7 +362,7 @@ void fn_800ED6E4(GSmodel* model, u8 tex_anim)
         model->anim_ended_callback(model, &info);
     }
 }
-void fn_800ED7E4(GSmodel* model, u8 tex_anim, f32 delta)
+void GSmodelAnimAdvanceFrame(GSmodel* model, u8 tex_anim, f32 delta)
 {
     u32 ended_flag;
     f32* frame_ptr;

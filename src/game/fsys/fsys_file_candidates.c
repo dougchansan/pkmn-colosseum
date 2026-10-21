@@ -527,7 +527,7 @@ u32 fsysStatus0(void) { return 1; }
 extern void GSdvdGetDriveStatus(void);
 extern u32 lbl_8047B1B4;
 extern FSYSManager lbl_80453FEC;
-void fn_8017B1AC(void) {
+void fsysCheckDrive(void) {
     GSdvdGetDriveStatus();
 }
 
@@ -626,7 +626,7 @@ done:
 /* 0x8017B370 | 0x74 */
 #pragma push
 #pragma optimization_level 0
-s32 fn_8017B370(u32 fileHandle) {
+s32 fsysStartLoadExclusive(u32 fileHandle) {
     FSYSSlot* slot;
     extern void fsysStartLoadMode0(FSYSSlot*, u32, u32, u32, u32);
 
@@ -643,7 +643,7 @@ s32 fn_8017B370(u32 fileHandle) {
 /* 0x8017B3E4 | 0x64 */
 #pragma push
 #pragma optimization_level 0
-s32 fn_8017B3E4(u32 fileHandle) {
+s32 fsysStartLoad(u32 fileHandle) {
     FSYSSlot* slot;
     extern void fsysStartLoadMode0(FSYSSlot*, u32, u32, u32, u32);
 
@@ -697,8 +697,8 @@ done:
 }
 #pragma pop
 
-extern void fn_8017F800(u32 fileHandle);
-extern u32 fn_8017FA5C(void);
+extern void fsysCacheFreeHandle(u32 fileHandle);
+extern u32 fsysCacheGetFreeSize(void);
 extern u32 fsysCacheLookup();
 extern void GSdvdReadAsync();
 extern void fsysDVDReadCallback(s32 result);
@@ -833,12 +833,12 @@ static void FSYSEvictUntilSpace(FSYSSlot* slot, u32 neededSize) {
         return;
     }
 
-    while (neededSize > fn_8017FA5C()) {
+    while (neededSize > fsysCacheGetFreeSize()) {
         handleID = ((FSYSFileHandle*)lbl_8047B1B8)->handleID;
         if (handleID < 0) {
             break;
         }
-        fn_8017F800((u32)handleID);
+        fsysCacheFreeHandle((u32)handleID);
         if (FSYSRemoveHandleID(handleID) < 0) {
             break;
         }
@@ -1300,7 +1300,7 @@ void* fsysLZSSDecodeJob(void* unused0, u32 unused1, const void* compressed,
     void* output;
     void* workCopy;
     s32 i;
-    extern void fn_8017F2C4(void*, const void*, u32);
+    extern void fsysLZSSDecode(void*, const void*, u32);
 
     workCopy = work;
     workCopy = workCopy;
@@ -1310,7 +1310,7 @@ void* fsysLZSSDecodeJob(void* unused0, u32 unused1, const void* compressed,
         for (i = 0; i < 0xFEE; i++) {
             gLZSSWindow[i] = 0;
         }
-        fn_8017F2C4(output, compressed, gLZSSContext.decompSize);
+        fsysLZSSDecode(output, compressed, gLZSSContext.decompSize);
         DCFlushRange(output, gLZSSContext.decompSize);
     }
     return output;
@@ -1782,12 +1782,12 @@ u32 fsysStatus100(FSYSSlot* slot) {
 }
 
 /* 0x8017CE7C | 0x4C */
-extern void fn_8017D960();
+extern void fsysSlotFinish();
 extern void fsysSlotCheckEntries();
 #pragma optimization_level 0
 u32 fsysSlotStatus2000(FSYSSlot* slot) {
     if ((s32)slot->loadMode == 3) {
-        fn_8017D960(slot);
+        fsysSlotFinish(slot);
     } else {
         fsysSlotCheckEntries(slot);
     }
@@ -1795,7 +1795,7 @@ u32 fsysSlotStatus2000(FSYSSlot* slot) {
 }
 
 /* 0x8017CED8 | 0x4C8 */
-extern void fn_8017F800(u32);
+extern void fsysCacheFreeHandle(u32);
 extern void* fsysMainToARAMSync();
 extern u32 lbl_8047B1B8;
 extern u32 lbl_8047B1BC;
@@ -1888,14 +1888,14 @@ s32 fsysPreloadArchive(u32 fileHandle) {
 /* 0x8017D624 | 0x68 */
 extern u32 lbl_8047B1B8;
 extern u32 lbl_8047B1BC;
-extern void fn_8017F800();
+extern void fsysCacheFreeHandle();
 #pragma optimization_level 0
 void fsysFlushCachedHandles(void) {
     FSYSFileHandle* table = (FSYSFileHandle*)lbl_8047B1B8;
     s32 i;
 
     for (i = 0; i < (s32)lbl_8047B1BC; i++) {
-        fn_8017F800(table[i].handleID);
+        fsysCacheFreeHandle(table[i].handleID);
         table[i].handleID = -1;
     }
     lbl_8047B1BC = 0;
@@ -2000,20 +2000,20 @@ void fsysStartPendingLoad(void) {
 #pragma optimization_level 4
 #pragma dont_inline on
 void fsysSlotFinishA(FSYSSlot* slot) {
-    fn_8017D960(slot);
+    fsysSlotFinish(slot);
     slot->status = FSYS_STATUS_FREE;
 }
 
 /* 0x8017D92C | 0x34 */
 #pragma optimization_level 4
 void fsysSlotFinishB(FSYSSlot* slot) {
-    fn_8017D960(slot);
+    fsysSlotFinish(slot);
     slot->status = FSYS_STATUS_FREE;
 }
 #pragma dont_inline reset
 
 /* 0x8017D960 | 0x158 */
-void fn_8017D960(FSYSSlot* slot) {
+void fsysSlotFinish(FSYSSlot* slot) {
     FSYSFileEntry* entry;
     u32 i;
     FSYSUserCallback callback;
@@ -2091,7 +2091,7 @@ void fsysSlotCheckEntries(FSYSSlot* slot) {
         }
     }
     if (flag == 0) {
-        fn_8017D960(slot);
+        fsysSlotFinish(slot);
     }
 }
 #pragma pop
@@ -2129,13 +2129,13 @@ void fsysSlotReadNextEntry(FSYSSlot* slot) {
             }
         }
         if (found < 0) {
-            while (FSYSAlign32(headerSize) > fn_8017FA5C()) {
+            while (FSYSAlign32(headerSize) > fsysCacheGetFreeSize()) {
                 table = (FSYSFileHandle*)lbl_8047B1B8;
                 handleID = table[0].handleID;
                 if (handleID < 0) {
                     break;
                 }
-                fn_8017F800((u32)handleID);
+                fsysCacheFreeHandle((u32)handleID);
                 found = -1;
                 table = (FSYSFileHandle*)lbl_8047B1B8;
                 for (j = 0; j < (s32)lbl_8047B1BC; j++) {

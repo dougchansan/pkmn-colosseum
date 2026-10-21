@@ -147,8 +147,8 @@ void _modelGetAObjFunc__FP9_HSD_AObjPv(HSD_AObj* aobj, HSD_AObj** out);
 void _modelResetPartAnimMixes__FP8_GSmodel(GSmodel* model);
 void _modelSetLoopFlag__FP9_HSD_AObjUl(HSD_AObj* aobj, u32 enable);
 void _modelGetEndFrame(HSD_AObj* aobj, f32* end_frame);
-void fn_800ED6E4(GSmodel* model, u8 tex_anim);
-void fn_800ED7E4(GSmodel* model, u8 tex_anim, f32 delta);
+void GSmodelAnimEndEvent(GSmodel* model, u8 tex_anim);
+void GSmodelAnimAdvanceFrame(GSmodel* model, u8 tex_anim, f32 delta);
 GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation,
                         GSvec* scale);
@@ -156,7 +156,7 @@ void GSpartFree(GSpart* part);
 void GSquatFromEuler(GSquat* quaternion, GSvec* rotation);
 void GSvecTransformQuat(GSvec* dst, GSquat* quaternion, GSvec* src);
 void GSvecAdd(GSvec* dst, GSvec* lhs, GSvec* rhs);
-void fn_800E0108(GSvec* dst, GSvec* lhs, GSvec* rhs);
+void GSvecMulComponents(GSvec* dst, GSvec* lhs, GSvec* rhs);
 void modelSetPos(GSmodel* model, GSvec* position);
 void modelSetRot(GSmodel* model, GSvec* rotation);
 void modelSetScl(GSmodel* model, GSvec* scale);
@@ -728,25 +728,25 @@ void GSmodelAdvanceAnimation(GSmodel* model, f32 delta)
     }
 
     if (flags & MODEL_FLAG_ANIM_ENDED) {
-        fn_800ED6E4(model, FALSE);
+        GSmodelAnimEndEvent(model, FALSE);
     }
     if (model->flags & MODEL_FLAG_TEX_ANIM_ENDED) {
-        fn_800ED6E4(model, TRUE);
+        GSmodelAnimEndEvent(model, TRUE);
     }
 
     flags = model->flags;
     if (flags & MODEL_FLAG_BLENDING) {
         if (flags & MODEL_FLAG_ANIMATING) {
-            fn_800ED7E4(model, FALSE, delta * model->anim_rate);
+            GSmodelAnimAdvanceFrame(model, FALSE, delta * model->anim_rate);
             model->blend_anim_frame_a =
                 model->blend_anim_frame_b * model->blend_frame_scale;
         }
     } else {
         if (flags & MODEL_FLAG_ANIMATING) {
-            fn_800ED7E4(model, FALSE, delta * model->anim_rate);
+            GSmodelAnimAdvanceFrame(model, FALSE, delta * model->anim_rate);
         }
         if (model->flags & MODEL_FLAG_TEX_ANIMATING) {
-            fn_800ED7E4(model, TRUE, delta * model->tex_anim_rate);
+            GSmodelAnimAdvanceFrame(model, TRUE, delta * model->tex_anim_rate);
         }
     }
 

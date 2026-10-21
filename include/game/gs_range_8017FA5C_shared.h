@@ -125,7 +125,7 @@ extern u16 GSmemAlloc(u32 size, u32 align);
 extern void* GSmemLock(u16 handle);
 extern void fsysFlushCachedHandles(void);
 
-u32 fn_8017FA5C(void);
+u32 fsysCacheGetFreeSize(void);
 void gsSmallHeapFree(void* allocation);
 void* gsSmallHeapAlloc(u32 size);
 void fsysARQCallback2(GsRangeARQEntry* entry);

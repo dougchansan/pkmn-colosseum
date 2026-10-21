@@ -299,7 +299,7 @@ void gba_LinkInit(void);
 /* GSmemLock */ extern void* GSmem_GetPtr(void* handle);
 
 /* SI / Thread functions */
-/* fn_800716C8 */ extern void  GSthread_Register(s32 channel, void* threadData);
+/* gbaCommSetChannelBuffer */ extern void  GSthread_Register(s32 channel, void* threadData);
 /* OSInitMutex */ extern void  SI_Setup(void* ctx);
 /* OSInitCond */ extern void  SI_SetupCallback(void* callbackData);
 /* OSCreateThread */ extern void  OSCreateThread(void* thread, void* func,
