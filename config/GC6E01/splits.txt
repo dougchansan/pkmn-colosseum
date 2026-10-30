@@ -3697,7 +3697,7 @@ game/data/bss_80404BF0.c:
 	.bss        start:0x80404BF0 end:0x80408400
 
 game/data/bss_80408400_prefix.c:
-	.bss        start:0x80408400 end:0x80434A10
+	.bss        start:0x80408400 end:0x804271D0
 
 game/data/data_8035B430.c:
 	.data       start:0x8035B430 end:0x8035B448
@@ -4300,7 +4300,7 @@ game/effect/effect_visual_candidate_801386DC.c:
 	.rodata     start:0x80272B40 end:0x80272C30
 
 game/data/rodata_80272C30.c:
-	.rodata     start:0x80272C30 end:0x80273338
+	.rodata     start:0x80272C30 end:0x802732E0
 
 game/effect/effect_visual_exact_801387C0.c:
 	.text       start:0x801387C0 end:0x80138838
@@ -4523,21 +4523,11 @@ game/people/people_data_suffix_801441A8.c:
 game/item_range_80144574.c:
 	.text       start:0x80144574 end:0x8014635C
 
-musyx/runtime/seq_get_private_id_exact_8014635C.c:
-	.text       start:0x8014635C end:0x801463C4
-
-musyx/runtime/seq_residual_801463C4.c:
-	.text       start:0x801463C4 end:0x80146E88
-
-musyx/runtime/seq_exact_80146E88.c:
-	.text       start:0x80146E88 end:0x801485FC
-
-musyx/runtime/seq_residual_801485FC.c:
-	.text       start:0x801485FC end:0x80149090
+musyx/runtime/seq.c:
+	.text       start:0x8014635C end:0x8014A23C
 	.data       start:0x80368A30 end:0x80368A80
-
-musyx/runtime/seq_exact_80149090.c:
-	.text       start:0x80149090 end:0x8014A23C
+	.bss        start:0x804271D0 end:0x80434A10
+	.sbss       start:0x8047AEF8 end:0x8047AF18
 	.sdata2     start:0x8047D350 end:0x8047D370
 
 musyx/runtime/synth.c:
@@ -4582,10 +4572,7 @@ musyx/runtime/synthvoice.c:
 	.sbss       start:0x8047AFD0 end:0x8047AFE8
 
 game/data/bss_80446F10.c:
-	.bss        start:0x80446F10 end:0x80448440
-
-game/data/bss_80448440.c:
-	.bss        start:0x80448440 end:0x80448540
+	.bss        start:0x80446F10 end:0x80447E60
 
 musyx/runtime/synth_ac.c:
 	.text       start:0x80158BB4 end:0x80158CD4
@@ -4593,7 +4580,7 @@ musyx/runtime/synth_ac.c:
 	.sdata2     start:0x8047D3F0 end:0x8047D408
 
 game/data/data_803692C8.c:
-	.data       start:0x803692C8 end:0x80369A68
+	.data       start:0x803692C8 end:0x80369A50
 
 musyx/runtime/synth_adsr.c:
 	.text       start:0x80158CD4 end:0x80159494
@@ -4605,26 +4592,12 @@ musyx/runtime/synth_vsamples.c:
 musyx/runtime/s_data.c:
 	.text       start:0x80159C48 end:0x8015A484
 
-musyx/runtime/hw_dspctrl_exact_8015A484.c:
-	.text       start:0x8015A484 end:0x8015A838
-
-musyx/runtime/hw_dspctrl_exact_8015A838.c:
-	.text       start:0x8015A838 end:0x8015A950
-
-musyx/runtime/hw_dspctrl_exact_8015A950.c:
-	.text       start:0x8015A950 end:0x8015AAA0
-
-musyx/runtime/hw_dspctrl_exact_8015AAA0.c:
-	.text       start:0x8015AAA0 end:0x8015AD1C
-
-musyx/runtime/hw_dspctrl_exact_8015AD1C.c:
-	.text       start:0x8015AD1C end:0x8015B250
-
-musyx/runtime/hw_dspctrl_exact_8015B250.c:
-	.text       start:0x8015B250 end:0x8015D408
-
-musyx/runtime/hw_dspctrl_exact_8015D408.c:
-	.text       start:0x8015D408 end:0x8015D7D0
+musyx/runtime/hw_dspctrl.c:
+	.text       start:0x8015A484 end:0x8015D7D0
+	.rodata     start:0x802732E0 end:0x80273338
+	.data       start:0x80369A50 end:0x80369A68
+	.bss        start:0x80447E60 end:0x80448540
+	.sbss       start:0x8047AFF0 end:0x8047B030
 
 musyx/runtime/hw_volconv.c:
 	.text       start:0x8015D7D0 end:0x8015DEC0
@@ -5016,10 +4989,10 @@ game/people/people.c:
 	.sdata2     start:0x8047D798 end:0x8047D8A8
 
 game/data/sdata2_8047D8A8.c:
-	.sdata2     start:0x8047D8A8 end:0x8047D908
+	.sdata2     start:0x8047D8A8 end:0x8047D8C8
 
 game/data/rodata_802741F8.c:
-	.rodata     start:0x802741F8 end:0x802744F0
+	.rodata     start:0x802741F8 end:0x80274468
 
 game/people/people_exact_8018F470.c:
 	.text       start:0x8018F470 end:0x8018F4C8
@@ -5029,7 +5002,7 @@ game/people/people_candidate_8018F4C8.c:
 	.data       start:0x8036C540 end:0x8036C564
 
 game/data/data_8036C568.c:
-	.data       start:0x8036C568 end:0x8036C638
+	.data       start:0x8036C568 end:0x8036C5F0
 
 game/people/people_exact_8018F5B4.c:
 	.text       start:0x8018F5B4 end:0x8018F730
@@ -5079,8 +5052,16 @@ game/gs_flag_exact_801908D4.c:
 hsd/hsd_object.c:
 	.text       start:0x80190E34 end:0x801914F4
 
-hsd/hsd_wobj.c:
-	.text       start:0x801914F4 end:0x801920E4
+hsd/wobj.c:
+	.text       start:0x801914F4 end:0x80191ECC
+	.rodata     start:0x80274468 end:0x802744A8
+	.data       start:0x8036C5F0 end:0x8036C638
+	.sbss       start:0x8047B218 end:0x8047B220
+	.sdata2     start:0x8047D8C8 end:0x8047D908
+
+hsd/archive.c:
+	.text       start:0x80191ECC end:0x801920E4
+	.rodata     start:0x802744A8 end:0x802744F0
 
 hsd/bytecode.c:
 	.text       start:0x801920E4 end:0x80193748
@@ -5118,26 +5099,15 @@ hsd/displayfunc.c:
 	.sbss       start:0x8047B240 end:0x8047B260
 	.sdata2     start:0x8047D9E0 end:0x8047DA18
 
-hsd/hsd_sdata2_8047DA18.c:
-	.sdata2     start:0x8047DA18 end:0x8047DA30
-
 game/data/bss_80465378.c:
 	.bss        start:0x80465378 end:0x804653A8
 
-game/data/data_8036C7A0.c:
-	.data       start:0x8036C7A0 end:0x8036C7E8
-
-game/data/rodata_80274708.c:
+hsd/dobj.c:
+	.text       start:0x80198F7C end:0x8019970C
 	.rodata     start:0x80274708 end:0x80274758
-
-hsd/dobj_exact_80198F7C.c:
-	.text       start:0x80198F7C end:0x801993A4
-
-hsd/dobj_exact_801993A4.c:
-	.text       start:0x801993A4 end:0x80199568
-
-hsd/dobj_exact_80199568.c:
-	.text       start:0x80199568 end:0x8019970C
+	.data       start:0x8036C7A0 end:0x8036C7E8
+	.sbss       start:0x8047B260 end:0x8047B268
+	.sdata2     start:0x8047DA18 end:0x8047DA30
 
 hsd/fobj.c:
 	.text       start:0x8019970C end:0x8019B7C0
@@ -6926,7 +6896,7 @@ game/data/sbss_8047AF60.c:
 	.sbss       start:0x8047AF60 end:0x8047AF66
 
 game/data/sbss_8047AFE8.c:
-	.sbss       start:0x8047AFE8 end:0x8047B030
+	.sbss       start:0x8047AFE8 end:0x8047AFF0
 
 game/data/sdata_80478C08.c:
 	.sdata      start:0x80478C08 end:0x80478C38
@@ -6938,10 +6908,7 @@ game/data/sdata_80478C40.c:
 	.sdata      start:0x80478C40 end:0x80478C50
 
 game/data/sbss_8047B1F8.c:
-	.sbss       start:0x8047B1F8 end:0x8047B220
-
-game/data/sbss_8047B260.c:
-	.sbss       start:0x8047B260 end:0x8047B268
+	.sbss       start:0x8047B1F8 end:0x8047B218
 
 game/data/sdata_80478CA8.c:
 	.sdata      start:0x80478CA8 end:0x80478D00
@@ -6990,7 +6957,7 @@ game/data/sbss_8047AA60.c:
 	.sbss       start:0x8047AA60 end:0x8047AAF8
 
 game/data/sbss_8047AB18.c:
-	.sbss       start:0x8047AB18 end:0x8047AF18
+	.sbss       start:0x8047AB18 end:0x8047AEF8
 
 game/data/sbss2_8047E718.c:
 	.sbss2      start:0x8047E718 end:0x8047E728

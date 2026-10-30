@@ -3,7 +3,6 @@
 #pragma section ".data"
 
 extern u8 lbl_8036C568[];
-extern void* lbl_8036C5F0[];
 extern void* lbl_8036C678[];
 extern u8 lbl_8036C6BC[];
 extern u8 lbl_8036C6C8[];
@@ -11,7 +10,6 @@ extern u8 lbl_8036C6D4[];
 extern void* jumptable_8036C6E0[];
 
 extern u8 CObjUpdateFunc[];
-extern u8 WObjInfoInit[];
 extern u8 fn_80193C24[];
 
 /* Auto-carved .data unit 0x8036C568..0x8036C714 (8 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
@@ -29,25 +27,4 @@ u8 lbl_8036C568[136] = {
     0x07, 0xFF, 0xFF, 0xFF, 0x0F, 0xFF, 0xFF, 0xFF, 0x1F, 0xFF, 0xFF, 0xFF,
     0x3F, 0xFF, 0xFF, 0xFF, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0x00, 0x00, 0x00, 0x00,
-};
-
-void* lbl_8036C5F0[18] = {
-    (void*)((u8*)WObjInfoInit),
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
-    (void*)0x00000000,
 };

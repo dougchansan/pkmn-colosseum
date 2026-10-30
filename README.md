@@ -10,7 +10,7 @@ A matching decompilation project for the GameCube game **Pokémon Colosseum**
 
 **All 8,677 tracked functions, all 2,504,940 tracked code bytes, and all
 3,565,996 tracked data bytes match and link from source (100%) across the DOL
-and all 25 configured REL modules. All 2,272 scoring units are complete and
+and all 25 configured REL modules. All 2,256 scoring units are complete and
 source-backed.** The code totals include accepted assembly implementations
 with recorded evidence.
 
@@ -20,7 +20,7 @@ with recorded evidence.
 | Function match | 100.00% (8,677 / 8,677 functions) |
 | Code match | 100.00% (2,504,940 / 2,504,940 matched code bytes) |
 | Data match | 100.00% (3,565,996 / 3,565,996 matched data bytes) |
-| Source-linked | 2,272 / 2,272 scoring units (100.00% of code) |
+| Source-linked | 2,256 / 2,256 scoring units (100.00% of code) |
 
 Source-linked data is **3,565,996 / 3,565,996 bytes (100%)**. The catalogue
 completed the last **91,421 tracked data bytes**, reconstructing 4,018 indexed
@@ -30,18 +30,20 @@ it is reconstructed data, not
 newly authored dialogue or additional native program code. No tracked data
 bytes remain in original fallback.
 
-The fresh [normal Build report](https://github.com/dougchansan/pkmn-colosseum/actions/runs/40986293627/artifacts/12947501389) at source revision
-[`ce09b514e43171ccb1b3c335dcc898dc22ae6963`](https://github.com/dougchansan/pkmn-colosseum/commit/ce09b514e43171ccb1b3c335dcc898dc22ae6963)
-records these results. Its [full build](https://github.com/dougchansan/pkmn-colosseum/actions/runs/40986293627/job/123837998946) compiled and linked all outputs,
+The [native source report](https://github.com/dougchansan/pkmn-colosseum/actions/runs/41008273719/artifacts/12957025264) at source revision
+[`df0ecc3dd0f0dc34e090bc45d51f5dffe81c717a`](https://github.com/dougchansan/pkmn-colosseum/commit/df0ecc3dd0f0dc34e090bc45d51f5dffe81c717a)
+records the current ownership layout. Its [source/output validation](https://github.com/dougchansan/pkmn-colosseum/actions/runs/41008273719/job/123908055820) compiled and linked all outputs,
 passed all **26 unchanged canonical hashes and direct original/rebuilt byte
 comparisons**, and passed the zero-data layout, registered assembly
-branch-target and complete vector-template checks. An independent report audit
-confirms every function identity and bound, the exact physical interval union, and all denominators
-are unchanged, with no overlapping or omitted bytes. Final documentation,
-source-status and integration checks are recorded in [PR #666](https://github.com/dougchansan/pkmn-colosseum/pull/666).
+branch-target and complete vector-template checks. The restored libraries'
+31 real state objects also retain their exact linked addresses and sizes.
+An independent report audit confirms every function identity and bound and
+the complete physical interval union are unchanged, with no overlapping,
+added or omitted bytes. Final documentation and topology acceptance are
+recorded in [PR #668](https://github.com/dougchansan/pkmn-colosseum/pull/668).
 
 The report SHA-256 is
-`b3d16289a1b16caed16c311bd4db447484a937749121308c469147a26a611b32`.
+`2779ecf834a656a461eb1febdd95a617d9b603c73e0ee1f2a6c006c8ff9bc7a0`.
 For subsequent builds, the authoritative report is
 `build/GC6E01/report.json`; the root-level `report.json` is historical.
 [`docs/DATA_MATCHING.md`](docs/DATA_MATCHING.md) records the completed data
@@ -58,10 +60,12 @@ pure-C percentage or runtime gameplay testing.
 split into address-owned units with different compiler flags, compiled through
 one-line `#include` shims. The report has 8,677 distinct module/address function
 identities, with no duplicate claims. Its code denominator contains 2,495,112
-DOL bytes and 9,828 REL bytes, all matched and source-linked. The existing
-**2,272-unit topology** is unchanged. The catalogue raised source-backed and
-complete units from 2,258 to 2,271; reconstructing the vector owner completes
-the final unit without changing physical coverage or any denominator.
+DOL bytes and 9,828 REL bytes, all matched and source-linked. The catalogue
+raised source-backed and complete units from 2,258 to 2,271; the vector owner
+completed the original 2,272-unit inventory. The subsequent MusyX/HSD cleanup
+reunites 21 former owners into five coherent library units, producing
+**2,256 complete scoring units** while preserving every function and physical
+code/data byte. The reviewed topology freeze records this ownership change.
 
 The completed fork import and Count-Sheep's retained original history are
 recorded in [PR #662](https://github.com/dougchansan/pkmn-colosseum/pull/662) and

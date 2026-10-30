@@ -6,12 +6,12 @@
     "total_code": 2504940,
     "total_data": 3565996,
     "total_functions": 8677,
-    "total_units": 2272
+    "total_units": 2256
   },
   "topology_status": {
     "auto_units": 17,
-    "named_units": 2255,
-    "source_backed_units": 2272,
+    "named_units": 2239,
+    "source_backed_units": 2256,
     "auto_code": 0,
     "auto_data": 13500,
     "auto_functions": 0
@@ -13997,12 +13997,12 @@
       "sections": [
         {
           "name": ".sbss",
-          "size": 1024,
+          "size": 992,
           "virtual_address": 2152180504
         }
       ],
       "total_code": 0,
-      "total_data": 1024,
+      "total_data": 992,
       "total_functions": 0
     },
     {
@@ -16745,12 +16745,12 @@
       "sections": [
         {
           "name": ".bss",
-          "size": 181776,
+          "size": 126416,
           "virtual_address": 2151711744
         }
       ],
       "total_code": 0,
-      "total_data": 181776,
+      "total_data": 126416,
       "total_functions": 0
     },
     {
@@ -19458,12 +19458,12 @@
       "sections": [
         {
           "name": ".rodata",
-          "size": 1800,
+          "size": 1712,
           "virtual_address": 2150050864
         }
       ],
       "total_code": 0,
-      "total_data": 1800,
+      "total_data": 1712,
       "total_functions": 0
     },
     {
@@ -20432,65 +20432,23 @@
       "total_functions": 1
     },
     {
-      "name": "main/musyx/runtime/seq_get_private_id_exact_8014635C",
+      "name": "main/musyx/runtime/seq",
       "sections": [
         {
-          "name": ".text",
-          "size": 104,
-          "virtual_address": 2148819804
-        }
-      ],
-      "total_code": 104,
-      "total_data": 0,
-      "total_functions": 1
-    },
-    {
-      "name": "main/musyx/runtime/seq_residual_801463C4",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 2756,
-          "virtual_address": 2148819908
-        }
-      ],
-      "total_code": 2756,
-      "total_data": 0,
-      "total_functions": 1
-    },
-    {
-      "name": "main/musyx/runtime/seq_exact_80146E88",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 6004,
-          "virtual_address": 2148822664
-        }
-      ],
-      "total_code": 6004,
-      "total_data": 0,
-      "total_functions": 9
-    },
-    {
-      "name": "main/musyx/runtime/seq_residual_801485FC",
-      "sections": [
+          "name": ".bss",
+          "size": 55360,
+          "virtual_address": 2151838160
+        },
         {
           "name": ".data",
           "size": 80,
           "virtual_address": 2151057968
         },
         {
-          "name": ".text",
-          "size": 2708,
-          "virtual_address": 2148828668
-        }
-      ],
-      "total_code": 2708,
-      "total_data": 80,
-      "total_functions": 1
-    },
-    {
-      "name": "main/musyx/runtime/seq_exact_80149090",
-      "sections": [
+          "name": ".sbss",
+          "size": 32,
+          "virtual_address": 2152181496
+        },
         {
           "name": ".sdata2",
           "size": 32,
@@ -20498,13 +20456,13 @@
         },
         {
           "name": ".text",
-          "size": 4524,
-          "virtual_address": 2148831376
+          "size": 16096,
+          "virtual_address": 2148819804
         }
       ],
-      "total_code": 4524,
-      "total_data": 32,
-      "total_functions": 4
+      "total_code": 16096,
+      "total_data": 55504,
+      "total_functions": 16
     },
     {
       "name": "main/musyx/runtime/synth",
@@ -20709,12 +20667,12 @@
       "sections": [
         {
           "name": ".sbss",
-          "size": 72,
+          "size": 8,
           "virtual_address": 2152181736
         }
       ],
       "total_code": 0,
-      "total_data": 72,
+      "total_data": 8,
       "total_functions": 0
     },
     {
@@ -20722,25 +20680,12 @@
       "sections": [
         {
           "name": ".bss",
-          "size": 5424,
+          "size": 3920,
           "virtual_address": 2151968528
         }
       ],
       "total_code": 0,
-      "total_data": 5424,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/bss_80448440",
-      "sections": [
-        {
-          "name": ".bss",
-          "size": 256,
-          "virtual_address": 2151973952
-        }
-      ],
-      "total_code": 0,
-      "total_data": 256,
+      "total_data": 3920,
       "total_functions": 0
     },
     {
@@ -20771,12 +20716,12 @@
       "sections": [
         {
           "name": ".data",
-          "size": 1952,
+          "size": 1928,
           "virtual_address": 2151060168
         }
       ],
       "total_code": 0,
-      "total_data": 1952,
+      "total_data": 1928,
       "total_functions": 0
     },
     {
@@ -20824,95 +20769,37 @@
       "total_functions": 6
     },
     {
-      "name": "main/musyx/runtime/hw_dspctrl_exact_8015A484",
+      "name": "main/musyx/runtime/hw_dspctrl",
       "sections": [
         {
+          "name": ".bss",
+          "size": 1760,
+          "virtual_address": 2151972448
+        },
+        {
+          "name": ".data",
+          "size": 24,
+          "virtual_address": 2151062096
+        },
+        {
+          "name": ".rodata",
+          "size": 88,
+          "virtual_address": 2150052576
+        },
+        {
+          "name": ".sbss",
+          "size": 64,
+          "virtual_address": 2152181744
+        },
+        {
           "name": ".text",
-          "size": 948,
+          "size": 13132,
           "virtual_address": 2148902020
         }
       ],
-      "total_code": 948,
-      "total_data": 0,
-      "total_functions": 1
-    },
-    {
-      "name": "main/musyx/runtime/hw_dspctrl_exact_8015A838",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 280,
-          "virtual_address": 2148902968
-        }
-      ],
-      "total_code": 280,
-      "total_data": 0,
-      "total_functions": 2
-    },
-    {
-      "name": "main/musyx/runtime/hw_dspctrl_exact_8015A950",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 336,
-          "virtual_address": 2148903248
-        }
-      ],
-      "total_code": 336,
-      "total_data": 0,
-      "total_functions": 1
-    },
-    {
-      "name": "main/musyx/runtime/hw_dspctrl_exact_8015AAA0",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 636,
-          "virtual_address": 2148903584
-        }
-      ],
-      "total_code": 636,
-      "total_data": 0,
-      "total_functions": 5
-    },
-    {
-      "name": "main/musyx/runtime/hw_dspctrl_exact_8015AD1C",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 1332,
-          "virtual_address": 2148904220
-        }
-      ],
-      "total_code": 1332,
-      "total_data": 0,
-      "total_functions": 2
-    },
-    {
-      "name": "main/musyx/runtime/hw_dspctrl_exact_8015B250",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 8632,
-          "virtual_address": 2148905552
-        }
-      ],
-      "total_code": 8632,
-      "total_data": 0,
-      "total_functions": 1
-    },
-    {
-      "name": "main/musyx/runtime/hw_dspctrl_exact_8015D408",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 968,
-          "virtual_address": 2148914184
-        }
-      ],
-      "total_code": 968,
-      "total_data": 0,
-      "total_functions": 6
+      "total_code": 13132,
+      "total_data": 1936,
+      "total_functions": 18
     },
     {
       "name": "main/musyx/runtime/hw_volconv",
@@ -22688,12 +22575,12 @@
       "sections": [
         {
           "name": ".sdata2",
-          "size": 96,
+          "size": 32,
           "virtual_address": 2152192168
         }
       ],
       "total_code": 0,
-      "total_data": 96,
+      "total_data": 32,
       "total_functions": 0
     },
     {
@@ -22701,12 +22588,12 @@
       "sections": [
         {
           "name": ".sbss",
-          "size": 40,
+          "size": 32,
           "virtual_address": 2152182264
         }
       ],
       "total_code": 0,
-      "total_data": 40,
+      "total_data": 32,
       "total_functions": 0
     },
     {
@@ -22714,12 +22601,12 @@
       "sections": [
         {
           "name": ".rodata",
-          "size": 760,
+          "size": 624,
           "virtual_address": 2150056440
         }
       ],
       "total_code": 0,
-      "total_data": 760,
+      "total_data": 624,
       "total_functions": 0
     },
     {
@@ -22758,12 +22645,12 @@
       "sections": [
         {
           "name": ".data",
-          "size": 208,
+          "size": 136,
           "virtual_address": 2151073128
         }
       ],
       "total_code": 0,
-      "total_data": 208,
+      "total_data": 136,
       "total_functions": 0
     },
     {
@@ -22975,17 +22862,55 @@
       "total_functions": 9
     },
     {
-      "name": "main/hsd/hsd_wobj",
+      "name": "main/hsd/wobj",
       "sections": [
         {
+          "name": ".data",
+          "size": 72,
+          "virtual_address": 2151073264
+        },
+        {
+          "name": ".rodata",
+          "size": 64,
+          "virtual_address": 2150057064
+        },
+        {
+          "name": ".sbss",
+          "size": 8,
+          "virtual_address": 2152182296
+        },
+        {
+          "name": ".sdata2",
+          "size": 64,
+          "virtual_address": 2152192200
+        },
+        {
           "name": ".text",
-          "size": 3056,
+          "size": 2520,
           "virtual_address": 2149127412
         }
       ],
-      "total_code": 3056,
-      "total_data": 0,
-      "total_functions": 16
+      "total_code": 2520,
+      "total_data": 208,
+      "total_functions": 14
+    },
+    {
+      "name": "main/hsd/archive",
+      "sections": [
+        {
+          "name": ".rodata",
+          "size": 72,
+          "virtual_address": 2150057128
+        },
+        {
+          "name": ".text",
+          "size": 536,
+          "virtual_address": 2149129932
+        }
+      ],
+      "total_code": 536,
+      "total_data": 72,
+      "total_functions": 2
     },
     {
       "name": "main/hsd/bytecode",
@@ -23158,32 +23083,6 @@
       "total_functions": 18
     },
     {
-      "name": "main/hsd/hsd_sdata2_8047DA18",
-      "sections": [
-        {
-          "name": ".sdata2",
-          "size": 24,
-          "virtual_address": 2152192536
-        }
-      ],
-      "total_code": 0,
-      "total_data": 24,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/sbss_8047B260",
-      "sections": [
-        {
-          "name": ".sbss",
-          "size": 8,
-          "virtual_address": 2152182368
-        }
-      ],
-      "total_code": 0,
-      "total_data": 8,
-      "total_functions": 0
-    },
-    {
       "name": "main/game/data/bss_80465378",
       "sections": [
         {
@@ -23197,69 +23096,37 @@
       "total_functions": 0
     },
     {
-      "name": "main/game/data/data_8036C7A0",
+      "name": "main/hsd/dobj",
       "sections": [
         {
           "name": ".data",
           "size": 72,
           "virtual_address": 2151073696
-        }
-      ],
-      "total_code": 0,
-      "total_data": 72,
-      "total_functions": 0
-    },
-    {
-      "name": "main/game/data/rodata_80274708",
-      "sections": [
+        },
         {
           "name": ".rodata",
           "size": 80,
           "virtual_address": 2150057736
-        }
-      ],
-      "total_code": 0,
-      "total_data": 80,
-      "total_functions": 0
-    },
-    {
-      "name": "main/hsd/dobj_exact_80198F7C",
-      "sections": [
+        },
+        {
+          "name": ".sbss",
+          "size": 8,
+          "virtual_address": 2152182368
+        },
+        {
+          "name": ".sdata2",
+          "size": 24,
+          "virtual_address": 2152192536
+        },
         {
           "name": ".text",
-          "size": 1064,
+          "size": 1936,
           "virtual_address": 2149158780
         }
       ],
-      "total_code": 1064,
-      "total_data": 0,
-      "total_functions": 8
-    },
-    {
-      "name": "main/hsd/dobj_exact_801993A4",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 452,
-          "virtual_address": 2149159844
-        }
-      ],
-      "total_code": 452,
-      "total_data": 0,
-      "total_functions": 1
-    },
-    {
-      "name": "main/hsd/dobj_exact_80199568",
-      "sections": [
-        {
-          "name": ".text",
-          "size": 420,
-          "virtual_address": 2149160296
-        }
-      ],
-      "total_code": 420,
-      "total_data": 0,
-      "total_functions": 4
+      "total_code": 1936,
+      "total_data": 184,
+      "total_functions": 13
     },
     {
       "name": "main/hsd/fobj",

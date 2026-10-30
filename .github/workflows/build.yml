@@ -76,6 +76,10 @@ jobs:
           python3 tools/data_match_diagnostics.py \
               --report build/${{ matrix.version }}/report.json \
               --config objdiff.json --include-data-only \
+              --include-unit main/musyx/runtime/seq \
+              --include-unit main/musyx/runtime/hw_dspctrl \
+              --include-unit main/hsd/dobj --include-unit main/hsd/wobj \
+              --include-unit main/hsd/archive --include-unit main/hsd/class \
               --orig orig/${{ matrix.version }} \
               --output build/${{ matrix.version }}/data_match_diagnostics.json
         fi
@@ -106,6 +110,10 @@ jobs:
               --report build/${{ matrix.version }}/report.json \
               --symbols config/${{ matrix.version }}/symbols.txt \
               --array-aliases config/${{ matrix.version }}/data_aliases \
+              --include-unit main/musyx/runtime/seq \
+              --include-unit main/musyx/runtime/hw_dspctrl \
+              --include-unit main/hsd/dobj --include-unit main/hsd/wobj \
+              --include-unit main/hsd/archive \
               --output build/${{ matrix.version }}/data_link_diagnostics.json
         fi
 
