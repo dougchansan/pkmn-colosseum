@@ -12,10 +12,12 @@ or hide a function regression.
 
 Seven obsolete MusyX files and eleven obsolete HSD files have moved unchanged
 to [`archive/previous_campaign/library_candidates/`](../archive/previous_campaign/library_candidates/).
-They are absent from the active source-owner report and from the transitive
-quoted-include dependencies of every source owner. A repository-wide reference
+Those first 18 files were absent from the active source-owner report and from
+the transitive quoted-include dependencies of every source owner. A repository-wide reference
 review found historical worklists, attribution proposals and explanatory
 comments, but no production build registration or live source include.
+Another 21 former owners are archived unchanged after their implementations
+and data were reunited below, for 39 preserved historical C files in total.
 
 The old `musyx_candidate_80158BB4.c` wrapper receives no matching credit.
 Its active replacement is [`runtime/synth_ac.c`](../src/musyx/runtime/synth_ac.c),
@@ -41,11 +43,11 @@ are pinned references. Existing attribution and license notices are retained.
 | `src/hsd/wobj.c` | 14 | 2,520 | 208 |
 | `src/hsd/archive.c` | 2 | 536 | 72 |
 
-The proposed mapping replaces 21 old owners with these five, reducing the
-scoring-unit inventory from 2,272 to 2,256. An independent split-map audit
-confirms the identical physical interval union in every section, with no
-overlaps or missing bytes. Native matching is required before accepting this
-mapping or refreshing the frozen report topology.
+The verified mapping replaces 21 old owners with these five, reducing the
+scoring-unit inventory from 2,272 to 2,256. Independent split-map and native
+report audits confirm the identical physical interval union in every section,
+with no overlaps, added bytes or missing bytes. The object-map freeze and
+README measurements are refreshed from the verified native source report.
 
 The sequencer owns its notes, instances, MIDI priorities and list state. The
 DSP controller owns its mixer/SRC tables, studio state and command-list
@@ -96,3 +98,38 @@ It no longer duplicates a fixed historical count of unrelated source owners;
 the strict object-map freeze remains responsible for their reviewed topology.
 Missing or duplicated report units, incomplete owners, changed denominators,
 or new vector function/code/data credit still fail.
+
+## Verified source result
+
+The native source revision
+[`df0ecc3dd0f0dc34e090bc45d51f5dffe81c717a`](https://github.com/dougchansan/pkmn-colosseum/commit/df0ecc3dd0f0dc34e090bc45d51f5dffe81c717a)
+passes all 26 unchanged canonical DOL/REL hashes and direct byte comparisons.
+Its [report and diagnostic artifacts](https://github.com/dougchansan/pkmn-colosseum/actions/runs/41008273719)
+show all 8,677 functions, 2,504,940 code bytes and 3,565,996 data bytes exact
+and source-linked, with all 2,256 scoring units complete. The subsequent
+acceptance commit updates only the README, this record and the topology freeze.
+The complete final checks are recorded in [PR #668](https://github.com/dougchansan/pkmn-colosseum/pull/668).
+
+The extended zero-data gate verifies 38 owners, 40 zero sections and 1,597
+symbols covering 655,416 physical bytes. Every previously checked byte remains
+covered, with another 336 bytes now checked. All 31 real state objects belonging
+to the four restored stateful units have exact final linked addresses and
+sizes. DSP's 60-byte native small-data section and WObj's 4-byte section each
+receive their proven four-byte terminal alignment at link time; no artificial
+state or padding variables were introduced. The gate records the actual native
+sizes and eight-byte alignment, requires the independently mapped terminal
+gap, and preserves every real symbol's strict offset, size and binding checks.
+
+All 334 checker tests and 13 jump-table tests pass. The source-wide wrapper
+scan, registered assembly branch-target checks and complete vector-template
+validation pass. The code/data/function denominators are unchanged. The
+independent report audit retains every function identity and bound and every
+physical section interval across all 26 modules, with zero overlaps or
+added/removed physical bytes.
+
+Report SHA-256:
+`2779ecf834a656a461eb1febdd95a617d9b603c73e0ee1f2a6c006c8ff9bc7a0`.
+Function-identity SHA-256:
+`29d80aeb75534ca8bfc9fbbdd80290e93bafea9d57354bdabc02b319446ea6ad`.
+Physical-interval-union SHA-256:
+`3ab2e1a11519104c854210097602a65dc0576bcafc03baa146d9b5aa0780b1f7`.
