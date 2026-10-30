@@ -315,7 +315,7 @@ extern u32 voiceAllocate(u8 priority, u8 maxVoices, u16 allocId, u8 isFX); /* vo
 extern void inpResetMidiCtrl(u8 voice, u32 arg2, u32 arg3);
 extern void inpResetChannelDefaults(u8 voice, u32 val); /* inpResetChannelDefaults */
 extern u32 vidMakeNew(SYNTH_VOICE* svoice, u8 new_vid); /* vidMakeNew */
-extern void hwBreak(u32 voice); /* src/musyx/musyx_range_80157280.c, real symbol */
+extern void hwBreak(u32 voice); /* MusyX hardware voice control. */
 
 extern void inpAddCtrl(CTRL_DEST* dst, u8 lowByte, s32 value, u8 repeat, u32 hasUpperByte);
 extern void inpSetGlobalMIDIDirtyFlag(u8 midi, u8 midiSet, u32 dirtyFlag); /* inpSetGlobalMIDIDirtyFlag */

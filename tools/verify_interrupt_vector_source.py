@@ -394,12 +394,19 @@ def compare_original(payload, dol):
 def check_report(report):
     wanted = {"total_code": 2504940, "matched_code": 2504940, "complete_code": 2504940,
               "total_functions": 8677, "matched_functions": 8677,
-              "total_data": 3565996, "matched_data": 3565996, "complete_data": 3565996,
-              "total_units": 2272, "complete_units": 2272}
+              "total_data": 3565996, "matched_data": 3565996, "complete_data": 3565996}
     require(all(int(report.get("measures", {}).get(key, -1)) == value for key, value in wanted.items()),
             "Whole-project report changes the completion scope or is incomplete")
-    require(len(report.get("units", [])) == 2272, "Report unit inventory is incomplete")
-    require(len({unit.get("name") for unit in report["units"]}) == 2272,
+    # Other source owners may be reunited into their original translation
+    # units. Their reviewed topology is enforced by check_object_map_freeze;
+    # this vector gate requires a coherent, fully source-complete inventory
+    # without baking that unrelated historical partition count into the unit.
+    total_units = int(report.get("measures", {}).get("total_units", -1))
+    require(total_units > 0 and
+            int(report["measures"].get("complete_units", -1)) == total_units,
+            "Whole-project report contains incomplete scoring units")
+    require(len(report.get("units", [])) == total_units, "Report unit inventory is incomplete")
+    require(len({unit.get("name") for unit in report["units"]}) == total_units,
             "Report unit identities are duplicated")
     require(all(unit.get("metadata", {}).get("complete") is True and
                 isinstance(unit.get("metadata", {}).get("source_path"), str) and
@@ -424,7 +431,7 @@ def check_report(report):
             and int(sections[0].get("metadata", {}).get("virtual_address", -1)) == BASE
             and float(sections[0].get("fuzzy_match_percent", 0)) == 100.0
             and not sections[0].get("functions"), "Vector report physical extent differs")
-    return {"completed_units": 2272, "vector_source_complete": True,
+    return {"completed_units": total_units, "vector_source_complete": True,
             "additional_function_credit": 0, "additional_code_credit": 0,
             "additional_data_credit": 0}
 

@@ -296,6 +296,29 @@ class InterruptVectorSourceTests(unittest.TestCase):
         self.assertEqual(result["additional_code_credit"], 0)
         self.assertEqual(result["additional_data_credit"], 0)
 
+    def test_coherent_repartition_preserves_vector_completion(self):
+        report = report_fixture()
+        report["units"].pop()
+        report["measures"]["total_units"] -= 1
+        report["measures"]["complete_units"] -= 1
+        result = verifier.check_report(report)
+        self.assertEqual(result["completed_units"], 2271)
+        self.assertEqual(result["additional_code_credit"], 0)
+
+    def test_repartition_cannot_hide_lost_inventory_or_changed_denominators(self):
+        for mutation in ("inventory", "code", "data", "functions", "empty"):
+            report = report_fixture()
+            if mutation == "inventory":
+                report["units"].pop()
+            elif mutation == "empty":
+                report["units"] = []
+                report["measures"]["total_units"] = 0
+                report["measures"]["complete_units"] = 0
+            else:
+                report["measures"]["total_" + mutation] -= 1
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                verifier.check_report(report)
+
     def test_incomplete_or_misattributed_report_fails(self):
         for mutation in ("global_incomplete", "unit_incomplete", "source", "extent", "credit", "missing",
                          "other_incomplete", "duplicate", "unit_count", "section_mismatch"):
