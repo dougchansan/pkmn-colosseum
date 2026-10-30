@@ -58,6 +58,29 @@ or neighboring addresses. For example, the old WObj source also contains two
 archive functions, and the BSS next to DObj belongs to FObj. A mixed data
 owner may transfer only the proven subset, retaining every neighboring byte.
 
+## Compiler comparisons
+
+The isolated experiments at
+[`b721f05d6db0c38424604bf1bef5a46896ed2332`](https://github.com/dougchansan/pkmn-colosseum/commit/b721f05d6db0c38424604bf1bef5a46896ed2332)
+compiled unchanged controls and alternative source copies with the generated
+compiler commands. They preserved source basenames and exported only scores,
+hashes, symbol layouts and call metadata in
+[the native CI diagnostics](https://github.com/dougchansan/pkmn-colosseum/actions/runs/41007472661).
+The temporary probe runner and exact recipes remain in that commit's history.
+
+The DSP's original automatic-inline setting matches all 18 functions and
+their helper-call sites, so the temporary scoped `SortVoices` pragma and
+unit-specific no-auto-inline override have been removed. DObj's natural
+load/helper form still scores 96.9469% for `DObjLoad`; its existing parameter
+copies remain documented in [RULE_EXCEPTIONS.md](RULE_EXCEPTIONS.md). Its
+separately owned literal stand-ins have been removed.
+
+Explicitly marking the public `seqGetPrivateId` definition inline omitted its
+required out-of-line entry, so the ordinary public definition is retained.
+The sequencer's private helper order and ordinary `static GetPublicId`
+annotation follow the pinned upstream source, allowing normal first-reference
+allocation of its BSS without extra pragmas or dummy state.
+
 ## Acceptance
 
 Each restored owner must compile and match as a complete object: all sibling

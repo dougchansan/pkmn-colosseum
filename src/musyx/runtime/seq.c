@@ -324,7 +324,7 @@ static void ClearNotes(void) {
     ln->next = NULL;
 }
 
-static inline u32 GetPublicId(u32 seqId)
+static u32 GetPublicId(u32 seqId)
 {
     u32 publicId;
     SEQ_INSTANCE* seq;

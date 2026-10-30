@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Compare linked DOL data symbol addresses with the existing retail map.
 
-Only complete, source-backed, data-only main units are selected. Incomplete
+Complete, source-backed, data-only main units are selected by default. An
+explicit --include-unit may also select a complete mixed main owner. Incomplete
 candidates still linked from originals are explicitly skipped. Output contains
 symbol names, addresses, sizes and comparison status, never section payloads.
 Missing/dead-stripped symbols are diagnostic observations, not matching credit.
@@ -177,13 +178,28 @@ def load_array_aliases(directory, expected):
     return output
 
 
-def diagnose(report, expected, actual, array_aliases=None):
+def diagnose(report, expected, actual, array_aliases=None, include_units=()):
     result = {"schema_version": 1, "payload_bytes_included": False,
               "scope": "complete_source_data_only_main_units",
               "units": [], "skipped_incomplete_units": []}
     totals = {key: 0 for key in ("match", "address_mismatch", "size_mismatch",
                                 "missing", "ambiguous")}
     aliases = array_aliases or {}
+    requested = set(include_units)
+    if requested:
+        result["scope"] = "complete_source_data_only_main_units_and_explicit_main_units"
+        result["explicit_units"] = sorted(requested)
+        for name in requested:
+            owners = [unit for unit in report["units"] if unit["name"] == name]
+            if len(owners) != 1:
+                raise ValueError("Explicit source owner is missing or ambiguous")
+            owner = owners[0]
+            measures, metadata = owner["measures"], owner.get("metadata", {})
+            if (not name.startswith("main/") or not metadata.get("source_path")
+                    or not metadata.get("complete") or not int(measures.get("total_data", 0))
+                    or int(measures.get("complete_data", 0)) != int(measures["total_data"])
+                    or int(measures.get("complete_code", 0)) != int(measures.get("total_code", 0))):
+                raise ValueError("Explicit unit is not a complete source-backed main data owner")
     if aliases:
         # A registration must belong wholly to its named source owner, even if
         # that owner is incomplete and will be skipped by the address report.
@@ -210,7 +226,7 @@ def diagnose(report, expected, actual, array_aliases=None):
     for unit in report["units"]:
         measures, metadata = unit["measures"], unit.get("metadata", {})
         if not unit["name"].startswith("main/") or not metadata.get("source_path") \
-                or int(measures.get("total_code", 0)) != 0 \
+                or int(measures.get("total_code", 0)) != 0 and unit["name"] not in requested \
                 or not int(measures.get("total_data", 0)):
             continue
         if not metadata.get("complete") or int(measures.get("complete_data", 0)) \
@@ -275,6 +291,8 @@ def main():
     parser.add_argument("--elf", type=Path, default=Path("build/GC6E01/main.elf"))
     parser.add_argument("--report", type=Path, default=Path("build/GC6E01/report.json"))
     parser.add_argument("--symbols", type=Path, default=Path("config/GC6E01/symbols.txt"))
+    parser.add_argument("--include-unit", action="append", default=[], metavar="UNIT",
+                        help="Also inspect this complete source-backed main owner, including mixed units")
     parser.add_argument("--array-aliases", type=Path,
                         help="Optional scoped source-array alias registration directory")
     parser.add_argument("--output", type=Path, default=Path("build/GC6E01/data_link_diagnostics.json"))
@@ -283,7 +301,7 @@ def main():
         expected = map_symbols(args.symbols.read_text())
         aliases = load_array_aliases(args.array_aliases, expected) if args.array_aliases else None
         result = diagnose(json.loads(args.report.read_text()), expected,
-                          linked_symbols(args.elf.read_bytes()), aliases)
+                          linked_symbols(args.elf.read_bytes()), aliases, args.include_unit)
     except (OSError, ValueError, KeyError, TypeError, struct.error) as exc:
         result = {"schema_version": 1, "payload_bytes_included": False,
                   "error": type(exc).__name__}

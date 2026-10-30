@@ -2243,7 +2243,7 @@ config.libs = [
                         or path == "musyx/runtime/snd_math.c"
                         or path == "musyx/runtime/snd3d.c"
                         else ["-inline noauto"]
-                        if "_inline_noauto" in path or path == "musyx/runtime/hw_dspctrl.c"
+                        if "_inline_noauto" in path
                         else []
                     ),
                     progress_category="musyx",

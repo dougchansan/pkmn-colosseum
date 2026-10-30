@@ -39,6 +39,51 @@ def executable_fixture():
 
 
 class DataLinkDiagnosticTests(unittest.TestCase):
+    def mixed_fixture(self):
+        unit = {"name": "main/library/owner",
+                "measures": {"total_code": "4", "complete_code": "4",
+                             "total_data": "8", "complete_data": "8"},
+                "metadata": {"source_path": "src/library/owner.c", "complete": True},
+                "sections": [{"name": ".text", "size": "4",
+                              "metadata": {"virtual_address": str(0x80000000)}},
+                             {"name": ".sbss", "size": "8",
+                              "metadata": {"virtual_address": str(0x80470000)}}]}
+        expected = map_symbols("state = .sbss:0x80470000; // type:object size:0x4")
+        actual = {"state": [{"address": 0x80470000, "size": 4}]}
+        return {"units": [unit]}, expected, actual
+
+    def test_explicit_mixed_owner_exposes_linked_state_and_address_errors(self):
+        report, expected, actual = self.mixed_fixture()
+        self.assertEqual(diagnose(report, expected, actual)["units"], [])
+        selected = ["main/library/owner"]
+        result = diagnose(report, expected, actual, include_units=selected)
+        self.assertEqual(result["explicit_units"], selected)
+        self.assertEqual(result["units"][0]["symbols"][0]["status"], "match")
+        actual["state"][0]["address"] += 4
+        result = diagnose(report, expected, actual, include_units=selected)
+        self.assertEqual(result["units"][0]["symbols"][0]["status"], "address_mismatch")
+
+    def test_explicit_selection_cannot_silently_skip_missing_or_unproven_sources(self):
+        for mutation in ("missing", "duplicate", "incomplete", "no_source", "code", "data", "module"):
+            report, expected, actual = self.mixed_fixture()
+            unit = report["units"][0]
+            selected = [unit["name"]]
+            if mutation == "missing":
+                report["units"] = []
+            elif mutation == "duplicate":
+                report["units"].append(copy.deepcopy(unit))
+            elif mutation == "incomplete":
+                unit["metadata"]["complete"] = False
+            elif mutation == "no_source":
+                unit["metadata"].pop("source_path")
+            elif mutation in ("code", "data"):
+                unit["measures"]["complete_" + mutation] = "0"
+            else:
+                unit["name"] = "rel/library/owner"
+                selected = [unit["name"]]
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                diagnose(report, expected, actual, include_units=selected)
+
     def alias_fixture(self):
         expected = map_symbols("\n".join([
             "flags = .sdata:0x80001000; // type:object size:0x1",

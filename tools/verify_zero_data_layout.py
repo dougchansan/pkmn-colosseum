@@ -7,7 +7,9 @@ Version 2 also accepts explicitly registered mixed translation units: every
 zero section must be listed, and each private symbol needs an exact native-name
 mapping. The other declared sections may coexist with the checked storage;
 this does not verify their contents. This checker never modifies objects or
-grants matching credit.
+grants matching credit. For mixed owners only, a mapped terminal gap may be
+supplied by link alignment when the native section ends at its final real
+symbol and its observed ELF alignment rounds that end to the full split size.
 """
 
 import argparse
@@ -172,7 +174,7 @@ def expectations(manifest_path, symbols_path, splits_path):
     return result
 
 
-def check_section(sections, symbols, expected):
+def check_section(sections, symbols, expected, *, mixed=False, observations=None):
     errors = []
     indices = [i for i, section in enumerate(sections)
                if section["name"] == expected["section"]]
@@ -182,11 +184,25 @@ def check_section(sections, symbols, expected):
     fields = sections[index]["fields"]
     if fields[1] != 8 or not fields[2] & 2 or fields[2] & 4:
         errors.append("expected allocated non-executable SHT_NOBITS storage")
-    if fields[5] != expected["size"]:
-        errors.append(f"section size {fields[5]} != {expected['size']}")
+    native_size = fields[5]
     alignment = fields[8]
-    if not alignment or alignment & (alignment - 1) or expected["start"] % alignment:
+    valid_alignment = (alignment > 0 and not alignment & (alignment - 1)
+                       and expected["start"] % alignment == 0)
+    if not valid_alignment:
         errors.append("compiled section alignment cannot occupy the retail start")
+    last_symbol_end = max(row["offset"] + row["size"] for row in expected["symbols"])
+    trailing_gap = {"offset": native_size, "size": expected["size"] - native_size}
+    terminal_alignment = (mixed and valid_alignment
+                          and 0 < native_size < expected["size"]
+                          and last_symbol_end == native_size
+                          and expected.get("gaps", []).count(trailing_gap) == 1
+                          and all(gap == trailing_gap
+                                  or gap["offset"] + gap["size"] <= native_size
+                                  for gap in expected.get("gaps", []))
+                          and (native_size + alignment - 1) // alignment * alignment
+                          == expected["size"])
+    if native_size != expected["size"] and not terminal_alignment:
+        errors.append(f"section size {native_size} != {expected['size']}")
     for i, section in enumerate(sections):
         f = section["fields"]
         if f[1] in (4, 9) and f[7] == index and f[5]:
@@ -218,6 +234,7 @@ def check_section(sections, symbols, expected):
         start, end = symbol["value"], symbol["value"] + symbol["size"]
         valid = (match is not None and symbol["info"] == 0x11
                  and int(match[1], 16) == expected["start"] + start
+                 and 0 <= start < end <= native_size
                  and any(gap["offset"] <= start and end <= gap["offset"] + gap["size"]
                          for gap in expected.get("gaps", [])))
         if not valid:
@@ -226,10 +243,16 @@ def check_section(sections, symbols, expected):
             errors.append(f"overlapping padding symbol: {symbol['name']}")
         else:
             padding_ranges.append((start, end))
+    if observations is not None:
+        observations.append({"section": expected["section"], "start": expected["start"],
+                             "physical_size": expected["size"], "native_size": native_size,
+                             "alignment": alignment, "last_symbol_end": last_symbol_end,
+                             "terminal_alignment_bytes": trailing_gap["size"]
+                             if terminal_alignment and not errors else 0})
     return errors
 
 
-def check_object(blob, expected):
+def check_object(blob, expected, *, observations=None):
     _, sections = read_elf(blob)
     _, symbols = parse_symbols(sections)
     zero_sections = expected.get("sections", [expected])
@@ -251,7 +274,8 @@ def check_object(blob, expected):
         if mixed and fields[1] == 8 and name not in zero_names:
             errors.append("unregistered zero-init storage section")
     for row in zero_sections:
-        section_errors = check_section(sections, symbols, row)
+        section_errors = check_section(sections, symbols, row, mixed=mixed,
+                                       observations=observations)
         errors.extend(f"{row['section']}: {error}" if mixed else error
                       for error in section_errors)
     return errors
@@ -276,11 +300,13 @@ def main():
     if not args.metadata_only:
         for row in expected:
             path = args.build_dir / "src" / Path(row["unit"]).with_suffix(".o")
+            observations = []
             try:
-                errors = check_object(path.read_bytes(), row)
+                errors = check_object(path.read_bytes(), row, observations=observations)
             except (OSError, ValueError, IndexError, struct.error) as exc:
                 errors = [type(exc).__name__]
-            result["units"].append({"unit": row["unit"], "errors": errors})
+            result["units"].append({"unit": row["unit"], "errors": errors,
+                                    "zero_sections": observations})
             result["objects_verified"] += not errors
         result["compiled_layout_valid"] = result["objects_verified"] == len(expected)
     summary = {key: value for key, value in result.items() if key != "units"}

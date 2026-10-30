@@ -190,6 +190,13 @@ class ZeroDataLayoutTests(unittest.TestCase):
                                                        ("second", 4, 4)]), expected), [])
             self.assertTrue(check_object(object_blob(), expected))
 
+    def test_storage_only_owner_still_requires_full_physical_extent(self):
+        expected = self.expected()
+        expected["symbols"] = expected["symbols"][:1]
+        expected["gaps"] = [{"offset": 4, "size": 4}]
+        self.assertEqual(check_object(object_blob([("first", 0, 4)], alignment=8), expected), [])
+        self.assertTrue(check_object(object_blob([("first", 0, 4)], size=4, alignment=8), expected))
+
 
 class MixedZeroDataLayoutTests(unittest.TestCase):
     SPLITS = ("library/test.c:\n"
@@ -303,6 +310,101 @@ class MixedZeroDataLayoutTests(unittest.TestCase):
                         ("padding_80470002", ".sbss", 1, 3, 0x11),
                         ("padding_80470001", ".sbss", 1, 3, 0x01)]:
             self.assertTrue(check_object(mixed_object_blob(symbols + [invalid]), expected))
+
+    def trailing_case(self):
+        entry = self.entry()
+        del entry["local_symbols"]["current"]
+        mapped = self.SYMBOLS.replace(
+            "current = .sbss:0x80470000; // type:object size:0x1 scope:local\n", "")
+        mapped = mapped.replace("root = .sbss:0x80470004", "root = .sbss:0x80470000")
+        native = [row for row in self.symbols() if row[0] != "current"]
+        native = [(n, s, 0 if n == "root" else o, z, i) for n, s, o, z, i in native]
+        return self.metadata(entry, symbols=mapped), native
+
+    def test_mixed_terminal_alignment_is_observed_and_preserves_physical_size(self):
+        expected, native = self.trailing_case()
+        observations = []
+        self.assertEqual(check_object(mixed_object_blob(native, sbss_size=4, alignment=8),
+                                      expected, observations=observations), [])
+        self.assertEqual(expected["size"], 16)
+        self.assertEqual(observations[1], {
+            "section": ".sbss", "start": 0x80470000, "physical_size": 8,
+            "native_size": 4, "alignment": 8, "last_symbol_end": 4,
+            "terminal_alignment_bytes": 4})
+        self.assertEqual(observations[0]["terminal_alignment_bytes"], 0)
+
+    def test_terminal_alignment_cannot_hide_lost_or_altered_state(self):
+        expected, native = self.trailing_case()
+        missing = [row for row in native if row[0] != "root"]
+        self.assertTrue(check_object(mixed_object_blob(missing, sbss_size=4, alignment=8), expected))
+        for replacement in [("root", ".sbss", 1, 4, 0x11),
+                            ("root", ".sbss", 0, 3, 0x11),
+                            ("root", ".sbss", 0, 8, 0x11),
+                            ("root", ".sbss", 0, 4, 0x01),
+                            ("root", ".sbss", 0, 4, 0x21)]:
+            mutated = [replacement if row[0] == "root" else row for row in native]
+            self.assertTrue(check_object(mixed_object_blob(mutated, sbss_size=4, alignment=8),
+                                         expected), replacement)
+
+    def test_terminal_alignment_requires_exact_native_symbol_end(self):
+        expected, native = self.trailing_case()
+        for size in (0, 3, 5, 7, 9):
+            self.assertTrue(check_object(mixed_object_blob(native, sbss_size=size, alignment=8),
+                                         expected), size)
+        self.assertTrue(check_object(mixed_object_blob(native, sbss_size=4, alignment=8,
+                                                       initialized=".sbss"), expected))
+
+    def test_terminal_alignment_cannot_invent_or_enlarge_alignment(self):
+        expected, native = self.trailing_case()
+        for alignment in (0, 3, 4, 16):
+            self.assertTrue(check_object(mixed_object_blob(native, sbss_size=4,
+                                                           alignment=alignment), expected), alignment)
+        expected["sections"][1]["start"] += 4
+        self.assertTrue(check_object(mixed_object_blob(native, sbss_size=4, alignment=8), expected))
+
+    def test_terminal_alignment_requires_independently_mapped_tail_gap(self):
+        expected, native = self.trailing_case()
+        for gaps in ([], [{"offset": 3, "size": 5}], [{"offset": 4, "size": 8}]):
+            expected["sections"][1]["gaps"] = gaps
+            self.assertTrue(check_object(mixed_object_blob(native, sbss_size=4, alignment=8),
+                                         expected), gaps)
+        expected["sections"][1]["gaps"] = [{"offset": 4, "size": 12}]
+        expected["sections"][1]["size"] = 16
+        self.assertTrue(check_object(mixed_object_blob(native, sbss_size=4, alignment=8), expected))
+
+    def test_terminal_alignment_rejects_extra_or_partially_materialized_padding(self):
+        expected, native = self.trailing_case()
+        for extra in [("unknown", ".sbss", 0, 4, 0x01),
+                      ("padding_80470000", ".sbss", 0, 4, 0x11),
+                      ("padding_80470004", ".sbss", 4, 4, 0x11),
+                      ("padding_80470004", ".sbss", 4, 1, 0x11)]:
+            self.assertTrue(check_object(mixed_object_blob(native + [extra], sbss_size=4,
+                                                           alignment=8), expected), extra)
+        partial = native + [("padding_80470004", ".sbss", 4, 1, 0x11)]
+        self.assertTrue(check_object(mixed_object_blob(partial, sbss_size=5, alignment=8), expected))
+
+    def test_terminal_alignment_preserves_independent_interior_gaps(self):
+        mapped = self.SYMBOLS.replace(
+            "current = .sbss:0x80470000; // type:object size:0x1 scope:local",
+            "current = .sbss:0x80470000; // type:object size:0xE scope:local")
+        mapped = mapped.replace("root = .sbss:0x80470004; // type:object size:0x4",
+                                "root = .sbss:0x80470010; // type:object size:0xE")
+        mapped += "callback = .sbss:0x80470020; // type:object size:0x1C\n"
+        expected = self.metadata(symbols=mapped,
+                                 splits=self.SPLITS.replace("end:0x80470008", "end:0x80470040"))
+        native = [row for row in self.symbols() if row[1] != ".sbss"]
+        native += [("current", ".sbss", 0, 14, 0x01),
+                   ("root", ".sbss", 16, 14, 0x11),
+                   ("callback", ".sbss", 32, 28, 0x11)]
+        self.assertEqual(expected["sections"][1]["gaps"], [
+            {"offset": 14, "size": 2}, {"offset": 30, "size": 2}, {"offset": 60, "size": 4}])
+        self.assertEqual(check_object(mixed_object_blob(native, sbss_size=60, alignment=8), expected), [])
+        shifted = [(n, s, 14 if n == "root" else o, z, i) for n, s, o, z, i in native]
+        self.assertTrue(check_object(mixed_object_blob(shifted, sbss_size=60, alignment=8), expected))
+        for extra in [("padding_8047000E", ".sbss", 14, 3, 0x11),
+                      ("padding_8047001E", ".sbss", 30, 4, 0x11)]:
+            self.assertTrue(check_object(mixed_object_blob(native + [extra], sbss_size=60,
+                                                           alignment=8), expected), extra)
 
     def test_partial_registration_cannot_skip_a_declared_zero_section(self):
         entry = self.entry()

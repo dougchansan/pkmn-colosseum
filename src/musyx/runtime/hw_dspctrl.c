@@ -17,9 +17,10 @@
  * Shared state retains its existing symbol-map names for the other MusyX
  * units. Private helpers and tables recover their upstream names and scope.
  * salFrame, salAuxFrame, salNumVoices and salMaxStudioNum belong to hardware.c
- * and remain external. GC/1.3.2 -O4,p -inline noauto preserves the helper
- * boundaries. SortVoices retains its recursive auto-inlining setting, while
- * AddDpop is explicitly inline because it is expanded in HandleDepopVoice.
+ * and remain external. The original GC/1.3.2 -O4,p -inline auto settings,
+ * with -use_lmw_stmw off, -sdata 8 and -sdata2 8, reproduce all eighteen
+ * retained functions and their required helper calls in native CI.
+ * AddDpop remains explicitly inline within HandleDepopVoice.
  */
 #include "musyx/runtime/hw_dspctrl.h"
 #include "dolphin/os/OSClock.h"
@@ -418,14 +419,6 @@ static void HandleDepopVoice(DSPstudioinfo* stp, DSPvoice* dsp_vptr) {
     }
 }
 
-/* RULE-EXCEPTION(user-approved): preserve the original recursive inlining.
- * The matched 600-byte SortVoices has four self-call relocations at +0x168,
- * +0x178, +0x22C and +0x23C although its C body has two recursive calls.
- * The preceding carve used -inline auto. Restore that setting only for this
- * function; salBuildCommandList keeps its original out-of-line helper calls.
- * See docs/RULE_EXCEPTIONS.md. */
-#pragma push
-#pragma auto_inline on
 static void SortVoices(DSPvoice** voices, s32 l, s32 r) {
     s32 i;
     s32 last;
@@ -456,7 +449,6 @@ static void SortVoices(DSPvoice** voices, s32 l, s32 r) {
     SortVoices(voices, l, last - 1);
     SortVoices(voices, last + 1, r);
 }
-#pragma pop
 /* Ensure `n` more u16 slots fit before dspCmdMaxPtr; if not, chain onto a
  * fresh command buffer (MORE). Written as a macro (not a helper function)
  * because retail repeats this exact sequence inline at every call site
