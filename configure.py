@@ -1054,11 +1054,6 @@ config.libs = [
             ),
             Object(
                 Matching,
-                "game/data/sbss_8047B260.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
                 "game/data/sdata_80478CA8.c",
                 progress_category="game",
             ),
@@ -2174,35 +2169,7 @@ config.libs = [
             ),
             Object(
                 Matching,
-                "musyx/runtime/seq_get_private_id_exact_8014635C.c",
-                mw_version="GC/1.3.2",
-                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
-                progress_category="musyx",
-            ),
-            Object(
-                Matching,
-                "musyx/runtime/seq_residual_801463C4.c",
-                mw_version="GC/1.3.2",
-                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
-                progress_category="musyx",
-            ),
-            Object(
-                Matching,
-                "musyx/runtime/seq_exact_80146E88.c",
-                mw_version="GC/1.3.2",
-                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
-                progress_category="musyx",
-            ),
-            Object(
-                Matching,
-                "musyx/runtime/seq_residual_801485FC.c",
-                mw_version="GC/1.3.2",
-                extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
-                progress_category="musyx",
-            ),
-            Object(
-                Matching,
-                "musyx/runtime/seq_exact_80149090.c",
+                "musyx/runtime/seq.c",
                 mw_version="GC/1.3.2",
                 extra_cflags=["-use_lmw_stmw off", "-sdata 8", "-sdata2 8"],
                 progress_category="musyx",
@@ -2276,7 +2243,7 @@ config.libs = [
                         or path == "musyx/runtime/snd_math.c"
                         or path == "musyx/runtime/snd3d.c"
                         else ["-inline noauto"]
-                        if "_inline_noauto" in path
+                        if "_inline_noauto" in path or path == "musyx/runtime/hw_dspctrl.c"
                         else []
                     ),
                     progress_category="musyx",
@@ -2287,13 +2254,7 @@ config.libs = [
                     (Matching, "musyx/runtime/synth_adsr.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/synth_vsamples.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/s_data.c", "GC/1.3.2"),
-                    (Matching, "musyx/runtime/hw_dspctrl_exact_8015A484.c", "GC/1.3.2"),
-                    (Matching, "musyx/runtime/hw_dspctrl_exact_8015A838.c", "GC/1.3.2"),
-                    (Matching, "musyx/runtime/hw_dspctrl_exact_8015A950.c", "GC/1.3.2"),
-                    (Matching, "musyx/runtime/hw_dspctrl_exact_8015AAA0.c", "GC/1.3.2"),
-                    (Matching, "musyx/runtime/hw_dspctrl_exact_8015AD1C.c", "GC/1.3.2"),
-                    (Matching, "musyx/runtime/hw_dspctrl_exact_8015B250.c", "GC/1.3.2"),
-                    (Matching, "musyx/runtime/hw_dspctrl_exact_8015D408.c", "GC/1.3.2"),
+                    (Matching, "musyx/runtime/hw_dspctrl.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/snd3d.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/snd_init.c", "GC/1.3.2"),
                     (Matching, "musyx/runtime/snd_math.c", "GC/1.3.2"),
@@ -10852,29 +10813,15 @@ config.libs = [
                 extra_cflags=["-use_lmw_stmw on", "-sdata 8", "-sdata2 8"],
                 progress_category="game",
             ),  # GC/1.3.2: pooled static render-mode tables (see source header)
+            # Whole DObj owner, including its own literal pools and state.
+            # The existing DObjLoad parameter-copy exception remains documented.
             Object(
                 Matching,
-                "hsd/dobj_exact_80198F7C.c",
+                "hsd/dobj.c",
                 mw_version="GC/1.3.2",
                 extra_cflags=["-O1", "-inline auto,deferred", "-use_lmw_stmw on", "-str reuse,readonly"],
                 progress_category="hsd",
-            ),  # sysdolphin library flags
-            # DObjLoad: user-approved rule exception (parameter copies); see
-            # the source and docs/RULE_EXCEPTIONS.md.
-            Object(
-                Matching,
-                "hsd/dobj_exact_801993A4.c",
-                mw_version="GC/1.3.2",
-                extra_cflags=["-O1", "-inline auto,deferred", "-use_lmw_stmw on", "-str reuse,readonly"],
-                progress_category="hsd",
-            ),  # sysdolphin library flags
-            Object(
-                Matching,
-                "hsd/dobj_exact_80199568.c",
-                mw_version="GC/1.3.2",
-                extra_cflags=["-O1", "-inline auto,deferred", "-use_lmw_stmw on", "-str reuse,readonly"],
-                progress_category="hsd",
-            ),  # sysdolphin library flags
+            ),
             Object(
                 Matching,
                 "hsd/fobj.c",
@@ -10882,11 +10829,20 @@ config.libs = [
                 extra_cflags=["-O1", "-inline auto,deferred", "-use_lmw_stmw on", "-str reuse,readonly"],
                 progress_category="hsd",
             ),  # sysdolphin library flags
+            # Whole WObj owner; archive functionality has its own source below.
             Object(
                 Matching,
-                "hsd/hsd_wobj.c",
+                "hsd/wobj.c",
                 mw_version="GC/1.3",
-                extra_cflags=["-O1", "-use_lmw_stmw on"],
+                extra_cflags=["-O1", "-use_lmw_stmw on", "-str reuse,readonly"],
+                progress_category="hsd",
+            ),
+            # Retain archive's proven GC/1.3 codegen for the first whole-owner build.
+            Object(
+                Matching,
+                "hsd/archive.c",
+                mw_version="GC/1.3",
+                extra_cflags=["-O1", "-use_lmw_stmw on", "-str reuse,readonly"],
                 progress_category="hsd",
             ),
             # HAL sysdolphin fog.c, built with the library flags; owns its
@@ -13126,12 +13082,6 @@ config.libs = [
                 extra_cflags=["-O1", "-inline auto,deferred", "-use_lmw_stmw on", "-str reuse,readonly"],
                 progress_category="hsd",
             ),
-            Object(
-                Matching,
-                "game/data/rodata_80274708.c",
-                progress_category="game",
-                extra_cflags=["-sdata2 0"],
-            ),
             # HAL sysdolphin hash.c and id.c, built with the library flags
             # (GC/1.3.2 -O4,p -O1 -inline auto,deferred -use_lmw_stmw on
             # -str reuse,readonly); each owns its own data.
@@ -13240,11 +13190,6 @@ config.libs = [
             Object(
                 Matching,
                 "game/data/bss_80446F10.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/bss_80448440.c",
                 progress_category="game",
             ),
             Object(
@@ -13585,11 +13530,6 @@ config.libs = [
             Object(
                 Matching,
                 "game/data/data_8036C568.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_8036C7A0.c",
                 progress_category="game",
             ),
             Object(
@@ -14080,11 +14020,6 @@ config.libs = [
                 Matching,
                 "game/data/sdata2_8047D8A8.c",
                 progress_category="game",
-            ),
-            Object(
-                Matching,
-                "hsd/hsd_sdata2_8047DA18.c",
-                progress_category="hsd",
             ),
             # HAL sysdolphin random.c, built with the library flags
             # (GC/1.3.2 -O4,p -O1 -inline auto,deferred -use_lmw_stmw on

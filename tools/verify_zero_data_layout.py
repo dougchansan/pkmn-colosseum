@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Verify zero-data symbol layouts; identical zero bytes alone are insufficient.
 
-Expectations come from the existing symbol map and named splits, not from the
-candidate declarations. The compact unit list selects the new zero-data owners
-and existing zero-data owners proposed for source linking. This checker never
-modifies objects or grants matching credit.
+Expectations come from the symbol map and named splits, not from candidate
+declarations. String registrations retain the strict storage-only checks.
+Version 2 also accepts explicitly registered mixed translation units: every
+zero section must be listed, and each private symbol needs an exact native-name
+mapping. The other declared sections may coexist with the checked storage;
+this does not verify their contents. This checker never modifies objects or
+grants matching credit.
 """
 
 import argparse
@@ -21,17 +24,56 @@ from tools.import_constant_symbol import parse_symbols, read_elf
 ZERO_SECTIONS = {".bss", ".sbss", ".sbss2"}
 SYMBOL = re.compile(r"^(\S+) = (\.[^:]+):0x([0-9A-Fa-f]+);\s*//\s*(.*)$")
 SPLIT = re.compile(r"^\s+(\.\S+)\s+start:0x([0-9A-Fa-f]+)\s+end:0x([0-9A-Fa-f]+)(.*)$")
+SOURCE_NAME = re.compile(r"[A-Za-z_]\w*", re.ASCII)
+
+
+def unique_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate manifest key")
+        result[key] = value
+    return result
+
+
+def registrations(manifest_path):
+    manifest = json.loads(manifest_path.read_text(), object_pairs_hook=unique_keys)
+    if (not isinstance(manifest, dict) or set(manifest) != {"version", "units"}
+            or type(manifest["version"]) is not int
+            or manifest["version"] not in (1, 2)
+            or not isinstance(manifest["units"], list) or not manifest["units"]):
+        raise ValueError("invalid zero-data manifest")
+    result = {}
+    for entry in manifest["units"]:
+        if isinstance(entry, str):
+            unit, sections, local_symbols = entry, None, None
+        elif (manifest["version"] == 2 and isinstance(entry, dict)
+              and set(entry) == {"unit", "sections", "local_symbols"}):
+            unit = entry["unit"]
+            sections, local_symbols = entry["sections"], entry["local_symbols"]
+            if (not isinstance(sections, list) or not sections
+                    or any(not isinstance(s, str) or s not in ZERO_SECTIONS for s in sections)
+                    or len(set(sections)) != len(sections)):
+                raise ValueError("mixed owner must declare distinct zero-init sections")
+            if (not isinstance(local_symbols, dict)
+                    or any(not isinstance(k, str) or not SOURCE_NAME.fullmatch(k)
+                           or not isinstance(v, str) or not SOURCE_NAME.fullmatch(v)
+                           for k, v in local_symbols.items())
+                    or len(set(local_symbols.values())) != len(local_symbols)):
+                raise ValueError("invalid or ambiguous private-symbol mapping")
+        else:
+            raise ValueError("invalid zero-data registration")
+        if (not isinstance(unit, str)
+                or not re.fullmatch(r"(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.c", unit)):
+            raise ValueError("unsafe zero-data unit path")
+        if unit in result:
+            raise ValueError("invalid or duplicate zero-data units")
+        result[unit] = {"sections": sections, "local_symbols": local_symbols}
+    return result
 
 
 def expectations(manifest_path, symbols_path, splits_path):
-    manifest = json.loads(manifest_path.read_text())
-    units = manifest["units"]
-    if manifest.get("version") != 1 or not units or len(units) != len(set(units)):
-        raise ValueError("invalid or duplicate zero-data units")
-    for unit in units:
-        path = Path(unit)
-        if path.is_absolute() or ".." in path.parts or path.suffix != ".c":
-            raise ValueError("unsafe zero-data unit path")
+    units = registrations(manifest_path)
     ranges = {unit: [] for unit in units}
     all_ranges = []
     owner = None
@@ -56,53 +98,81 @@ def expectations(manifest_path, symbols_path, splits_path):
             symbols.append((name, section, int(address, 16), fields))
     result = []
     for unit, spans in ranges.items():
-        if len(spans) != 1 or spans[0][0] not in ZERO_SECTIONS:
+        registration = units[unit]
+        mixed = registration["sections"] is not None
+        zero_spans = [span for span in spans if span[0] in ZERO_SECTIONS]
+        if mixed:
+            if (len({s[0] for s in spans}) != len(spans)
+                    or set(registration["sections"]) != {s[0] for s in zero_spans}
+                    or len(zero_spans) == len(spans)):
+                raise ValueError("mixed registration must cover every declared zero section")
+        elif len(spans) != 1 or len(zero_spans) != 1:
             raise ValueError("zero-data owner must have one zero-init section")
-        section, start, end = spans[0]
-        for other, other_section, a, b in all_ranges:
-            if other != unit and other_section == section and a < end and start < b:
-                raise ValueError("zero-data split overlaps another owner")
-        selected = []
-        for name, symbol_section, address, fields in symbols:
-            if symbol_section != section:
-                continue
-            size = int(fields.get("size", "0"), 0)
-            if address < start and address + size > start:
-                raise ValueError("split bisects an existing symbol")
-            if not start <= address < end:
-                continue
-            if fields.get("type") != "object" or size <= 0 or address + size > end:
-                raise ValueError("unsupported or bisected zero-data symbol")
-            suffix = f"{address:08X}"
-            if fields.get("scope") == "local" and not name.endswith(suffix):
-                name += "_" + suffix
-            selected.append({"name": name, "offset": address - start, "size": size})
-        if not selected:
-            raise ValueError("zero-data owner has no existing symbols")
-        selected.sort(key=lambda row: row["offset"])
-        cursor = 0
-        expected = []
-        gaps = []
-        for row in selected:
-            if row["offset"] < cursor:
-                raise ValueError("zero-data symbols overlap")
-            if row["offset"] > cursor:
-                gaps.append({"offset": cursor, "size": row["offset"] - cursor})
-            expected.append(row)
-            cursor = row["offset"] + row["size"]
-        if cursor < end - start:
-            gaps.append({"offset": cursor, "size": end - start - cursor})
-        if len({row["name"] for row in expected}) != len(expected):
-            raise ValueError("duplicate zero-data symbol name")
-        result.append({"unit": unit, "section": section, "start": start,
-                       "size": end - start, "symbols": expected, "gaps": gaps,
-                       "existing_symbols": len(selected)})
+        sections = []
+        private_names = set()
+        native_names = set()
+        for section, start, end in zero_spans:
+            for other, other_section, a, b in all_ranges:
+                if other != unit and other_section == section and a < end and start < b:
+                    raise ValueError("zero-data split overlaps another owner")
+            selected = []
+            for name, symbol_section, address, fields in symbols:
+                if symbol_section != section:
+                    continue
+                size = int(fields.get("size", "0"), 0)
+                if address < start and address + size > start:
+                    raise ValueError("split bisects an existing symbol")
+                if not start <= address < end:
+                    continue
+                if (fields.get("type") != "object" or size <= 0 or address + size > end
+                        or mixed and fields.get("scope", "global") not in ("global", "local")):
+                    raise ValueError("unsupported or bisected zero-data symbol")
+                local = fields.get("scope") == "local"
+                row = {"name": name, "offset": address - start, "size": size}
+                if mixed:
+                    row["info"] = 0x01 if local else 0x11
+                    if local:
+                        private_names.add(name)
+                        if name not in registration["local_symbols"]:
+                            raise ValueError("private zero-data symbol needs an exact native-name mapping")
+                        row["name"] = registration["local_symbols"][name]
+                elif local:
+                    suffix = f"{address:08X}"
+                    if not name.endswith(suffix):
+                        row["name"] += "_" + suffix
+                if row["name"] in native_names:
+                    raise ValueError("duplicate zero-data symbol name")
+                native_names.add(row["name"])
+                selected.append(row)
+            if not selected:
+                raise ValueError("zero-data owner has no existing symbols")
+            selected.sort(key=lambda row: row["offset"])
+            cursor = 0
+            gaps = []
+            for row in selected:
+                if row["offset"] < cursor:
+                    raise ValueError("zero-data symbols overlap")
+                if row["offset"] > cursor:
+                    gaps.append({"offset": cursor, "size": row["offset"] - cursor})
+                cursor = row["offset"] + row["size"]
+            if cursor < end - start:
+                gaps.append({"offset": cursor, "size": end - start - cursor})
+            sections.append({"unit": unit, "section": section, "start": start,
+                             "size": end - start, "symbols": selected, "gaps": gaps,
+                             "existing_symbols": len(selected)})
+        if mixed:
+            if private_names != set(registration["local_symbols"]):
+                raise ValueError("private-symbol mappings must name only owned local zero-data symbols")
+            result.append({"unit": unit, "sections": sections,
+                           "allocated_sections": [span[0] for span in spans],
+                           "size": sum(row["size"] for row in sections),
+                           "existing_symbols": sum(row["existing_symbols"] for row in sections)})
+        else:
+            result.extend(sections)
     return result
 
 
-def check_object(blob, expected):
-    _, sections = read_elf(blob)
-    _, symbols = parse_symbols(sections)
+def check_section(sections, symbols, expected):
     errors = []
     indices = [i for i, section in enumerate(sections)
                if section["name"] == expected["section"]]
@@ -119,8 +189,6 @@ def check_object(blob, expected):
         errors.append("compiled section alignment cannot occupy the retail start")
     for i, section in enumerate(sections):
         f = section["fields"]
-        if i != index and f[2] & 2 and f[5]:
-            errors.append("unexpected additional allocated section")
         if f[1] in (4, 9) and f[7] == index and f[5]:
             errors.append("zero-init section unexpectedly has relocations")
     names = {row["name"] for row in expected["symbols"]}
@@ -132,9 +200,11 @@ def check_object(blob, expected):
             continue
         symbol = found[0]
         actual = (symbol["shndx"], symbol["value"], symbol["size"], symbol["info"])
-        wanted = (index, row["offset"], row["size"], 0x11)
+        wanted = (index, row["offset"], row["size"], row.get("info", 0x11))
         if actual != wanted:
             errors.append(f"{row['name']}: section/offset/size/binding {actual} != {wanted}")
+        if symbol["other"]:
+            errors.append(f"{row['name']}: unexpected symbol visibility")
     # A compiler may leave map-derived gaps implicit. Any explicit padding
     # definition must name its own address and fit wholly inside one such gap.
     # It may not cover a real object, overlap another padding symbol, or create
@@ -159,6 +229,34 @@ def check_object(blob, expected):
     return errors
 
 
+def check_object(blob, expected):
+    _, sections = read_elf(blob)
+    _, symbols = parse_symbols(sections)
+    zero_sections = expected.get("sections", [expected])
+    zero_names = {row["section"] for row in zero_sections}
+    allowed = set(expected.get("allocated_sections", zero_names))
+    mixed = "sections" in expected
+    errors = []
+    seen = set()
+    for section in sections:
+        fields = section["fields"]
+        if not fields[2] & 2 or not fields[5]:
+            continue
+        name = section["name"]
+        if name in seen:
+            errors.append("duplicate allocated section")
+        seen.add(name)
+        if name not in allowed:
+            errors.append("unexpected additional allocated section")
+        if mixed and fields[1] == 8 and name not in zero_names:
+            errors.append("unregistered zero-init storage section")
+    for row in zero_sections:
+        section_errors = check_section(sections, symbols, row)
+        errors.extend(f"{row['section']}: {error}" if mixed else error
+                      for error in section_errors)
+    return errors
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=ROOT / "config/GC6E01/zero_data_units.json")
@@ -172,7 +270,9 @@ def main():
     expected = expectations(args.manifest, args.symbols, args.splits)
     result = {"metadata_valid": True, "objects_verified": 0,
               "compiled_layout_valid": None, "units": [],
-              "total_bytes": sum(row["size"] for row in expected)}
+              "total_bytes": sum(row["size"] for row in expected),
+              "expected_zero_sections": sum(len(row.get("sections", [row])) for row in expected),
+              "expected_symbols": sum(row["existing_symbols"] for row in expected)}
     if not args.metadata_only:
         for row in expected:
             path = args.build_dir / "src" / Path(row["unit"]).with_suffix(".o")

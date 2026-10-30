@@ -1,11 +1,17 @@
 # Historical MusyX and HSD candidates
 
-These 18 C files were retired from `src/` after checking the complete
+The first 18 C files were retired from `src/` after checking the complete
 source-owner report at `0275f31498f43ad807d4c91fa2da95ede5f5291b` and recursively
 following quoted source/header includes from every active owner. None is an
 active build input, directly or through another source file. Their contents
 are preserved unchanged as research history; old includes and comments retain
 the paths used by that historical campaign.
+
+A further 21 former source owners are retained here after their code and data
+were assigned to the whole `seq.c`, `hw_dspctrl.c`, `dobj.c`, `wobj.c`, and
+`archive.c` owners. Their contents are also unchanged. The active source/include
+closure no longer reaches any of them; all physical section ranges remain
+assigned. The cleanup record tracks native verification of the replacements.
 
 The six MusyX wrappers and `musyx_range_80157280.c` belonged to the former
 centralized candidate implementation. The active pitch helpers that prompted

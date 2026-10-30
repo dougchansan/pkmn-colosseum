@@ -1,21 +1,13 @@
 #include "dolphin/types.h"
 
 /*
- * Zero-initialized storage at .sbss 0x8047AB18-0x8047AF18.
+ * Zero-initialized storage at .sbss 0x8047AB18-0x8047AEF8.
  * Original symbols establish object extents. Native scalar alignment supplies
  * ordinary gaps; remaining padding uses individual bytes. MWCC emits these
  * definitions in reverse order. Every symbol and gap is independently checked.
  */
 #pragma force_active on
 
-u8 lbl_8047AF14[0x4];
-u8 lbl_8047AF10[0x4];
-u8 lbl_8047AF0C[0x4];
-u8 lbl_8047AF08[0x4];
-u8 lbl_8047AF04[0x4];
-u8 lbl_8047AF00[0x4];
-u8 lbl_8047AEFC;
-u8 lbl_8047AEF8[0x4];
 u8 lbl_8047AEF0[0x8];
 u16 lbl_8047AEEC;
 u8 lbl_8047AEE8[0x4];

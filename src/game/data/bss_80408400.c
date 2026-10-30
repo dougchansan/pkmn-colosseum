@@ -12,9 +12,6 @@
 #endif
 
 #if defined(BSS_80408400_PREFIX)
-u8 lbl_80434910[0x100];
-u8 lbl_804285D0[0xC340];
-u8 lbl_804271D0[0x1400];
 u8 lbl_804271B0[0x20];
 u8 lbl_80427190[0x20];
 u8 lbl_80427170[0x20];
@@ -56,7 +53,6 @@ u8 lbl_80445F30[0x20];
 
 #if defined(BSS_80408400_SUFFIX)
 /* musyx/runtime/synthvoice.c owns 0x80445F50 - 0x80446F10. */
-u8 lbl_80447E60[0x5E0];
 u8 lbl_80447860[0x600];
 u8 lbl_80446F10[0x950];
 #endif

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "units": [
     "game/data/sbss2_8047E700.c",
     "game/data/sbss_80478DC0.c",
@@ -34,6 +34,46 @@
     "game/data/bss_80466DE8.c",
     "game/data/bss_80467378.c",
     "game/data/bss_80467CF8.c",
-    "game/data/bss_8046D630.c"
+    "game/data/bss_8046D630.c",
+    {
+      "unit": "musyx/runtime/seq.c",
+      "sections": [
+        ".bss",
+        ".sbss"
+      ],
+      "local_symbols": {
+        "seqNote": "seqNote",
+        "seq_next_id": "seq_next_id",
+        "curFadeOutState": "curFadeOutState",
+        "curSeqId": "curSeqId",
+        "noteFree": "noteFree",
+        "cseq": "cseq"
+      }
+    },
+    {
+      "unit": "musyx/runtime/hw_dspctrl.c",
+      "sections": [
+        ".bss",
+        ".sbss"
+      ],
+      "local_symbols": {
+        "voices": "voices",
+        "dspARAMZeroBuffer": "dspARAMZeroBuffer"
+      }
+    },
+    {
+      "unit": "hsd/dobj.c",
+      "sections": [
+        ".sbss"
+      ],
+      "local_symbols": {}
+    },
+    {
+      "unit": "hsd/wobj.c",
+      "sections": [
+        ".sbss"
+      ],
+      "local_symbols": {}
+    }
   ]
 }

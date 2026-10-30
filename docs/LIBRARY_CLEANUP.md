@@ -25,12 +25,33 @@ preserved in the archive rather than presented beside the active code.
 
 ## Library restoration scope
 
-The remaining consolidation targets are the MusyX sequencer and DSP controller,
-then HAL DObj and WObj. Use the appropriate older Dolphin branch of
+The consolidation covers the MusyX sequencer and DSP controller, then HAL
+DObj and WObj, with the archive functions separated from the former WObj
+source. The appropriate older Dolphin branch of
 [AxioDL MusyX](https://github.com/AxioDL/musyx/tree/89850639d731ec080c12cb0bc8d7ab2ea3880c3a)
 and the compatible HAL implementations in
 [Melee](https://github.com/doldecomp/melee/tree/598987cf347c125c7416517af18bf5c1dc3f15a1/src/sysdolphin/baselib)
-as pinned references. Preserve the existing attribution and license notices.
+are pinned references. Existing attribution and license notices are retained.
+
+| Owner | Retained functions | Code bytes | Owned data bytes |
+|---|---:|---:|---:|
+| `src/musyx/runtime/seq.c` | 16 | 16,096 | 55,504 |
+| `src/musyx/runtime/hw_dspctrl.c` | 18 | 13,132 | 1,936 |
+| `src/hsd/dobj.c` | 13 | 1,936 | 184 |
+| `src/hsd/wobj.c` | 14 | 2,520 | 208 |
+| `src/hsd/archive.c` | 2 | 536 | 72 |
+
+The proposed mapping replaces 21 old owners with these five, reducing the
+scoring-unit inventory from 2,272 to 2,256. An independent split-map audit
+confirms the identical physical interval union in every section, with no
+overlaps or missing bytes. Native matching is required before accepting this
+mapping or refreshing the frozen report topology.
+
+The sequencer owns its notes, instances, MIDI priorities and list state. The
+DSP controller owns its mixer/SRC tables, studio state and command-list
+storage. DObj and WObj own their class information, small globals and literal
+pools. Scalar and table symbol sizes describe the actual typed objects;
+existing section-end padding remains part of the physical owner ranges.
 
 Ownership must be established by symbols and their consumers, not filenames
 or neighboring addresses. For example, the old WObj source also contains two
