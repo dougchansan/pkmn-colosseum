@@ -67,6 +67,11 @@ The completed fork import and Count-Sheep's retained original history are
 recorded in [PR #662](https://github.com/dougchansan/pkmn-colosseum/pull/662) and
 [`docs/COUNT_SHEEP_INTEGRATION.md`](docs/COUNT_SHEEP_INTEGRATION.md).
 
+The [library cleanup record](docs/LIBRARY_CLEANUP.md) distinguishes active
+matching sources from retired candidate wrappers and tracks restoration of
+whole MusyX/HSD translation units and their data ownership. Superseded library
+candidates are preserved under `archive/previous_campaign/library_candidates/`.
+
 The historical function worklist has no remaining rows.
 [`docs/completed-functions.csv`](docs/completed-functions.csv) retains all
 217 campaign entries and their evidence notes. This historical campaign queue
