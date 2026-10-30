@@ -261,11 +261,11 @@ typedef struct {
     u32 noteData;
 } SEQ_PATTERN;
 
-/* Zero-initialized storage belongs to this sequencer. MWCC emits the two
- * uninitialized external arrays in reverse declaration order. */
+/* Zero-initialized storage belongs to this sequencer. The early helper
+ * definitions retain the upstream first-reference order of these arrays. */
 static NOTE seqNote[256];
-u16 lbl_80434910[8][16];             /* seqMIDIPriority */
 SEQ_INSTANCE lbl_804285D0[8];        /* seqInstance */
+u16 lbl_80434910[8][16];             /* seqMIDIPriority */
 
 static u32 seq_next_id = 0;
 static u8 curFadeOutState = 0;
@@ -307,38 +307,21 @@ extern u32 sndSeqPlayEx(u16 sgid, u16 sid, void* arrfile, SND_PLAYPARA* para,
 static void StartPause(SEQ_INSTANCE* si);
 static void InitTrackEvents(void);
 
-static inline void DoPrgChange(SEQ_INSTANCE* seq, u8 program, u8 midi)
-{
-    lbl_80434910[curSeqId][midi] = 0xFFFF;
-    if (midi != 9) {
-        program = seq->normTrans[program];
-        if (program == 0xFF) {
-            return;
+static void ClearNotes(void) {
+    NOTE* ln;
+    s32 i;
+
+    ln = NULL;
+    noteFree = &seqNote[0];
+    for (i = 0; i < 256; i++) {
+        seqNote[i].prev = ln;
+        if (ln != NULL) {
+            ln->next = &seqNote[i];
         }
-        seq->prgState[midi].macId = seq->normtab[program].macro;
-        seq->prgState[midi].priority = seq->normtab[program].prio;
-        seq->prgState[midi].maxVoices = seq->normtab[program].maxVoices;
-        return;
+        ln = &seqNote[i];
     }
-    program = seq->drumTrans[program];
-    if (program == 0xFF) {
-        return;
-    }
-    seq->prgState[midi].macId = seq->drumtab[program].macro;
-    seq->prgState[midi].priority = seq->drumtab[program].prio;
-    seq->prgState[midi].maxVoices = seq->drumtab[program].maxVoices;
-}
 
-static inline void BuildTransTab(u8* table, PAGE* page)
-{
-    u8 i;
-
-    for (i = 0; i < 128; i++) {
-        table[i] = 0xFF;
-    }
-    for (i = 0; page->index != 0xFF; i++, page++) {
-        table[page->index] = i;
-    }
+    ln->next = NULL;
 }
 
 static inline u32 GetPublicId(u32 seqId)
@@ -380,6 +363,40 @@ u32 seqGetPrivateId(u32 seqId) {
         }
     }
     return SND_SEQ_ERROR_ID;
+}
+
+static inline void DoPrgChange(SEQ_INSTANCE* seq, u8 program, u8 midi)
+{
+    lbl_80434910[curSeqId][midi] = 0xFFFF;
+    if (midi != 9) {
+        program = seq->normTrans[program];
+        if (program == 0xFF) {
+            return;
+        }
+        seq->prgState[midi].macId = seq->normtab[program].macro;
+        seq->prgState[midi].priority = seq->normtab[program].prio;
+        seq->prgState[midi].maxVoices = seq->normtab[program].maxVoices;
+        return;
+    }
+    program = seq->drumTrans[program];
+    if (program == 0xFF) {
+        return;
+    }
+    seq->prgState[midi].macId = seq->drumtab[program].macro;
+    seq->prgState[midi].priority = seq->drumtab[program].prio;
+    seq->prgState[midi].maxVoices = seq->drumtab[program].maxVoices;
+}
+
+static inline void BuildTransTab(u8* table, PAGE* page)
+{
+    u8 i;
+
+    for (i = 0; i < 128; i++) {
+        table[i] = 0xFF;
+    }
+    for (i = 0; page->index != 0xFF; i++, page++) {
+        table[page->index] = i;
+    }
 }
 
 static inline void KillNotes(SEQ_INSTANCE* seq) {
@@ -1564,23 +1581,6 @@ void seqHandle(u32 deltaTime) {
         }
         si = nextSi;
     }
-}
-
-static void ClearNotes(void) {
-    NOTE* ln;
-    s32 i;
-
-    ln = NULL;
-    noteFree = &seqNote[0];
-    for (i = 0; i < 256; i++) {
-        seqNote[i].prev = ln;
-        if (ln != NULL) {
-            ln->next = &seqNote[i];
-        }
-        ln = &seqNote[i];
-    }
-
-    ln->next = NULL;
 }
 
 static void InitPublicIds(void) { seq_next_id = 0; }
