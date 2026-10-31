@@ -4,7 +4,7 @@
  * values through an ordinary variable, which MWCC compiles to plain stores. */
 #include "dolphin/types.h"
 
-extern void fn_800E0C78(void);
+extern void GSsrandTime(void);
 extern void GSmathInitCosTable(void);
 
 volatile u32 GSmathInit_gqr[4];
@@ -14,6 +14,6 @@ void GSmathInit(void) {
     GSmathInit_gqr[1] = 0x00050005;
     GSmathInit_gqr[2] = 0x00060006;
     GSmathInit_gqr[3] = 0x00070007;
-    fn_800E0C78();
+    GSsrandTime();
     GSmathInitCosTable();
 }

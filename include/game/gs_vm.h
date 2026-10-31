@@ -32,7 +32,7 @@
  * The whole unit's source is src/game/gs_vm.c, linked over
  * 0x800F1A0C-0x800F75FC with the string pool it owns (the definitions
  * outside that range are under GS_VM_WHOLE_UNIT). Linked .text-only
- * pieces: fn_800F10E8, fn_800F13D0, fn_800F16C0, fn_800F75FC,
+ * pieces: fn_800F10E8, fn_800F13D0, fn_800F16C0, cms_PoolSetParam,
  * cms_UnregisterScript, cms_RegisterScript, and cms_InitThreadPool (inside input.c's unit).
  */
 #ifndef GS_VM_H
@@ -96,7 +96,7 @@ typedef struct GSVMPool {
     /* 0x06 */ u16   unk06;
     /* 0x08 */ GSVMScript* scripts;
     /* 0x0C */ GSVMCtx* contexts;
-    /* 0x10 */ void* natives;        /* native-call table, set by fn_800F75FC */
+    /* 0x10 */ void* natives;        /* native-call table, set by cms_PoolSetParam */
 } GSVMPool; /* size 0x14 */
 
 /* The VM's data, defined in game/gs_vm.c. */
@@ -209,7 +209,7 @@ static inline void GSvmReturn(GSVMCtx* ctx)
 }
 
 /* Script-context lookup, shared by the script control calls
- * (fn_800F6D18, fn_800F7068, fn_800F7108, fn_800F716C, fn_800F7274). */
+ * (fn_800F6D18, GSvmIsRunning, GSvmGetThreadByKey, GSvmStopGroup, fn_800F7274). */
 extern void GSthreadTerminate(struct GSThread* thread);
 
 /* The live context whose key is `key`, or NULL. */

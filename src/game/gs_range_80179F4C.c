@@ -1,5 +1,5 @@
 /**
- * .text 0x80179FA4 - 0x8017A5FC: fsysInitTOC. fn_80179F4C (0x80179F4C -
+ * .text 0x80179FA4 - 0x8017A5FC: fsysInitTOC. fsysShowLoadingMenu (0x80179F4C -
  * 0x80179FA4), the other function between camera.c (which ends at
  * 0x80179F4C with _cameraRestoreStateData) and gs_range_8017A5FC_prefix.c,
  * is exact at level 0 and carved into gs_range_80179F4C_exact_80179F4C.c.
@@ -26,15 +26,15 @@ extern FSYSManager lbl_80453FEC;
 extern FSYSFileHandle* lbl_8047B1B8;
 extern s32 lbl_8047B1BC;
 extern void* lbl_8047B1C0[2];
-extern u32 fn_8017FA5C(void);
-extern void fn_8017F800(s32 handleID);
-extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 key1, u32 key2);
-extern u8 fn_80167EF8(const char* path);
+extern u32 fsysCacheGetFreeSize(void);
+extern void fsysCacheFreeHandle(s32 handleID);
+extern u32 fsysCacheReserve(u32 size, u32 fileHandle, u32 key1, u32 key2);
+extern u8 GSdvdConvertPathToEntrynum(const char* path);
 extern u32 GSdvdOpen(const char* path);
 extern u32 GSdvdGetLength(u32 fileInfo);
 extern u8 GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                       void (*callback)(s32 result));
-extern void fn_8017A5FC(s32 result);
+extern void fsysSetReadStatus12F(s32 result);
 
 /* The same cache table walk and LRU removal expand in the later FSYS stages. */
 static inline s32 fsysCacheFindHandle(FSYSSlot* slot)
@@ -104,18 +104,18 @@ static inline void fsysCacheMakeRoom(FSYSSlot* slot)
     s32 n;
     s32 handleID;
 
-    freeSize = fn_8017FA5C();
+    freeSize = fsysCacheGetFreeSize();
     if (slot->totalDecompSize > freeSize && fsysCacheFindHandle(slot) < 0) {
         for (n = 0;; n++) {
             handleID = fsysCacheOldestHandle();
             if (handleID < 0) {
                 break;
             }
-            fn_8017F800(handleID);
+            fsysCacheFreeHandle(handleID);
             if (fsysCacheRemoveHandle(handleID) < 0) {
                 break;
             }
-            freeSize = fn_8017FA5C();
+            freeSize = fsysCacheGetFreeSize();
             if (slot->totalDecompSize <= freeSize) {
                 break;
             }
@@ -168,7 +168,7 @@ void fsysInitTOC(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
     cacheSize = lowSize + (cacheSize << 17);
 
     fsysCacheMakeRoom(slot);
-    cacheAddress = fn_8017F928(cacheSize, slot->fileHandle, entry->groupID,
+    cacheAddress = fsysCacheReserve(cacheSize, slot->fileHandle, entry->groupID,
                                  entry->nameHash);
     fsysCacheMakeRoom(slot);
 
@@ -192,12 +192,12 @@ void fsysInitTOC(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
     archive = slot->archiveData;
     if (archive->flags & 1) {
         slot->tocBuffer = NULL;
-        if (externalPath && fn_80167EF8(externalPath)) {
+        if (externalPath && GSdvdConvertPathToEntrynum(externalPath)) {
             slot->tocBuffer = (void*)GSdvdOpen(externalPath);
         }
         if (!slot->tocBuffer) {
             GSdvdReadAsync(slot->fileInfo0, dvdBuffer, slot->dmaChunkSize,
-                         offset, fn_8017A5FC);
+                         offset, fsysSetReadStatus12F);
         } else {
             fileSize = GSdvdGetLength((u32)slot->tocBuffer);
             if (fileSize < 0x20000) {
@@ -210,10 +210,10 @@ void fsysInitTOC(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
             slot->dmaDstOffset = 0;
             fsysSetTotalSize(slot);
             GSdvdReadAsync((u32)slot->tocBuffer, dvdBuffer, slot->dmaChunkSize,
-                         0, fn_8017A5FC);
+                         0, fsysSetReadStatus12F);
         }
     } else {
         GSdvdReadAsync(slot->fileInfo0, dvdBuffer, slot->dmaChunkSize,
-                     offset, fn_8017A5FC);
+                     offset, fsysSetReadStatus12F);
     }
 }

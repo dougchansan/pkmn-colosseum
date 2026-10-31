@@ -119,7 +119,7 @@
  *   fn_800DA4C4, fn_800DA2BC, fn_800DA1E8, fn_800DA028 -- GX TEV/material setup
  *   fn_800D88DC, fn_800D888C -- GX blend/alpha mode
  *   fn_800D7820 -- GX draw begin
- *   fn_800E05C0, fn_800E048C -- matrix position/rotation
+ *   GSmtxMakeTrans, GSmtxMakeScale -- matrix position/rotation
  *   fn_800D7F14 -- GX load matrix
  *   fn_800D6A00 -- GX cull mode
  *   fn_800D67BC, fn_800D6680, fn_800D5CB8 -- GX position/color/texcoord
@@ -161,16 +161,16 @@ extern void GSmodelSetAnimFrame(struct GSmodel* model, f32 frame);
 extern void GSmodelStartAnimation(struct GSmodel* model);
 extern u16 GStextureGetXsize(struct GStextureHandle* tex);
 extern u16 GStextureGetYsize(struct GStextureHandle* tex);
-extern u32 fn_800E3B3C(void);
-extern void fn_800D377C(s32 mode);
+extern u32 GSmodelGetPoolCount(void);
+extern void GSgfxSetPixelFormatMode(s32 mode);
 extern void GSgfxRenderLayer(void* arg0, u8 arg1);
 extern void GSgfxRenderEnd(void);
 extern void GSvecCopy(void* dst, void* src);
 extern void GSvecAdd(void* a, void* b, void* c);
 extern void GSvecTransform(void* a, void* b, void* c);
-extern void fn_800E064C(void* dst);
+extern void GSmtxIdentity(void* dst);
 /* gs_math_mtx.c's body passes f1-f3 through to PSMTXScaleApply unread. */
-extern void fn_800E02C4(void* a, f32 x, f32 y, f32 z);
+extern void GSmtxScaleApply(void* a, f32 x, f32 y, f32 z);
 
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const char* fmt, ...);     /* OSReport */
@@ -224,8 +224,8 @@ extern void  gfxSetCullMode(u32 a);
 extern void  gfxSetFlags(u32 a);
 extern void  gfxClearFlags(u32 a);
 extern void  gfxSetVtxDesc(void* model);
-extern void  fn_800E05C0(void* dst, f32 x, f32 y, f32 z);
-extern void  fn_800E048C(void* mtx, f32 x, f32 y, f32 z);
+extern void  GSmtxMakeTrans(void* dst, f32 x, f32 y, f32 z);
+extern void  GSmtxMakeScale(void* mtx, f32 x, f32 y, f32 z);
 extern void  gfxPushMultMatrix(void* mtx);
 extern void  gfxSetPrimitive(u32 mode);
 extern void  gfxBegin(u16 index);
@@ -236,16 +236,16 @@ extern void  GXDrawDone(void);
 extern void  GXInvalidateVtxCache(void);
 extern void  GStextureFree(void* model);
 extern void  gfxSetOrtho(f32 a, f32 b, f32 c, f32 d);
-extern void  fn_800D9ED8(u32 param);
+extern void  gfxSetFlag1A(u32 param);
 extern void* GSmodelGetPart(void* model, u32 mode);
 extern void  GSpartGetTransform(void* obj, void* a, void* b, void* c);
 extern void  GSpartFree(void* handle);
 extern void* GSpartGetMaterial(void* handle, u32 idx);
 extern void* GStextureCreate(u16 width, u16 height, s32 format, s32 tlutFormat, u8 mipLevels);
-extern void* fn_800E3B08(u32 index);
+extern void* GSmodelGetActiveEntry(u32 index);
 extern void  fn_800E24B0(u16 handle);
 extern void  GSmemFree(u16 handle);
-extern void  fn_800F9210(u32 group, u32 resource);
+extern void  GSresReleaseOwnerItem(u32 group, u32 resource);
 extern void  GSmodelSetVisibility(void* model, u32 visible);
 extern u8    GSmodelCanTexAnimate(void* model);
 extern void  GSmodelSetTexAnimIndex(void* model, u16 value);
@@ -393,7 +393,7 @@ extern void  DCFlushRange(void* ptr, u32 size);
 extern f32 vecMag(void*);
 extern void gfxEnd(void);
 extern void gfxLoadTexture(u32 a, void* b);
-extern f32 fn_800E0BA0(void);
+extern f32 GSrandfSigned(void);
 extern void gfxVtxTexCoord(u32 a, f32 b, f32 c);
 extern void gfxPopMatrix(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
@@ -446,7 +446,7 @@ extern u32 _envMapDestroy(void* ptr);
 extern u32 _envMapStop(void* ptr);
 extern u32 envMapEffectInit(void* ptr);
 extern u32 envMapEffectStart(void* ptr);
-extern void fn_800D4604(u32 mode);
+extern void gfxSetRecordMode(u32 mode);
 extern u32 _envMapUpdate(void* ptr, u32 delta);
 extern u32 _blurDestroy(void* ptr);
 extern u32 _blurInit(void* ptr);
@@ -565,9 +565,9 @@ u32 _lightningRenderMain(void* ptr) {
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetVtxDesc(*(void**)(p + 0x14));
-        fn_800E05C0(matrix, modelPos[0], modelPos[1], modelPos[2]);
+        GSmtxMakeTrans(matrix, modelPos[0], modelPos[1], modelPos[2]);
         gfxPushMultMatrix(matrix);
-        fn_800E048C(matrix, *(f32*)(p + 0x28), *(f32*)(p + 0x2C), *(f32*)(p + 0x30));
+        GSmtxMakeScale(matrix, *(f32*)(p + 0x28), *(f32*)(p + 0x2C), *(f32*)(p + 0x30));
         gfxPushMultMatrix(matrix);
         gfxSetPrimitive(2);
 
@@ -599,7 +599,7 @@ u32 _lightningRenderMain(void* ptr) {
             entry = *(u8**)(p + 4);
             grow = *(f32*)&lbl_8047D158;
             for (i = 0; i < count; i++, entry += 0x97C) {
-                width = *(f32*)(p + 0x6C) * fn_800E0BA0() + *(f32*)(p + 0x68);
+                width = *(f32*)(p + 0x6C) * GSrandfSigned() + *(f32*)(p + 0x68);
             gfxVtxPos(*(f32*)(entry + 0x960) - width, *(f32*)(entry + 0x964),
                         *(f32*)(entry + 0x968) - width);
             gfxVtxColor4u8(0, p[0x24], p[0x25], p[0x26], p[0x27]);
@@ -779,8 +779,8 @@ extern f32 GSrandf(void);
 extern void fn_800CDBE0(void);
 extern void fn_800CE148(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
-extern void fn_800DFFCC(void* dst, void* src, const void* value);
-extern void fn_800E0718(void*, void*, f32);
+extern void GSvecCross(void* dst, void* src, const void* value);
+extern void GSquatRotAxisRad(void*, void*, f32);
 extern void GSvecTransformQuat(void* dst, void* quat, void* src);
 extern void GSmtxMakeYRotation(void* mtx, f32 angle);
 extern void vecScale(void* dst, void* src, f32 scale);
@@ -812,7 +812,7 @@ void _lightningGenerate(void* ptr, u32 b) {
             f32 angle;
             f32 radius;
 
-            radius = *(f32*)(p + 0x58) * fn_800E0BA0() + *(f32*)(p + 0x54);
+            radius = *(f32*)(p + 0x58) * GSrandfSigned() + *(f32*)(p + 0x54);
             angle = 6.2831855f * GSrandf();
             *(f32*)(entry + 0x960) = radius * (f32)cos(angle);
             *(f32*)(entry + 0x964) = 0.0f;
@@ -830,12 +830,12 @@ void _lightningGenerate(void* ptr, u32 b) {
             GSvecCopy(tangent, direction);
             tangent[1] = 0.0f;
             GSvecNormalize(tangent, tangent);
-            fn_800DFFCC(tangent, direction, tangent);
+            GSvecCross(tangent, direction, tangent);
             GSvecNormalize(tangent, tangent);
 
-            fn_800E0718(step, tangent, *(f32*)(p + 0x4C) * fn_800E0BA0());
+            GSquatRotAxisRad(step, tangent, *(f32*)(p + 0x4C) * GSrandfSigned());
             GSvecTransformQuat(direction, step, direction);
-            GSmtxMakeYRotation(rotation, *(f32*)(p + 0x50) * fn_800E0BA0());
+            GSmtxMakeYRotation(rotation, *(f32*)(p + 0x50) * GSrandfSigned());
             GSvecTransform(direction, rotation, direction);
 
             if (b != 0) {
@@ -849,10 +849,10 @@ void _lightningGenerate(void* ptr, u32 b) {
             }
 
             vecScale(direction, current + 0xC,
-                        *(f32*)(p + 0x60) * fn_800E0BA0() + *(f32*)(p + 0x5C));
-            set__5GSvecFfff(noise, *(f32*)(p + 0x40) * fn_800E0BA0(),
-                            *(f32*)(p + 0x44) * fn_800E0BA0(),
-                            *(f32*)(p + 0x48) * fn_800E0BA0());
+                        *(f32*)(p + 0x60) * GSrandfSigned() + *(f32*)(p + 0x5C));
+            set__5GSvecFfff(noise, *(f32*)(p + 0x40) * GSrandfSigned(),
+                            *(f32*)(p + 0x44) * GSrandfSigned(),
+                            *(f32*)(p + 0x48) * GSrandfSigned());
             GSvecAdd(noise, noise, p + 0x34);
             GSvecAdd(direction, direction, noise);
             GSvecAdd(current, previous, direction);
@@ -894,7 +894,7 @@ u32 leaffxEffectCreate(void* callbacks) {
     return effectId;
 }
 #endif
-extern void fn_800F9210(u32 a, u32 b);
+extern void GSresReleaseOwnerItem(u32 a, u32 b);
 #if 0
 asm void fn_80138B74(void* ptr) {
 #include "src/game/effect/effect_visual_fn_80138B74.inc"
@@ -902,8 +902,8 @@ asm void fn_80138B74(void* ptr) {
 #else
 u32 _leaffxDestroy(void* ptr) {
     if (ptr) {
-        fn_800F9210(*(u16*)((u8*)ptr + 0x40), *(u16*)((u8*)ptr + 0x44));
-        fn_800F9210(*(u16*)((u8*)ptr + 0x40), *(u16*)((u8*)ptr + 0x42));
+        GSresReleaseOwnerItem(*(u16*)((u8*)ptr + 0x40), *(u16*)((u8*)ptr + 0x44));
+        GSresReleaseOwnerItem(*(u16*)((u8*)ptr + 0x40), *(u16*)((u8*)ptr + 0x42));
     }
     return 1;
 }
@@ -1033,7 +1033,7 @@ allocation_error:
     defined(EFFECT_VISUAL_EXACT_80138DE4)
 extern void GSquatSlerp();
 extern void GSmtxFromQuat();
-extern void fn_800E03B4();
+extern void GSmtxTransApply();
 extern void GSmodelSetMatrix();
 extern u32 lbl_8047D170;
 extern u32 lbl_8047D164;
@@ -1118,8 +1118,8 @@ u32 _leaffxUpdate(void* ptr, u32 delta) {
                         scale = *(f32*)(entry + 0x50);
                         GSquatSlerp(rotation, entry + 0x30, entry + 0x40, *(f32*)(entry + 0x54));
                         GSmtxFromQuat(matrix, rotation);
-                        fn_800E02C4(matrix, scale, scale, scale);
-                        fn_800E03B4(matrix, position);
+                        GSmtxScaleApply(matrix, scale, scale, scale);
+                        GSmtxTransApply(matrix, position);
                         GSmodelSetMatrix(leafModel, matrix);
                     }
                 }
@@ -1135,12 +1135,12 @@ u32 _leaffxUpdate(void* ptr, u32 delta) {
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_80139074_80139820)
 extern f32 GSrandf(void);
-extern void fn_800E0718(void*, void*, f32);
+extern void GSquatRotAxisRad(void*, void*, f32);
 extern void GSmtxFromQuat();
-extern void fn_800E03B4();
+extern void GSmtxTransApply();
 extern void GSmodelSetMatrix();
 /* Quaternion copy, dst = src (src/game/gs_math_quat.c). */
-extern void fn_800E076C(void* dst, void* src);
+extern void GSquatCopy(void* dst, void* src);
 extern u32 lbl_8047D180;
 extern u32 lbl_8047D184;
 #if 0
@@ -1188,7 +1188,7 @@ void _leaffxMoveLeaf(void* entry, u8* leaf) {
     nearRange = *(f32*)(config + 0x1C);
 
     *(f32*)(leaf + 0x54) -= 1.0f;
-    fn_800E076C(leaf + 0x30, leaf + 0x40);
+    GSquatCopy(leaf + 0x30, leaf + 0x40);
 
     yaw0 = *(f32*)&lbl_8047D180 * GSrandf();
     pitch0 = *(f32*)&lbl_8047D184 * GSrandf();
@@ -1197,7 +1197,7 @@ void _leaffxMoveLeaf(void* entry, u8* leaf) {
     cosPitch0 = cos(pitch0);
     cosYaw0 = cos(yaw0);
     set__5GSvecFfff(direction, sinPitch0 * cosYaw0, cosPitch0, sinPitch0 * sinYaw0);
-    fn_800E0718(leaf + 0x40, direction,
+    GSquatRotAxisRad(leaf + 0x40, direction,
                 *(f32*)&lbl_8047D180 * GSrandf());
 
     GSvecCopy(leaf, leaf + 0xC);
@@ -1205,7 +1205,7 @@ void _leaffxMoveLeaf(void* entry, u8* leaf) {
     GSvecCopy(vec, leaf + 0x24);
     GSvecSub(vec, vec, leaf + 0xC);
     GSvecNormalize(vec, vec);
-    distance0 = farRange * fn_800E0BA0() + farBase;
+    distance0 = farRange * GSrandfSigned() + farBase;
     distance0 *= *(f32*)(leaf + 0x50);
     vecScale(vec, vec, -distance0);
     GSvecAdd(vec, vec, leaf);
@@ -1214,7 +1214,7 @@ void _leaffxMoveLeaf(void* entry, u8* leaf) {
     yaw1 = *(f32*)&lbl_8047D180 * GSrandf();
     pitch1 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch1 = sin(pitch1);
-    distance1 = nearRange * fn_800E0BA0() + nearBase;
+    distance1 = nearRange * GSrandfSigned() + nearBase;
     distance1 *= *(f32*)(leaf + 0x50);
     sinYaw1 = sin(yaw1);
     cosPitch1 = cos(pitch1);
@@ -1228,7 +1228,7 @@ void _leaffxMoveLeaf(void* entry, u8* leaf) {
     yaw2 = *(f32*)&lbl_8047D180 * GSrandf();
     pitch2 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch2 = sin(pitch2);
-    distance2 = farRange * fn_800E0BA0() + farBase;
+    distance2 = farRange * GSrandfSigned() + farBase;
     distance2 *= *(f32*)(leaf + 0x50);
     sinYaw2 = sin(yaw2);
     cosPitch2 = cos(pitch2);
@@ -1334,7 +1334,7 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
         GSmodelGetPosition(source, position);
     }
 
-    *(f32*)(e + 0x50) = *(f32*)(p + 0x14) * fn_800E0BA0() + *(f32*)(p + 0x10);
+    *(f32*)(e + 0x50) = *(f32*)(p + 0x14) * GSrandfSigned() + *(f32*)(p + 0x10);
     *(f32*)(e + 0x50) *= *(f32*)(p + 0x0C);
     *(f32*)(e + 0x54) = lbl_8047D168;
 
@@ -1348,7 +1348,7 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     /* RULE-EXCEPTION(user-approved): codegen-only cast; it keeps this e + 0x30
        from being merged with the one in the final fn_800E040C call — see
        docs/RULE_EXCEPTIONS.md */
-    fn_800E0718((f32*)(e + 0x30), vecA, *(f32*)&lbl_8047D180 * GSrandf());
+    GSquatRotAxisRad((f32*)(e + 0x30), vecA, *(f32*)&lbl_8047D180 * GSrandf());
 
     yaw1 = *(f32*)&lbl_8047D180 * GSrandf();
     pitch1 = *(f32*)&lbl_8047D184 * GSrandf();
@@ -1357,12 +1357,12 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     cosPitch1 = cos(pitch1);
     cosYaw1 = cos(yaw1);
     set__5GSvecFfff(vecB, sinPitch1 * cosYaw1, cosPitch1, sinPitch1 * sinYaw1);
-    fn_800E0718((u8*)e + 0x40, vecB, *(f32*)&lbl_8047D180 * GSrandf());
+    GSquatRotAxisRad((u8*)e + 0x40, vecB, *(f32*)&lbl_8047D180 * GSrandf());
 
     GSvecCopy(e, position);
 
     vec = (f32*)(e + 0x18);
-    radius2 = radiusRange * fn_800E0BA0() + radiusBase;
+    radius2 = radiusRange * GSrandfSigned() + radiusBase;
     radius2 *= *(f32*)(e + 0x50);
     yaw2 = *(f32*)&lbl_8047D180 * GSrandf();
     pitch2 = *(f32*)&lbl_8047D184 * GSrandf();
@@ -1378,8 +1378,8 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     yaw3 = *(f32*)&lbl_8047D180 * GSrandf();
     pitch3 = *(f32*)&lbl_8047D188 * GSrandf();
     sinPitch3 = sin(pitch3);
-    radius3 = heightRange * fn_800E0BA0() + heightBase;
-    radius3 *= *(f32*)(p + 0x34) * fn_800E0BA0() + *(f32*)(p + 0x30);
+    radius3 = heightRange * GSrandfSigned() + heightBase;
+    radius3 *= *(f32*)(p + 0x34) * GSrandfSigned() + *(f32*)(p + 0x30);
     radius3 *= *(f32*)(e + 0x50);
     sinYaw3 = sin(yaw3);
     cosPitch3 = cos(pitch3);
@@ -1392,7 +1392,7 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     yaw4 = *(f32*)&lbl_8047D180 * GSrandf();
     pitch4 = *(f32*)&lbl_8047D184 * GSrandf();
     sinPitch4 = sin(pitch4);
-    radius4 = radiusRange * fn_800E0BA0() + radiusBase;
+    radius4 = radiusRange * GSrandfSigned() + radiusBase;
     radius4 *= *(f32*)(e + 0x50);
     sinYaw4 = sin(yaw4);
     cosPitch4 = cos(pitch4);
@@ -1402,8 +1402,8 @@ u8 _leaffxGenerateLeafData(void* ptr, void* entry) {
     GSvecAdd(vec, vec, e + 0x0C);
 
     GSmtxFromQuat(matrix, (u8*)e + 0x30);
-    fn_800E02C4(matrix, *(f32*)(e + 0x50), *(f32*)(e + 0x50), *(f32*)(e + 0x50));
-    fn_800E03B4(matrix, position);
+    GSmtxScaleApply(matrix, *(f32*)(e + 0x50), *(f32*)(e + 0x50), *(f32*)(e + 0x50));
+    GSmtxTransApply(matrix, position);
     GSmodelSetMatrix(*(void**)(e + 0x58), matrix);
     return 1;
 }
@@ -1468,7 +1468,7 @@ u32 _boltStop(void* ptr) {
     return 1;
 }
 #endif
-extern u32 fn_800EE7E0(void* obj);
+extern u32 GSmodelIsHidden(void* obj);
 extern const f32 lbl_8047D190;
 #if 1
 u32 _boltRender(void* ptr) {
@@ -1497,7 +1497,7 @@ u32 _boltRender(void* ptr) {
             if (*(s32*)(p + 0x50) > 0) {
                 part = GSmodelGetPart(model, *(u32*)(p + 0x50));
                 if (part != NULL) {
-                    if ((u8)fn_800EE7E0(part) != 0) {
+                    if ((u8)GSmodelIsHidden(part) != 0) {
                         GSpartGetTransform(part, pos, NULL, NULL);
                         GSpartFree(part);
                     }
@@ -1572,9 +1572,9 @@ BOOL _boltUpdate(void* ptr, u32 tick) {
                 point = entry;
                 for (segment = 0; segment < segment_count; segment++, point += 0x18) {
                     set__5GSvecFfff(random_offset,
-                                    offset[0] * fn_800E0BA0(),
-                                    offset[1] * fn_800E0BA0(),
-                                    offset[2] * fn_800E0BA0());
+                                    offset[0] * GSrandfSigned(),
+                                    offset[1] * GSrandfSigned(),
+                                    offset[2] * GSrandfSigned());
                     GSvecAdd(point, point, random_offset);
                 }
 
@@ -1667,9 +1667,9 @@ u32 boltStartEffect(void* ptr) {
 #endif
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || defined(EFFECT_VISUAL_EXACT_80139E80)
-extern void fn_800E0108(void);
-extern void fn_800E0560(void);
-extern void fn_800E042C(void);
+extern void GSvecMulComponents(void);
+extern void GSmtxMakeTranslate(void);
+extern void GSmtxMakeScaleVec(void);
 extern void vecNormalize(void);
 extern u32 lbl_8047D1A0;
 extern const f32 lbl_8047D1A8;
@@ -1684,12 +1684,12 @@ asm void fn_80139E80(void* entry, void* parent, void* cameraPos, void* modelPos)
 void _boltDrawStrip(u8* e, u8* p, void* cameraPos, void* modelPos) {
     extern void gfxPopMatrix(void);
     extern void gfxPushMultMatrix(void*);
-    extern void fn_800DFFCC(void*, void*, void*);
+    extern void GSvecCross(void*, void*, void*);
     extern void GSvecNormalize(f32*, f32*);
     extern f32 vecMag(f32*);
-    extern void fn_800E0108(f32*, f32*, f32*, u32, u32);
-    extern void fn_800E0560(f32 (*)[4], f32*);
-    extern void fn_800E042C(f32 (*)[4], f32*);
+    extern void GSvecMulComponents(f32*, f32*, f32*, u32, u32);
+    extern void GSmtxMakeTranslate(f32 (*)[4], f32*);
+    extern void GSmtxMakeScaleVec(f32 (*)[4], f32*);
     extern void vecNormalize(f32*, f32*);
     /* RULE-EXCEPTION(user-approved): store-only carrier for register allocation — see docs/RULE_EXCEPTIONS.md */
     short spanEnd;
@@ -1711,7 +1711,7 @@ void _boltDrawStrip(u8* e, u8* p, void* cameraPos, void* modelPos) {
     start = *(u16*)(e + 0x12DC);
     current = *(u16*)(p + 0x48) - start;
     halfSpan = (u16)(spanEnd = *(u16*)(e + 0x12DE) - start) >> 1;
-    fn_800E0108(interpolated, (f32*)(e + 0x12CC), (f32*)(p + 0x20), *(u16*)(p + 0x48) - start,
+    GSvecMulComponents(interpolated, (f32*)(e + 0x12CC), (f32*)(p + 0x20), *(u16*)(p + 0x48) - start,
                 start);
     GSvecSub(interpolated, modelPos, interpolated);
     if (current < halfSpan) {
@@ -1730,9 +1730,9 @@ void _boltDrawStrip(u8* e, u8* p, void* cameraPos, void* modelPos) {
         }
     }
 
-    fn_800E0560(matrix, interpolated);
+    GSmtxMakeTranslate(matrix, interpolated);
     gfxPushMultMatrix(matrix);
-    fn_800E042C(matrix, (f32*)(p + 0x20));
+    GSmtxMakeScaleVec(matrix, (f32*)(p + 0x20));
     gfxPushMultMatrix(matrix);
     gfxBegin((visible * 4) & 0xFFFC);
 
@@ -1746,7 +1746,7 @@ void _boltDrawStrip(u8* e, u8* p, void* cameraPos, void* modelPos) {
         vecScale(cameraVector, cameraVector, 0.5f);
         GSvecSub(cameraVector, cameraPos, cameraVector);
         GSvecNormalize(cameraVector, cameraVector);
-        fn_800DFFCC(normal, cameraVector, direction);
+        GSvecCross(normal, cameraVector, direction);
         if (vecMag(normal) > 0.001f) {
             vecNormalize(normal, normal);
         }
@@ -1832,9 +1832,9 @@ void _boltSubdivide(u8* entry, u8* parent, ElectronPoint* origin, u32 depth, f32
 
         set__5GSvecFfff(
             current,
-            spread[0] * fn_800E0BA0() + *(f32*)(parent + 0x2C),
-            spread[1] * fn_800E0BA0() + *(f32*)(parent + 0x30),
-            spread[2] * fn_800E0BA0() + *(f32*)(parent + 0x34));
+            spread[0] * GSrandfSigned() + *(f32*)(parent + 0x2C),
+            spread[1] * GSrandfSigned() + *(f32*)(parent + 0x30),
+            spread[2] * GSrandfSigned() + *(f32*)(parent + 0x34));
         GSvecAdd(current, current, point);
 
         (*(u16*)(entry + 0x12E2))++;
@@ -1923,7 +1923,7 @@ u32 electronStartEffect(void* ptr) {
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || defined(EFFECT_VISUAL_EXACT_8013A520)
 #if defined(EFFECT_VISUAL_EXACT_8013A520)
 extern f32 GSrandf(void);
-extern u32 fn_800EE7E0(void* obj);
+extern u32 GSmodelIsHidden(void* obj);
 #endif
 extern void __cvt_fp2unsigned(void);
 extern const f32 lbl_8047D1B8;
@@ -2027,7 +2027,7 @@ u32 _electronRender(void* ptr) {
         if (first == NULL) {
             continue;
         }
-        if ((u8)fn_800EE7E0(first) != 0) {
+        if ((u8)GSmodelIsHidden(first) != 0) {
             GSpartGetTransform(first, firstPos, 0, 0);
             if (GSvecDistance(firstPos, center) > 0.1f) {
                 for (secondIndex = firstIndex + 1; secondIndex < count;
@@ -2036,7 +2036,7 @@ u32 _electronRender(void* ptr) {
                     if (second == NULL) {
                         continue;
                     }
-                    if ((u8)fn_800EE7E0(second) != 0 && chance > GSrandf()) {
+                    if ((u8)GSmodelIsHidden(second) != 0 && chance > GSrandf()) {
                         GSpartGetTransform(second, secondPos, 0, 0);
                         if (GSvecDistance(firstPos, center) > 0.1f) {
                             GSvecCopy(ctrl[0], firstPos);
@@ -2073,7 +2073,7 @@ u32 _electronRender(void* ptr) {
                             GSvecAdd(ctrl[3], secondPos, offset);
 
                             segments = *(f32*)(p + 0x10) *
-                                       (*(f32*)(p + 0x1C) * fn_800E0BA0() +
+                                       (*(f32*)(p + 0x1C) * GSrandfSigned() +
                                         *(f32*)(p + 0x18));
                             step = 1.0f / (f32)segments;
                             gfxBegin((u16)(segments + 1));
@@ -2087,7 +2087,7 @@ u32 _electronRender(void* ptr) {
                                     pitchB3 = 3.1415927f * GSrandf();
                                     sinPitchB3 = sin(pitchB3);
                                     lengthB3 = *(f32*)(p + 0x14) * *(f32*)(p + 0x10) *
-                                             fn_800E0BA0();
+                                             GSrandfSigned();
                                     sinYawB3 = sin(yawB3);
                                     cosPitchB3 = cos(pitchB3);
                                     cosYawB3 = cos(yawB3);
@@ -2585,8 +2585,8 @@ asm u32 fn_8013B504(void* ptr) {
 u32 _surfDestroy(void* ptr) {
     if (ptr) {
         if (*(s32*)((u8*)ptr + 0x58) != 0) {
-            fn_800F9210(*(u32*)((u8*)ptr + 0x50), *(u32*)((u8*)ptr + 0x54));
-            fn_800F9210(*(u32*)((u8*)ptr + 0x50), *(u32*)((u8*)ptr + 0x58));
+            GSresReleaseOwnerItem(*(u32*)((u8*)ptr + 0x50), *(u32*)((u8*)ptr + 0x54));
+            GSresReleaseOwnerItem(*(u32*)((u8*)ptr + 0x50), *(u32*)((u8*)ptr + 0x58));
         }
     }
     return 1;
@@ -2626,8 +2626,8 @@ u32 _surfStop(void* ptr) {
 #if defined(EFFECT_VISUAL_BANK_ACTIVE)
 extern f32 GSrandf(void);
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
-extern void fn_800DFFCC(void* dst, void* src, const void* value);
-extern void fn_800E0718(void*, void*, f32);
+extern void GSvecCross(void* dst, void* src, const void* value);
+extern void GSquatRotAxisRad(void*, void*, f32);
 extern void GSvecTransformQuat(void* dst, void* quat, void* src);
 extern void GSmtxMakeYRotation(void* mtx, f32 angle);
 extern void vecScale(void* dst, void* src, f32 scale);
@@ -2763,7 +2763,7 @@ fail:
     GSlogWrite((const char*)lbl_80272EA0);
     return 0;
 }
-extern void fn_800E09E8(void* dst, void* src, u32 count);
+extern void GSsplineEvalStrip(void* dst, void* src, u32 count);
 extern u32 lbl_8047D208;
 #if 0
 asm u32 fn_8013B85C(void* ptr, u32 delta) {
@@ -2793,12 +2793,12 @@ u32 _surfUpdate(void* ptr, u32 delta) {
         if (count % 2 != 0) {
             half = count >> 1;
             firstCount = half + 1;
-            fn_800E09E8(*(void**)(p + 0xBC), p + 0x5C, firstCount);
-            fn_800E09E8(*(u8**)(p + 0xBC) + firstCount * 0xC, p + 0x8C, half);
+            GSsplineEvalStrip(*(void**)(p + 0xBC), p + 0x5C, firstCount);
+            GSsplineEvalStrip(*(u8**)(p + 0xBC) + firstCount * 0xC, p + 0x8C, half);
         } else {
             evenHalf = count >> 1;
-            fn_800E09E8(*(void**)(p + 0xBC), p + 0x5C, evenHalf);
-            fn_800E09E8(*(u8**)(p + 0xBC) + evenHalf * 0xC, p + 0x8C, evenHalf);
+            GSsplineEvalStrip(*(void**)(p + 0xBC), p + 0x5C, evenHalf);
+            GSsplineEvalStrip(*(u8**)(p + 0xBC) + evenHalf * 0xC, p + 0x8C, evenHalf);
         }
 
         count = *(u16*)(p + 0x1C);
@@ -2863,8 +2863,8 @@ void _surfCalcNormals(void* ptr) {
         point += 0xC;
         GSvecSub(previousDelta, points, previous);
         GSvecSub(nextDelta, point, points);
-        fn_800DFFCC(previousDelta, previousDelta, lbl_80315540);
-        fn_800DFFCC(nextDelta, nextDelta, lbl_80315540);
+        GSvecCross(previousDelta, previousDelta, lbl_80315540);
+        GSvecCross(nextDelta, nextDelta, lbl_80315540);
         GSvecAdd(vectors, nextDelta, previousDelta);
         vecScale(vectors, vectors, 0.5f);
         GSvecNormalize(vectors, vectors);
@@ -2995,7 +2995,7 @@ void _surfBuildMesh(void* ptr, void* mtx, u8* color, f32 x, f32 z, f32 scale) {
     GSmemDumpMap(0, 0);
 }
 #endif
-extern void* fn_8019FF48(void* model);
+extern void* HSD_JObjGetDObj_8019FF48(void* model);
 extern void HSD_MObjSetFlags(void* mobj, u32 flags);
 extern void HSD_MObjCompileTev(void* mobj);
 #endif
@@ -3003,7 +3003,7 @@ extern void HSD_MObjCompileTev(void* mobj);
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || defined(EFFECT_VISUAL_EXACT_8013C074)
 #if defined(EFFECT_VISUAL_EXACT_8013C074)
 extern u8 GSmemDumpMap();
-extern void* fn_8019FF48(void* model);
+extern void* HSD_JObjGetDObj_8019FF48(void* model);
 extern void HSD_MObjSetFlags(void* mobj, u32 flags);
 extern void HSD_MObjCompileTev(void* mobj);
 #endif
@@ -3094,7 +3094,7 @@ static inline void surfBuildStrips(SurfRenderState* state) {
 
 u32 _surfSetupMaterial(void* ptr, void* arg) {
     SurfRenderState* state = arg;
-    SurfRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    SurfRenderDObj* dobj = HSD_JObjGetDObj_8019FF48(*(void**)((u8*)ptr + 0x8));
     SurfRenderPObj* pobj;
     void* mobj;
     SurfRenderStage* stage;
@@ -3242,8 +3242,8 @@ u32 _seaDestroy(void* ptr) {
         GXDrawDone();
         GXInvalidateVtxCache();
         if (*(s32*)((u8*)ptr + 0x7c) != 0) {
-            fn_800F9210(*(u32*)((u8*)ptr + 0x74), *(u32*)((u8*)ptr + 0x78));
-            fn_800F9210(*(u32*)((u8*)ptr + 0x74), *(u32*)((u8*)ptr + 0x7c));
+            GSresReleaseOwnerItem(*(u32*)((u8*)ptr + 0x74), *(u32*)((u8*)ptr + 0x78));
+            GSresReleaseOwnerItem(*(u32*)((u8*)ptr + 0x74), *(u32*)((u8*)ptr + 0x7c));
         }
     }
     return 1;
@@ -3483,7 +3483,7 @@ __declspec(section ".sdata2") const f32 lbl_8047D23C = 0.0f;
 #if defined(EFFECT_VISUAL_BANK_ACTIVE)
 extern void set__5GSvecFfff(void* dst, f32 x, f32 y, f32 z);
 #endif
-extern f32 fn_800E0CA0(f32 angle);
+extern f32 GSsinTable(f32 angle);
 extern u32 lbl_8047D248;
 /* RULE-EXCEPTION(user-approved): extern-named stand-in for the 0.0f shared
    with seaEffectStart (0x8047D23C), which stays in the data unit — see
@@ -3540,7 +3540,7 @@ u32 _seaUpdate(void* ptr, u32 delta) {
             rowAngleStep = angleStep / *randomZ;
             angle = *randomAngle + amplitude / *randomZ;
             for (column = 0; column < columns; column++) {
-                grid[1] = *(f32*)(p + 0x4C) + *randomX * fn_800E0CA0(angle);
+                grid[1] = *(f32*)(p + 0x4C) + *randomX * GSsinTable(angle);
                 angle += rowAngleStep;
                 grid += 3;
             }
@@ -3629,7 +3629,7 @@ u32 _seaResetMaterial(void* inner, void* ptr) {
     s32 found11;
     s32 stageIndex;
 
-    displayObject = fn_8019FF48(*(void**)((u8*)inner + 0x8));
+    displayObject = HSD_JObjGetDObj_8019FF48(*(void**)((u8*)inner + 0x8));
     found9 = 0;
     found10 = 0;
     found13 = 0;
@@ -3727,7 +3727,7 @@ u32 _seaResetMaterial(void* inner, void* ptr) {
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || defined(EFFECT_VISUAL_EXACT_8013D0A8)
 #if defined(EFFECT_VISUAL_EXACT_8013D0A8)
-extern void* fn_8019FF48(void* model);
+extern void* HSD_JObjGetDObj_8019FF48(void* model);
 extern void HSD_MObjSetFlags(void* mobj, u32 flags);
 extern void HSD_MObjCompileTev(void* mobj);
 extern u8 lbl_80363CB8[];
@@ -3825,7 +3825,7 @@ static inline void blurBuildStrips(BlurRenderState* state) {
 
 u32 _seaSetupMaterial(void* ptr, void* arg) {
     BlurRenderState* state = arg;
-    BlurRenderDObj* dobj = fn_8019FF48(*(void**)((u8*)ptr + 0x8));
+    BlurRenderDObj* dobj = HSD_JObjGetDObj_8019FF48(*(void**)((u8*)ptr + 0x8));
     BlurRenderPObj* pobj;
     void* mobj;
     BlurRenderStage* stage;
@@ -4123,7 +4123,7 @@ log:
 
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_8013D984)
-extern u8 fn_800E3C64(void* model);
+extern u8 GSmodelHasAnimation(void* model);
 extern u8 GSmodelIsEnvMapEnabled(void* model);
 extern void GSmodelSetEnvMapBlendValue(void* model, f32 value);
 extern u32 lbl_8047AEE0;
@@ -4167,21 +4167,21 @@ u32 _envMapUpdate(void* ptr, u32 delta) {
                         (*(f32*)(node + 0x4) - *(f32*)node);
             model = *(void**)p;
             if (lbl_8047AEE0 != 0 && model != NULL) {
-                modelCount = fn_800E3B3C();
+                modelCount = GSmodelGetPoolCount();
                 if (modelCount != 0) {
-                    fn_800D4604(2);
+                    gfxSetRecordMode(2);
                     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-                    fn_800D377C(1);
+                    GSgfxSetPixelFormatMode(1);
                     GSgfxRenderLayer((void*)lbl_8047AEE0, 0);
                     for (i = 0; i < modelCount; i++) {
-                        otherModel = fn_800E3B08(i);
+                        otherModel = GSmodelGetActiveEntry(i);
                         if (otherModel != NULL && otherModel != model &&
-                            fn_800E3C64(otherModel)) {
+                            GSmodelHasAnimation(otherModel)) {
                             GSmodelDrawModel(otherModel, 0x3010);
                         }
                     }
                     GSgfxRenderEnd();
-                    fn_800D4604(1);
+                    gfxSetRecordMode(1);
                 }
             }
 
@@ -4296,7 +4296,7 @@ u32 _blurInit(void* ptr) {
 }
 #endif
 extern void GSgfxEndBackFBCapture(void* a);
-extern void fn_800E5790(void* a);
+extern void GSmodelBlurFreeWork(void* a);
 #if 0
 asm u32 fn_8013DD7C(void* ptr) {
 #include "src/game/effect/effect_visual_fn_8013DD7C.inc"
@@ -4310,7 +4310,7 @@ u32 _blurStop(void* ptr) {
         } else {
             inner = *(void**)ptr;
             if (inner) {
-                fn_800E5790(inner);
+                GSmodelBlurFreeWork(inner);
             }
         }
     }
@@ -4350,14 +4350,14 @@ u32 blurEffectStart(void* ptr) {
 #if !defined(EFFECT_VISUAL_BANK_ACTIVE) || \
     defined(EFFECT_VISUAL_EXACT_8013DE6C)
 extern u8 GSmodelIsAnimating(void* model);
-extern s32 fn_800D3068(void);
+extern s32 GSgfxGetFrameInterval(void);
 extern f32 GSmodelGetAnimFrame(void* model);
 extern f32 GSmodelGetAnimRate(void* model);
-extern s32 fn_800D45F8(void);
+extern s32 gfxGetRecordMode(void);
 extern u32 GSmaterialGetFlags(void* material);
 extern void GSmaterialSetFlags(void* material, u32 flags);
 extern void GSmaterialStoreAlpha(void* material);
-extern void fn_800EC134(void*);
+extern void GSmodelApplyAnimation(void*);
 extern void GSmaterialResetAlpha(void* material);
 extern void GSmaterialResetFlags(void* material);
 extern u32 lbl_8047D288;
@@ -4376,7 +4376,7 @@ asm void fn_8013DE6C(void) {
 }
 #else
 u32 _blurRender(void* ptr) {
-    extern void fn_800D4604(s32);
+    extern void gfxSetRecordMode(s32);
     u8* timing;
     f32 halfRate;
     f32 alpha;
@@ -4409,7 +4409,7 @@ u32 _blurRender(void* ptr) {
         frame = *(u32*)(p + 0x1C);
         blend = (f32)frame / (f32)*(u32*)(timing + 8);
         blend = blend * (*(f32*)(timing + 4) - *(f32*)timing) + *(f32*)timing;
-        switch (fn_800D3068()) {
+        switch (GSgfxGetFrameInterval()) {
         case 1:
             copies = 60.0f * blend + 0.5f;
             break;
@@ -4442,8 +4442,8 @@ u32 _blurRender(void* ptr) {
         }
 
         GSmodelSetPEdescr(model, lbl_80363CC8);
-        oldMode = fn_800D45F8();
-        fn_800D4604(2);
+        oldMode = gfxGetRecordMode();
+        gfxSetRecordMode(2);
         _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
         materials = *(void***)(p + 4);
         for (i = 0; i < materialCount; i++, materials++) {
@@ -4460,7 +4460,7 @@ u32 _blurRender(void* ptr) {
         while (startFrame + halfRate < animFrame) {
             alpha = j++ * alphaStep;
             GSmodelSetAnimFrame(model, startFrame);
-            fn_800EC134(model);
+            GSmodelApplyAnimation(model);
             startFrame += animRate;
             alpha = 0.5f * (alpha * alpha);
             materials = *(void***)(p + 4);
@@ -4481,9 +4481,9 @@ u32 _blurRender(void* ptr) {
         }
         GSmodelResetPEdescr(model);
         GSmodelSetAnimFrame(model, animFrame);
-        fn_800EC134(model);
+        GSmodelApplyAnimation(model);
         GSmodelDrawModel(model, 0x3010);
-        fn_800D4604(oldMode);
+        gfxSetRecordMode(oldMode);
         return 1;
     }
     return 0;
@@ -4528,7 +4528,7 @@ u32 _blurDrawCapture(void* model, void* unused, void* state) {
                 *(f32*)&lbl_8047D29C, *(f32*)&lbl_8047D2A0);
     gfxSetBlendMode(1, 6, 7);
     gfxSetZMode(0, 7, 0);
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     gfxSetUpdates(1, 1, 0);
     gfxSetCullMode(0);
     gfxSetFlags(3);
@@ -4553,7 +4553,7 @@ u32 _blurDrawCapture(void* model, void* unused, void* state) {
     gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, alpha);
     gfxVtxTexCoord(0, 1.0f, 1.0f);
     gfxEnd();
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
     return 1;
 
 ret0:
@@ -4819,7 +4819,7 @@ extern void* GSmodelGetBound(void* model);
 extern void* GSmodelGetMatrixPtr(void* model);
 extern void GSmodelSetRenderFlags(void* model, u32 flags);
 extern void GSmodelInitMaterialAlpha(void* model);
-extern void fn_8019D620(void* jobj);
+extern void HSD_JObjSetMtxDirtySub_8019D620(void* jobj);
 extern void GSmodelSetMaterialAlpha(void* model, f32 alpha);
 extern void GSmodelResetMaterialAlpha(void* model);
 extern void GSmodelResetRenderFlags(void* model);
@@ -4858,7 +4858,7 @@ typedef struct LayerVec {
                     dirty_ = 1;                                                 \
                 }                                                               \
                 if (dirty_ == 0) {                                              \
-                    fn_8019D620(jobj);                                          \
+                    HSD_JObjSetMtxDirtySub_8019D620(jobj);                                          \
                 }                                                               \
             }                                                                   \
         }                                                                       \
@@ -4889,7 +4889,7 @@ typedef struct LayerVec {
     } while (0)
 
 void _auraDrawModel(void* ptr) {
-    extern void fn_800EC134(void*);
+    extern void GSmodelApplyAnimation(void*);
     u8* p;
     void* model;
     void* texture;
@@ -4922,7 +4922,7 @@ void _auraDrawModel(void* ptr) {
         return;
     }
 
-    fn_800EC134(model);
+    GSmodelApplyAnimation(model);
     GSmodelSetPEdescr(model, lbl_80363CD8);
 
     if (part == NULL) {
@@ -4948,8 +4948,8 @@ void _auraDrawModel(void* ptr) {
     GSvecTransform(&mid, mtx, &mid);
     GSvecSub(&mid, &mid, &baseTranslate);
 
-    fn_800D377C(2);
-    fn_800D4604(2);
+    GSgfxSetPixelFormatMode(2);
+    gfxSetRecordMode(2);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     GSgfxRenderLayer(texture, 0);
 
@@ -4993,8 +4993,8 @@ void _auraDrawModel(void* ptr) {
     GSmodelResetRenderFlags(model);
     GSmodelResetMaterialAlpha(model);
     GSgfxRenderEnd();
-    fn_800D4604(1);
-    fn_800D377C(1);
+    gfxSetRecordMode(1);
+    GSgfxSetPixelFormatMode(1);
     GSmodelResetPEdescr(model);
 }
 #endif
@@ -5199,19 +5199,19 @@ u16 distortionEffectStart(void* ptr) {
 extern u8 GSmodelGetVisibility(void* obj);
 extern void gsParticleDraw(u32 a, u32 b);
 extern void gfxLoadTexMatrix(u32 a, u32 b, u32 c, void* d);
-extern void fn_800DC1D4(u32 a);
-extern void fn_800DBA54(u32 a);
-extern void fn_800DB9F0(u32 a, u32 b, u32 c);
-extern void fn_800DB988(u32 a, u32 b, u32 c);
-extern void fn_800DB900(u32 a, void* b, u32 c);
-extern void fn_800DBCE4(u32 a, u32 b, u32 c, u32 d, u32 e);
+extern void gfxSetNumTevStages(u32 a);
+extern void gfxSetNumIndStages(u32 a);
+extern void gfxSetIndTexOrder(u32 a, u32 b, u32 c);
+extern void gfxSetIndTexCoordScale(u32 a, u32 b, u32 c);
+extern void gfxSetIndTexMtx(u32 a, void* b, u32 c);
+extern void gfxSetTevIndWarp(u32 a, u32 b, u32 c, u32 d, u32 e);
 extern void gfxSetTevStage(u32 a, u32 b, u32 c, u32 d, u32 e);
-extern void fn_800DC14C(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
-extern void fn_800DC0D4(u32 a, u32 b, u32 c, u32 d, u32 e);
-extern void fn_800DC04C(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
-extern void fn_800DBFD4(u32 a, u32 b, u32 c, u32 d, u32 e);
+extern void gfxSetTevAlphaOp(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
+extern void gfxSetTevAlphaIn(u32 a, u32 b, u32 c, u32 d, u32 e);
+extern void gfxSetTevColorOp(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
+extern void gfxSetTevColorIn(u32 a, u32 b, u32 c, u32 d, u32 e);
 extern void gfxVtxColor(u32 a, u32 r, u32 g, u32 b);
-extern void fn_800DBE5C(u32 a);
+extern void gfxSetTevDirect(u32 a);
 extern u32 lbl_8047AEE8;
 extern u32 lbl_8047AEF0;
 /* RULE-EXCEPTION(user-approved): extern-named stand-ins for constants shared with linked code — see docs/RULE_EXCEPTIONS.md */
@@ -5233,14 +5233,14 @@ u32 _distortionRender(void* ptr) {
         }
         _distortionEffectUpdateMatrices(ptr);
         if (lbl_8047AEE8 != 0) {
-            count = fn_800E3B3C();
+            count = GSmodelGetPoolCount();
             if (count != 0) {
-                fn_800D4604(2);
+                gfxSetRecordMode(2);
                 _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
-                fn_800D377C(1);
+                GSgfxSetPixelFormatMode(1);
                 GSgfxRenderLayer((void*)lbl_8047AEE8, 0);
                 for (i = 0; i < count; i++) {
-                    obj = fn_800E3B08(i);
+                    obj = GSmodelGetActiveEntry(i);
                     if (obj != NULL && GSmodelGetVisibility(obj) != 0) {
                         GSmodelDrawModel(obj, 0x3010);
                     }
@@ -5250,7 +5250,7 @@ u32 _distortionRender(void* ptr) {
                     gsParticleDraw(0x2000, 1);
                 }
                 GSgfxRenderEnd();
-                fn_800D4604(1);
+                gfxSetRecordMode(1);
             }
         }
         gfxSetZMode(0, 2, 0);
@@ -5258,24 +5258,24 @@ u32 _distortionRender(void* ptr) {
         gfxSetFlags(0x80000003);
         gfxClearFlags(4);
         gfxSetBlendMode(0, 6, 7);
-        fn_800D9ED8(1);
+        gfxSetFlag1A(1);
         gfxSetUpdates(1, 1, 0);
         gfxLoadTexture(0, (void*)lbl_8047AEE8);
         gfxLoadTexture(1, *(void**)(p + 0x4));
         gfxLoadTexMatrix(0, 2, 4, p + 0x68);
-        fn_800E064C(mtx);
+        GSmtxIdentity(mtx);
         gfxLoadTexMatrix(1, 2, 5, mtx);
-        fn_800DC1D4(1);
-        fn_800DBA54(1);
-        fn_800DB9F0(0, 1, 1);
-        fn_800DB988(0, lbl_8047AEF0, lbl_8047AEF0);
-        fn_800DB900(1, p + 0x98, 1);
-        fn_800DBCE4(0, 0, 1, 0, 1);
+        gfxSetNumTevStages(1);
+        gfxSetNumIndStages(1);
+        gfxSetIndTexOrder(0, 1, 1);
+        gfxSetIndTexCoordScale(0, lbl_8047AEF0, lbl_8047AEF0);
+        gfxSetIndTexMtx(1, p + 0x98, 1);
+        gfxSetTevIndWarp(0, 0, 1, 0, 1);
         gfxSetTevStage(0, 0, 0, 0, 2);
-        fn_800DC14C(0, 0, 0, 0, 1, 0);
-        fn_800DC0D4(0, 0xf, 0xf, 0xf, 8);
-        fn_800DC04C(0, 0, 0, 0, 1, 0);
-        fn_800DBFD4(0, 7, 7, 7, 4);
+        gfxSetTevAlphaOp(0, 0, 0, 0, 1, 0);
+        gfxSetTevAlphaIn(0, 0xf, 0xf, 0xf, 8);
+        gfxSetTevColorOp(0, 0, 0, 0, 1, 0);
+        gfxSetTevColorIn(0, 7, 7, 7, 4);
         gfxSetVtxDesc(*(void**)p);
         gfxSetPrimitive(6);
         gfxPushMultMatrix(p + 0x38);
@@ -5304,10 +5304,10 @@ u32 _distortionRender(void* ptr) {
         gfxEnd();
         gfxPopMatrix();
         gfxLoadTexMatrix(0, 2, 4, mtx);
-        fn_800DBE5C(0);
-        fn_800DBA54(0);
+        gfxSetTevDirect(0);
+        gfxSetNumIndStages(0);
         gfxClearFlags(0x80000002);
-        fn_800D9ED8(0);
+        gfxSetFlag1A(0);
         return 1;
     }
     return 0;
@@ -5388,12 +5388,12 @@ u32 _distortionUpdate(void* ptr, u32 delta) {
 #endif
 extern void* gfxGetCameraMatrix(u32 index);
 extern void GScameraGetLookAt(void* mtx, void* lookAt, void* eye);
-extern void fn_800E0628(void* dst, void* src);
+extern void GSmtxCopy(void* dst, void* src);
 extern void GSmtxTranspose(void* dst, void* src);
 extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
 extern s32 gfxProjectPoint(void* input, void* output, s32 count);
 extern void GSlogWrite(const char* fmt, ...);
-extern void fn_800E03E8(void* matrix, f32 x, f32 y, f32 z);
+extern void GSmtxTranslate(void* matrix, f32 x, f32 y, f32 z);
 /* RULE-EXCEPTION(user-approved): extern-named stand-ins for constants shared with linked code — see docs/RULE_EXCEPTIONS.md */
 extern const f32 lbl_8047D300;
 extern const f32 lbl_8047D304;
@@ -5426,16 +5426,16 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     matrix = (f32*)((u8*)ptr + 0x38);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
     cameraMatrix = gfxGetCameraMatrix(0);
-    fn_800E064C(matrix);
+    GSmtxIdentity(matrix);
     if (camera != NULL) {
         GScameraGetLookAt(camera, lookAt, eye);
-        fn_800E0628(viewMatrix, cameraMatrix);
+        GSmtxCopy(viewMatrix, cameraMatrix);
         viewMatrix[11] = lbl_8047D300;
         viewMatrix[7] = lbl_8047D300;
         viewMatrix[3] = lbl_8047D300;
         GSmtxTranspose(matrix, viewMatrix);
     }
-    fn_800E02C4(matrix, *(f32*)((u8*)ptr + 0x10),
+    GSmtxScaleApply(matrix, *(f32*)((u8*)ptr + 0x10),
                 *(f32*)((u8*)ptr + 0x10), *(f32*)((u8*)ptr + 0x10));
     matrix[3] = *(f32*)((u8*)ptr + 0x2C);
     matrix[7] = *(f32*)((u8*)ptr + 0x30);
@@ -5461,7 +5461,7 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     *(f32*)((u8*)ptr + 0xA4) = lbl_8047D300;
     *(f32*)((u8*)ptr + 0xA8) = 0.5f;
     *(f32*)((u8*)ptr + 0xAC) = xScale;
-    fn_800E048C((u8*)ptr + 0x68, projected[1][0] - projected[0][0],
+    GSmtxMakeScale((u8*)ptr + 0x68, projected[1][0] - projected[0][0],
                  projected[1][1] - projected[0][1], lbl_8047D300);
     xScale = 128.0f /
              (f32)GStextureGetXsize((void*)lbl_8047AEE8);
@@ -5470,7 +5470,7 @@ void _distortionEffectUpdateMatrices(void* ptr) {
     xScale *= *(f32*)((u8*)ptr + 0x20);
     yScale *= *(f32*)((u8*)ptr + 0x20);
     /* RULE-EXCEPTION(user-approved): integer-cast address stops MWCC sharing it with the earlier call — see docs/RULE_EXCEPTIONS.md */
-    fn_800E03E8((void*)((u32)ptr + 0x68), xScale + projected[0][0],
+    GSmtxTranslate((void*)((u32)ptr + 0x68), xScale + projected[0][0],
                 yScale + projected[0][1], lbl_8047D300);
 }
 #endif
@@ -5507,11 +5507,11 @@ asm void fn_8013FC58(void) {
 u32 _billboardDestroy(void* ptr) {
     if (ptr) {
         if (*(u32*)((u8*)ptr + 0x10) != 0) {
-            fn_800F9210(*(u32*)ptr, *(u32*)((u8*)ptr + 0x8));
-            fn_800F9210(*(u32*)ptr, *(u32*)((u8*)ptr + 0x4));
+            GSresReleaseOwnerItem(*(u32*)ptr, *(u32*)((u8*)ptr + 0x8));
+            GSresReleaseOwnerItem(*(u32*)ptr, *(u32*)((u8*)ptr + 0x4));
         }
         if (*(u32*)((u8*)ptr + 0x14) != 0) {
-            fn_800F9210(*(u32*)ptr, *(u32*)((u8*)ptr + 0xc));
+            GSresReleaseOwnerItem(*(u32*)ptr, *(u32*)((u8*)ptr + 0xc));
         }
     }
     return 1;
@@ -5570,7 +5570,7 @@ u32 _billboardStop(void* ptr) {
 }
 #endif
 extern void* gsParticleCreate(void* ptr, u16 arg, u32 flag);
-extern void fn_800E3CC8(void* model, u32 flag);
+extern void GSmodelSetFlag200(void* model, u32 flag);
 extern u8 GSmodelCanAnimate(void* model);
 extern void GSmodelSetAnimIndex(void* model, u16 value);
 extern void GSmodelSetAnimType(void* model, u32 value);
@@ -5601,7 +5601,7 @@ u16 billboardEffectStart(void* ptr) {
 
     if (model != NULL) {
         GSmodelSetVisibility(model, 1);
-        fn_800E3CC8(model, 1);
+        GSmodelSetFlag200(model, 1);
         if (GSmodelCanAnimate(model)) {
             GSmodelSetAnimIndex(model, *(u16*)((u8*)ptr + 0x1c));
             GSmodelSetAnimType(model, *(u32*)((u8*)ptr + 0x18));
@@ -5632,7 +5632,7 @@ extern f64 tan(f64 x);
 extern u8 GSmodelCanAnimate(void* model);
 extern void* GSmodelGetBound(void* model);
 extern void GScameraGetLookAt(void* mtx, void* lookAt, void* eye);
-extern u32 fn_80118DA8(void* ptr);
+extern u32 gsParticleGetMaxLife(void* ptr);
 extern void gsParticleSetVecB(void* arg1, void* arg2);
 extern u8 GSmodelHasAnimationEnded(void* model);
 extern u8 GSmodelHasTexAnimationEnded(void* model);
@@ -5691,7 +5691,7 @@ u32 _billboardUpdate(void* ptr) {
         }
 
         if (*(void**)(p + 0x20) != NULL &&
-            fn_80118DA8(*(void**)(p + 0x20)) != 0) {
+            gsParticleGetMaxLife(*(void**)(p + 0x20)) != 0) {
             gsParticleSetVecB(*(void**)(p + 0x20), &position);
             updated = 1;
         }
@@ -5799,7 +5799,7 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
     extern void* GStextureLockImage(void* texture, u8 level);
     extern void GStextureUnlockImage(void* texture);
     extern void GStextureConvertToHW(void* texture);
-    extern void fn_800EF098(void* texture);
+    extern void GStextureSwizzleCI4(void* texture);
     extern void* memcpy(void* dst, const void* src, u32 size);
     extern const u8 lbl_80478BA8[4][2];
     extern const char lbl_802730B8[];
@@ -5846,8 +5846,8 @@ void* _pachiruEffectCreateTexture__FP9GStextureP9GStextureUl(void* baseTexture,
     DCFlushRange(outputPixels, size);
     GStextureUnlockImage(baseTexture);
 
-    fn_800EF098(outputTexture);
-    fn_800EF098(spotTexture);
+    GStextureSwizzleCI4(outputTexture);
+    GStextureSwizzleCI4(spotTexture);
     sourcePixels = GStextureLockImage(spotTexture, 0);
     if (sourcePixels == NULL) {
         goto fail;

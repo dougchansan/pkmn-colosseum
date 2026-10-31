@@ -9,7 +9,7 @@
  * menuCB_SubWinDisp_GCENTRY (XD 0x800443E4-0x80046594).
  *
  * DIRECT filename proof: __assert first-arg string 'menuColosseumBattle.c'
- * at .data 0x802678D8 referenced by fn_8005CCD0 and fn_8005CF2C.
+ * at .data 0x802678D8 referenced by fn_8005CCD0 and menuColosseumShowPartyError.
  *
  * menuColosseumBattleMain (below) is reintroduced from the previous
  * campaign's ui_core.c (archive/previous_campaign/src/game/ui/ui_core.c,
@@ -118,33 +118,33 @@ typedef struct ColosseumBattleRules {
 
 /* ===== External function declarations (menuColosseumBattleMain only) ===== */
 extern void winSetSequence(struct WinSeqState* state, u16 id);
-extern void fn_800347B8(void);
-extern void fn_800347C4(void);
-extern void fn_800347E8(s32);
-extern void fn_8003480C(s32);
-s32 fn_800566E8(void);
-extern s32 fn_800573C0(void);
-s32 fn_80057694(void);
-void fn_800576A4(s32);
-void fn_80057830(s32, s32, s32);
+extern void cardeSetRecordFlag(void);
+extern void cardeBuzzer_800347C4(void);
+extern void cardeBuzzer_800347E8(s32);
+extern void cardeBuzzer_8003480C(s32);
+s32 pcBoxTabIsMoving(void);
+extern s32 pcBoxCursorBusy(void);
+s32 pcBoxGetHeldFlag(void);
+void pcBoxSetHeldFlag(s32);
+void pcBoxSetCursorTarget(s32, s32, s32);
 extern u8 menuColosseumBattleGetFlag(void);
 extern u32 GSmemGetHandleByPtr(void*);
 extern void GSmemFree(u32);
 extern void fn_800E24B0(u32);
 extern void* GSmemLock(u32);
 extern void GSmsgGetText(void*, s32, void*);
-extern void fn_8002D91C();
+extern void shopRunAtLocation();
 extern void menuTaisenRun(void);
 extern void menuCBBattleSetupFight();
-extern void fn_8006A76C();
+extern void memcardIsUnavailable();
 extern void savedataBattleClearFlagC98B();
 extern void savedataBattleSetFlagC98B();
 extern void savedataBattleGetFlagC98B();
-extern void fn_8006A7C8();
-extern void fn_8006A7E0();
-extern void fn_8006A7E8();
-extern void fn_8006A7F0();
-extern void fn_8006A81C();
+extern void savedataBattleGetParty();
+extern void savedataBattleSetController();
+extern void savedataBattleGetController();
+extern void savedataBattleCopyPlayer();
+extern void savedataBattleSetTrainerData();
 extern void menuCBBiosInitHero();
 extern void menuCBBios_InitTrainer();
 extern void savedataBattleSetCouponRun();
@@ -158,23 +158,23 @@ extern void menuColosseumBattleClearFlag();
 extern void menuColosseumBattleSetFlag();
 extern void menuWaitFaceSprites();
 extern void floorRequestChange(s32);
-extern void fn_80071160();
-extern void fn_80071344();
+extern void menuFindLiveSaveSlot();
+extern void _menuReopenTop();
 extern void fn_80071398();
 extern void fn_800714C8();
 extern void fn_800715BC();
-extern void fn_8007162C();
+extern void _menuPeekStackDepth();
 extern void menuRuleCheckPartyAndRule();
-extern void fn_80077E80();
-extern void fn_80077EA4();
-extern void fn_800849B4();
-extern void fn_80088964();
+extern void menuRuleCopy();
+extern void menuRuleEqual();
+extern void cardeTransferUI();
+extern void menuMemcardTaskA();
 extern void menuSaveLoadCommitA();
-extern void fn_800889A4();
-extern void fn_80088D84();
-extern void fn_80089028();
+extern void menuMemcardTaskB();
+extern void menuSaveLoadCommitB();
+extern void gbaGetConnectionMode();
 extern void gbaCommStartSendPokemon();
-extern void fn_80093574();
+extern void gbaCommWaitDone();
 extern void menuGetCursorItemID();
 extern void menuSubOpenYesNo();
 extern void menuClose();
@@ -221,7 +221,7 @@ extern void scriptStoreTemochiPokemon(s32);
 extern u8 scriptCheckTemochiPokemon(s32);
 extern void* getPokemon__5PCBOXFScSc(void*, s8, s8);
 extern s8 pcboxGetNbPokemonBox(void);
-extern s8 fn_801347D8(void);
+extern s8 pcBoxGetSlotCount(void);
 extern void* heroGetStatus(void*, s32, u16);
 extern u16 pokemonBiosGetPokemonDataId(void*);
 extern u32 pokemonGetStatus(void*, u32, u32, u32);
@@ -229,46 +229,46 @@ extern u8 pokemonGetAnnonKatati(u32);
 extern u32 _toolentryAlloc__FUl(u32);
 extern u32 floorGetCurrentContext(void);
 extern u32 GSthreadCreate(u32, u32, u32, u32, u32, void*);
-extern void fn_80057E70(void);
-extern void fn_8017B3E4(s32);
-extern s32 fn_8017B2CC(s32);
+extern void pcBoxStreamModels(void);
+extern void fsysStartLoad(s32);
+extern s32 GSresGroupGetState(s32);
 extern void GSresReleaseById(s32);
-extern void fn_800F915C(s32);
-extern void fn_80055B98(s32);
+extern void GSresReleaseOwner(s32);
+extern void pcBoxOpen(s32);
 extern void std078_flagSetFalse(s32);
-extern s32 fn_800576B4(void);
-extern void* fn_800574E0(void);
-extern void fn_800576C4(s32);
-extern void fn_80057458(void*);
-extern s32 fn_80054B1C(s32, s32);
-extern void fn_80055DE0(void);
-extern s32 fn_80055E10(void);
+extern s32 pcBoxGetHoldState(void);
+extern void* pcBoxGetHeld(void);
+extern void pcBoxSetHoldState(s32);
+extern void pcBoxCopyToOtherHeld(void*);
+extern s32 pcBoxSelectCommand(s32, s32);
+extern void menuPartyCloseMenuA3(void);
+extern s32 menuPartyOpenMenuA3(void);
 extern s8 pcboxGetPokemonBoxNbEmptySlot(s32, s8);
 extern void pcboxAddPokemon(s32, void*, s8);
 extern void pokemonInit(void*);
 extern void fadeSet(s32, f32);
-extern s32 fn_80056A78(void);
-extern void fn_80056A80(void);
-extern void fn_80057C9C(void*, void*, s32*);
-extern void fn_80056B74(s32, s32);
-extern void fn_80054760(s32, s32);
-extern void fn_80057A38(void);
-extern void fn_80057A64(void*, s32);
+extern s32 pcBoxGetTab(void);
+extern void pcBoxCloseTabs(void);
+extern void pcBoxRunStatus(void*, void*, s32*);
+extern void pcBoxOpenTabs(s32, s32);
+extern void pcBoxOpenDetail(s32, s32);
+extern void pcBoxCloseHeldWindow(void);
+extern void pcBoxOpenHeldWindow(void*, s32);
 extern void* menuItemBiosGetPtr(s32);
 extern u8 pokemonBiosGetPcboxMark(void*);
 extern void pokemonBiosSetPcboxMark(void*, u8);
-extern s32 fn_8005D3D0(s32);
+extern s32 pcBoxSelectMode(s32);
 extern void GScharCpy(void*, void*);
-extern void fn_80054670(s32);
-extern s32 fn_8005464C(void);
-extern void fn_8005744C(void);
-extern s32 fn_80057428(void);
-extern void fn_800574A8(void);
+extern void menuPartySlotFadeStart(s32);
+extern s32 menuPartySlotFadeDone(void);
+extern void pcBoxHeldFadeStart(void);
+extern s32 pcBoxHeldFadeDone(void);
+extern void pcBoxClearHeld(void);
 extern void* windowSearchID(s32);
-extern u32 fn_8005D738(u8);
-extern void fn_80058804(void*, s32);
-extern void fn_800587D8(void);
-extern void fn_8005471C(void);
+extern u32 pcBoxConfirmRelease(u8);
+extern void pcBoxShowMessage(void*, s32);
+extern void pcBoxCloseMessage(void);
+extern void pcBoxCloseDetail(void);
 
 /* ===== SDA globals ===== */
 extern s32 lbl_8047A598;
@@ -339,8 +339,8 @@ static const char menuCBMsgMultiType[] = "BATTLETYPE_MULTI != _CB.m_eBattleType"
 static inline void menuCBOpenParty(s32 menu, u8* party, void* rules, void* resume)
 {
     extern s32 menuIsCheck(s32);
-    extern s32 fn_8006A7E8(void*);
-    extern void* fn_8006A7C8(void*);
+    extern s32 savedataBattleGetController(void*);
+    extern void* savedataBattleGetParty(void*);
     extern s32 menuOpenCustom(s32, s32, void*, s32, s32, s32, ...);
 
     if ((u8)menuIsCheck(menu)) {
@@ -350,7 +350,7 @@ static inline void menuCBOpenParty(s32 menu, u8* party, void* rules, void* resum
         }
     }
     menuOpenCustom(menu, 0, NULL, 0x10, 0, 4,
-                   fn_8006A7C8(party), fn_8006A7E8(party), rules, resume);
+                   savedataBattleGetParty(party), savedataBattleGetController(party), rules, resume);
 }
 
 /* Both trainer-selection paths repeat this initialization sequence. */
@@ -436,9 +436,9 @@ static inline s32 menuCBResumeYama(u8* rec)
 }
 static inline u8* menuCBWindowWork(void)
 {
-    extern s32 fn_8007162C(void);
+    extern s32 _menuPeekStackDepth(void);
     extern void* windowSearchID(s32);
-    u8* npc = windowSearchID((u16)fn_8007162C());
+    u8* npc = windowSearchID((u16)_menuPeekStackDepth());
     if (npc != NULL) {
         return *(u8**)(npc + 0x20);
     }
@@ -446,18 +446,18 @@ static inline u8* menuCBWindowWork(void)
 }
 static inline s32 menuCBEditRules(s32 cmd)
 {
-    extern s32 fn_8007162C(void);
+    extern s32 _menuPeekStackDepth(void);
     extern s32 _menuPop(void);
     extern s32 menuOpenCustom(s32, s32, void*, s32, s32, s32, ...);
     extern u8* savedataBattleGetRulePtr(void);
     extern u8* savedataBattleGetRuleSlotPtr(s32);
     extern s32 menuGetCursorItemID(s32);
-    extern s32 fn_80088964(void);
-    extern s32 fn_80077EA4(void*, void*);
+    extern s32 menuMemcardTaskA(void);
+    extern s32 menuRuleEqual(void*, void*);
     extern s32 memcardGetFlag41(void);
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
 
-    s32 r = menuOpenCustom(fn_8007162C(), 0, NULL, 0x10, 1, 1, lbl_8047A5A0 + 0x42C0);
+    s32 r = menuOpenCustom(_menuPeekStackDepth(), 0, NULL, 0x10, 1, 1, lbl_8047A5A0 + 0x42C0);
     if (r < 0) {
         cmd = -1;
         return cmd;
@@ -468,16 +468,16 @@ static inline s32 menuCBEditRules(s32 cmd)
         cmd = 0xC0;
         break;
     case 6:
-        if (menuGetCursorItemID(fn_8007162C()) == 0x9FC) {
-            fn_80077E80(lbl_8047A5A0 + 0x42C0, savedataBattleGetRuleSlotPtr(0));
+        if (menuGetCursorItemID(_menuPeekStackDepth()) == 0x9FC) {
+            menuRuleCopy(lbl_8047A5A0 + 0x42C0, savedataBattleGetRuleSlotPtr(0));
             *(s16*)(lbl_8047A5A0 + 0x42C6) = 6;
             break;
         }
         goto c1_apply;
     case 7:
     c1_apply:
-        if ((u8)fn_80077EA4(lbl_8047A5A0 + 0x42C0, savedataBattleGetRulePtr()) == 0) {
-            fn_80077E80(&((ColosseumBattleRules*)((u8*)savedataGetStatus(0, 0xE)))->rules[*(s32*)(((u8*)savedataGetStatus(0, 0xE)) + 8) * 0x54], lbl_8047A5A0 + 0x42C0);
+        if ((u8)menuRuleEqual(lbl_8047A5A0 + 0x42C0, savedataBattleGetRulePtr()) == 0) {
+            menuRuleCopy(&((ColosseumBattleRules*)((u8*)savedataGetStatus(0, 0xE)))->rules[*(s32*)(((u8*)savedataGetStatus(0, 0xE)) + 8) * 0x54], lbl_8047A5A0 + 0x42C0);
             for (;;) {
                 if ((u8)memcardGetFlag41() == 0) {
                     break;
@@ -486,7 +486,7 @@ static inline s32 menuCBEditRules(s32 cmd)
                 if (menuSubOpenYesNo(0, 0x3C, 0x9E, 0) != 0) {
                     break;
                 }
-                if (fn_80088964() >= 0) {
+                if (menuMemcardTaskA() >= 0) {
                     break;
                 }
             }
@@ -509,47 +509,47 @@ static inline s32 menuCBEditRules(s32 cmd)
 #pragma opt_loop_invariants off
 #pragma opt_common_subs off
 void menuColosseumBattleMain(void) {
-    extern s32 fn_8007162C(void);
-    extern s32 fn_80071344(void);
+    extern s32 _menuPeekStackDepth(void);
+    extern s32 _menuReopenTop(void);
     extern s32 _menuPop_80071398();
     extern s32 _menuPop(void);
     extern void _menuPush(s32);
-    extern s32 fn_80071160(void);
+    extern s32 menuFindLiveSaveSlot(void);
     extern s32 menuOpenCustom(s32, s32, void*, s32, s32, s32, ...);
     extern s32 menuIsCheck(s32);
     extern s32 GSinputIsConnected(s32);
-    extern s32 fn_8008ABA0(s32);
+    extern s32 gbaCommIsReady(s32);
     extern u8* savedataBattleGetSavedHero(void*);
-    extern s32 fn_8006A7E8(void*);
-    extern void* fn_8006A7C8(void*);
+    extern s32 savedataBattleGetController(void*);
+    extern void* savedataBattleGetParty(void*);
     extern s32 savedataBattleGetFlagC98B(void*);
-    extern void fn_8006A81C(void*, u32);
-    extern s32 fn_8006A76C(void*);
+    extern void savedataBattleSetTrainerData(void*, u32);
+    extern s32 memcardIsUnavailable(void*);
     extern u8* savedataBattleGetRulePtr(void);
     extern u8* savedataBattleGetRuleSlotPtr(s32);
     extern u8* savedataBattleGetEntryPtr(s32);
     extern u8* savedataBattleGetEntryById(s32);
     extern s32 savedataBattleGetCouponRun(void);
-    extern u32 fn_800FF540(void);
+    extern u32 floorGetPendingLink(void);
     extern u32 std082_flagGetValue(s32);
     extern void* windowSearchID(s32);
     extern s32 windowGetActiveID(void);
     extern u8* windowGetKeyInfo(void);
-    extern s32 fn_80076054(void*, void*);
+    extern s32 menuRuleGetPartyError(void*, void*);
     extern s32 GScharCmp(void*, void*);
-    extern s32 fn_80089028(void);
-    extern u32 fn_80093574(s32);
-    extern s32 fn_800849B4(s32, s32, void*, void*);
+    extern s32 gbaGetConnectionMode(void);
+    extern u32 gbaCommWaitDone(s32);
+    extern s32 cardeTransferUI(s32, s32, void*, void*);
     extern u32 heroBiosGetRnd(void*);
     extern u8* heroBiosGetNamePtr(void*);
     extern s32 menuGetCursorItemID(s32);
     extern u32 gamedatasaveGetStatus(s32, s32);
     extern s32 menuSaveLoadCommitA(void);
-    extern s32 fn_80088964(void);
-    extern s32 fn_80088D84(void);
-    extern s32 fn_800889A4(void);
+    extern s32 menuMemcardTaskA(void);
+    extern s32 menuSaveLoadCommitB(void);
+    extern s32 menuMemcardTaskB(void);
     extern s32 menuRuleCheckPartyAndRule(void*);
-    extern s32 fn_80077EA4(void*, void*);
+    extern s32 menuRuleEqual(void*, void*);
     extern s32 memcardGetFlag41(void);
     extern s8 menuSubOpenYesNo(s32, s32, s32, s32);
     extern void floorChangePos(u32, s32, f32, f32, f32);
@@ -569,22 +569,22 @@ void menuColosseumBattleMain(void) {
     savedataGetStatus(0, 0xE);
     posFlag = 0;
     warpArg = 0;
-    prevCmd = fn_8007162C();
+    prevCmd = _menuPeekStackDepth();
     floorId = 0;
-    if (fn_800FF540() != 0) {
+    if (floorGetPendingLink() != 0) {
         __assert(lbl_802678D8, 0x267, menuCBMsgFloorStack);
     }
     if (std082_flagGetValue(0x8AE) != 0) {
         __assert(lbl_802678D8, 0x268, menuCBMsgStoryMode);
     }
-    while (fn_8007162C() > 0) {
+    while (_menuPeekStackDepth() > 0) {
         s32 mode;
-        first = fn_8007162C();
-        cmd = fn_8007162C();
+        first = _menuPeekStackDepth();
+        cmd = _menuPeekStackDepth();
         menuOpenCustom(0xBE, 0, NULL, 0x10, 0, 1, first);
-        switch (fn_8007162C()) {
+        switch (_menuPeekStackDepth()) {
         case 0xAA: {
-            s32 v = fn_80071344();
+            s32 v = _menuReopenTop();
             if (v < 0) {
                 cmd = -1;
                 break;
@@ -599,13 +599,13 @@ void menuColosseumBattleMain(void) {
         }
         case 0xA8: {
 
-            switch (fn_80071344()) {
+            switch (_menuReopenTop()) {
             case 0:
                 cmd = 0xAC;
                 *(s32*)(WORKP + 4) = 0;
                 *(s32*)(WORKP + 0x10) = 0;
                 *(s32*)(WORKP + 0) = 0;
-                fn_8006A7E0(WORKP + 0x59A8, 0);
+                savedataBattleSetController(WORKP + 0x59A8, 0);
                 break;
             case 1:
                 cmd = 0xB3;
@@ -624,7 +624,7 @@ void menuColosseumBattleMain(void) {
             s32 selection;
             menuSetRuleType(0);
             {
-                s32 v = fn_80071344();
+                s32 v = _menuReopenTop();
                 if (v < 0) {
                     cmd = -1;
                     break;
@@ -689,8 +689,8 @@ void menuColosseumBattleMain(void) {
                 cmd = -1;
                 break;
             }
-            fn_8006A7F0(savedataBattleGetEntryById(1), savedataBattleGetSavedHero(WORKP));
-            if ((u8)fn_8006A76C(WORKP) != 0) {
+            savedataBattleCopyPlayer(savedataBattleGetEntryById(1), savedataBattleGetSavedHero(WORKP));
+            if ((u8)memcardIsUnavailable(WORKP) != 0) {
                 savedataBattleClearFlagC98B(WORKP);
             } else {
                 s32 wasOpen = savedataBattleGetFlagC98B(WORKP);
@@ -728,7 +728,7 @@ void menuColosseumBattleMain(void) {
             s32 v;
             *(s32*)(WORKP + 8) = 2;
             *(s32*)(WORKP + 0) = 0;
-            v = fn_80071344();
+            v = _menuReopenTop();
             switch (v) {
             case 0:
             case 1:
@@ -751,7 +751,7 @@ void menuColosseumBattleMain(void) {
         }
         case 0xAF: {
             u8 playerMode;
-            s32 v = fn_80071344();
+            s32 v = _menuReopenTop();
             if (v < 0) {
                 cmd = -1;
                 break;
@@ -799,7 +799,7 @@ void menuColosseumBattleMain(void) {
             __assert(lbl_802678D8, 0x3C4, (char*)&lbl_8047BF1C);
             break;
         case 0xB0:
-            switch (fn_80071344()) {
+            switch (_menuReopenTop()) {
             case 0:
                 if ((u8)memcardGetFlag41() == 0) {
                     winMsgOpen(2, 0x44EB, 1, 0);
@@ -831,7 +831,7 @@ void menuColosseumBattleMain(void) {
                 menuOpenCustom(0xBE, 0, NULL, 0x10, 0, 1, 0xF5);
                 menuOpenCustom(0xDA, 0, NULL, 0x10, 0, 4, trainer, 0, savedataBattleGetRulePtr(), 0);
                 menuSetPosition(0xDA, 0, -0x28);
-                m = fn_80076054((u8*)trainer, savedataBattleGetRulePtr());
+                m = menuRuleGetPartyError((u8*)trainer, savedataBattleGetRulePtr());
                 if ((u16)m == 0) {
                     __assert(lbl_802678D8, 0x1BB, lbl_80267A20);
                 }
@@ -865,7 +865,7 @@ void menuColosseumBattleMain(void) {
             arr[2] = NULL;
             arr[3] = NULL;
             menuSetRuleType(2);
-            r = fn_800849B4(0, 2, arr, NULL);
+            r = cardeTransferUI(0, 2, arr, NULL);
             menuSetRuleType(0);
             if (r < 0) {
                 _menuPop();
@@ -936,15 +936,15 @@ void menuColosseumBattleMain(void) {
                 if ((u8)memcardGetFlag41() == 0) {
                     soundStartSE(0x26);
                     winMsgOpen(2, 0x3C60, 1, 0);
-                    if (fn_8006A7E8(lbl_8047A5A0) != 0) {
+                    if (savedataBattleGetController(lbl_8047A5A0) != 0) {
                         winMsgOpen(2, 0x3D55, 1, 0);
                     }
-                } else if (fn_800889A4() < 0) {
+                } else if (menuMemcardTaskB() < 0) {
                     memcpy(savedataGetStatus(0, 0xE), lbl_8047A5A0 + 0x4318, 0xCC2C);
-                    if (fn_8006A7E8(lbl_8047A5A0) != 0) {
+                    if (savedataBattleGetController(lbl_8047A5A0) != 0) {
                         winMsgOpen(2, 0x3D55, 1, 0);
                     }
-                } else if (fn_8006A7E8(lbl_8047A5A0) == 0) {
+                } else if (savedataBattleGetController(lbl_8047A5A0) == 0) {
                     winMsgOpen(2, 0x3C5E, 1, 0);
                 } else {
                     winMsgOpen(2, 0x3D44, 1, 0);
@@ -957,7 +957,7 @@ void menuColosseumBattleMain(void) {
                 break;
             }
         b2_cancel:
-            if (fn_8006A7E8(lbl_8047A5A0) != 0) {
+            if (savedataBattleGetController(lbl_8047A5A0) != 0) {
                 winMsgOpen(2, 0x3D55, 1, 0);
                 menuCloseCustom(0xDA, 0, 0);
                 menuWaitFaceSprites();
@@ -1007,7 +1007,7 @@ void menuColosseumBattleMain(void) {
             }
             wm = savedataBattleGetRulePtr();
             menuCBOpenParty(0xDA, (u8*)(void*)cmd, wm, 0);
-            m = fn_80076054((u8*)cmd + 0xB44, savedataBattleGetRulePtr());
+            m = menuRuleGetPartyError((u8*)cmd + 0xB44, savedataBattleGetRulePtr());
             if ((u16)m != 0) {
                 winMsgOpen(1, (u16)m, 1, 0);
                 winMsgClose(1);
@@ -1065,7 +1065,7 @@ void menuColosseumBattleMain(void) {
                         cmd = -1;
                         break;
                     }
-                    if ((u8)fn_8006A76C(WORKP) == 0) {
+                    if ((u8)memcardIsUnavailable(WORKP) == 0) {
                         u8* wm2;
                         menuOpenCustom(0xBE, 0, NULL, 0x10, 0, 1, first);
                         wm2 = savedataBattleGetRulePtr();
@@ -1073,7 +1073,7 @@ void menuColosseumBattleMain(void) {
                     }
                 }
             }
-            if ((u8)fn_8006A76C(WORKP) != 0) {
+            if ((u8)memcardIsUnavailable(WORKP) != 0) {
                 savedataBattleClearFlagC98B(WORKP);
             } else {
                 s32 wasOpen = savedataBattleGetFlagC98B(WORKP);
@@ -1142,7 +1142,7 @@ void menuColosseumBattleMain(void) {
             break;
         }
         case 0xB3: {
-            s32 v = fn_80071344();
+            s32 v = _menuReopenTop();
             if (v < 0) {
                 cmd = -1;
                 break;
@@ -1167,8 +1167,8 @@ void menuColosseumBattleMain(void) {
                 }
                 *(s32*)(WORKP + 4) = *(s32*)e;
                 *(s32*)(WORKP + 0xC) = *(s32*)(e + 4);
-                fn_8006A7E0(WORKP + 0x59A8, *st);
-                fn_8006A81C(WORKP + 0x59A8, e[0xC]);
+                savedataBattleSetController(WORKP + 0x59A8, *st);
+                savedataBattleSetTrainerData(WORKP + 0x59A8, e[0xC]);
                 {
                     u32 offset;
                     s8* p;
@@ -1177,8 +1177,8 @@ void menuColosseumBattleMain(void) {
                     i = 1;
                     offset = 0x1660;
                     for (; i < 4; i++) {
-                        fn_8006A7E0((WORKP + offset + 0x59A8), 1);
-                        fn_8006A81C((WORKP + offset + 0x59A8), p[0xC]);
+                        savedataBattleSetController((WORKP + offset + 0x59A8), 1);
+                        savedataBattleSetTrainerData((WORKP + offset + 0x59A8), p[0xC]);
                         offset += 0x1660;
                         p += 1;
                     }
@@ -1199,10 +1199,10 @@ void menuColosseumBattleMain(void) {
             if (prevCmd == 0xC1) {
                 mode = 7;
             } else {
-                fn_80077E80(lbl_8047A5A0 + 0x42C0, savedataBattleGetRulePtr());
+                menuRuleCopy(lbl_8047A5A0 + 0x42C0, savedataBattleGetRulePtr());
             }
             for (;;) {
-                r = menuOpenCustom(fn_8007162C(), 0, &mode, 0x10, 1, 1, lbl_8047A5A0 + 0x42C0);
+                r = menuOpenCustom(_menuPeekStackDepth(), 0, &mode, 0x10, 1, 1, lbl_8047A5A0 + 0x42C0);
                 if (r < 0) {
                     cmd = -1;
                     goto c0_end;
@@ -1241,7 +1241,7 @@ void menuColosseumBattleMain(void) {
             __assert(lbl_802678D8, 0x5F5, (char*)&lbl_8047BF1C);
             break;
         case 0xBF: {
-            s32 v = fn_80071344();
+            s32 v = _menuReopenTop();
             switch (v) {
             case 0:
             case 1:
@@ -1267,14 +1267,14 @@ void menuColosseumBattleMain(void) {
             break;
         }
         case 0xC2:
-            switch (fn_80071344()) {
+            switch (_menuReopenTop()) {
             case 0:
                 _menuPop();
                 if (*(s32*)(WORKP + 0x10) != 4) {
                     cmd = 0xB1;
                     break;
                 }
-                if ((u8)fn_80089028() != 0) {
+                if ((u8)gbaGetConnectionMode() != 0) {
                     cmd = 0xE4;
                     break;
                 }
@@ -1321,7 +1321,7 @@ void menuColosseumBattleMain(void) {
                 arr[3] = lbl_8047A5A0 + 0x37A8;
                 break;
             }
-            r = fn_800849B4(mode2, 0x1A, arr, NULL);
+            r = cardeTransferUI(mode2, 0x1A, arr, NULL);
             if (r < 0) {
                 cmd = _menuPop_80071398(0xB3);
                 break;
@@ -1335,14 +1335,14 @@ void menuColosseumBattleMain(void) {
                 menuCBBiosInitHero(WORKP + 0x59A8, lbl_8047A5A0 + 0x1660);
                 menuCBBiosInitHero(WORKP + 0x7008, lbl_8047A5A0 + 0x2178);
                 if (*(s32*)(WORKP + 0x59AC) == 0) {
-                    fn_8006A81C(WORKP + 0x59A8, 1);
-                    fn_8006A81C(WORKP + 0x7008, 2);
+                    savedataBattleSetTrainerData(WORKP + 0x59A8, 1);
+                    savedataBattleSetTrainerData(WORKP + 0x7008, 2);
                 } else {
-                    fn_8006A81C(WORKP + 0x59A8, 2);
-                    fn_8006A81C(WORKP + 0x7008, 3);
+                    savedataBattleSetTrainerData(WORKP + 0x59A8, 2);
+                    savedataBattleSetTrainerData(WORKP + 0x7008, 3);
                 }
-                fn_8006A81C(WORKP + 0x8668, 0);
-                fn_8006A81C(WORKP + 0x9CC8, 0);
+                savedataBattleSetTrainerData(WORKP + 0x8668, 0);
+                savedataBattleSetTrainerData(WORKP + 0x9CC8, 0);
                 break;
             case 2:
             default:
@@ -1350,10 +1350,10 @@ void menuColosseumBattleMain(void) {
                 menuCBBiosInitHero(WORKP + 0x7008, lbl_8047A5A0 + 0x2178);
                 menuCBBiosInitHero(WORKP + 0x8668, lbl_8047A5A0 + 0x2C90);
                 menuCBBiosInitHero(WORKP + 0x9CC8, lbl_8047A5A0 + 0x37A8);
-                fn_8006A81C(WORKP + 0x59A8, 1);
-                fn_8006A81C(WORKP + 0x7008, 2);
-                fn_8006A81C(WORKP + 0x8668, 3);
-                fn_8006A81C(WORKP + 0x9CC8, 4);
+                savedataBattleSetTrainerData(WORKP + 0x59A8, 1);
+                savedataBattleSetTrainerData(WORKP + 0x7008, 2);
+                savedataBattleSetTrainerData(WORKP + 0x8668, 3);
+                savedataBattleSetTrainerData(WORKP + 0x9CC8, 4);
                 break;
             }
             cmd = 0xB6;
@@ -1368,12 +1368,12 @@ void menuColosseumBattleMain(void) {
                     *(u8*)(WORKP + i * 0x1660 + 0x7005) = 0;
                 }
             }
-            v = fn_80071344();
+            v = _menuReopenTop();
             if (v < 0) {
-                s32 e = fn_80071160();
+                s32 e = menuFindLiveSaveSlot();
                 switch (e) {
                 case 0:
-                    if ((u8)fn_8008ABA0(1) != 0) {
+                    if ((u8)gbaCommIsReady(1) != 0) {
                         winMsgOpen(2, 0x4445, 1, 0);
                         while ((u8)GSinputIsConnected(1) == 0) {
                             _threadSwitch();
@@ -1395,7 +1395,7 @@ void menuColosseumBattleMain(void) {
                 }
                 winMsgClose(1);
                 if ((u8)GSinputIsConnected(1) == 0) {
-                    winMsgOpen(2, (u8)fn_8008ABA0(1) ? 0x4445 : 0x3C4F, 1, 0);
+                    winMsgOpen(2, (u8)gbaCommIsReady(1) ? 0x4445 : 0x3C4F, 1, 0);
                     while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
@@ -1407,10 +1407,10 @@ void menuColosseumBattleMain(void) {
             r = menuOpen(0xD0, 1);
             menuClose(0xD0);
             if (r < 0) {
-                s32 e = fn_80071160();
+                s32 e = menuFindLiveSaveSlot();
                 switch (e) {
                 case 0:
-                    if ((u8)fn_8008ABA0(1) != 0) {
+                    if ((u8)gbaCommIsReady(1) != 0) {
                         winMsgOpen(2, 0x4445, 1, 0);
                         while ((u8)GSinputIsConnected(1) == 0) {
                             _threadSwitch();
@@ -1432,7 +1432,7 @@ void menuColosseumBattleMain(void) {
                 }
                 winMsgClose(1);
                 if ((u8)GSinputIsConnected(1) == 0) {
-                    winMsgOpen(2, (u8)fn_8008ABA0(1) ? 0x4445 : 0x3C4F, 1, 0);
+                    winMsgOpen(2, (u8)gbaCommIsReady(1) ? 0x4445 : 0x3C4F, 1, 0);
                     while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
@@ -1450,7 +1450,7 @@ void menuColosseumBattleMain(void) {
             break;
         }
         case 0xB5: {
-            s32 v = fn_80071344();
+            s32 v = _menuReopenTop();
             cmd = 0xD1;
             switch (v) {
             case 0:
@@ -1469,10 +1469,10 @@ void menuColosseumBattleMain(void) {
             case -1:
             case 3:
             default: {
-                s32 e = fn_80071160();
+                s32 e = menuFindLiveSaveSlot();
                 switch (e) {
                 case 0:
-                    if ((u8)fn_8008ABA0(1) != 0) {
+                    if ((u8)gbaCommIsReady(1) != 0) {
                         winMsgOpen(2, 0x4445, 1, 0);
                         while ((u8)GSinputIsConnected(1) == 0) {
                             _threadSwitch();
@@ -1494,7 +1494,7 @@ void menuColosseumBattleMain(void) {
                 }
                 winMsgClose(1);
                 if ((u8)GSinputIsConnected(1) == 0) {
-                    winMsgOpen(2, (u8)fn_8008ABA0(1) ? 0x4445 : 0x3C4F, 1, 0);
+                    winMsgOpen(2, (u8)gbaCommIsReady(1) ? 0x4445 : 0x3C4F, 1, 0);
                     while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
@@ -1532,17 +1532,17 @@ void menuColosseumBattleMain(void) {
                     winMsgClose(1);
                     break;
                 }
-                fn_8002D91C(0xB);
+                shopRunAtLocation(0xB);
                 break;
             case 1:
-                if ((u8)fn_8008ABA0(1) != 0) {
+                if ((u8)gbaCommIsReady(1) != 0) {
                     winMsgOpen(2, 0x4445, 1, 0);
                     while ((u8)GSinputIsConnected(1) == 0) {
                         _threadSwitch();
                     }
                     winMsgClose(1);
                 }
-                fn_8002D91C(0xC);
+                shopRunAtLocation(0xC);
                 break;
             case -1:
             default:
@@ -1565,8 +1565,8 @@ void menuColosseumBattleMain(void) {
                     goto quit105;
                 }
                 savedataBattleSetCouponRun(0);
-                if (fn_8006A7E8((void*)cmd) == 0) {
-                    if ((u8)fn_8006A76C(WORKP) != 0) {
+                if (savedataBattleGetController((void*)cmd) == 0) {
+                    if ((u8)memcardIsUnavailable(WORKP) != 0) {
                         goto quit105;
                     }
                     couponAmount = coins;
@@ -1574,7 +1574,7 @@ void menuColosseumBattleMain(void) {
                     for (;;) {
                         winMsgOpen(2, 0x3C03, 1, 0);
                         if (menuSubOpenYesNo(0, 0x3C, 0x9E, 0) == 0) {
-                            if (fn_80088D84() >= 0) {
+                            if (menuSaveLoadCommitB() >= 0) {
                                 goto quit105;
                             }
                             continue;
@@ -1602,7 +1602,7 @@ void menuColosseumBattleMain(void) {
                         arr2[1] = lbl_8047A5A0 + 0x1660;
                         arr2[2] = NULL;
                         arr2[3] = NULL;
-                        r = fn_800849B4(0, 0x40, arr2, money);
+                        r = cardeTransferUI(0, 0x40, arr2, money);
                         if (r < 0) {
                             continue;
                         }
@@ -1623,9 +1623,9 @@ void menuColosseumBattleMain(void) {
                         if (money[1] > 9999999) {
                             money[1] = 9999999;
                         }
-                        fn_80093574(1);
+                        gbaCommWaitDone(1);
                         gbaCommStartSendPokemon(1, money, 0);
-                        if ((s32)fn_80093574(1) == 0xC) {
+                        if ((s32)gbaCommWaitDone(1) == 0xC) {
                             winMsgOpen(7, 0x3D52, 1, 0);
                             break;
                         }
@@ -1642,7 +1642,7 @@ void menuColosseumBattleMain(void) {
                     }
                     break;
                 }
-                if ((u8)fn_8006A76C(savedataGetStatus(0, 0xE)) == 0) {
+                if ((u8)memcardIsUnavailable(savedataGetStatus(0, 0xE)) == 0) {
                     do {
                         winMsgOpen(2, 0x44EC, 1, 0);
                         if (menuSubOpenYesNo(0, 0x3C, 0x9E, 0) != 0) {
@@ -1668,7 +1668,7 @@ void menuColosseumBattleMain(void) {
         default:
             break;
         }
-        if ((u8)GSinputIsConnected(1) == 0 && (u8)fn_8008ABA0(1) == 0) {
+        if ((u8)GSinputIsConnected(1) == 0 && (u8)gbaCommIsReady(1) == 0) {
             winMsgOpen(2, 0x3C4F, 1, 0);
             while ((u8)GSinputIsConnected(1) == 0) {
                 _threadSwitch();
@@ -1682,22 +1682,22 @@ void menuColosseumBattleMain(void) {
             if (r < 0) {
                 goto done;
             }
-        } else if (cmd != fn_8007162C()) {
-            s32 r = fn_8007162C();
+        } else if (cmd != _menuPeekStackDepth()) {
+            s32 r = _menuPeekStackDepth();
             s32 active = windowGetActiveID();
             if (active == r) {
-                menuCloseCustom(fn_8007162C(), 0, 0);
+                menuCloseCustom(_menuPeekStackDepth(), 0, 0);
             }
             menuCloseCustom(0xBE, 0, 1);
             _menuPush(cmd);
         }
         if (floorId != 0) {
-            s32 r = fn_8007162C();
+            s32 r = _menuPeekStackDepth();
             s32 active = windowGetActiveID();
             if (active != r) {
                 goto done;
             }
-            menuCloseCustom(fn_8007162C(), 0, 0);
+            menuCloseCustom(_menuPeekStackDepth(), 0, 0);
             menuCloseCustom(0xBE, 0, 1);
             goto done;
         }
@@ -1713,7 +1713,7 @@ done:
         if (floorId == 0x3A1) {
             menuColosseumBattleClearFlag();
             if ((u8)GSinputIsConnected(1) == 0) {
-                winMsgOpen(2, (u8)fn_8008ABA0(1) ? 0x4445 : 0x3C4F, 1, 0);
+                winMsgOpen(2, (u8)gbaCommIsReady(1) ? 0x4445 : 0x3C4F, 1, 0);
                 while ((u8)GSinputIsConnected(1) == 0) {
                     _threadSwitch();
                 }
@@ -1778,7 +1778,7 @@ void menuColosseumBattleInit(void)
     extern void GSresGetResource(void* archive, void* destination);
     extern void cameraPlayAnime(s32 id, u32 data, s32 start, s32 loop);
     extern void GSscene_SetMode(s32 mode);
-    extern u8 fn_800FF548(void);
+    extern u8 floorGetFadeOutFlag(void);
     extern void toolentryDebugPokemonCreate(void);
     extern void menuColosseumBattleSetup(void* status);
     u8* strings;
@@ -1809,7 +1809,7 @@ void menuColosseumBattleInit(void)
         archive, ((ColosseumMenuHeap*)lbl_8047A5A0)->resourceHandle);
     cameraPlayAnime(0x531, 0x0FFF1800, 0, 1);
     GSscene_SetMode(4);
-    if (fn_800FF548() == 0) {
+    if (floorGetFadeOutFlag() == 0) {
         toolentryDebugPokemonCreate();
         menuColosseumBattleSetup(savedataGetStatus(0, 0xE));
     }

@@ -66,7 +66,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern int  fadeSet();
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();
@@ -103,11 +103,11 @@ static inline u16 toolentryCountValidPokemon(s32 player) {
 }
 
 static inline u16 toolentryEntryPokemonNum(s32 player) {
-    extern u32 fn_8006B1D4(void);
+    extern u32 menuTaisenGetEntryCount(void);
     u16 limit;
     u16 num;
 
-    limit = fn_8006B1D4();
+    limit = menuTaisenGetEntryCount();
     num = toolentryCountValidPokemon(player);
     if (num < limit) {
         return num;
@@ -276,10 +276,10 @@ u32 couponAddFromResult(void)
 {
     extern u32 savedataBattleGetCouponRun();
     extern void savedataBattleGetSavedHero();
-    extern void* fn_8006B5A8();
+    extern void* battleResultGetSave();
     extern void heroAddPokecoupon();
     u32 uVar1;
-  fn_8006B5A8();
+  battleResultGetSave();
   savedataBattleGetSavedHero();
   uVar1 = savedataBattleGetCouponRun();
   heroAddPokecoupon(0,uVar1);
@@ -351,7 +351,7 @@ s32 couponCalcEarned(void) {
     extern f32 lbl_8047E658;
     extern f32 lbl_8047E65C;
     extern u8* savedataBattleGetEntryPtr(void*);
-    extern void* fn_8006B5A8();
+    extern void* battleResultGetSave();
     extern u16 pokemonBiosGetPokemonDataId(void*);
     extern u8 pokemonCheckValid(void*);
     extern void* heroBiosGetPokemonPtr(void*, u16);
@@ -370,9 +370,9 @@ s32 couponCalcEarned(void) {
     f32 factor;
 
     count = 0;
-    level = *(s32*)((u8*)fn_8006B5A8() + 0xc);
-    type = *(s32*)fn_8006B5A8();
-    wins = *(s32*)((u8*)fn_8006B5A8() + 0x14);
+    level = *(s32*)((u8*)battleResultGetSave() + 0xc);
+    type = *(s32*)battleResultGetSave();
+    wins = *(s32*)((u8*)battleResultGetSave() + 0x14);
     for (i = 0; i < 6; i++) {
         member = heroBiosGetPokemonPtr(savedataBattleGetEntryPtr(0) + 0xb44, i);
         if (pokemonCheckValid(member)) {
@@ -428,7 +428,7 @@ u32 toolentryTaisenGetControlerType(void* ctx) { return *(u32*)((u8*)savedataBat
 u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
     extern u32 lbl_80478E04;
     extern void* savedataBattleGetEntryPtr(void*);
-    extern u32 fn_801FCBA4(void);
+    extern u32 fightTrainerDataBiosGetStatus09(void);
     extern void fightTrainerDataBiosGetPtr(u32);
     u32 id;
     u32 base;
@@ -441,7 +441,7 @@ u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
         return 0;
     }
     fightTrainerDataBiosGetPtr(id);
-    offset = fn_801FCBA4();
+    offset = fightTrainerDataBiosGetStatus09();
     offset *= 0x14;
     base = lbl_80478E04;
     entry = (u32*)(base + offset);
@@ -463,7 +463,7 @@ u32 toolentryGetTrainerSamllFaceResID(void* ctx, u32 param1, u32 param2) {
 u32 toolentryGetTrainerBicFaceResID(void* ctx, u32 param1, u32 param2) {
     extern u32 lbl_80478E04;
     extern void* savedataBattleGetEntryPtr(void*);
-    extern u32 fn_801FCBA4(void);
+    extern u32 fightTrainerDataBiosGetStatus09(void);
     extern void fightTrainerDataBiosGetPtr(u32);
     u16 id16;
     u32 id;
@@ -482,7 +482,7 @@ u32 toolentryGetTrainerBicFaceResID(void* ctx, u32 param1, u32 param2) {
         return 0;
     }
     fightTrainerDataBiosGetPtr(id);
-    offset = fn_801FCBA4();
+    offset = fightTrainerDataBiosGetStatus09();
     offset *= 0x14;
     base = lbl_80478E04;
     entry = (u32*)(base + offset);
@@ -656,8 +656,8 @@ u16 toolentryTaisenGetEntryPokemonNum(void* ctx, u32 param1, u32 param2) {
     u16 limit;
     u16 num;
 
-    extern u32 fn_8006B1D4(void);
-    limit = fn_8006B1D4();
+    extern u32 menuTaisenGetEntryCount(void);
+    limit = menuTaisenGetEntryCount();
     num = toolentryCountValidPokemon((s32)ctx);
     if (num < limit) {
         return num;
@@ -729,20 +729,20 @@ u32 toolentryTaisenGetPokemonPtr(u32 r3, u16 r4)
 
 
 /* Address: 0x8025D9A8 | Size: 0x24 | Pattern: null_check_getter */
-extern void* fn_8006B5A8(void*);
-u32 battleResultGet00(void* ctx) { return *(u32*)fn_8006B5A8(ctx); }
+extern void* battleResultGetSave(void*);
+u32 battleResultGet00(void* ctx) { return *(u32*)battleResultGetSave(ctx); }
 
 /* Address: 0x8025D9CC | Size: 0x24 | Pattern: null_check_getter */
-u32 battleResultGet10(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x10); }
+u32 battleResultGet10(void* ctx) { return *(u32*)((u8*)battleResultGetSave(ctx) + 0x10); }
 
 /* Address: 0x8025D9F0 | Size: 0x28 | Ghidra import */
 u32 toolentryTaisenGetHomePlace(void)
 {
-    extern u32 fn_8006A7E8();
+    extern u32 savedataBattleGetController();
     extern void* savedataBattleGetEntryPtr();
     u16 uVar1;
   savedataBattleGetEntryPtr();
-  uVar1 = fn_8006A7E8();
+  uVar1 = savedataBattleGetController();
   return uVar1;
 }
 
@@ -750,18 +750,18 @@ u32 toolentryTaisenGetHomePlace(void)
 /* Address: 0x8025DA18 | Size: 0x24 | Pattern: accessor */
 u32 toolentryTaisenGetBattlePlayerID(void* ctx) {
     extern void* savedataBattleGetEntryPtr(void*);
-    extern u32 fn_8006A7D8(void);
+    extern u32 savedataBattleGetPlayerId(void);
 
     savedataBattleGetEntryPtr(ctx);
-    return fn_8006A7D8();
+    return savedataBattleGetPlayerId();
 }
 
 /* toolentryTaisenGetEntryPlayerNum | Size: 0x4C | Get battle party size based on mode */
 u32 toolentryTaisenGetEntryPlayerNum(void) {
     s32 mode;
     u32 res;
-    extern void* fn_8006B5A8(void);
-    void* result = fn_8006B5A8();
+    extern void* battleResultGetSave(void);
+    void* result = battleResultGetSave();
     res = 2;
     mode = *(s32*)((u8*)result + 0x4);
     switch (mode) {
@@ -777,20 +777,20 @@ u32 toolentryTaisenGetEntryPlayerNum(void) {
 }
 
 /* Address: 0x8025DA88 | Size: 0x24 | Pattern: null_check_getter */
-u32 toolentryTaisenGetBattleType(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x4); }
+u32 toolentryTaisenGetBattleType(void* ctx) { return *(u32*)((u8*)battleResultGetSave(ctx) + 0x4); }
 
 /* Address: 0x8025DAAC | Size: 0x24 | Pattern: null_check_getter */
-u32 battleResultGet0C(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0xc); }
+u32 battleResultGet0C(void* ctx) { return *(u32*)((u8*)battleResultGetSave(ctx) + 0xc); }
 
 /* Address: 0x8025DAD0 | Size: 0x24 | Pattern: null_check_getter */
-u32 battleResultGet08(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x8); }
+u32 battleResultGet08(void* ctx) { return *(u32*)((u8*)battleResultGetSave(ctx) + 0x8); }
 
 /* Address: 0x8025DAF4 | Size: 0x38 | Ghidra import */
 u32 battleResultDec18(void)
 {
-    extern void* fn_8006B5A8();
+    extern void* battleResultGetSave();
     u32 uVar1;
-    uVar1 = (u32)fn_8006B5A8();
+    uVar1 = (u32)battleResultGetSave();
     if (*(u32 *)(uVar1 + 0x18) != 0) {
         *(u32 *)(uVar1 + 0x18) = *(u32 *)(uVar1 + 0x18) - 1;
     }
@@ -801,29 +801,29 @@ u32 battleResultDec18(void)
 /* Address: 0x8025DB2C | Size: 0x30 | Ghidra import */
 u32 battleResultInc18(void)
 {
-    extern void* fn_8006B5A8();
+    extern void* battleResultGetSave();
     int iVar1;
-  iVar1 = (int)fn_8006B5A8();
+  iVar1 = (int)battleResultGetSave();
   *(int *)(iVar1 + 0x18) = *(int *)(iVar1 + 0x18) + 1;
   return *(u32 *)(iVar1 + 0x18);
 }
 
 
 /* Address: 0x8025DB5C | Size: 0x24 | Pattern: null_check_getter */
-u32 battleResultGet18(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x18); }
+u32 battleResultGet18(void* ctx) { return *(u32*)((u8*)battleResultGetSave(ctx) + 0x18); }
 
 /* Address: 0x8025DB80 | Size: 0x30 | Ghidra import */
 u32 battleResultInc14(void)
 {
-    extern void* fn_8006B5A8();
+    extern void* battleResultGetSave();
     int iVar1;
-  iVar1 = (int)fn_8006B5A8();
+  iVar1 = (int)battleResultGetSave();
   *(int *)(iVar1 + 0x14) = *(int *)(iVar1 + 0x14) + 1;
   return *(u32 *)(iVar1 + 0x14);
 }
 
 
 /* Address: 0x8025DBB0 | Size: 0x24 | Pattern: null_check_getter */
-u32 battleResultGet14(void* ctx) { return *(u32*)((u8*)fn_8006B5A8(ctx) + 0x14); }
+u32 battleResultGet14(void* ctx) { return *(u32*)((u8*)battleResultGetSave(ctx) + 0x14); }
 
 #endif /* carve guards */

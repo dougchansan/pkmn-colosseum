@@ -54,7 +54,7 @@ void wazaSequenceFree(void* obj)
 {
     extern void fn_800E24B0(u16 handle);
     extern void GSmemFree(u16 handle);
-    extern void fn_800F9210(u32, u32);
+    extern void GSresReleaseOwnerItem(u32, u32);
     extern void gsParticleKillAll(void*);
     extern void GSeffectFree(u32);
     extern void GSlogWrite(const char*, ...);
@@ -88,10 +88,10 @@ void wazaSequenceFree(void* obj)
             case 2:
                 if (node->resourceGroup != 0) {
                     if (node->resourceA != 0) {
-                        fn_800F9210(node->resourceGroup, node->resourceA);
+                        GSresReleaseOwnerItem(node->resourceGroup, node->resourceA);
                     }
                     if (node->resourceB != 0) {
-                        fn_800F9210(node->resourceGroup, node->resourceB);
+                        GSresReleaseOwnerItem(node->resourceGroup, node->resourceB);
                     }
                 }
                 break;
@@ -104,7 +104,7 @@ void wazaSequenceFree(void* obj)
                 } else {
                     if (node->resource != NULL) {
                         gsParticleKillAll(node->resource);
-                        fn_800F9210(node->resourceGroup, node->resourceA);
+                        GSresReleaseOwnerItem(node->resourceGroup, node->resourceA);
                     }
                 }
                 node->field_8C = 0;
@@ -134,10 +134,10 @@ void wazaSequenceFree(void* obj)
 
     if (sequence->resourceGroup != 0) {
         if (sequence->resourceB != 0) {
-            fn_800F9210(sequence->resourceGroup, sequence->resourceB);
+            GSresReleaseOwnerItem(sequence->resourceGroup, sequence->resourceB);
         }
         if (sequence->resourceA != 0) {
-            fn_800F9210(sequence->resourceGroup, sequence->resourceA);
+            GSresReleaseOwnerItem(sequence->resourceGroup, sequence->resourceA);
         }
     }
 

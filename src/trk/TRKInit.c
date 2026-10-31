@@ -9,13 +9,13 @@ extern u32 fn_800C0E60(void); /* __TRK_get_MSR */
 u32 TRKTargetTranslate(u32 addr);
 extern u8 gTRKInterruptVectorTable[];
 extern u32 lbl_80313848[];
-extern void* fn_80003488(void* dst, const void* src, u32 length);
+extern void* TRK_memcpy(void* dst, const void* src, u32 length);
 extern void TRK_flush_cache(void* address, u32 length);
 
 static inline void TRK_copy_vector(u32 offset) {
     void* destination = (void*)TRKTargetTranslate(offset);
 
-    fn_80003488(destination, gTRKInterruptVectorTable + offset, 0x100);
+    TRK_memcpy(destination, gTRKInterruptVectorTable + offset, 0x100);
     TRK_flush_cache(destination, 0x100);
 }
 
@@ -270,7 +270,7 @@ void TRK__write_aram(register int c, register u32 p2, void* p3) {
         while (!__ARGetInterruptStatus()) {
         }
 
-        fn_80003488((void*)c, buff, counter);
+        TRK_memcpy((void*)c, buff, counter);
         __dcbf((void*)c, 0);
     }
 
@@ -288,7 +288,7 @@ void TRK__write_aram(register int c, register u32 p2, void* p3) {
             }
         }
         g = c + p2;
-        fn_80003488((void*)g, (void*)(buff + counter), 0x20 - counter);
+        TRK_memcpy((void*)g, (void*)(buff + counter), 0x20 - counter);
 
         __dcbf((void*)g, 0);
     }

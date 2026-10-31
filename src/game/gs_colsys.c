@@ -4,18 +4,18 @@
  *        matched leaf helpers. 0x8010C364-0x8010CBD0 (16 fns, 9 matched).
  *
  * Real matched functions (100%, byte-identical -- do not touch):
- *   fn_8010C364  -- returns 1 after a GStexture-invalidation trigger call
- *   fn_8010C46C, zokuseiDataBiosGetCategory, fn_8010C4D4, zokuseiDataBiosGetAisyou
+ *   menuFaceFreeTexture  -- returns 1 after a GStexture-invalidation trigger call
+ *   wazaDataGetName, zokuseiDataBiosGetCategory, wazaDataGetDesc, zokuseiDataBiosGetAisyou
  *                -- surface-type table (lbl_8035B500) field readers /
  *                   type-vs-type interaction lookup
  *   GScolsy2UtilGetSidePlanePoint -- 3-component dot product (now its own
  *                   unit, GScolsys2Util_exact_8010C77C.c)
  *   GScolsys2GetObjEnable, GScolsys2SetObjEnable -- active-layer per-triangle visibility
  *                   flag get/set (via lbl_80404C68)
- *   fn_8010CBC0  -- returns the first word of lbl_80404C68
+ *   GScolsys2GetCurFloor_8010CBC0  -- returns the first word of lbl_80404C68
  *
  * Still unmatched (honest TODO stubs, no evidence for real names):
- *   fn_8010C388, _menuFaceBiosGetPtr__FUs, zokuseiGetAisyouScore, zokuseiGetAisyouDualType,
+ *   menuFaceIsPokemon, _menuFaceBiosGetPtr__FUs, zokuseiGetAisyouScore, zokuseiGetAisyouDualType,
  *   zokuseiGetWazaJoutai, colsysMakeRotMatrix, colsysMakeSRTMatrix
  *
  * A prior campaign-generation transplant had attached a ~1600-line
@@ -46,7 +46,7 @@
 #include "game/gs_colsys.h"
 
 /* ===== External SDK / engine functions ===== */
-extern void  GStextureFree(void);                        /* GStexture trigger (fn_8010C364) */
+extern void  GStextureFree(void);                        /* GStexture trigger (menuFaceFreeTexture) */
 extern void PSMTXIdentity(Mtx m);
 extern void PSMTXCopy(const Mtx src, Mtx dst);
 extern void PSMTXConcat(const Mtx left, const Mtx right, Mtx out);
@@ -92,7 +92,7 @@ extern GSColSysState lbl_80404C68;
  * their own units (GS_COLSYS_WHOLE_RANGE is never defined). */
 #if defined(GS_COLSYS_WHOLE_RANGE)
 /* 0x8010C220 | 0x4 | void_stub */
-void fn_8010C220(void) {
+void mainNop_8010C220(void) {
 }
 
 /* 0x8010C224 | 0x140 */
@@ -104,7 +104,7 @@ void menuFaceInit(void) {
 
 #if !defined(GS_COLSYS_CANDIDATE_8010C46C)
 /* 0x8010C364 | 0x24 */
-s32 fn_8010C364(void) {
+s32 menuFaceFreeTexture(void) {
     GStextureFree();
     return 1;
 }
@@ -116,7 +116,7 @@ extern char lbl_80272000[];
 extern char lbl_8035B4E8[];
 extern void GSlogWrite(char*, char*, ...);
 
-u32 fn_8010C388(u16 idx) {
+u32 menuFaceIsPokemon(u16 idx) {
     u8* entry;
     u16 i = idx;
 
@@ -156,7 +156,7 @@ void* _menuFaceBiosGetPtr__FUs(u16 idx) {
 
 #if defined(GS_COLSYS_CANDIDATE_8010C46C)
 /* 0x8010C46C | 0x34 */
-u16 fn_8010C46C(u16 typeIndex) {
+u16 wazaDataGetName(u16 typeIndex) {
     if (typeIndex >= lbl_80478B38) {
         return 0;
     }
@@ -172,7 +172,7 @@ u8 zokuseiDataBiosGetCategory(u16 typeIndex) {
 }
 
 /* 0x8010C4D4 | 0x34 */
-u32 fn_8010C4D4(u16 typeIndex) {
+u32 wazaDataGetDesc(u16 typeIndex) {
     if (typeIndex >= lbl_80478B38) {
         return 0;
     }
@@ -443,7 +443,7 @@ s32 colsysMakeSRTMatrix(Mtx out, u32 triIndex) {
 }
 
 /* 0x8010CBC0 | 0x10 */
-u32 fn_8010CBC0(void) {
+u32 GScolsys2GetCurFloor_8010CBC0(void) {
     return *(u32*)&lbl_80404C68;
 }
 
@@ -464,12 +464,12 @@ void GScolsys2UnloadCCD(void) {
 }
 
 /* 0x8010CC54 | 0x118 */
-void fn_8010CC54(void) {
+void GScolsys2ClearHitFlags(void) {
     /* TODO: match -- 280 bytes at 0x8010CC54 */
 }
 
 /* 0x8010CD6C | 0x98 */
-void fn_8010CD6C(void) {
+void GScolsys2CopyTriangles(void) {
     /* TODO: match -- 152 bytes at 0x8010CD6C */
 }
 
@@ -479,12 +479,12 @@ void fn_8010CE04(void) {
 }
 
 /* 0x8010CFE4 | 0x54 */
-void fn_8010CFE4(void) {
+void GScolsys2SetFloor(void) {
     /* TODO: match -- 84 bytes at 0x8010CFE4 */
 }
 
 /* 0x8010D038 | 0x2C */
-s32 fn_8010D038(void) {
+s32 GScolsys2PopFloor(void) {
     s32 layer;
 
     layer = COL_LAYER_IDX;
@@ -496,12 +496,12 @@ s32 fn_8010D038(void) {
 }
 
 /* 0x8010D064 | 0x10C */
-void fn_8010D064(void) {
+void GScolsys2PushFloor(void) {
     /* TODO: match -- 268 bytes at 0x8010D064 */
 }
 
 /* 0x8010D170 | 0x9C */
-void fn_8010D170(void) {
+void GScolsys2Init(void) {
     /* TODO: match -- 156 bytes at 0x8010D170 */
 }
 
@@ -516,7 +516,7 @@ void GScolsys2Draw(void) {
 }
 
 /* 0x8010D8D4 | 0x52C */
-void fn_8010D8D4(void) {
+void colsysDebugDraw(void) {
     /* TODO: match -- 1324 bytes at 0x8010D8D4 */
 }
 

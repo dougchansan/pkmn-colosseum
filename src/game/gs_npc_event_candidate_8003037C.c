@@ -5,12 +5,12 @@ extern void msgctrlSetValue(s32 paramId, s32 value);
 extern void GSmsgPrintColor(s32, s32, u32, u16);
 extern u8 lbl_803A2688[];
 
-void fn_8003037C(u32 r3, u32* r4)
+void menuDBDrawItem2(u32 r3, u32* r4)
 {
     r4[0x4C / 4] = 0x43E2;
 }
 
-void fn_80030388(u8* r3, u8* r4)
+void menuDBDrawText(u8* r3, u8* r4)
 {
     u32 flags = *(u32*)(r4 + 0x64);
     s32 evtype = *(s16*)(r4 + 0x6);
@@ -30,6 +30,6 @@ void fn_80030388(u8* r3, u8* r4)
     }
 }
 
-void fn_80030428(void)
+void menuDBDrawItem3(void)
 {
 }

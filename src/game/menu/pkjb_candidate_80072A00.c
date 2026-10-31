@@ -2,7 +2,7 @@
  * @file pkjb_candidate_80072A00.c
  * @brief pkjb_uploader.c carve, 0x80072A00 - 0x80072C74.
  *
- * fn_80072A00: command 0x60, then ping with 0xAA until the GBA answers
+ * gbaCmdPing60: command 0x60, then ping with 0xAA until the GBA answers
  * (3 s), with the key state held.
  *
  * The earlier pkjbWait60 inline form was 99.7%: the key channel and the
@@ -41,7 +41,7 @@ static inline void pkjbWaitPing(s32 chan, s32* result)
 }
 
 /* 0x80072A00 | 0x274 */
-s32 fn_80072A00(s32 chan)
+s32 gbaCmdPing60(s32 chan)
 {
     s32 key;
     s32 result;
@@ -51,7 +51,7 @@ s32 fn_80072A00(s32 chan)
 
     key = chan + 1;
     gbaCommandSetKeyState(key, 2);
-    first = fn_80073C38(chan);
+    first = gbaCmdResetLink(chan);
     if (first != 0) {
         result = first;
     } else {

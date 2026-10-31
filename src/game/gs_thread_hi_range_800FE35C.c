@@ -123,12 +123,12 @@ void spriteSetEnv(void) {
     gfxSetCullMode(0);
 }
 
-void fn_800FE6A0(f32 x, f32 y) {
+void spriteSetScale(f32 x, f32 y) {
     lbl_80478B10 = x;
     lbl_80478B14 = y;
 }
 
-void fn_800FE6AC(s16* x, s16* y) {
+void spriteGetOrigin(s16* x, s16* y) {
     if (x != NULL) {
         *x = lbl_8047AC70;
     }
@@ -137,7 +137,7 @@ void fn_800FE6AC(s16* x, s16* y) {
     }
 }
 
-void fn_800FE6D0(s16 x, s16 y) {
+void spriteSetOrigin(s16 x, s16 y) {
     lbl_8047AC70 = x;
     lbl_8047AC72 = y;
 }

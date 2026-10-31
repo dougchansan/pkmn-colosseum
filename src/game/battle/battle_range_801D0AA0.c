@@ -23,7 +23,7 @@ u8 heroGetPokemonBallId(u32 index)
     return pokemonBiosGetCatchBallId(pokemon);
 }
 
-u16 fn_801D0AFC(s32 mode)
+u16 heroPartyHealAll(s32 mode)
 {
     extern u16 lbl_8047B3D8;
     extern void* savedataGetStatus(u32, u32);
@@ -99,7 +99,7 @@ void pokemonCenterHealSequence(void)
         switch (state) {
         case 0:
             timer = 0;
-            fn_801D0AFC(1);
+            heroPartyHealAll(1);
             state = 10;
             break;
         case 10:

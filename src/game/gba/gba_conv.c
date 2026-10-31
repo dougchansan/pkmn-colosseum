@@ -11,8 +11,8 @@
 
 /* ===== External function declarations ===== */
 extern void fn_8001E074();
-extern void fn_8005CF2C();
-extern void fn_8006A76C();
+extern void menuColosseumShowPartyError();
+extern void memcardIsUnavailable();
 extern void savedataBattleClearFlagC98B();
 extern void savedataBattleSetFlagC98B();
 extern void savedataBattleGetFlagC98B();
@@ -22,17 +22,17 @@ extern void savedataBattleGetSavedHeroKind();
 extern void menuCommonFree();
 extern void menuCommonAlloc();
 extern void menuRuleCheckPartyAndRule();
-extern void fn_8008ABA0();
+extern void gbaCommIsReady();
 extern void gbaCommStartTransferA();
 extern void gbaCommStartTransferB();
 extern void gbaCommStartTransferC();
 extern void gbaCommStartTransferFile();
 extern void gbaCommIsBusy();
-extern void fn_80093610();
+extern void gbaCommGetResult();
 extern void gbaCommEnd();
 extern void SIProbe();
 extern void GSgetFrameStep();
-extern void fn_800D37CC();
+extern void GSgfxGetVsyncRate();
 extern void GSmemGetHandleByPtr();
 extern void GSmemFree();
 extern void fn_800E24B0();
@@ -65,7 +65,7 @@ extern void windowGetKeyInfo();
 extern void winMsgCheck();
 extern void winMsgClose();
 extern void winMsgOpen();
-extern void fn_801081F8();
+extern void winSeqSetItem();
 extern void winSpriteSetDisp();
 extern void floorGetPrevFloorID();
 extern void wazaDataBiosGetDoc();
@@ -102,41 +102,41 @@ extern u8 lbl_8026F4F8[];
 extern u8 lbl_803FB2F8[];
 
 /* ===== Forward declarations ===== */
-void fn_80083AF4(void);
-void fn_80083BF8(void);
-void fn_80083CBC(void);
-void fn_80083CFC(void);
-void fn_80083D30(void);
-void fn_80083ECC(void);
-void fn_80084034(void);
-void fn_80084038(void);
-void fn_800849B4(void);
+void cardeArenaWalk(void);
+void cardeArenaCountRecords(void);
+void cardeArenaClear(void);
+void cardeArenaGetPtr(void);
+void cardeEncodePartyMoveText(void);
+void cardeEncodeMoveText(void);
+void cardeGBAMenuButton(void);
+void menuGBACRun(void);
+void cardeTransferUI(void);
 void cardeGbaTransfer(void);
-void fn_80087AE8(void);
-void fn_80087C64(void);
-void fn_80088428(void);
+void cardeWaitMessage(void);
+void cardeGridPrompt(void);
+void cardeGridPromptScene(void);
 u32 dnaKeyCodeCheck(u16 a, u16 b, u16 c);
 s32 menuSaveLoadReceiveGift(void);
-s32 fn_80088964(void);
-s32 fn_800889A4(void);
+s32 menuMemcardTaskA(void);
+s32 menuMemcardTaskB(void);
 s32 menuSaveLoadSaveGame(s32 capture);
 s32 menuSaveLoadCommitA(void);
-s32 fn_80088D84(void);
+s32 menuSaveLoadCommitB(void);
 void menuSaveLoadStorePosition(u8* p);
-s32 fn_80088F58(void);
-s32 fn_80088F74(void);
-s32 fn_80088F88(void);
+s32 debugCounterNextA(void);
+s32 debugCounterIncA(void);
+s32 debugCounterNextB(void);
 s32 dbgMenuGBAAddCoupon(void);
 s32 dbgToolBattleDebugSetAGBConnectionMode(s32 a, s32 b);
-s32 fn_80089028(void);
-void fn_80089030(u8 x);
+s32 gbaGetConnectionMode(void);
+void gbaSetConnectionMode(u8 x);
 
 /* ===== Function implementations ===== */
 
 /* A wrapper that defines GBA_CONV_CARVE_<addr> builds only that linked carve
  * (plus the inline helpers it uses); everything else stays out of its object.
  * Those units build with -opt nopeephole, matching the peephole-off state the
- * full file reaches through fn_80088428's pragma. */
+ * full file reaches through cardeGridPromptScene's pragma. */
 #if defined(GBA_CONV_CARVE_800886D0) || defined(GBA_CONV_CARVE_800889E4) || \
     defined(GBA_CONV_CARVE_80088C60) || defined(GBA_CONV_CARVE_800884BC)
 #define GBA_CONV_CARVE
@@ -146,7 +146,7 @@ void fn_80089030(u8 x);
 #if !defined(PR424_GBA_CONV_TAIL_ONLY)
 
 /* 0x80083AF4 | size: 0x104 */
-void fn_80083AF4(void) {
+void cardeArenaWalk(void) {
     extern void savedataGetStatus();
     u8 sp[0x20];
     u32 r0 = 0;
@@ -218,7 +218,7 @@ while (1) {
 }
 
 /* 0x80083BF8 | size: 0xC4 */
-void fn_80083BF8(void) {
+void cardeArenaCountRecords(void) {
     extern void savedataGetStatus();
     u8 sp[0x10];
     u32 tmp = 0;
@@ -275,7 +275,7 @@ while (1) {
 }
 
 /* 0x80083CBC | size: 0x40 */
-void fn_80083CBC(void) {
+void cardeArenaClear(void) {
     extern void savedataGetStatus();
     u8 sp[0x10];
     u32 tmp = 0;
@@ -297,7 +297,7 @@ void fn_80083CBC(void) {
 }
 
 /* 0x80083CFC | size: 0x34 */
-void fn_80083CFC(void) {
+void cardeArenaGetPtr(void) {
     extern void savedataGetStatus();
     u8 sp[0x10];
     u32 tmp = 0;
@@ -315,7 +315,7 @@ void fn_80083CFC(void) {
 }
 
 /* 0x80083D30 | size: 0x19C */
-void fn_80083D30(void) {
+void cardeEncodePartyMoveText(void) {
     extern void pokemonBiosGetPokemonWazaDataId();
     extern void heroBiosGetPokemonPtr();
     extern void fn_80135938();
@@ -435,7 +435,7 @@ void fn_80083D30(void) {
 }
 
 /* 0x80083ECC | size: 0x168 */
-void fn_80083ECC(void) {
+void cardeEncodeMoveText(void) {
     extern void fn_80135938();
     u8 sp[0x160];
     u32 tmp = 0;
@@ -533,11 +533,11 @@ void fn_80083ECC(void) {
 }
 
 /* 0x80084034 | size: 0x4 */
-void fn_80084034(void) {
+void cardeGBAMenuButton(void) {
 }
 
 /* 0x80084038 | size: 0x97C */
-void fn_80084038(void) {
+void menuGBACRun(void) {
     extern void __assert();
     u8 sp[0x30];
     u32 tmp = 0;
@@ -782,7 +782,7 @@ void fn_80084038(void) {
                     r4 = *(u16*)((u8*)r24 + 0x0);
                     r3 = r29;
                     r5 = *(u16*)((u8*)r24 + 0x2);
-                    ((void(*)(void))fn_801081F8)();
+                    ((void(*)(void))winSeqSetItem)();
                     r24 = r24 + 0x6;
                     r26 = r26 + 0x1;
                 } while (r26 < 0x2e);
@@ -798,7 +798,7 @@ void fn_80084038(void) {
                 r4 = *(u16*)((u8*)r24 + 0x0);
                 r3 = r29;
                 r5 = *(u16*)((u8*)r24 + 0x4);
-                ((void(*)(void))fn_801081F8)();
+                ((void(*)(void))winSeqSetItem)();
                 r24 = r24 + 0x6;
                 r27 = r27 + 0x1;
             } while (r27 < 0x2e);
@@ -846,7 +846,7 @@ L_80084458:
             if ((s32)tmp == 4) {
             }
             r3 = r31 + 0x1;
-            ((void(*)(void))fn_8008ABA0)();
+            ((void(*)(void))gbaCommIsReady)();
             tmp = r3 & 0xFF;
             if (tmp == 0) {
                 ((void(*)(void))menuGetEnablePort)();
@@ -962,7 +962,7 @@ L_80084458:
                 r3 = r29;
                 r5 = 0x1ba;
                 r4 = tmp & 0xFFFF;
-                ((void(*)(void))fn_801081F8)();
+                ((void(*)(void))winSeqSetItem)();
         }
 
             } else {
@@ -970,7 +970,7 @@ L_80084458:
         r3 = r29;
         r5 = 0x0;
         r4 = tmp & 0xFFFF;
-        ((void(*)(void))fn_801081F8)();
+        ((void(*)(void))winSeqSetItem)();
         tmp = -0x1;
         *(u32*)((u8*)r26 + 0x64) = tmp;
             }
@@ -981,7 +981,7 @@ L_80084458:
                 r3 = r29;
                 r5 = 0x1ba;
                 r4 = tmp & 0xFFFF;
-                ((void(*)(void))fn_801081F8)();
+                ((void(*)(void))winSeqSetItem)();
         }
         }
 
@@ -990,7 +990,7 @@ L_80084458:
     r3 = r29;
     r5 = 0x0;
     r4 = tmp & 0xFFFF;
-    ((void(*)(void))fn_801081F8)();
+    ((void(*)(void))winSeqSetItem)();
     tmp = -0x1;
     *(u32*)((u8*)r26 + 0x64) = tmp;
             }
@@ -1099,7 +1099,7 @@ L_80084458:
                     r3 = r29;
                     r5 = 0x1ba;
                     r4 = tmp & 0xFFFF;
-                    ((void(*)(void))fn_801081F8)();
+                    ((void(*)(void))winSeqSetItem)();
                 }
 
                 } else {
@@ -1107,7 +1107,7 @@ L_80084458:
             r3 = r29;
             r5 = 0x0;
             r4 = tmp & 0xFFFF;
-            ((void(*)(void))fn_801081F8)();
+            ((void(*)(void))winSeqSetItem)();
             tmp = -0x1;
             *(u32*)((u8*)r24 + 0x64) = tmp;
                 }
@@ -1118,7 +1118,7 @@ L_80084458:
                     r3 = r29;
                     r5 = 0x1ba;
                     r4 = tmp & 0xFFFF;
-                    ((void(*)(void))fn_801081F8)();
+                    ((void(*)(void))winSeqSetItem)();
                 }
 
                 } else {
@@ -1126,7 +1126,7 @@ L_80084458:
             r3 = r29;
             r5 = 0x0;
             r4 = tmp & 0xFFFF;
-            ((void(*)(void))fn_801081F8)();
+            ((void(*)(void))winSeqSetItem)();
             tmp = -0x1;
             *(u32*)((u8*)r24 + 0x64) = tmp;
                 }
@@ -1137,7 +1137,7 @@ L_80084458:
                     r3 = r29;
                     r5 = 0x1ba;
                     r4 = tmp & 0xFFFF;
-                    ((void(*)(void))fn_801081F8)();
+                    ((void(*)(void))winSeqSetItem)();
                 }
 
                 } else {
@@ -1145,7 +1145,7 @@ L_80084458:
             r3 = r29;
             r5 = 0x0;
             r4 = tmp & 0xFFFF;
-            ((void(*)(void))fn_801081F8)();
+            ((void(*)(void))winSeqSetItem)();
             tmp = -0x1;
             *(u32*)((u8*)r24 + 0x64) = tmp;
                 }
@@ -1158,7 +1158,7 @@ L_80084458:
                     r3 = r29;
                     r5 = *(u16*)((u8*)r26 + 0x0);
                     r4 = tmp & 0xFFFF;
-                    ((void(*)(void))fn_801081F8)();
+                    ((void(*)(void))winSeqSetItem)();
             }
             }
         }
@@ -1171,7 +1171,7 @@ L_80084458:
 }
 
 /* 0x800849B4 | size: 0xD8 */
-void fn_800849B4(void) {
+void cardeTransferUI(void) {
     extern void cardeGbaTransfer();
     u8 sp[0x20];
     u32 tmp = 0;
@@ -1229,8 +1229,8 @@ void fn_800849B4(void) {
 
 /* 0x80084A8C | size: 0x305C */
 void cardeGbaTransfer(void) {
-    extern void fn_80087AE8();
-    extern void fn_80128E04();
+    extern void cardeWaitMessage();
+    extern void savedataGetSection0();
     extern void savedataGetWorkPtr();
     extern void savedataGetStatus();
     extern void heroInit();
@@ -1402,7 +1402,7 @@ void cardeGbaTransfer(void) {
             while (f27 < f28) {
 
                 ((void(*)(void))_threadSwitch)();
-                ((void(*)(void))fn_800D37CC)();
+                ((void(*)(void))GSgfxGetVsyncRate)();
                 *(u32*)(sp + 0xC14) = tmp;
                 f30 = f0 - f31;
                 ((void(*)(void))GSgetFrameStep)();
@@ -1421,7 +1421,7 @@ void cardeGbaTransfer(void) {
                 ((void(*)(void))menuCloseCustom)();
                 r3 = r18;
                 r4 = 0x0;
-                ((void(*)(void))fn_8005CF2C)();
+                ((void(*)(void))menuColosseumShowPartyError)();
                 r3 = 0x0;
                 return;
         }
@@ -1493,7 +1493,7 @@ void cardeGbaTransfer(void) {
             ((void(*)(void))winMsgOpen)();
             r3 = r24;
             r4 = 0x6;
-            fn_80087AE8();
+            cardeWaitMessage();
             tmp = r3 & 0xFF;
             if (tmp == 0) {
                 r3 = 0x1;
@@ -1510,7 +1510,7 @@ void cardeGbaTransfer(void) {
                         if ((s32)tmp == 4) {
                         }
                         r3 = r17 + 0x1;
-                        ((void(*)(void))fn_8008ABA0)();
+                        ((void(*)(void))gbaCommIsReady)();
                         tmp = r3 & 0xFF;
                         if (tmp == 0) {
                             ((void(*)(void))menuGetEnablePort)();
@@ -1665,7 +1665,7 @@ void cardeGbaTransfer(void) {
             *(u32*)((u8*)r24 + 0x28) = tmp;
             r3 = *(u8*)((u8*)r24 + 0x21);
             r3 = (s8)r3;
-            ((void(*)(void))fn_80093610)();
+            ((void(*)(void))gbaCommGetResult)();
         L_8008513C:
             if ((s32)r3 == 0xe) {
                 r3 = 0x1;
@@ -1682,7 +1682,7 @@ void cardeGbaTransfer(void) {
                         if ((s32)tmp == 4) {
                         }
                         r3 = r17 + 0x1;
-                        ((void(*)(void))fn_8008ABA0)();
+                        ((void(*)(void))gbaCommIsReady)();
                         tmp = r3 & 0xFF;
                         if (tmp == 0) {
                             ((void(*)(void))menuGetEnablePort)();
@@ -1829,7 +1829,7 @@ void cardeGbaTransfer(void) {
         *(u32*)((u8*)r24 + 0x28) = tmp;
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_80093610)();
+        ((void(*)(void))gbaCommGetResult)();
     L_800853B4:
         if ((s32)r3 != 0xe) {
         do {
@@ -1856,7 +1856,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r17 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -1975,7 +1975,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r18 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -2085,12 +2085,12 @@ void cardeGbaTransfer(void) {
             if (tmp == 0) {
                 r3 = r24;
                 r4 = 0x1;
-                fn_80087AE8();
+                cardeWaitMessage();
 
             } else {
             r3 = r24;
             r4 = 0x7;
-            fn_80087AE8();
+            cardeWaitMessage();
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 tmp = 0x1;
@@ -2112,7 +2112,7 @@ void cardeGbaTransfer(void) {
         *(u32*)(r27 + r24) = tmp;
         do {
             r3 = r26;
-            ((void(*)(void))fn_8008ABA0)();
+            ((void(*)(void))gbaCommIsReady)();
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 ((void(*)(void))menuGetEnablePort)();
@@ -2144,7 +2144,7 @@ void cardeGbaTransfer(void) {
             while (f27 < f31) {
 
                 ((void(*)(void))_threadSwitch)();
-                ((void(*)(void))fn_800D37CC)();
+                ((void(*)(void))GSgfxGetVsyncRate)();
                 *(u32*)(sp + 0xC1C) = tmp;
                 f29 = f0 - f28;
                 ((void(*)(void))GSgetFrameStep)();
@@ -2197,7 +2197,7 @@ void cardeGbaTransfer(void) {
         *(u32*)((u8*)r24 + 0x28) = tmp;
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_80093610)();
+        ((void(*)(void))gbaCommGetResult)();
         r16 = r3;
     L_80085960:
         if ((s32)r16 != 0xe) {
@@ -2217,7 +2217,7 @@ void cardeGbaTransfer(void) {
                 if ((s32)tmp == 4) {
                 }
                 r3 = r17 + 0x1;
-                ((void(*)(void))fn_8008ABA0)();
+                ((void(*)(void))gbaCommIsReady)();
                 tmp = r3 & 0xFF;
                 if (tmp == 0) {
                     ((void(*)(void))menuGetEnablePort)();
@@ -2338,7 +2338,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r19 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -2448,12 +2448,12 @@ void cardeGbaTransfer(void) {
             if (tmp == 0) {
                 r3 = r24;
                 r4 = 0x1;
-                fn_80087AE8();
+                cardeWaitMessage();
 
             } else {
             r3 = r24;
             r4 = 0x7;
-            fn_80087AE8();
+            cardeWaitMessage();
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 tmp = 0x1;
@@ -2486,7 +2486,7 @@ void cardeGbaTransfer(void) {
         }
         savedataGetWorkPtr();
         if (r3 != 0) {
-            fn_80128E04();
+            savedataGetSection0();
             if (r3 != 0) {
                 gamedataBiosGetGamedataAtttestPtr();
                 if (r3 != 0) {
@@ -2516,7 +2516,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r19 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -2626,12 +2626,12 @@ void cardeGbaTransfer(void) {
             if (tmp == 0) {
                 r3 = r24;
                 r4 = 0x1;
-                fn_80087AE8();
+                cardeWaitMessage();
 
             } else {
             r3 = r24;
             r4 = 0x7;
-            fn_80087AE8();
+            cardeWaitMessage();
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 tmp = 0x1;
@@ -2666,7 +2666,7 @@ void cardeGbaTransfer(void) {
                 if ((s32)tmp == 4) {
                 }
                 r3 = r19 + 0x1;
-                ((void(*)(void))fn_8008ABA0)();
+                ((void(*)(void))gbaCommIsReady)();
                 tmp = r3 & 0xFF;
                 if (tmp == 0) {
                     ((void(*)(void))menuGetEnablePort)();
@@ -2776,12 +2776,12 @@ void cardeGbaTransfer(void) {
         if (tmp == 0) {
             r3 = r24;
             r4 = 0x1;
-            fn_80087AE8();
+            cardeWaitMessage();
 
         } else {
         r3 = r24;
         r4 = 0x7;
-        fn_80087AE8();
+        cardeWaitMessage();
         tmp = r3 & 0xFF;
         if (tmp != 0) {
             tmp = 0x1;
@@ -2828,7 +2828,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r19 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -2938,12 +2938,12 @@ void cardeGbaTransfer(void) {
             if (tmp == 0) {
                 r3 = r24;
                 r4 = 0x1;
-                fn_80087AE8();
+                cardeWaitMessage();
 
             } else {
             r3 = r24;
             r4 = 0x7;
-            fn_80087AE8();
+            cardeWaitMessage();
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 tmp = 0x1;
@@ -2976,7 +2976,7 @@ void cardeGbaTransfer(void) {
                         if ((s32)tmp == 4) {
                         }
                         r3 = r19 + 0x1;
-                        ((void(*)(void))fn_8008ABA0)();
+                        ((void(*)(void))gbaCommIsReady)();
                         tmp = r3 & 0xFF;
                         if (tmp == 0) {
                             ((void(*)(void))menuGetEnablePort)();
@@ -3086,12 +3086,12 @@ void cardeGbaTransfer(void) {
                 if (tmp == 0) {
                     r3 = r24;
                     r4 = 0x1;
-                    fn_80087AE8();
+                    cardeWaitMessage();
 
                 } else {
                 r3 = r24;
                 r4 = 0x7;
-                fn_80087AE8();
+                cardeWaitMessage();
                 tmp = r3 & 0xFF;
                 if (tmp != 0) {
                     tmp = 0x1;
@@ -3118,7 +3118,7 @@ void cardeGbaTransfer(void) {
             ((void(*)(void))menuCloseCustom)();
             r3 = r22;
             r4 = 0x1;
-            ((void(*)(void))fn_8005CF2C)();
+            ((void(*)(void))menuColosseumShowPartyError)();
             if (tmp == 0) {
                 r3 = 0x0;
                 return;
@@ -3248,7 +3248,7 @@ void cardeGbaTransfer(void) {
         *(u32*)((u8*)r24 + 0x28) = tmp;
         r3 = *(u8*)((u8*)r24 + 0x21);
         r3 = (s8)r3;
-        ((void(*)(void))fn_80093610)();
+        ((void(*)(void))gbaCommGetResult)();
     L_800869A4:
         if ((s32)r3 != 0xe) {
             if ((s32)r3 < 0xe) {
@@ -3270,7 +3270,7 @@ void cardeGbaTransfer(void) {
                 if ((s32)tmp == 4) {
                 }
                 r3 = r17 + 0x1;
-                ((void(*)(void))fn_8008ABA0)();
+                ((void(*)(void))gbaCommIsReady)();
                 tmp = r3 & 0xFF;
                 if (tmp == 0) {
                     ((void(*)(void))menuGetEnablePort)();
@@ -3389,7 +3389,7 @@ void cardeGbaTransfer(void) {
                 if ((s32)tmp == 4) {
                 }
                 r3 = r19 + 0x1;
-                ((void(*)(void))fn_8008ABA0)();
+                ((void(*)(void))gbaCommIsReady)();
                 tmp = r3 & 0xFF;
                 if (tmp == 0) {
                     ((void(*)(void))menuGetEnablePort)();
@@ -3499,12 +3499,12 @@ void cardeGbaTransfer(void) {
         if (tmp == 0) {
             r3 = r24;
             r4 = 0x1;
-            fn_80087AE8();
+            cardeWaitMessage();
 
         } else {
         r3 = r24;
         r4 = 0x7;
-        fn_80087AE8();
+        cardeWaitMessage();
         tmp = r3 & 0xFF;
         if (tmp != 0) {
             tmp = 0x1;
@@ -3538,7 +3538,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r19 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -3648,12 +3648,12 @@ void cardeGbaTransfer(void) {
             if (tmp == 0) {
                 r3 = r24;
                 r4 = 0x1;
-                fn_80087AE8();
+                cardeWaitMessage();
 
             } else {
             r3 = r24;
             r4 = 0x7;
-            fn_80087AE8();
+            cardeWaitMessage();
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 tmp = 0x1;
@@ -3677,7 +3677,7 @@ void cardeGbaTransfer(void) {
             ((void(*)(void))winMsgOpen)();
             r3 = r24;
             r4 = 0x1;
-            fn_80087AE8();
+            cardeWaitMessage();
             r3 = 0x0;
             return;
         }
@@ -3713,7 +3713,7 @@ void cardeGbaTransfer(void) {
                     }
                 r3 = r24;
                 r4 = 0x3;
-                fn_80087AE8();
+                cardeWaitMessage();
                 tmp = r3 & 0xFF;
                 if (tmp != 0) {
                     r3 = 0x1;
@@ -3733,7 +3733,7 @@ void cardeGbaTransfer(void) {
                         if ((s32)tmp == 4) {
                         }
                         r3 = r17 + 0x1;
-                        ((void(*)(void))fn_8008ABA0)();
+                        ((void(*)(void))gbaCommIsReady)();
                         tmp = r3 & 0xFF;
                         if (tmp == 0) {
                             ((void(*)(void))menuGetEnablePort)();
@@ -3844,7 +3844,7 @@ void cardeGbaTransfer(void) {
             if ((s32)tmp != 2) break;
             r3 = r24;
             r4 = 0x3;
-            fn_80087AE8();
+            cardeWaitMessage();
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 r3 = 0x1;
@@ -3864,7 +3864,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r17 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -3975,7 +3975,7 @@ void cardeGbaTransfer(void) {
         if ((s32)tmp != 3) break;
         r3 = r24;
         r4 = 0x3;
-        fn_80087AE8();
+        cardeWaitMessage();
         tmp = r3 & 0xFF;
         if (tmp != 0) {
             r3 = 0x1;
@@ -3995,7 +3995,7 @@ void cardeGbaTransfer(void) {
                 if ((s32)tmp == 4) {
                 }
                 r3 = r17 + 0x1;
-                ((void(*)(void))fn_8008ABA0)();
+                ((void(*)(void))gbaCommIsReady)();
                 tmp = r3 & 0xFF;
                 if (tmp == 0) {
                     ((void(*)(void))menuGetEnablePort)();
@@ -4106,7 +4106,7 @@ void cardeGbaTransfer(void) {
         if ((s32)tmp == 0) {
             r3 = r24;
             r4 = 0x3;
-            fn_80087AE8();
+            cardeWaitMessage();
             tmp = r3 & 0xFF;
             if (tmp != 0) {
                 r3 = 0x1;
@@ -4126,7 +4126,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r17 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -4238,7 +4238,7 @@ void cardeGbaTransfer(void) {
         tmp = *(u8*)((u8*)r3 + 0x1);
         r3 = r24;
         *(u8*)((u8*)r24 + 0x21) = tmp;
-        fn_80087AE8();
+        cardeWaitMessage();
         tmp = r3 & 0xFF;
         if (tmp == 0) {
             r3 = 0x1;
@@ -4255,7 +4255,7 @@ void cardeGbaTransfer(void) {
                     if ((s32)tmp == 4) {
                     }
                     r3 = r17 + 0x1;
-                    ((void(*)(void))fn_8008ABA0)();
+                    ((void(*)(void))gbaCommIsReady)();
                     tmp = r3 & 0xFF;
                     if (tmp == 0) {
                         ((void(*)(void))menuGetEnablePort)();
@@ -4370,7 +4370,7 @@ void cardeGbaTransfer(void) {
 }
 
 /* 0x80087AE8 | size: 0x17C */
-void fn_80087AE8(void) {
+void cardeWaitMessage(void) {
     u8 sp[0x20];
     u32 tmp = 0;
     u32 r3 = 0;
@@ -4474,7 +4474,7 @@ L_80087B3C:
 }
 
 /* 0x80087C64 | size: 0x7C4 */
-void fn_80087C64(void) {
+void cardeGridPrompt(void) {
     extern void GSsndGetStatus();
     extern void soundStartSE();
     u8 sp[0x1C0];
@@ -5026,17 +5026,17 @@ static inline void gbaConvCaptureMemo(GbaConvPlayerMemo* memo) {
 
 /* Snapshot the save image, renumber the slots, run link mode 6 and restore. */
 static inline s32 gbaConvRunLinkMode(void) {
-    extern u8 fn_8006A76C(void);
+    extern u8 memcardIsUnavailable(void);
     extern void* menuCommonAlloc(u32 size);
     extern void menuCommonFree(void* p);
     extern void* savedataGetWorkPtr(void);
     extern u8* savedataGetStatus(s32 side, s32 slotType);
     extern void _flagSet(s32 id, s32 value);
-    extern s32 fn_801D0748(s32 a, s32 b, s32 c);
+    extern s32 memcardWaitTask2(s32 a, s32 b, s32 c);
     void* buf;
     s32 result;
 
-    if (fn_8006A76C() != 0) {
+    if (memcardIsUnavailable() != 0) {
         return 0;
     }
     buf = menuCommonAlloc(0x1DFD0);
@@ -5044,7 +5044,7 @@ static inline s32 gbaConvRunLinkMode(void) {
     gbaConvResetSlotIds();
     savedataGetStatus(0, 0xE)[0x1C] = 0;
     _flagSet(0x8AE, 0);
-    result = fn_801D0748(6, 2, 0);
+    result = memcardWaitTask2(6, 2, 0);
     memcpy(savedataGetWorkPtr(), buf, 0x1DFD0);
     menuCommonFree(buf);
     if (result == 4) {
@@ -5122,9 +5122,9 @@ static inline u32 gbaConvCheckIds(GbaConvChannelState* state) {
 
 #if !defined(GBA_CONV_CARVE)
 /* 0x80088428 | size: 0x94 */
-void fn_80088428(void) {
+void cardeGridPromptScene(void) {
     #pragma peephole off
-    extern u32 fn_80087C64(void* p);
+    extern u32 cardeGridPrompt(void* p);
     extern void soundStartSE(s32);
     extern void cameraWaitSyncAnime(s32);
     extern void cameraPlayAnime(s32, s32, s32, s32);
@@ -5135,7 +5135,7 @@ void fn_80088428(void) {
     soundStartSE(0x27);
     cameraPlayAnime(0x62d, 0x107C1800, 0, 0);
     cameraWaitSyncAnime(1);
-    r31 = fn_80087C64(&lbl_803FB2F8);
+    r31 = cardeGridPrompt(&lbl_803FB2F8);
     soundStartSE(0x28);
     cameraPlayAnime(0x62d, 0x107D1800, 0, 0);
     cameraWaitSyncAnime(1);
@@ -5161,9 +5161,9 @@ u32 dnaKeyCodeCheck(u16 a, u16 b, u16 c) {
 #if !defined(GBA_CONV_CARVE) || defined(GBA_CONV_CARVE_800886D0)
 /* 0x800886D0 | size: 0x294 */
 s32 menuSaveLoadReceiveGift(void) {
-    extern u8 fn_8006A76C(void);
+    extern u8 memcardIsUnavailable(void);
     extern s32 savedataBattleGetSavedHeroKind(void);
-    extern u8 fn_801EE398(void);
+    extern u8 darkPokemonAllFlag14Set(void);
     extern u8 std081_flagCheckTrue(s32 id);
     extern void* menuCommonAlloc(u32 size);
     extern void menuCommonFree(void* p);
@@ -5178,19 +5178,19 @@ s32 menuSaveLoadReceiveGift(void) {
     extern s8 menuSubOpenYesNo(s32 a, s32 b, s32 c, s32 d);
     extern u8* savedataGetStatus(s32 side, s32 slotType);
     extern void _flagSet(s32 id, s32 value);
-    extern s32 fn_801D0748(s32 a, s32 b, s32 c);
+    extern s32 memcardWaitTask2(s32 a, s32 b, s32 c);
     void* buf;
     s32 mode;
     s32 result;
     s32 coupons;
 
-    if (fn_8006A76C() != 0) {
+    if (memcardIsUnavailable() != 0) {
         return 0;
     }
     if (savedataBattleGetSavedHeroKind() != 0) {
         return 0;
     }
-    if (fn_801EE398() == 0) {
+    if (darkPokemonAllFlag14Set() == 0) {
         return 0;
     }
     if (std081_flagCheckTrue(0x478) == 0) {
@@ -5228,7 +5228,7 @@ s32 menuSaveLoadReceiveGift(void) {
             gbaConvResetSlotIds();
             savedataGetStatus(0, 0xE)[0x1C] = 0;
             _flagSet(0x8AE, 0);
-            result = fn_801D0748(4, 2, 0);
+            result = memcardWaitTask2(4, 2, 0);
             if (result == 4 || result == 5) {
                 break;
             }
@@ -5248,11 +5248,11 @@ s32 menuSaveLoadReceiveGift(void) {
 
 #if !defined(GBA_CONV_CARVE)
 /* 0x80088964 | size: 0x40 */
-s32 fn_80088964(void) {
+s32 menuMemcardTaskA(void) {
     #pragma peephole off
-    extern s32 fn_801D0748(s32, s32, s32);
+    extern s32 memcardWaitTask2(s32, s32, s32);
 
-    if (fn_801D0748(0xd, 2, 0) == 4) {
+    if (memcardWaitTask2(0xd, 2, 0) == 4) {
         return 0;
     } else {
         return -1;
@@ -5260,10 +5260,10 @@ s32 fn_80088964(void) {
 }
 
 /* 0x800889A4 | size: 0x40 */
-s32 fn_800889A4(void) {
-    extern s32 fn_801D0748(s32, s32, s32);
+s32 menuMemcardTaskB(void) {
+    extern s32 memcardWaitTask2(s32, s32, s32);
 
-    if (fn_801D0748(5, 2, 0) == 4) {
+    if (memcardWaitTask2(5, 2, 0) == 4) {
         return 0;
     } else {
         return -1;
@@ -5319,17 +5319,17 @@ s32 menuSaveLoadSaveGame(s32 capture) {
 #if !defined(GBA_CONV_CARVE) || defined(GBA_CONV_CARVE_80088C60)
 /* 0x80088C60 | size: 0x124 */
 s32 menuSaveLoadCommitA(void) {
-    extern u8 fn_8006A76C(void);
+    extern u8 memcardIsUnavailable(void);
     extern void* menuCommonAlloc(u32 size);
     extern void menuCommonFree(void* p);
     extern void* savedataGetWorkPtr(void);
     extern u8* savedataGetStatus(s32 side, s32 slotType);
     extern void _flagSet(s32 id, s32 value);
-    extern s32 fn_801D0748(s32 a, s32 b, s32 c);
+    extern s32 memcardWaitTask2(s32 a, s32 b, s32 c);
     void* buf;
     s32 result;
 
-    if (fn_8006A76C() != 0) {
+    if (memcardIsUnavailable() != 0) {
         return 0;
     }
     buf = menuCommonAlloc(0x1DFD0);
@@ -5337,7 +5337,7 @@ s32 menuSaveLoadCommitA(void) {
     gbaConvResetSlotIds();
     savedataGetStatus(0, 0xE)[0x1C] = 0;
     _flagSet(0x8AE, 0);
-    result = fn_801D0748(6, 2, 0);
+    result = memcardWaitTask2(6, 2, 0);
     memcpy(savedataGetWorkPtr(), buf, 0x1DFD0);
     menuCommonFree(buf);
     if (result == 4) {
@@ -5348,7 +5348,7 @@ s32 menuSaveLoadCommitA(void) {
 
 /* 0x80088D84 | size: 0x124 */
 
-s32 fn_80088D84(void) {
+s32 menuSaveLoadCommitB(void) {
     return gbaConvRunLinkMode();
 }
 #endif
@@ -5383,7 +5383,7 @@ void menuSaveLoadStorePosition(u8* p) {
 }
 
 /* 0x80088F58 | size: 0x1C */
-s32 fn_80088F58(void) {
+s32 debugCounterNextA(void) {
     u32 count;
 
     count = *(volatile u32*)&lbl_8047A66C;
@@ -5394,13 +5394,13 @@ s32 fn_80088F58(void) {
 }
 
 /* 0x80088F74 | size: 0x14 */
-s32 fn_80088F74(void) {
+s32 debugCounterIncA(void) {
     *(u32*)&lbl_8047A668 += 1;
     return 0;
 }
 
 /* 0x80088F88 | size: 0x1C */
-s32 fn_80088F88(void) {
+s32 debugCounterNextB(void) {
     u32 count;
 
     count = *(volatile u32*)&lbl_8047A664;
@@ -5426,17 +5426,17 @@ s32 dbgMenuGBAAddCoupon(void) {
 
 /* 0x80088FF8 | size: 0x30 */
 s32 dbgToolBattleDebugSetAGBConnectionMode(s32 a, s32 b) {
-    fn_80089030(b == 0);
+    gbaSetConnectionMode(b == 0);
     return 0;
 }
 
 /* 0x80089028 | size: 0x8 */
-s32 fn_80089028(void) {
+s32 gbaGetConnectionMode(void) {
     return lbl_80478958;
 }
 
 /* 0x80089030 | size: 0x18 */
-void fn_80089030(u8 x) {
+void gbaSetConnectionMode(u8 x) {
     lbl_80478958 = (x == 0);
 }
 #endif

@@ -12,7 +12,7 @@ u8 fightIsWazaThunderInRain(u32 move_id)
     return 0;
 }
 
-s32 fn_80229BD8(s32 arg)
+s32 fightIsWazaAlwaysHit(s32 arg)
 {
     extern u32 wazaGetStatus(void*, u32, u16, u32);
     u16 value = (u16)wazaGetStatus(0, arg, 9, 0);

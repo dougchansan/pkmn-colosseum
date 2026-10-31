@@ -148,14 +148,14 @@ void HSD_SetupChannelMode(u32 rendermode)
 
     if (specular) {
         if (!vtx_alpha) {
-            fn_801B3AE8(GX_ALPHA1);
+            HSD_ChanLightingOff(GX_ALPHA1);
         }
         HSD_StateSetNumChans(2);
     } else if (vtx_alpha) {
-        fn_801B3AE8(GX_COLOR1);
+        HSD_ChanLightingOff(GX_COLOR1);
         HSD_StateSetNumChans(2);
     } else {
-        fn_801B3AE8(GX_COLOR1A1);
+        HSD_ChanLightingOff(GX_COLOR1A1);
         HSD_StateSetNumChans(1);
     }
 }

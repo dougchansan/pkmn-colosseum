@@ -29,7 +29,7 @@ extern void menuClose();
 extern s32 menuCloseSync(s32, s32);
 extern s32 menuOpen(s32, s32);
 extern s8 pcboxGetNbPokemonBox(void);
-extern s8 fn_801347D8(void);
+extern s8 pcBoxGetSlotCount(void);
 extern u8 pokemonCheckValid(void*);
 extern u8 pokemonIsDarkPokemon(void*);
 extern u32 pokemonBiosGetPokemonDataId(void*);
@@ -38,11 +38,11 @@ extern u32 pokemonGetAnnonKatati(u32);
 extern void scriptStoreTemochiPokemon(s32);
 extern u8 scriptCheckTemochiPokemon(s32);
 extern u32 floorGetCurrentContext(void);
-extern void fn_80057E70(void);
-extern void fn_80055B98(s32);
-extern void fn_800F915C(s32);
-extern void fn_8017B3E4(s32);
-extern s32 fn_8017B2CC(s32);
+extern void pcBoxStreamModels(void);
+extern void pcBoxOpen(s32);
+extern void GSresReleaseOwner(s32);
+extern void fsysStartLoad(s32);
+extern s32 GSresGroupGetState(s32);
 extern void GSresReleaseById(s32);
 extern void std078_flagSetFalse(s32);
 
@@ -114,7 +114,7 @@ static inline s32 colosseumBattleCountPokemon(void) {
     }
 
     for (slot = 0; slot < pcboxGetNbPokemonBox(); slot++) {
-        for (box = 0; box < fn_801347D8(); box++) {
+        for (box = 0; box < pcBoxGetSlotCount(); box++) {
             pokemon = getPokemon__5PCBOXFScSc(0, (s8)slot, (s8)box);
             if (pokemon != NULL && pokemonCheckValid(pokemon) != 0) {
                 count++;
@@ -140,8 +140,8 @@ void pcBoxStorageMain(void) {
     s32 shouldSkipWait;
 
     scriptStoreTemochiPokemon(0);
-    fn_8017B3E4(0x70B);
-    while (fn_8017B2CC(0x70B) == 1) {
+    fsysStartLoad(0x70B);
+    while (GSresGroupGetState(0x70B) == 1) {
         _threadSwitch();
     }
 
@@ -164,7 +164,7 @@ void pcBoxStorageMain(void) {
             }
 
             for (slot = 0; slot < pcboxGetNbPokemonBox(); slot++) {
-                for (boxSlot = 0; boxSlot < fn_801347D8(); boxSlot++) {
+                for (boxSlot = 0; boxSlot < pcBoxGetSlotCount(); boxSlot++) {
                     boxPokemon = getPokemon__5PCBOXFScSc(0, (s8)slot, (s8)boxSlot);
                     if (boxPokemon != NULL && pokemonCheckValid(boxPokemon) != 0) {
                         id = colosseumBattleGetMenuPokemonId(boxPokemon);
@@ -180,14 +180,14 @@ void pcBoxStorageMain(void) {
         lbl_8047A590 = NULL;
     }
 
-    GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, fn_80057E70);
+    GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, pcBoxStreamModels);
     menuClose(0x19);
     menuClose(0x1A);
     menuClose(0x1B);
     menuCloseSync(0x19, 1);
     menuCloseSync(0x1A, 1);
     menuCloseSync(0x1B, 1);
-    fn_80055B98(0);
+    pcBoxOpen(0);
     menuOpen(0x1A, 0);
     menuOpen(0x1B, 0);
     menuOpen(0x19, 0);
@@ -195,7 +195,7 @@ void pcBoxStorageMain(void) {
     connectedState = colosseumBattleGetConnectState();
     if (connectedState == 2) {
         GSresReleaseById(0x48A);
-        fn_800F915C(0x48A);
+        GSresReleaseOwner(0x48A);
         shouldSkipWait = 1;
     } else {
         if (connectedState == 1) {
@@ -217,7 +217,7 @@ void pcBoxStorageMain(void) {
     }
 
     GSresReleaseById(0x70B);
-    fn_800F915C(0x70B);
+    GSresReleaseOwner(0x70B);
     if (scriptCheckTemochiPokemon(0) != 0) {
         std078_flagSetFalse(0xDDE);
     }

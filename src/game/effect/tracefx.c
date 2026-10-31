@@ -3,21 +3,21 @@
  * @brief TraceFX -- Trail / trace visual effects for Pokemon Colosseum.
  *
  * Decompiled from:
- *   fn_801364A8                          -- Trail resource/model load helper
- *   fn_80137114 (tracefxRender)          -- Per-frame trail rendering
- *   fn_8013735C (tracefxInit)            -- Initialise a TraceFXWork structure
- *   fn_8013757C (tracefxStartEffectImpl) -- Internal start implementation
- *   fn_80137780 (tracefxStopEffectImpl)  -- Internal stop / cleanup
+ *   wazaEffectParseParams                          -- Trail resource/model load helper
+ *   _wazaEffectParseBlur (tracefxRender)          -- Per-frame trail rendering
+ *   _wazaEffectParseSea (tracefxInit)            -- Initialise a TraceFXWork structure
+ *   _wazaEffectParseLightning (tracefxStartEffectImpl) -- Internal start implementation
+ *   _wazaEffectParseFilter (tracefxStopEffectImpl)  -- Internal stop / cleanup
  *   tracefxEffectCreate (tracefxStartUpdate)     -- Begin trail update cycle
- *   fn_801379E4 (tracefxSetTrailParam)   -- Set a trail parameter
- *   fn_80137A2C (tracefxSetTrailColor)   -- Set trail RGBA colour
+ *   _tracefxDestroy (tracefxSetTrailParam)   -- Set a trail parameter
+ *   _tracefxStop (tracefxSetTrailColor)   -- Set trail RGBA colour
  *   tracefxStartEffect (tracefxStartEffect)     -- Public start API
  *   _tracefxUpdate (tracefxAddSegment)      -- Add segments to a running trail
  *   _tracefxRender (tracefxUpdate)          -- Per-frame trail logic update
  *
  * A prior campaign transplant had left invented duplicate definitions
  * named tracefxInit, tracefxAddSegment, and tracefxUpdate that reimplement
- * fn_8013735C, _tracefxUpdate, and _tracefxRender under friendly names; none had
+ * _wazaEffectParseSea, _tracefxUpdate, and _tracefxRender under friendly names; none had
  * any callers anywhere in the tree (the real fn_ names are what get called
  * -- see tracefxEffectCreate below), so they have been removed, along with the
  * tracefxStartEffect_Draft helper that only existed to call the fictional
@@ -39,10 +39,10 @@
  *   3. Applying colour fade and width taper over the segment lifetime.
  *   4. Rendering via the GS rendering pipeline (GSpart model system).
  *
- * fn_801364A8 was merged in from the former game/effect/effect_util.c
+ * wazaEffectParseParams was merged in from the former game/effect/effect_util.c
  * CodeCandidate bucket (0x8013151C - 0x80137114): it shares the
  * 60.0f/0.0f/int-to-float state and directly calls
- * fn_80137114/fn_8013735C/fn_8013757C/fn_80137780 below, so it is the
+ * _wazaEffectParseBlur/_wazaEffectParseSea/_wazaEffectParseLightning/_wazaEffectParseFilter below, so it is the
  * true first function of this translation unit.
  *
  * Address range: 0x801364A8 - 0x801380D4 (approx.)
@@ -54,7 +54,7 @@
 
 /* ===== External engine functions ===== */
 extern void  GSlogWrite(const char* fmt, ...);          /* OSReport / GSlog */
-extern u32   GSgfxGetFrameCount(void);                   /* fn_800D37CC */
+extern u32   GSgfxGetFrameCount(void);                   /* GSgfxGetVsyncRate */
 extern void* GSresGetResource(u32 group, u32 model);         /* GSfloor model load */
 extern void* GSmodelGetPart(void* model, u16 partIdx);     /* GSpart get sub-part */
 extern void  GSpartGetTransform(void* part, void* outPos,
@@ -75,7 +75,7 @@ extern void  loadModel(u32 memOffset, u32 size,
                           u32 data, u32 handle);         /* GSfloor load data */
 extern void  memset(void* dst, u32 val, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 len);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern void  GXDrawDone(void);
 extern void  GXInvalidateVtxCache(void);
 extern void  GStextureFree(void* p);
@@ -101,12 +101,12 @@ extern void  gfxVtxTexCoord(s32 a, f32 s, f32 t);
 extern void  gfxEnd(void);
 
 /* ===== Forward declarations (vtable callbacks) ===== */
-u8*   fn_80137114(u8* work, u8* params, s32 frames);
-u8*   fn_8013735C(u8* work, void* params, s32 frames);
-u8*   fn_8013757C(u8* work, void* params, s32 frames);
-u8*   fn_80137780();
-BOOL  fn_801379E4(u8* w);
-BOOL  fn_80137A2C(u8* w);
+u8*   _wazaEffectParseBlur(u8* work, u8* params, s32 frames);
+u8*   _wazaEffectParseSea(u8* work, void* params, s32 frames);
+u8*   _wazaEffectParseLightning(u8* work, void* params, s32 frames);
+u8*   _wazaEffectParseFilter();
+BOOL  _tracefxDestroy(u8* w);
+BOOL  _tracefxStop(u8* w);
 BOOL  _tracefxUpdate(u8* work, u32 steps);
 int   _tracefxRender(u8* w);
 BOOL  tracefxStartEffect(u8* w);
@@ -131,13 +131,13 @@ extern const char lbl_80272B08[]; /* "tracefxStartEffect: Could not start trail 
 #pragma push
 #pragma opt_propagation off
 /* 0x801364A8 | 0xC6C */
-u8* fn_801364A8(u8* work, u8* params) {
+u8* wazaEffectParseParams(u8* work, u8* params) {
     extern u8 lbl_80314638[];
     extern u8 lbl_80314AE8[];
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u16 GSmemAlloc(u32, u32);
     extern void* GStextureLoad(void*);
-    extern void fn_800EFD14(void*, u16);
+    extern void GStextureClaimHandle(void*, u16);
     extern void GStextureSetWrap(void*, s32, s32);
     extern void* memcpy(void*, const void*, u32);
     extern void envMapAddKey(u8*, s32, f32, f32);
@@ -153,7 +153,7 @@ u8* fn_801364A8(u8* work, u8* params) {
     s32 i;
 
 #define TRACEFX_FRAME_DURATION(total) \
-    ((u16)(s32)(((f32)(s32)fn_800D37CC() * (f32)(s32)(total)) / 60.0f))
+    ((u16)(s32)(((f32)(s32)GSgfxGetVsyncRate() * (f32)(s32)(total)) / 60.0f))
 
     desc = params;
     frames = *(s32*)(desc + 4);
@@ -161,11 +161,11 @@ u8* fn_801364A8(u8* work, u8* params) {
     memset(work, 0, 0xD8);
     *(u32*)(work + 0x00) = *(u32*)desc;
     *(s32*)(work + 0x04) =
-        (s32)(((f32)(s32)fn_800D37CC() * (f32)frames) / 60.0f);
+        (s32)(((f32)(s32)GSgfxGetVsyncRate() * (f32)frames) / 60.0f);
 
     switch (*(u32*)desc) {
     case 0:
-        params = fn_80137780(work + 8, params, frames);
+        params = _wazaEffectParseFilter(work + 8, params, frames);
         break;
 
     case 1:
@@ -192,7 +192,7 @@ u8* fn_801364A8(u8* work, u8* params) {
             copy = GSmemLock(handle);
             memcpy(copy, aligned, TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x4C)));
             *(u32*)(work + 0x60) = (u32)GStextureLoad(copy);
-            fn_800EFD14(*(void**)(work + 0x60), handle);
+            GStextureClaimHandle(*(void**)(work + 0x60), handle);
         } else {
             *(u32*)(work + 0x60) = 0;
         }
@@ -218,7 +218,7 @@ u8* fn_801364A8(u8* work, u8* params) {
         break;
 
     case 3:
-        params = fn_8013757C(work + 8, params, frames);
+        params = _wazaEffectParseLightning(work + 8, params, frames);
         break;
 
     case 4:
@@ -238,7 +238,7 @@ u8* fn_801364A8(u8* work, u8* params) {
             copy = GSmemLock(handle);
             memcpy(copy, aligned, TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x10)));
             *(u32*)(work + 0x1C) = (u32)GStextureLoad(copy);
-            fn_800EFD14(*(void**)(work + 0x1C), handle);
+            GStextureClaimHandle(*(void**)(work + 0x1C), handle);
         } else {
             *(u32*)(work + 0x1C) = 0;
         }
@@ -294,7 +294,7 @@ u8* fn_801364A8(u8* work, u8* params) {
     }
 
     case 6:
-        params = fn_8013735C(work + 8, params, frames);
+        params = _wazaEffectParseSea(work + 8, params, frames);
         break;
 
     case 7:
@@ -348,7 +348,7 @@ u8* fn_801364A8(u8* work, u8* params) {
             data = params + 0x10;
             for (i = 0; i < (s32)count; i++, data += 0x10) {
                 envMapAddKey(work + 8,
-                            (s32)(((f32)(s32)fn_800D37CC() * (f32)*(s32*)(data + 0x08)) / 60.0f),
+                            (s32)(((f32)(s32)GSgfxGetVsyncRate() * (f32)*(s32*)(data + 0x08)) / 60.0f),
                             *(f32*)(data + 0x00),
                             *(f32*)(data + 0x04));
             }
@@ -356,7 +356,7 @@ u8* fn_801364A8(u8* work, u8* params) {
         case 1: {
             u32 bits = *(s32*)(params + 0x08);
             f32 value = *(f32*)&bits;
-            s32 duration = ((f32)(s32)fn_800D37CC() * (f32)frames) / 60.0f;
+            s32 duration = ((f32)(s32)GSgfxGetVsyncRate() * (f32)frames) / 60.0f;
             s32 third = duration / 3;
 
             envMapAddKey(work + 8, third, 0.0f, value);
@@ -372,7 +372,7 @@ u8* fn_801364A8(u8* work, u8* params) {
     }
 
     case 9:
-        params = fn_80137114(work + 8, params, frames);
+        params = _wazaEffectParseBlur(work + 8, params, frames);
         break;
 
     case 10:
@@ -468,7 +468,7 @@ u8* fn_801364A8(u8* work, u8* params) {
             copy = GSmemLock(handle);
             memcpy(copy, aligned, TRACEFX_ALIGN32_SIZE(*(s32*)(params + 0x10)));
             *(u32*)(work + 0x0C) = (u32)GStextureLoad(copy);
-            fn_800EFD14(*(void**)(work + 0x0C), handle);
+            GStextureClaimHandle(*(void**)(work + 0x0C), handle);
         } else {
             *(u32*)(work + 0x0C) = 0;
         }
@@ -492,7 +492,7 @@ u8* fn_801364A8(u8* work, u8* params) {
  * =================================================================== */
 
 /* 0x80137114 | 0x248 */
-u8* fn_80137114(u8* work, u8* params, s32 frames) {
+u8* _wazaEffectParseBlur(u8* work, u8* params, s32 frames) {
     extern void blurAddKey(u8*, s32, f32, f32);
     s32 i;
     s32 duration;
@@ -508,7 +508,7 @@ u8* fn_80137114(u8* work, u8* params, s32 frames) {
         *(u32*)(work + 0x10) = *(u32*)(params + 8);
         data = params + 0x0C;
         for (i = 0; i < count; i++, data += 0x10) {
-            duration = ((f32)*(s32*)(data + 8) * (f32)(s32)fn_800D37CC()) / 60.0f;
+            duration = ((f32)*(s32*)(data + 8) * (f32)(s32)GSgfxGetVsyncRate()) / 60.0f;
             blurAddKey(work, duration, *(f32*)data, *(f32*)(data + 4));
         }
         break;
@@ -516,7 +516,7 @@ u8* fn_80137114(u8* work, u8* params, s32 frames) {
         *(u32*)(work + 0x10) = 1;
         data = params + 8;
         for (i = 0; i < count; i++, data += 0x10) {
-            duration = ((f32)*(s32*)(data + 8) * (f32)(s32)fn_800D37CC()) / 60.0f;
+            duration = ((f32)*(s32*)(data + 8) * (f32)(s32)GSgfxGetVsyncRate()) / 60.0f;
             blurAddKey(work, duration, *(f32*)data, *(f32*)(data + 4));
         }
         break;
@@ -526,7 +526,7 @@ u8* fn_80137114(u8* work, u8* params, s32 frames) {
             u32 bits = *(u32*)params;
             value = *(f32*)&bits;
         }
-        frames = ((f32)frames * (f32)(s32)fn_800D37CC()) / 60.0f;
+        frames = ((f32)frames * (f32)(s32)GSgfxGetVsyncRate()) / 60.0f;
         duration = frames;
         duration = duration / 3;
         blurAddKey(work, duration, 0.0f, value);
@@ -541,7 +541,7 @@ u8* fn_80137114(u8* work, u8* params, s32 frames) {
 /* 86.32%: real correct C. Documented src-dup 5-reg stmw reg-coloring (target copies
  * params->r31 so r29 reuses for arena; CW coalescer keeps 4 regs) + float-const
  * band-isolation reloc (lbl_8047D118 @nn) = un-saveable in isolated band. equivalent.txt */
-u8* fn_8013735C(u8* work, void* params, s32 frames) {
+u8* _wazaEffectParseSea(u8* work, void* params, s32 frames) {
     u8* p = params;
     s32 memOffset = 0;
     void* model;
@@ -560,7 +560,7 @@ u8* fn_8013735C(u8* work, void* params, s32 frames) {
     }
 
     *(s16*)(work + 0xa6) =
-        (s16)(((f32)frames * (f32)(s32)fn_800D37CC()) / 60.0f);
+        (s16)(((f32)frames * (f32)(s32)GSgfxGetVsyncRate()) / 60.0f);
 
     *(f32*)(work + 0x48) = *(f32*)(p + 0x00);
     *(f32*)(work + 0x4c) = *(f32*)(p + 0x04);
@@ -610,10 +610,10 @@ u8* fn_8013735C(u8* work, void* params, s32 frames) {
 }
 
 /* 0x8013757C | 0x204 */
-u8* fn_8013757C(u8* work, void* params, s32 frames) {
+u8* _wazaEffectParseLightning(u8* work, void* params, s32 frames) {
     extern u16 GSmemAlloc(u32, u32);
     extern void* GStextureLoad(void*);
-    extern void fn_800EFD14(void*, u16);
+    extern void GStextureClaimHandle(void*, u16);
     extern void GStextureSetWrap(void*, s32, s32);
     extern u8 lbl_80314638[];
     extern u8 lbl_80314AE8[];
@@ -623,7 +623,7 @@ u8* fn_8013757C(u8* work, void* params, s32 frames) {
     memset(work, 0, 0x70);
 
     *(u16*)(work + 0x12) =
-        (u16)(((f32)frames * (f32)(s32)fn_800D37CC()) / 60.0f);
+        (u16)(((f32)frames * (f32)(s32)GSgfxGetVsyncRate()) / 60.0f);
 
     work[0x23] = *(u32*)(p + 0) >> 24;
     work[0x22] = *(u32*)(p + 0) >> 16;
@@ -653,7 +653,7 @@ u8* fn_8013757C(u8* work, void* params, s32 frames) {
         void* copy = GSmemLock(handle);
         memcpy(copy, params, TRACEFX_ALIGN32_SIZE(*(u32*)(p + 0x4C)));
         *(void**)(work + 0x1C) = GStextureLoad(copy);
-        fn_800EFD14(*(void**)(work + 0x1C), handle);
+        GStextureClaimHandle(*(void**)(work + 0x1C), handle);
     } else {
         *(void**)(work + 0x1C) = NULL;
     }
@@ -667,7 +667,7 @@ u8* fn_8013757C(u8* work, void* params, s32 frames) {
 }
 
 /* 0x80137780 | 0x1EC */
-u8* fn_80137780(u8* work, u8* params) {
+u8* _wazaEffectParseFilter(u8* work, u8* params) {
     /* RULE-EXCEPTION(user-approved): int stride local and combined advance chosen for register allocation (permuter farm) — see docs/RULE_EXCEPTIONS.md */
     int stride;
     typedef struct TraceColor {
@@ -739,7 +739,7 @@ u8* fn_80137780(u8* work, u8* params) {
             filterAddKey(work, &first, &second, -1);
         } else {
             filterAddKey(work, &first, &second,
-                        ((f32)*(s32*)(data + 8) * (f32)(s32)fn_800D37CC()) / 60.0f);
+                        ((f32)*(s32*)(data + 8) * (f32)(s32)GSgfxGetVsyncRate()) / 60.0f);
         }
     }
     return data;
@@ -755,7 +755,7 @@ u8* fn_80137780(u8* work, u8* params) {
 void* tracefxEffectCreate(void* owner) {
     void* obj = GSeffectCreate(owner, 0x2C);
     if (obj != (void*)0) {
-        GSeffectSetCallbacks(obj, 0, fn_801379E4, tracefxStartEffect, fn_80137A2C, 0,
+        GSeffectSetCallbacks(obj, 0, _tracefxDestroy, tracefxStartEffect, _tracefxStop, 0,
                     _tracefxUpdate, _tracefxRender);
         GSeffectSetup(obj, 0);
     }
@@ -763,7 +763,7 @@ void* tracefxEffectCreate(void* owner) {
 }
 
 /* 0x801379E4 | 0x48 */
-BOOL fn_801379E4(u8* w) {
+BOOL _tracefxDestroy(u8* w) {
     if (w != (void*)0) {
         GXDrawDone();
         GXInvalidateVtxCache();
@@ -775,7 +775,7 @@ BOOL fn_801379E4(u8* w) {
 }
 
 /* 0x80137A2C | 0x78 */
-BOOL fn_80137A2C(u8* w) {
+BOOL _tracefxStop(u8* w) {
     u16 handle;
     if (w != (void*)0) {
         GXDrawDone();

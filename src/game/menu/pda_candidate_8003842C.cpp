@@ -122,7 +122,7 @@ void std024_dialogDisplayPCBoxMenu(void)
     extern void menuPokemonModelRequestById(u8* model, s32 id);
     extern void menuModelTerm(u8* model);
     extern void* peopleInfoBiosGetPtr(s32 id);
-    extern void fn_8018F4C8(void* info, s32 kind, s32* out0, s32* out1);
+    extern void peopleInfoGetMotion(void* info, s32 kind, s32* out0, s32* out1);
     s32 state;
     s32 running;
     s32 choice;
@@ -191,7 +191,7 @@ void std024_dialogDisplayPCBoxMenu(void)
             menuModelInit(lbl_803A6498, (s16)(*(s16*)(lbl_802EF0A8 + 0x5fd6) + 0xa),
             *(s16*)(lbl_802EF0A8 + 0x5fd8));
             menuPokemonModelRequestById(lbl_803A6498, 0xf70400);
-            fn_8018F4C8(peopleInfoBiosGetPtr(0xf70400), 1, &motion, &scratch);
+            peopleInfoGetMotion(peopleInfoBiosGetPtr(0xf70400), 1, &motion, &scratch);
             menuModelSetMotion(lbl_803A6498, motion);
             choice = pcMenuSave();
             menuModelTerm(lbl_803A6498);
@@ -219,7 +219,7 @@ void std024_dialogDisplayPCBoxMenu(void)
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma scheduling off
-void fn_800388C4(void)
+void pcCloseAllMenus(void)
 {
     extern void menuCloseCustom(s32 slot, s32 arg1, s32 arg2);
 
@@ -248,14 +248,14 @@ void fn_800388C4(void)
 
 extern f32 lbl_8047A494;
 
-void fn_80038990(void)
+void pcFrameStepTask(void)
 {
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     extern void _threadSwitch(void);
 
     while (1) {
-        lbl_8047A494 = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        lbl_8047A494 = (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
         _threadSwitch();
     }
 }
@@ -267,7 +267,7 @@ void fn_80038990(void)
 extern f32 lbl_8047A484;
 extern f32 lbl_8047BA58;
 
-void fn_80038A00(void)
+void pcResetTimer8047A484(void)
 {
     lbl_8047A484 = lbl_8047BA58;
 }
@@ -309,12 +309,12 @@ static inline void pdaResetPeopleTablesSave(u8* base, u8* tbl)
 
 static inline void pdaFillSavePrompt(void)
 {
-    extern u32 fn_80005748(void);
+    extern u32 gamedataGetPlaytime(void);
     extern u32 darkPokemonCountFlag14(void);
     extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
-    playTime = fn_80005748();
+    playTime = gamedataGetPlaytime();
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
@@ -335,11 +335,11 @@ s32 pcMenuSave(void)
 {
     extern s32 menuOpen(s32 menu, s32 mode);
     extern s8 menuSubOpenYesNo(s32 a, s32 b, s32 c, s32 d);
-    extern u32 fn_80005748(void);
+    extern u32 gamedataGetPlaytime(void);
     extern void gamedataSetPlaytime(f32 seconds);
     extern void* memcardAllocBuffer(void);
     extern void memcardFreeBuffer(void* buffer);
-    extern s32 fn_801D0748(s32 a, s32 b, s32 c);
+    extern s32 memcardWaitTask2(s32 a, s32 b, s32 c);
     extern void* savedataGetStatus(void* buffer, s32 kind);
     extern u32 gamedatasaveGetStatus(void* buffer, s32 kind);
     extern u32 heroGetStatus(void* data, s32 a, s32 b);
@@ -352,7 +352,7 @@ s32 pcMenuSave(void)
     extern void gamedatasaveBiosSetFloorid(void* data, s32 value);
     extern void gamedatasaveBiosSetPrevfloorid(void* data, s32 value);
     extern void gamedatasaveBiosSetFloorposindex(void* data, u8 value);
-    extern void fn_8011418C(s32* floorId, s32* prevFloorId, u8* posIndex);
+    extern void floorGetSaveInfo(s32* floorId, s32* prevFloorId, u8* posIndex);
     void* backup;
     u8* slot;
     u8 saved;
@@ -390,12 +390,12 @@ s32 pcMenuSave(void)
         case 2:
             backup = (saved = 1, memcardAllocBuffer());
             *(PdaSaveImage*)backup = *(PdaSaveImage*)savedataGetStatus(0, 0);
-            if (fn_801D0748(3, 2, 0) == 3 &&
+            if (memcardWaitTask2(3, 2, 0) == 3 &&
                 gamedatasaveGetStatus(0, 4) != 0) {
                 u32 previousHeroId = heroGetStatus(savedataGetStatus(backup, 2), 2, 0);
                 if (previousHeroId == heroGetStatus(0, 2, 0) ||
                     gamedatasaveGetStatus(backup, 4) == 0) {
-                    lbl_8047A498 = fn_80005748();
+                    lbl_8047A498 = gamedataGetPlaytime();
                     pdaFillSavePrompt();
                     lbl_8047A480 = (void*)0x1b60;
                     answer = menuSubOpenYesNo(0, 0x3c, 0x118, 1);
@@ -404,11 +404,11 @@ s32 pcMenuSave(void)
                     } else {
                         saved = 1;
                     }
-                    lbl_8047A498 = fn_80005748() - lbl_8047A498;
+                    lbl_8047A498 = gamedataGetPlaytime() - lbl_8047A498;
                 }
             }
             *(PdaSaveImage*)savedataGetStatus(0, 0) = *(PdaSaveImage*)backup;
-            gamedataSetPlaytime((f32)(lbl_8047A498 + fn_80005748()));
+            gamedataSetPlaytime((f32)(lbl_8047A498 + gamedataGetPlaytime()));
             lbl_8047A498 = 0;
             memcardFreeBuffer(backup);
             if (saved) {
@@ -425,11 +425,11 @@ s32 pcMenuSave(void)
             *(s32*)lbl_803A64E0 = gamedatasaveBiosGetFloorid(data);
             *(s32*)&slot[4] = gamedatasaveBiosGetPrevfloorid(data);
             slot[8] = gamedatasaveBiosGetFloorposindex(data);
-            fn_8011418C(&floorId, &prevFloorId, &posIndex);
+            floorGetSaveInfo(&floorId, &prevFloorId, &posIndex);
             gamedatasaveBiosSetFloorid(data, floorId);
             gamedatasaveBiosSetPrevfloorid(data, prevFloorId);
             gamedatasaveBiosSetFloorposindex(data, posIndex);
-            fn_801D0748(4, 2, 0);
+            memcardWaitTask2(4, 2, 0);
             state = 0x64;
             break;
         case 0x64:

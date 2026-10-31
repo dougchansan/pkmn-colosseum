@@ -6,7 +6,7 @@ extern void _winSeqMoveSub(void* targetPtr, void* statePtr);
 extern void* windowSearchID(s32 id);
 extern u8 lbl_80404B68[];
 
-void fn_80106F98(s32 windowId)
+void winSeqUpdateAll(s32 windowId)
 {
     u8* window = windowSearchID(windowId);
     u8* node;

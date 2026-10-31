@@ -54,7 +54,7 @@ extern void* memcpy(void* dst, const void* src, u32 n);
 extern void GSlogWritef(const char* fmt, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);   /* GSmemAllocRaw */
 extern void* GSmemLock(u16 handle);         /* GSmemGetPtr */
-extern u32 fn_800D3094(void);
+extern u32 GSgfxGetRetraceCount(void);
 extern void fn_800AAD34(u32 mask);            /* PADReset */
 extern BOOL PADRecalibrate(u32 mask);            /* PADRecalibrate */
 extern BOOL PADInit(void);                /* PADInit */
@@ -83,7 +83,7 @@ extern u32 lbl_8047AC48;
 /* Channels waiting for PADReset. The PAD sampling callback (inputPadCallback)
  * sets and clears these bits, so GSinputRead re-reads it on every use. */
 extern volatile u32 lbl_8047AC4C;
-/* fn_800D3094 value at the last PADReset. */
+/* GSgfxGetRetraceCount value at the last PADReset. */
 extern u32 lbl_8047AC50;
 
 static inline InputPad* InputFindPad(s32 id) {
@@ -443,7 +443,7 @@ u32 GSinputRead(s32 id) {
 
     pad->prevButton = pad->current.button;
     level = OSDisableInterrupts();
-    now = fn_800D3094();
+    now = GSgfxGetRetraceCount();
     if (lbl_8047AC4C != 0 && now != lbl_8047AC50) {
         fn_800AAD34(lbl_8047AC4C);
         lbl_8047AC50 = now;
@@ -532,7 +532,7 @@ u32 GSinputGetSubType(s32 id) {
     return pad->type;
 }
 
-u16 fn_800F7BC4(s32 id) {
+u16 GSinputGetButtons(s32 id) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {
@@ -541,7 +541,7 @@ u16 fn_800F7BC4(s32 id) {
     return pad->current.button;
 }
 
-u32 fn_800F7B5C(s32 id) {
+u32 GSinputGetButtonsUp(s32 id) {
     InputPad* pad = InputFindPad(id);
 
     if (pad == NULL) {

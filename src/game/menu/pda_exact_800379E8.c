@@ -2,8 +2,8 @@
  * @file pda_exact_800379E8.c
  * @brief PDA orbit-sprite callbacks, 0x800379E8 - 0x80037F40.
  *
- * Function-boundary carve of pda_range_80037158.c: fn_800379E8,
- * fn_80037BB0 and fn_80037D78 all inline pdaUpdateOrbitSprite without a
+ * Function-boundary carve of pda_range_80037158.c: menu20DrawAnim,
+ * menu22DrawAnim and menu21DrawAnim all inline pdaUpdateOrbitSprite without a
  * target update. The literals 0.0f and 2pi resolve to the shared
  * lbl_8047BA58/lbl_8047BA60 through configure.py's constant_import.
  */
@@ -103,7 +103,7 @@ static inline void pdaUpdateOrbitSprite(PdaSprite* sprite, f32 baseAngle,
 }
 
 #pragma peephole off
-void fn_800379E8(void* window, PdaSprite* sprite)
+void menu20DrawAnim(void* window, PdaSprite* sprite)
 {
     extern f32 lbl_802E52B8[4];
     (void)window;
@@ -112,7 +112,7 @@ void fn_800379E8(void* window, PdaSprite* sprite)
 #pragma peephole reset
 
 #pragma peephole off
-void fn_80037BB0(void* window, PdaSprite* sprite)
+void menu22DrawAnim(void* window, PdaSprite* sprite)
 {
     extern f32 lbl_802E52B8[4];
     (void)window;
@@ -121,7 +121,7 @@ void fn_80037BB0(void* window, PdaSprite* sprite)
 #pragma peephole reset
 
 #pragma peephole off
-void fn_80037D78(void* window, PdaSprite* sprite)
+void menu21DrawAnim(void* window, PdaSprite* sprite)
 {
     extern f32 lbl_802E52B8[4];
     (void)window;

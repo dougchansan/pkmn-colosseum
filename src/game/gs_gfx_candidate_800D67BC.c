@@ -6,17 +6,17 @@
  * would own: no jump table, no pooled constant, and the primitive table
  * (lbl_80314350) and draw counters (lbl_804001F0) stay extern.
  *
- * Retail expands fn_800D6A80 (the vertex/primitive counter, out of line at
+ * Retail expands gfxCountPrims (the vertex/primitive counter, out of line at
  * 0x800D6A80 and owned by gs_gfx_exact_800D6A00.c) at the end of this
  * function, with the two counter addresses constant-folded. The callee
  * sits later in the TU than this caller, so the original build inlined it
  * with deferred inlining. The carve reproduces the same expansion by
- * defining the same fn_800D6A80 source `inline` ahead of the caller, which
- * emits no second fn_800D6A80 symbol.
+ * defining the same gfxCountPrims source `inline` ahead of the caller, which
+ * emits no second gfxCountPrims symbol.
  */
 #include "dolphin/types.h"
 
-extern void fn_800DB758(u16 vertCount);
+extern void gfxBeginPrimitive(u16 vertCount);
 extern void gfxRecordCommand(u32, u32, ...);
 extern void gfxVtxDescClear(u8*);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
@@ -28,7 +28,7 @@ extern u32 lbl_8047AA80;
 extern u32 lbl_80314350[];
 extern u8 lbl_804001F0[];
 
-inline void fn_800D6A80(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims) {
+inline void gfxCountPrims(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims) {
     *totalVerts += vertCount;
     switch (type) {
         case 3: *totalPrims += vertCount / 3; break;
@@ -41,7 +41,7 @@ inline void fn_800D6A80(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrim
 
 void gfxBegin(u16 vertCount) {
     if (*(u8*)(lbl_8047AA80 + 0x47e) == 1) {
-        fn_800DB758(vertCount);
+        gfxBeginPrimitive(vertCount);
         return;
     }
     if (*(s32*)lbl_8047AA80 == 1) {
@@ -78,6 +78,6 @@ void gfxBegin(u16 vertCount) {
     gfxSetupChannelsTev(*(u32*)(lbl_8047AA80 + 0x24));
     GXBegin(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
                 *(u32*)(*(u32*)(lbl_8047AA80 + 0x24) + 0x4), vertCount);
-    fn_800D6A80(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
+    gfxCountPrims(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
                 (u32*)(lbl_804001F0 + 0xc), (u32*)(lbl_804001F0 + 0x4));
 }

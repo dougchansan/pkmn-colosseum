@@ -29,7 +29,7 @@ void pcboxInit(void* base)
 {
     extern void GSmsgGetText(void*, u32, u32);
     extern void pokemonInitAry(void*, u32);
-    extern void fn_80142A88(void*, u32);
+    extern void itemSlotsClear(void*, u32);
     u8* status;
     s32 i;
     u8* cur;
@@ -49,7 +49,7 @@ void pcboxInit(void* base)
         cur += 0x24A4;
     } while (i < 3);
 
-    fn_80142A88(status + 0x6DEC, 0xEB);
+    itemSlotsClear(status + 0x6DEC, 0xEB);
 }
 
 void pcboxSetStatus(void)

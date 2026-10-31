@@ -61,7 +61,7 @@ void _vtrTexDispFunc__Fv(void)
     extern void gfxSetUpdates(s32, s32, s32);
     extern void gfxSetZMode(s32, s32, s32);
     extern void gfxSetCullMode(s32);
-    extern void fn_800D9ED8(s32);
+    extern void gfxSetFlag1A(s32);
     extern void gfxSetPrimitive(s32 primitive);
     extern void gfxSetVtxDesc(void* format);
     extern void gfxBegin(s32 count);
@@ -88,7 +88,7 @@ void _vtrTexDispFunc__Fv(void)
     gfxSetUpdates(1, 1, 0);
     gfxSetZMode(0, 1, 1);
     gfxSetCullMode(0);
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     gfxSetPrimitive(4);
 
     if (lbl_8047B435) {
@@ -150,5 +150,5 @@ void _vtrTexDispFunc__Fv(void)
         GSmsgPrintf(0x230, 0x2C, -1, lbl_8047E474);
         break;
     }
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 }

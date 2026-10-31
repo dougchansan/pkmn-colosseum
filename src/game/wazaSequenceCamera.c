@@ -108,13 +108,13 @@ extern s32 lbl_8047B410;
 extern f32 lbl_80478CDC;
 
 extern u8 lbl_80467CC0[];
-extern void fn_801DD158(void* obj);
+extern void wazaSequenceOwnerUpdate(void* obj);
 extern void wazaSequenceOwnerUpdateBlink(void* obj);
-extern void fn_801DD3E4(void* obj);
+extern void wazaSequenceOwnerFreeAll(void* obj);
 extern void wazaSequenceOwnerRelease(void* obj);
 extern void _threadSwitch(void);
-extern s32 fn_8017B2CC(s32 id);
-extern void fn_800F915C(s32 id);
+extern s32 GSresGroupGetState(s32 id);
+extern void GSresReleaseOwner(s32 id);
 extern void GSresReleaseById(s32 id);
 #ifndef WAZA_CAMERA_FILE_ONLY
 void* battleCameraWazaGetOwner(void) {
@@ -130,14 +130,14 @@ void* battleCameraWazaGetOwner(void) {
  * ========================================================================= */
 
 /**
- * fn_801D2C74 - Waza animation pre-check.
+ * battleCameraWazaRestart - Waza animation pre-check.
  * Address: 0x801D2C74 | Size: 0xB4
  */
 #ifndef WAZA_CAMERA_FILE_ONLY
-void fn_801D2C74(void* owner) {
+void battleCameraWazaRestart(void* owner) {
     extern void GSscene_SetMode(s32 arg);
     extern void cameraStopAnime(void* arg);
-    extern void fn_801765F4(s32 arg);
+    extern void battleCameraSetFlag3(s32 arg);
     extern s32  GSgetVersionMinor(void);
     extern u8   lbl_8047B3F4;
 
@@ -155,7 +155,7 @@ void fn_801D2C74(void* owner) {
                     }
                     lbl_8047B3F0 = NULL;
                 }
-                fn_801765F4(0);
+                battleCameraSetFlag3(0);
                 lbl_8047B3EC = NULL;
                 if (GSgetVersionMinor() == 2) {
                     GSscene_SetMode(2);
@@ -168,10 +168,10 @@ void fn_801D2C74(void* owner) {
 #endif
 
 /**
- * fn_801D2D28 - Waza animation setup from move data.
+ * battleCameraWazaUpdate - Waza animation setup from move data.
  * Address: 0x801D2D28 | Size: 0x26C
  */
-void fn_801D2D28(void)
+void battleCameraWazaUpdate(void)
 {
     typedef struct CameraFovKey {
         f32 start;
@@ -273,14 +273,14 @@ void fn_801D2D28(void)
 }
 
 /**
- * fn_801D2F94 - Waza animation teardown.
+ * battleCameraWazaStop - Waza animation teardown.
  * Address: 0x801D2F94 | Size: 0x88
  */
 extern void GSscene_SetMode(s32 arg);
 extern void cameraStopAnime(void* arg);
-extern void fn_801765F4(s32 arg);
+extern void battleCameraSetFlag3(s32 arg);
 extern s32  GSgetVersionMinor(void);
-void fn_801D2F94(void) {
+void battleCameraWazaStop(void) {
     void* obj;
     if (lbl_8047B3EC != NULL) {
         obj = lbl_8047B3F0;
@@ -292,7 +292,7 @@ void fn_801D2F94(void) {
             }
             lbl_8047B3F0 = NULL;
         }
-        fn_801765F4(0);
+        battleCameraSetFlag3(0);
         lbl_8047B3EC = NULL;
         if (GSgetVersionMinor() == 2) {
             GSscene_SetMode(2);
@@ -312,10 +312,10 @@ void battleCameraWazaInit(void) {
 }
 
 /**
- * fn_801D3034 - Waza animation frame step.
+ * battleCameraWazaStopIfOwner - Waza animation frame step.
  * Address: 0x801D3034 | Size: 0x88
  */
-void fn_801D3034(void* state) {
+void battleCameraWazaStopIfOwner(void* state) {
     void* obj;
     if (state == lbl_8047B3EC) {
         obj = lbl_8047B3F0;
@@ -327,7 +327,7 @@ void fn_801D3034(void* state) {
             }
             lbl_8047B3F0 = NULL;
         }
-        fn_801765F4(0);
+        battleCameraSetFlag3(0);
         lbl_8047B3EC = NULL;
         if (GSgetVersionMinor() == 2) {
             GSscene_SetMode(2);
@@ -357,7 +357,7 @@ void battleCameraStartWaza(void* owner, void* sequence) {
     extern void* GSmodelGetBound(void* model);
     extern void GSmodelGetPosition(void* model, Vec* out);
     extern void GSmodelGetRotation(void* model, Vec* out);
-    extern void fn_800D1070(s32 mode);
+    extern void cameraObjectAnimUpdate(s32 mode);
     u8* ownerBytes = owner;
     u8* sequenceBytes = sequence;
     Vec offsetPosition;
@@ -433,17 +433,17 @@ void battleCameraStartWaza(void* owner, void* sequence) {
                     offsetPosition.y += rootPosition.y;
                 }
                 GSmodelGetRotation(model, &offsetRotation);
-                scaleValue = fn_801DABAC(owner);
+                scaleValue = wazaSequenceOwnerGetScale(owner);
                 set__5GSvecFfff(
                     (f32*)&offsetScale, scaleValue, scaleValue, scaleValue);
             }
 
-            fn_801765F4(animShift);
+            battleCameraSetFlag3(animShift);
             cameraMoveStop();
             cameraSetOffsetPosition(&offsetPosition);
             cameraSetOffsetRotation(&offsetRotation);
             cameraSetOffsetScale(&offsetScale);
-            fn_800D1070(0);
+            cameraObjectAnimUpdate(0);
             cameraUpdate();
             return;
         }
@@ -548,7 +548,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         f32 out_far;
     } WazaSequenceCameraParamsLocal;
     extern f32 GSrandf(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void cameraSetDistance(f32);
     extern void cameraSetHeight(f32);
     extern void cameraSetRotY(f32);
@@ -608,7 +608,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         } else {
             direction.x -= offset;
         }
-        cameraMovePosition(7, &direction, (f32)duration / (f32)fn_800D37CC());
+        cameraMovePosition(7, &direction, (f32)duration / (f32)GSgfxGetVsyncRate());
 
         square = offset * offset + height * height;
         params->out_near = sqrtf(square);
@@ -661,7 +661,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         cameraSetHeight(height);
         cameraSetRotY(rotA);
         cameraUpdate();
-        cameraMoveRotationXYZ(7, 0.0f, rotB, 0.0f, (f32)duration / (f32)fn_800D37CC());
+        cameraMoveRotationXYZ(7, 0.0f, rotB, 0.0f, (f32)duration / (f32)GSgfxGetVsyncRate());
 
         length = sqrtf(distance * distance + height * height);
         params->out_far = length;
@@ -706,7 +706,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         cameraSetRotY(rotation);
         cameraUpdate();
         GSscene_GetCameraDirectionVector(&direction);
-        cameraMovePosition(7, &direction, (f32)duration / (f32)fn_800D37CC());
+        cameraMovePosition(7, &direction, (f32)duration / (f32)GSgfxGetVsyncRate());
 
         length = sqrtf(distance * distance + length * length);
         params->out_far = length;
@@ -738,7 +738,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         cameraSetRotY(rotation);
         cameraUpdate();
         GSscene_GetCameraDirectionVector(&direction);
-        cameraMovePosition(7, &direction, (f32)duration / (f32)fn_800D37CC());
+        cameraMovePosition(7, &direction, (f32)duration / (f32)GSgfxGetVsyncRate());
 
         length = sqrtf(110.0f * 110.0f + 25.0f * 25.0f);
         params->out_far = length;
@@ -798,7 +798,7 @@ void _wazaSequenceCameraDoPosition__FP13ModelSequenceP24wazaSequenceCameraParams
         cameraSetRotY(rotation);
         cameraUpdate();
         GSscene_GetCameraDirectionVector(&direction);
-        cameraMovePosition(7, &direction, (f32)duration / (f32)fn_800D37CC());
+        cameraMovePosition(7, &direction, (f32)duration / (f32)GSgfxGetVsyncRate());
 
         length = sqrtf(distance * distance + height * height);
         params->out_far = length;
@@ -843,7 +843,7 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
     extern void GSscene_GetCameraPositionVector(Vec*);
     extern void GSvecSub(Vec*, Vec*, Vec*);
     extern void vecScale(Vec*, Vec*, f32);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void cameraMovePosition(s32, Vec*, f32);
     u8* file = header;
     WazaCameraParams* camera = params;
@@ -942,7 +942,7 @@ void _wazaSequenceCameraDoDollyPosition__FP21TemplateExpFileHeaderP24wazaSequenc
     direction.y = height;
     GSvecAdd(&direction, &direction, &position);
     delay = duration - randomDelay;
-    cameraMovePosition(7, &direction, (f32)delay / (f32)fn_800D37CC());
+    cameraMovePosition(7, &direction, (f32)delay / (f32)GSgfxGetVsyncRate());
 
     camera->nearDistance =
         sqrtf(nearDistance * nearDistance + height * height);

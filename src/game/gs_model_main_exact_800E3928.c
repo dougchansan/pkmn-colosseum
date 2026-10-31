@@ -181,10 +181,10 @@ extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
 extern void modelShadowInit__Fv(void);
-extern void fn_800EC134(GSmodel* model);
+extern void GSmodelApplyAnimation(GSmodel* model);
 extern void gsParticleKill(void* bank, u32 destroyChildren);
 extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
-extern u32 fn_80191118(GSbound* bound);
+extern u32 GSboundIsVisible(GSbound* bound);
 extern u32 GSmaterialGetEnabledExtensions(void* material);
 extern void GSmaterialGetModulate(void* material, GScolor* color);
 extern void GSmaterialSetModulate(void* material, const GScolor* color);
@@ -201,7 +201,7 @@ extern void GSmemFree(u32 handle);
 extern void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model);
 extern void GSmodelRemoveNull(GSmodel* model);
 extern void modelRemoveCenterNull(GSmodel* model);
-extern HSDJObj* fn_801A02B0(HSDJObj* jobj);
+extern HSDJObj* HSD_JObjRemove_801A02B0(HSDJObj* jobj);
 extern void HSD_JObjUnref(void* object);
 extern void* memset(void* dst, int value, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
@@ -222,7 +222,7 @@ extern void clear__5GSvecFv(GSvec* vec);
 extern u8 modelProcessAt60fps__FP8_GSmodel(GSmodel* model);
 extern void GSmodelAdvanceAnimation(GSmodel* model, f32 frames);
 extern void PSMTXCopy(const f32 src[3][4], f32 dst[3][4]);
-extern void fn_8019D620(HSDJObj* jobj);
+extern void HSD_JObjSetMtxDirtySub_8019D620(HSDJObj* jobj);
 extern GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 extern void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation, GSvec* scale);
 extern void GSpartFree(GSpart* part);
@@ -234,7 +234,7 @@ extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void GSmodelSetAnimType(GSmodel* model, u32 type);
 extern void GSmodelStartAnimation(GSmodel* model);
 
-void fn_800E85E8(GSmodel* model);
+void GSmodelFreeTextureList(GSmodel* model);
 
 static inline void modelUpdateBoundCenter(GSmodel* model)
 {
@@ -270,7 +270,7 @@ void GSmodelApplyAll(void* unused)
                 if (flags & GSMODEL_FLAG_BOUND_CHECK) {
                     u8 boundVisible;
 
-                    boundVisible = fn_80191118(&model->bound) != 0;
+                    boundVisible = GSboundIsVisible(&model->bound) != 0;
                     if (boundVisible == 1) {
                         model->flags.raw |= GSMODEL_FLAG_BOUND_VISIBLE;
                     } else {
@@ -312,14 +312,14 @@ void GSmodelApplyAll(void* unused)
             flags = model->flags.raw;
             if ((flags & GSMODEL_FLAG_BOUND_VISIBLE) &&
                 (flags & GSMODEL_FLAG_UPDATE_BOUND)) {
-                fn_80190E60(&model->bound);
+                GSboundDebugDraw(&model->bound);
             }
         }
         i++;
     }
 }
 
-GSmodel* fn_800E3B08(u32 index)
+GSmodel* GSmodelGetActiveEntry(u32 index)
 {
     GSmodel* model;
 
@@ -335,12 +335,12 @@ GSmodel* fn_800E3B08(u32 index)
     return NULL;
 }
 
-u32 fn_800E3B3C(void)
+u32 GSmodelGetPoolCount(void)
 {
     return lbl_8047AB78;
 }
 
-void fn_800E3B44(GSmodel* model, u8 enable)
+void GSmodelSetFlag400(GSmodel* model, u8 enable)
 {
     if (enable) {
         model->flags.raw |= GSMODEL_FLAG_PARTICLE_LINKED;
@@ -413,7 +413,7 @@ void GSmodelLinkToGSparticleBank(GSmodel* model, void* bank)
         model->linkedGSparticleBank = bank;
         if (model->linkedGSparticleBank != NULL) {
             GSmodelSetAnimFrame(model, model->animFrame);
-            fn_800EC134(model);
+            GSmodelApplyAnimation(model);
         }
     }
 }
@@ -423,9 +423,9 @@ GSbound* GSmodelGetBound(GSmodel* model)
     return &model->bound;
 }
 
-u32 fn_800E3C64(GSmodel* model)
+u32 GSmodelHasAnimation(GSmodel* model)
 {
-    return fn_80191118(&model->bound) != 0;
+    return GSboundIsVisible(&model->bound) != 0;
 }
 
 void GSmodelSetBoundCheck(GSmodel* model, u8 enable)
@@ -438,12 +438,12 @@ void GSmodelSetBoundCheck(GSmodel* model, u8 enable)
     model->flags.raw &= ~GSMODEL_FLAG_BOUND_CHECK;
 }
 
-u32 fn_800E3CBC(GSmodel* model)
+u32 GSmodelGetFlag200(GSmodel* model)
 {
     return (model->flags.raw & GSMODEL_FLAG_PARTICLE_TEXSTAGE) != 0;
 }
 
-void fn_800E3CC8(GSmodel* model, u8 enable)
+void GSmodelSetFlag200(GSmodel* model, u8 enable)
 {
     if (enable) {
         model->flags.raw |= GSMODEL_FLAG_PARTICLE_TEXSTAGE;
@@ -473,7 +473,7 @@ u32 GSmodelGetVisibility(GSmodel* model)
     return (model->flags.raw & GSMODEL_FLAG_VISIBLE) != 0;
 }
 
-void fn_800E3D14(GSmodel* model, GSvec* out)
+void GSmodelCopyPosition(GSmodel* model, GSvec* out)
 {
     GSvecCopy(out, &model->boundCenter);
 }
@@ -493,7 +493,7 @@ void GSmodelGetPosition(GSmodel* model, GSvec* out)
     GSvecCopy(out, &model->position);
 }
 
-void fn_800E3DC4(GSmodel* model, const GSvec* rotation)
+void GSmodelTranslate(GSmodel* model, const GSvec* rotation)
 {
     GSvec newRotation;
     HSDJObj* jobj;
@@ -534,7 +534,7 @@ void fn_800E3DC4(GSmodel* model, const GSvec* rotation)
                 }
 
                 if (dirty == 0) {
-                    fn_8019D620(jobj);
+                    HSD_JObjSetMtxDirtySub_8019D620(jobj);
                 }
             }
         }
@@ -568,7 +568,7 @@ void fn_800E3DC4(GSmodel* model, const GSvec* rotation)
                 }
 
                 if (dirty == 0) {
-                    fn_8019D620(jobj);
+                    HSD_JObjSetMtxDirtySub_8019D620(jobj);
                 }
             }
         }
@@ -605,7 +605,7 @@ void fn_800E3DC4(GSmodel* model, const GSvec* rotation)
                     }
 
                     if (dirty == 0) {
-                        fn_8019D620(zJObj);
+                        HSD_JObjSetMtxDirtySub_8019D620(zJObj);
                     }
                 }
             }
@@ -666,7 +666,7 @@ void GSmodelSetScale(GSmodel* model, GSvec* scale)
                 }
 
                 if (dirty == 0) {
-                    fn_8019D620(jobj);
+                    HSD_JObjSetMtxDirtySub_8019D620(jobj);
                 }
             }
         }
@@ -712,7 +712,7 @@ void GSmodelSetRotation(GSmodel* model, GSvec* rotation)
                 }
 
                 if (dirty == 0) {
-                    fn_8019D620(jobj);
+                    HSD_JObjSetMtxDirtySub_8019D620(jobj);
                 }
             }
         }
@@ -746,7 +746,7 @@ void GSmodelSetRotation(GSmodel* model, GSvec* rotation)
                 }
 
                 if (dirty == 0) {
-                    fn_8019D620(jobj);
+                    HSD_JObjSetMtxDirtySub_8019D620(jobj);
                 }
             }
         }
@@ -783,7 +783,7 @@ void GSmodelSetRotation(GSmodel* model, GSvec* rotation)
                 }
 
                 if (dirty == 0) {
-                    fn_8019D620(zJObj);
+                    HSD_JObjSetMtxDirtySub_8019D620(zJObj);
                 }
             }
         }
@@ -829,7 +829,7 @@ void GSmodelSetPosition(GSmodel* model, GSvec* position)
                 }
 
                 if (dirty == 0) {
-                    fn_8019D620(jobj);
+                    HSD_JObjSetMtxDirtySub_8019D620(jobj);
                 }
             }
         }
@@ -915,7 +915,7 @@ void GSmodelSetMatrix(GSmodel* model, const f32 matrix[3][4])
         }
 
         if (dirty == 0) {
-            fn_8019D620(jobj);
+            HSD_JObjSetMtxDirtySub_8019D620(jobj);
         }
     }
 }
@@ -958,7 +958,7 @@ void GSmodelDetachFromGSpart(GSmodel* model, u8 applyTransform)
                             dirty = 1;
                         }
                         if (dirty == 0) {
-                            fn_8019D620(jobj);
+                            HSD_JObjSetMtxDirtySub_8019D620(jobj);
                         }
                     }
                 }
@@ -1009,7 +1009,7 @@ void GSmodelDetachFromGSpart(GSmodel* model, u8 applyTransform)
                             dirty = 1;
                         }
                         if (dirty == 0) {
-                            fn_8019D620(jobj);
+                            HSD_JObjSetMtxDirtySub_8019D620(jobj);
                         }
                     }
                 }
@@ -1038,7 +1038,7 @@ void GSmodelDetachFromGSpart(GSmodel* model, u8 applyTransform)
                             dirty = 1;
                         }
                         if (dirty == 0) {
-                            fn_8019D620(jobj);
+                            HSD_JObjSetMtxDirtySub_8019D620(jobj);
                         }
                     }
                 }
@@ -1067,7 +1067,7 @@ void GSmodelDetachFromGSpart(GSmodel* model, u8 applyTransform)
                             dirty = 1;
                         }
                         if (dirty == 0) {
-                            fn_8019D620(jobj);
+                            HSD_JObjSetMtxDirtySub_8019D620(jobj);
                         }
                     }
                 }
@@ -1101,7 +1101,7 @@ void GSmodelDetachFromGSpart(GSmodel* model, u8 applyTransform)
                             dirty = 1;
                         }
                         if (dirty == 0) {
-                            fn_8019D620(jobj);
+                            HSD_JObjSetMtxDirtySub_8019D620(jobj);
                         }
                     }
                 }

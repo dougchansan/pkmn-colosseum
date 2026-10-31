@@ -13,7 +13,7 @@ extern void* GSresGetResource(u32 group, u32 id);
 extern void* GSresFindById(u32 id);
 extern void GScameraRestoreState(void* camera, void* snapshot);
 extern void GScameraSaveState(void* camera, void* snapshot);
-extern void fn_800D258C(void* camera);
+extern void GScameraSetCurrent(void* camera);
 extern void* memcpy(void* dst, const void* src, u32 n);
 
 /* Retail expands this same lookup in both state save/restore functions. */
@@ -41,7 +41,7 @@ void _cameraRestoreStateData(void* data)
         camera = cameraGetCurrentAnimation();
     }
     GScameraRestoreState(camera, &save->camera);
-    fn_800D258C(camera);
+    GScameraSetCurrent(camera);
 }
 
 void _cameraMakeStateData(void* data)

@@ -358,17 +358,17 @@ void GXSetTevDirect(u32 dstCoord) {
     GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
-void fn_800BBC7C(u32 dstCoord, u32 func, u8 normalize, u8 color, u32 postMtx) {
+void GXSetTevIndWarp(u32 dstCoord, u32 func, u8 normalize, u8 color, u32 postMtx) {
     u32 colorSel = color != 0 ? 6 : 0;
 
     GXSetTevIndirect(dstCoord, func, 0, normalize != 0 ? 7 : 0, postMtx, colorSel, colorSel, 0, 0, 0);
 }
 
-void fn_800BBF98(u32 dstCoord, u32 func, u32 normalize) {
+void GXSetTevIndBumpXYZ(u32 dstCoord, u32 func, u32 normalize) {
     GXSetTevIndirect(dstCoord, func, 0, 7, normalize, 0, 0, 0, 0, 0);
 }
 
-void fn_800BBFDC(u32 dstCoord) {
+void GXSetTevIndRepeat(u32 dstCoord) {
     GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 6, 6, 1, 0, 0);
 }
 
@@ -804,7 +804,7 @@ void GXSetProjection(f32* projection, s32 type) {
 #if !defined(SDK_800BD2E0_ONLY) && !defined(SDK_800BC618_ONLY)
 #if !defined(SDK_800BE348_ONLY) && !defined(SDK_800BCFDC_ONLY)
 #if !defined(SDK_800BD58C_ONLY)
-void fn_800BD394(f32* projection) {
+void GXSetProjectionv(f32* projection) {
     GXData_800BB30C* p;
     u32 type;
 
@@ -1338,11 +1338,11 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     gx->field_002 = 0;
 }
 
-void fn_800BE30C(void) {
+void GXClearGPMetric(void) {
     __cpReg[2] = 4;
 }
 
-u32 fn_800BE31C(void) {
+u32 gappReadGPMetric0(void) {
     u32 hi;
     u32 lo;
 

@@ -1,11 +1,11 @@
 #include "dolphin/gx/GXInternal.h"
 
-void fn_800BE30C(void)
+void GXClearGPMetric(void)
 {
     __cpReg[2] = 4;
 }
 
-u32 fn_800BE31C(void)
+u32 gappReadGPMetric0(void)
 {
     u32 hi;
     u32 lo;

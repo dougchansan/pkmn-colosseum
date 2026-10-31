@@ -181,10 +181,10 @@ extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
 extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
 extern void modelShadowInit__Fv(void);
-extern void fn_800EC134(GSmodel* model);
+extern void GSmodelApplyAnimation(GSmodel* model);
 extern void gsParticleKill(void* bank, u32 destroyChildren);
 extern void GSmodelSetParticleVisibility(void* bank, u32 visible);
-extern u32 fn_80191118(GSbound* bound);
+extern u32 GSboundIsVisible(GSbound* bound);
 extern u32 GSmaterialGetEnabledExtensions(void* material);
 extern void GSmaterialGetModulate(void* material, GScolor* color);
 extern void GSmaterialSetModulate(void* material, const GScolor* color);
@@ -201,7 +201,7 @@ extern void GSmemFree(u32 handle);
 extern void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model);
 extern void GSmodelRemoveNull(GSmodel* model);
 extern void modelRemoveCenterNull(GSmodel* model);
-extern HSDJObj* fn_801A02B0(HSDJObj* jobj);
+extern HSDJObj* HSD_JObjRemove_801A02B0(HSDJObj* jobj);
 extern void HSD_JObjUnref(void* object);
 extern void* memset(void* dst, int value, u32 size);
 extern void* memcpy(void* dst, const void* src, u32 size);
@@ -222,7 +222,7 @@ extern void clear__5GSvecFv(GSvec* vec);
 extern u8 modelProcessAt60fps__FP8_GSmodel(GSmodel* model);
 extern void GSmodelAdvanceAnimation(GSmodel* model, f32 frames);
 extern void PSMTXCopy(const f32 src[3][4], f32 dst[3][4]);
-extern void fn_8019D620(HSDJObj* jobj);
+extern void HSD_JObjSetMtxDirtySub_8019D620(HSDJObj* jobj);
 extern GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 extern void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation, GSvec* scale);
 extern void GSpartFree(GSpart* part);
@@ -234,7 +234,7 @@ extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
 extern void GSmodelSetAnimType(GSmodel* model, u32 type);
 extern void GSmodelStartAnimation(GSmodel* model);
 
-void fn_800E85E8(GSmodel* model);
+void GSmodelFreeTextureList(GSmodel* model);
 
 extern void HSD_StateInvalidate(u32 mask);
 extern void* GScameraGetActiveCamera(void);
@@ -318,7 +318,7 @@ void GSmodelDrawModel(GSmodel* model, u32 flags)
             HSD_CObjEndCurrent();
         }
         if ((model->flags.raw & 0x200000) != 0) {
-            fn_80190E60(&model->bound);
+            GSboundDebugDraw(&model->bound);
         }
     }
     _gfxSetFlagsImm(-1);
@@ -471,7 +471,7 @@ void GSmodelAdvanceAll(u32 frames, u8 phase)
                     dirty_ = 1;                                                     \
                 }                                                                   \
                 if (dirty_ == 0) {                                                  \
-                    fn_8019D620(jobj);                                              \
+                    HSD_JObjSetMtxDirtySub_8019D620(jobj);                                              \
                 }                                                                   \
             }                                                                       \
         }                                                                           \

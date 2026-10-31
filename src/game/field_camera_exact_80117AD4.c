@@ -7,7 +7,7 @@ typedef struct GSFieldWorldResourceState {
 
 extern GSFieldWorldResourceState lbl_804083D0;
 
-u32 fn_80117AD4(void)
+u32 fieldCameraDebugGetRoom(void)
 {
     return lbl_804083D0.field_10;
 }

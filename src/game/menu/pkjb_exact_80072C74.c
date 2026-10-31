@@ -11,7 +11,7 @@
  * kicking the GBA with 0x11) while it has nothing to send; the key state is
  * released on any definite result.
  */
-s32 fn_80072C74(s32 chan, u32* response)
+s32 gbaCmdPollWord(s32 chan, u32* response)
 {
     u32 data;
     u32 command;

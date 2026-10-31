@@ -11,7 +11,7 @@
  *
  * Colosseum keeps a shape animation's AObj on the PObj itself (and drives it
  * through the class's update method), hides PObjs flagged 0x800, counts
- * vertices and triangles (fn_801ACDAC), and invalidates the vertex cache
+ * vertices and triangles (HSD_DObjCountVerticesSub), and invalidates the vertex cache
  * after loading.
  *
  * Globals other objects already link against keep their dtk names; the
@@ -137,25 +137,25 @@ void GXLoadTexMtxImm(Mtx mtx, u32 id, int type);
 /* hsdClass */
 extern HSD_ClassInfo lbl_8036C638;
 /* hsdSearchClassInfo */
-HSD_ClassInfo* fn_80193748(const char* class_name);
+HSD_ClassInfo* hsdSearchClassInfo_80193748(const char* class_name);
 /* hsdNew */
-void* fn_80193828(HSD_ClassInfo* info);
+void* hsdNew_80193828(HSD_ClassInfo* info);
 /* hsdAllocMemPiece */
-void* fn_80193B10(u32 size);
+void* hsdAllocMemPiece_80193B10(u32 size);
 /* hsdFreeMemPiece */
-void fn_80193AF0(void* mem, u32 size);
+void hsdFreeMemPiece_80193AF0(void* mem, u32 size);
 /* HSD_MemAlloc */
 void* HSD_MemAlloc(u32 size);
 /* HSD_Free */
 void HSD_Free(void* ptr);
 /* HSD_IsMemoryReleased: nonzero when the pointer lies in freed memory. */
-int fn_801A6990(void* ptr);
+int HSD_IsMemoryReleased_801A6990(void* ptr);
 /* HSD_SListAlloc */
 HSD_SList* HSD_SListAlloc(void);
 /* HSD_SListRemove */
 HSD_SList* HSD_SListRemove(HSD_SList* list);
 /* _HSD_NeedCacheInvalidate */
-void fn_8019C6EC(u32 flags);
+void HSD_RequestInvalidate(u32 flags);
 /* HSD_StateSetCullMode */
 void HSD_StateSetCullMode(int mode);
 /* HSD_PerfCountEnvelopeBlending */
@@ -311,7 +311,7 @@ void HSD_PObjAnimAll(HSD_PObj* pobj)
 
 static inline HSD_Envelope* HSD_EnvelopeAlloc(void)
 {
-    HSD_Envelope* envelope = fn_80193B10(sizeof(HSD_Envelope));
+    HSD_Envelope* envelope = hsdAllocMemPiece_80193B10(sizeof(HSD_Envelope));
     HSD_ASSERT(425, envelope);
     memset(envelope, 0, sizeof(HSD_Envelope));
     return envelope;
@@ -320,7 +320,7 @@ static inline HSD_Envelope* HSD_EnvelopeAlloc(void)
 static inline void HSD_EnvelopeFree(HSD_Envelope* env)
 {
     if (env != NULL) {
-        fn_80193AF0(env, sizeof(HSD_Envelope));
+        hsdFreeMemPiece_80193AF0(env, sizeof(HSD_Envelope));
     }
 }
 
@@ -372,7 +372,7 @@ static inline void HSD_ShapeSetFree(HSD_ShapeSet* shape_set)
     if (!shape_set) {
         return;
     }
-    fn_80193AF0(shape_set, sizeof(HSD_ShapeSet));
+    hsdFreeMemPiece_80193AF0(shape_set, sizeof(HSD_ShapeSet));
 }
 
 static inline void HSD_ShapeSetRemove(HSD_ShapeSet* shape_set)
@@ -393,7 +393,7 @@ static inline HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc)
     HSD_ShapeSet* shape_set;
     int i;
 
-    shape_set = fn_80193B10(sizeof(HSD_ShapeSet));
+    shape_set = hsdAllocMemPiece_80193B10(sizeof(HSD_ShapeSet));
     HSD_ASSERT(482, shape_set);
     memset(shape_set, 0, sizeof(HSD_ShapeSet));
     shape_set->flags = sdesc->flags;
@@ -442,7 +442,7 @@ static s32 PObjLoad(HSD_Class* o, HSD_PObjDesc* desc)
         HSD_Panic(__FILE__, 554, "pobj: unexected type.\n");
     }
 
-    fn_8019C6EC(1);
+    HSD_RequestInvalidate(1);
 
     return 0;
 }
@@ -456,11 +456,11 @@ HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc* pobjdesc)
         HSD_ClassInfo* info;
 
         if (!pobjdesc->class_name ||
-            !(info = fn_80193748(pobjdesc->class_name)))
+            !(info = hsdSearchClassInfo_80193748(pobjdesc->class_name)))
         {
             pobj = HSD_PObjAlloc();
         } else {
-            pobj = fn_80193828(info);
+            pobj = hsdNew_80193828(info);
             HSD_ASSERT(583, pobj);
         }
         HSD_POBJ_METHOD(pobj)->load(pobj, pobjdesc);
@@ -502,7 +502,7 @@ void HSD_PObjSetDefaultClass(HSD_PObjInfo* info)
 
 static inline HSD_PObj* HSD_PObjAlloc(void)
 {
-    HSD_PObj* pobj = fn_80193828(&HSD_PObjGetDefaultClass()->parent);
+    HSD_PObj* pobj = hsdNew_80193828(&HSD_PObjGetDefaultClass()->parent);
     HSD_ASSERT(681, pobj);
     return pobj;
 }
@@ -570,7 +570,7 @@ void HSD_PObjResolveRefsAll(HSD_PObj* pobj, HSD_PObjDesc* pdesc)
  * a direct attribute in an unsupported format ends that PObj's count,
  * which retail branches straight to the next PObj for.
  */
-void fn_801ACDAC(HSD_PObj* pobj, u32* nb_vtx, u32* nb_tri)
+void HSD_DObjCountVerticesSub(HSD_PObj* pobj, u32* nb_vtx, u32* nb_tri)
 {
     u32 vtx = 0;
     u32 tri = 0;
@@ -1574,11 +1574,11 @@ static void PObjAmnesia(HSD_ClassInfo* info)
         default_class = NULL;
     }
     if (info == HSD_CLASS_INFO(&hsdPObj)) {
-        if (fn_801A6990(vertex_buffer)) {
+        if (HSD_IsMemoryReleased_801A6990(vertex_buffer)) {
             vertex_buffer = NULL;
             vertex_buffer_size = 0;
         }
-        if (fn_801A6990(normal_buffer)) {
+        if (HSD_IsMemoryReleased_801A6990(normal_buffer)) {
             normal_buffer = NULL;
             normal_buffer_size = 0;
         }

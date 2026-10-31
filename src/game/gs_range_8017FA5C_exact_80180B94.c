@@ -1,6 +1,6 @@
 /**
  * @file gs_range_8017FA5C_exact_80180B94.c
- * @brief GSgapp job pool init fn_80180B94 (0x80180B94 - 0x80180C78).
+ * @brief GSgapp job pool init fsysJobPoolInit (0x80180B94 - 0x80180C78).
  *
  * Allocates count 0x40-byte job records and clears them. Carved out of the
  * 0x8017FA5C - 0x80180C78 retail unit so the exact function can link on its
@@ -9,7 +9,7 @@
  */
 #include "game/gs_range_8017FA5C_shared.h"
 
-void fn_80180B94(s32 count)
+void fsysJobPoolInit(s32 count)
 {
     u32 size;
     GsRangePoolElem* entry;

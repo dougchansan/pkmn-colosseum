@@ -67,10 +67,10 @@ u32 fightSideGetJoutaiUserFightTargetId(u32 param_1, u32 param_2) {
 /* 0x801F6CA0 | size: 0x54 | small */
 void fightSideSetNowKaisuuJoutaiDataId(u32 param_1, u32 param_2, u32 param_3) {
     extern u32 joutaiDataBiosGetStatusKind(u32);
-    extern void fn_8011AB50(u32, u32, u32);
+    extern void statusSetJoutai05(u32, u32, u32);
 
     if ((u16)joutaiDataBiosGetStatusKind(param_2) == 6) {
-        fn_8011AB50(param_1, param_2, param_3);
+        statusSetJoutai05(param_1, param_2, param_3);
     }
 }
 
@@ -88,23 +88,23 @@ u32 fightSideGetNowKaisuuJoutaiDataId(u32 param_1, u32 param_2) {
 /* 0x801F6D48 | size: 0x54 | small */
 u32 fightSideGetKaisuuJoutaiDataId(u32 param_1, u32 param_2) {
     extern u32 joutaiDataBiosGetStatusKind(u32);
-    extern u32 fn_8011AE40(u32, u32);
+    extern u32 statusGetJoutaiKaisuu(u32, u32);
 
     if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0xFFFFFFFF;
     }
-    return fn_8011AE40(param_1, param_2);
+    return statusGetJoutaiKaisuu(param_1, param_2);
 }
 
 /* 0x801F6D9C | size: 0x54 | small */
 u32 fightSideGetCountAsJoutaiDataId(u32 param_1, u32 param_2) {
     extern u32 joutaiDataBiosGetStatusKind(u32);
-    extern u32 fn_8011B130(u32, u32);
+    extern u32 statusGetJoutaiStack(u32, u32);
 
     if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0xFFFFFFFF;
     }
-    return fn_8011B130(param_1, param_2);
+    return statusGetJoutaiStack(param_1, param_2);
 }
 
 /* 0x801F6DF0 | size: 0x54 | small */
@@ -131,21 +131,21 @@ u32 fightSideCheckWriteJoutaiDataId(u32 param_1, u32 param_2) {
 /* 0x801F6E98 | size: 0x54 | small */
 u32 fightSideIsJoutaiDataId(u32 param_1, u32 param_2) {
     extern u32 joutaiDataBiosGetStatusKind(u32);
-    extern u32 fn_8011B67C(u32, u32);
+    extern u32 statusIsJoutaiDataId(u32, u32);
 
     if ((u16)joutaiDataBiosGetStatusKind(param_2) != 6) {
         return 0;
     }
-    return fn_8011B67C(param_1, param_2);
+    return statusIsJoutaiDataId(param_1, param_2);
 }
 
 /* 0x801F6EEC | size: 0x4C | small */
 void fightSideInitJoutaiDataId(u32 param_1, u32 param_2) {
     extern u32 joutaiDataBiosGetStatusKind(u32);
-    extern void fn_8011B788(u32, u32);
+    extern void statusInitJoutaiDataId(u32, u32);
 
     if ((u16)joutaiDataBiosGetStatusKind(param_2) == 6) {
-        fn_8011B788(param_1, param_2);
+        statusInitJoutaiDataId(param_1, param_2);
     }
 }
 
@@ -447,7 +447,7 @@ u32 fightSideCheckValid(u32 param_1) {
 
 /* 0x801F7480 | size: 0xB0 | medium */
 void fightSideCreate(u32 param_1, u16 param_2) {
-    extern void fn_8011B950(u32, u32);
+    extern void joutaiSlotsClear(u32, u32);
     extern void fightSideBiosSetMakibisiCheckFlag(u32, u32);
     extern void fightSideBiosSetFightSideDataId(u32, u16);
     extern u32 fightSideBiosGetFightTrainerPtr(u32, u32);
@@ -465,7 +465,7 @@ void fightSideCreate(u32 param_1, u16 param_2) {
             } else {
                 uVar1 = fightSideBiosGetJoutaiPtr(param_1, 0);
             }
-            fn_8011B950(uVar1, 6);
+            joutaiSlotsClear(uVar1, 6);
             if (param_1 == 0) {
                 uVar1 = 0;
             } else {
@@ -484,7 +484,7 @@ void fightSideCreate(u32 param_1, u16 param_2) {
 
 /* 0x801F7530 | size: 0xC8 | medium */
 void fightSideInitAry(u32 param_1, u16 param_2) {
-    extern void fn_8011B950(u32, u32);
+    extern void joutaiSlotsClear(u32, u32);
     extern void fightSideBiosSetMakibisiCheckFlag(u32, u32);
     extern void fightSideBiosSetFightSideDataId(u32, u16);
     extern u32 fightSideBiosGetFightTrainerPtr(u32, u32);
@@ -508,7 +508,7 @@ void fightSideInitAry(u32 param_1, u16 param_2) {
                 } else {
                     uVar1 = fightSideBiosGetJoutaiPtr((0, uVar3), 0);
                 }
-                fn_8011B950(uVar1, 6);
+                joutaiSlotsClear(uVar1, 6);
                 if ((uVar3 == 0) != 0U) {
                     uVar1 = 0;
                 } else {

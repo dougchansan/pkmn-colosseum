@@ -3,7 +3,7 @@
  * @file pda_exact_80043728.c
  * @brief PDA memo-list cursor handling, 0x80043728 - 0x800439BC.
  *
- * fn_80043728 is copied from pda_range_80037158.c. Its float literals are
+ * pdaMemoListKey is copied from pda_range_80037158.c. Its float literals are
  * redirected by the temporary constant_import build step to the shared
  * lbl_8047BCxx pool.
  */
@@ -24,7 +24,7 @@ extern u32 soundStartRaw(u32, u32, u32);
 #define SF(off) (*(f32*)((u8*)&lbl_803A6818 + (off)))
 
 /* Move the memo-list cursor by one entry or one page of ten. */
-u32 fn_80043728(u32 unused, s32 mode, u16 buttons)
+u32 pdaMemoListKey(u32 unused, s32 mode, u16 buttons)
 {
     u8* scene;
     u16 total;

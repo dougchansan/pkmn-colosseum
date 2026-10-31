@@ -32,8 +32,8 @@ s32 Hu_IsStub(void) {
     return 0;
 }
 
-void fn_800CE7D4(void) {
+void gdevCcPreContinueHook(void) {
 }
 
-void fn_800CE7D8(void) {
+void gdevCcPostStopHook(void) {
 }

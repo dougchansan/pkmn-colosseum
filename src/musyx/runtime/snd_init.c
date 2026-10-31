@@ -101,7 +101,7 @@ void sndQuit(void)
     lbl_8047AF18 = 0;
 }
 
-u8 fn_8015FFD4(void) /* sndIsInstalled */
+u8 sndIsInitialized(void) /* sndIsInstalled */
 {
     return lbl_8047AF18;
 }

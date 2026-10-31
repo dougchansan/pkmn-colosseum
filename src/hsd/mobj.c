@@ -39,7 +39,7 @@
  *    same fcmpo sequence in all thirteen cases (recovered as the static
  *    inline MObjClamp01, policy "repeated expansion"; it leaves no symbol)
  *    and checks mat / pe for NULL;
- *  - fn_801A6DA0 (push a TObj onto the material) and
+ *  - HSD_TObjInsertNext (push a TObj onto the material) and
  *    HSD_MObjAddTObjNext are new; HSD_MObjSetToonTextureImage is gone;
  *  - assert line numbers are those of Colosseum's longer file.
  *
@@ -135,23 +135,23 @@ extern void fn_801BBE3C(HSD_TObj* tobj, HSD_TObj* next);
 /* ========================================================================= */
 
 /* hsdSearchClassInfo */
-extern HSD_ClassInfo* fn_80193748(const char* class_name);
+extern HSD_ClassInfo* hsdSearchClassInfo_80193748(const char* class_name);
 /* hsdIsDescendantOf */
 extern BOOL hsdIsDescendantOf(void* info, void* p);
 /* hsdNew */
-extern void* fn_80193828(HSD_ClassInfo* info);
+extern void* hsdNew_80193828(HSD_ClassInfo* info);
 /* hsdAllocMemPiece */
-extern void* fn_80193B10(s32 size);
+extern void* hsdAllocMemPiece_80193B10(s32 size);
 
-#define hsdSearchClassInfo(n) fn_80193748(n)
+#define hsdSearchClassInfo(n) hsdSearchClassInfo_80193748(n)
 #define hsdIsDescendantOf(i, p) hsdIsDescendantOf(i, p)
-#define hsdNew(i) fn_80193828(i)
-#define hsdAllocMemPiece(s) fn_80193B10(s)
+#define hsdNew(i) hsdNew_80193828(i)
+#define hsdAllocMemPiece(s) hsdAllocMemPiece_80193B10(s)
 
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void* memset(void* dst, int val, u32 size);
 
-extern void fn_80193AF0(void* mem, s32 size); /* hsdFreeMemPiece */
+extern void hsdFreeMemPiece_80193AF0(void* mem, s32 size); /* hsdFreeMemPiece */
 
 extern HSD_ClassInfo lbl_8036C638; /* hsdClass */
 
@@ -758,7 +758,7 @@ HSD_TObj* HSD_MObjGetTObj(HSD_MObj* mobj)
 }
 
 /* 0x801A6DA0 | 0x24 */
-void fn_801A6DA0(HSD_MObj* mobj, HSD_TObj* tobj)
+void HSD_TObjInsertNext(HSD_MObj* mobj, HSD_TObj* tobj)
 {
     if (mobj == NULL || tobj == NULL) {
         return;
@@ -848,7 +848,7 @@ void MObjRelease(HSD_Class* o)
     HSD_MObj* mobj = HSD_MOBJ(o);
 
     HSD_AObjRemove(mobj->aobj);
-    fn_80193AF0(mobj->mat, sizeof(HSD_Material));
+    hsdFreeMemPiece_80193AF0(mobj->mat, sizeof(HSD_Material));
     HSD_TObjRemoveAll(mobj->tobj);
 
     if (mobj->tevdesc != NULL) {
@@ -858,7 +858,7 @@ void MObjRelease(HSD_Class* o)
         HSD_TExpFreeList(mobj->texp, HSD_TE_ALL, 1);
     }
     if (mobj->pe != NULL) {
-        fn_80193AF0(mobj->pe, sizeof(HSD_PEDesc));
+        hsdFreeMemPiece_80193AF0(mobj->pe, sizeof(HSD_PEDesc));
     }
     HSD_PARENT_INFO(&hsdMObj)->release(o);
 }

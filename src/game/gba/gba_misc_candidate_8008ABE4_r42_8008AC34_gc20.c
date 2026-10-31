@@ -9,22 +9,22 @@ extern u16 lbl_8047A67C[4];
 /* Retail stores this six-entry retry table in small uninitialized data. */
 extern u16 lbl_8047A684[6] __attribute__((section(".sdata")));
 
-extern s32 fn_80073990(s32 chan);
-extern s32 fn_80073A44(s32 chan, u16* keys);
+extern s32 gbaCmdKeepAlive(s32 chan);
+extern s32 gbaCmdReadKeys(s32 chan, u16* keys);
 
 /*
  * Polls the GBA on a controller port that has no pad attached (index is
  * 1-based). Transient errors (1 or 2) are retried up to ten times before the
  * port's link state is dropped.
  */
-void fn_8008AC34(s32 index)
+void gbaPollPort(s32 index)
 {
     s32 result;
     u16 keys;
 
     switch (lbl_803FB318[index - 1]) {
     case 1:
-        result = fn_80073A44(index - 1, &keys);
+        result = gbaCmdReadKeys(index - 1, &keys);
         if (result == 0) {
             lbl_8047A684[index - 1] = 0;
             lbl_8047A67C[index - 1] = keys;
@@ -40,7 +40,7 @@ void fn_8008AC34(s32 index)
         }
         break;
     case 3:
-        result = fn_80073990(index - 1);
+        result = gbaCmdKeepAlive(index - 1);
         if (result == 0) {
             lbl_8047A684[index - 1] = 0;
         } else if (result <= 2 && ++lbl_8047A684[index - 1] <= 10) {

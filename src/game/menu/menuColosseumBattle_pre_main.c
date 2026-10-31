@@ -89,34 +89,34 @@ typedef struct ColosseumPokemonBlob {
 } ColosseumPokemonBlob;
 
 /* ===== External function declarations (menuColosseumBattleMain only) ===== */
-extern s32 fn_80057DE8(void* pokemon);
-extern void fn_800347B8(void);
-extern void fn_800347C4(void);
-extern void fn_800347E8(s32);
-extern void fn_8003480C(s32);
-s32 fn_800566E8(void);
-extern s32 fn_800573C0(void);
-s32 fn_80057694(void);
-void fn_800576A4(s32);
-void fn_80057830(s32, s32, s32);
+extern s32 pcBoxIsShadowPokemon(void* pokemon);
+extern void cardeSetRecordFlag(void);
+extern void cardeBuzzer_800347C4(void);
+extern void cardeBuzzer_800347E8(s32);
+extern void cardeBuzzer_8003480C(s32);
+s32 pcBoxTabIsMoving(void);
+extern s32 pcBoxCursorBusy(void);
+s32 pcBoxGetHeldFlag(void);
+void pcBoxSetHeldFlag(s32);
+void pcBoxSetCursorTarget(s32, s32, s32);
 extern u8 menuColosseumBattleGetFlag(void);
 extern u32 GSmemGetHandleByPtr(void*);
 extern void GSmemFree(u32);
 extern void fn_800E24B0(u32);
 extern void* GSmemLock(u32);
 extern void GSmsgGetText(void*, s32, void*);
-extern void fn_8002D91C();
+extern void shopRunAtLocation();
 extern void menuTaisenRun(void);
 extern void menuCBBattleSetupFight();
-extern void fn_8006A76C();
+extern void memcardIsUnavailable();
 extern void savedataBattleClearFlagC98B();
 extern void savedataBattleSetFlagC98B();
 extern void savedataBattleGetFlagC98B();
-extern void fn_8006A7C8();
-extern void fn_8006A7E0();
-extern void fn_8006A7E8();
-extern void fn_8006A7F0();
-extern void fn_8006A81C();
+extern void savedataBattleGetParty();
+extern void savedataBattleSetController();
+extern void savedataBattleGetController();
+extern void savedataBattleCopyPlayer();
+extern void savedataBattleSetTrainerData();
 extern void menuCBBiosInitHero();
 extern void fn_8006AC28();
 extern void savedataBattleSetCouponRun();
@@ -130,23 +130,23 @@ extern void menuColosseumBattleClearFlag();
 extern void menuColosseumBattleSetFlag();
 extern void menuWaitFaceSprites();
 extern void floorRequestChange(s32);
-extern void fn_80071160();
-extern void fn_80071344();
+extern void menuFindLiveSaveSlot();
+extern void _menuReopenTop();
 extern void fn_80071398();
 extern void fn_800714C8();
 extern void fn_800715BC();
-extern void fn_8007162C();
+extern void _menuPeekStackDepth();
 extern void menuRuleCheckPartyAndRule();
-extern void fn_80077E80();
-extern void fn_80077EA4();
-extern void fn_800849B4();
-extern void fn_80088964();
+extern void menuRuleCopy();
+extern void menuRuleEqual();
+extern void cardeTransferUI();
+extern void menuMemcardTaskA();
 extern void menuSaveLoadCommitA();
-extern void fn_800889A4();
-extern void fn_80088D84();
-extern void fn_80089028();
+extern void menuMemcardTaskB();
+extern void menuSaveLoadCommitB();
+extern void gbaGetConnectionMode();
 extern void gbaCommStartSendPokemon();
-extern void fn_80093574();
+extern void gbaCommWaitDone();
 extern void menuGetCursorItemID();
 extern void menuSubOpenYesNo();
 extern void menuClose();
@@ -195,7 +195,7 @@ extern void scriptStoreTemochiPokemon(s32);
 extern u8 scriptCheckTemochiPokemon(s32);
 extern void* getPokemon__5PCBOXFScSc(void*, s8, s8);
 extern s8 pcboxGetNbPokemonBox(void);
-extern s8 fn_801347D8(void);
+extern s8 pcBoxGetSlotCount(void);
 extern void* heroGetStatus(void*, s32, u16);
 extern u16 pokemonBiosGetPokemonDataId(void*);
 extern u32 pokemonGetStatus(void*, u32, u32, u32);
@@ -203,47 +203,47 @@ extern u8 pokemonGetAnnonKatati(u32);
 extern u32 _toolentryAlloc__FUl(u32);
 extern u32 floorGetCurrentContext(void);
 extern u32 GSthreadCreate(u32, u32, u32, u32, u32, void*);
-extern void fn_80057E70(void);
-extern void fn_8017B3E4(s32);
-extern s32 fn_8017B2CC(s32);
+extern void pcBoxStreamModels(void);
+extern void fsysStartLoad(s32);
+extern s32 GSresGroupGetState(s32);
 extern void GSresReleaseById(s32);
-extern void fn_800F915C(s32);
-extern void fn_80055B98(s32);
+extern void GSresReleaseOwner(s32);
+extern void pcBoxOpen(s32);
 extern void std078_flagSetFalse(s32);
-extern s32 fn_800576B4(void);
-extern void* fn_800574E0(void);
-extern void fn_800576C4(s32);
-extern void fn_80057458(void*);
-extern s32 fn_80054B1C(s32, s32);
-extern void fn_80055DE0(void);
-extern s32 fn_80055E10(void);
+extern s32 pcBoxGetHoldState(void);
+extern void* pcBoxGetHeld(void);
+extern void pcBoxSetHoldState(s32);
+extern void pcBoxCopyToOtherHeld(void*);
+extern s32 pcBoxSelectCommand(s32, s32);
+extern void menuPartyCloseMenuA3(void);
+extern s32 menuPartyOpenMenuA3(void);
 extern s8 pcboxGetPokemonBoxNbEmptySlot(s32, s8);
 extern void pcboxAddPokemon(s32, void*, s8);
 extern void pokemonInit(void*);
 extern void fadeSet(s32, f32);
-extern s32 fn_80056A78(void);
-extern void fn_80056A80(void);
-extern void fn_80057C9C(void*, void*, s32*);
-extern void* fn_80058F40(void*, s32, s32*);
-extern void fn_80056B74(s32, s32);
-extern void fn_80054760(s32, s32);
-extern void fn_80057A38(void);
-extern void fn_80057A64(void*, s32);
+extern s32 pcBoxGetTab(void);
+extern void pcBoxCloseTabs(void);
+extern void pcBoxRunStatus(void*, void*, s32*);
+extern void* pcBoxStepPartyPokemon(void*, s32, s32*);
+extern void pcBoxOpenTabs(s32, s32);
+extern void pcBoxOpenDetail(s32, s32);
+extern void pcBoxCloseHeldWindow(void);
+extern void pcBoxOpenHeldWindow(void*, s32);
 extern void* menuItemBiosGetPtr(s32);
 extern u8 pokemonBiosGetPcboxMark(void*);
 extern void pokemonBiosSetPcboxMark(void*, u8);
-extern s32 fn_8005D3D0(s32);
+extern s32 pcBoxSelectMode(s32);
 extern void GScharCpy(void*, void*);
-extern void fn_80054670(s32);
-extern s32 fn_8005464C(void);
-extern void fn_8005744C(void);
-extern s32 fn_80057428(void);
-extern void fn_800574A8(void);
+extern void menuPartySlotFadeStart(s32);
+extern s32 menuPartySlotFadeDone(void);
+extern void pcBoxHeldFadeStart(void);
+extern s32 pcBoxHeldFadeDone(void);
+extern void pcBoxClearHeld(void);
 extern void* windowSearchID(s32);
-extern u8 fn_8005D738(u8);
-extern void fn_80058804(void*, s32);
-extern void fn_800587D8(void);
-extern void fn_8005471C(void);
+extern u8 pcBoxConfirmRelease(u8);
+extern void pcBoxShowMessage(void*, s32);
+extern void pcBoxCloseMessage(void);
+extern void pcBoxCloseDetail(void);
 
 /* ===== SDA globals ===== */
 extern s32 lbl_8047A598;
@@ -325,8 +325,8 @@ static inline s32 selectPcBox(void)
     s32 box;
 
     while (1) {
-        box = fn_80055E10();
-        fn_800587D8();
+        box = menuPartyOpenMenuA3();
+        pcBoxCloseMessage();
         if (box < 0 || box >= pcboxGetNbPokemonBox()) {
             box = -1;
             break;
@@ -334,8 +334,8 @@ static inline s32 selectPcBox(void)
         if (pcboxGetPokemonBoxNbEmptySlot(0, (s8)box) > 0) {
             break;
         }
-        fn_80058804((void*)0x1B81, 1);
-        fn_80058804((void*)0x1B80, 0);
+        pcBoxShowMessage((void*)0x1B81, 1);
+        pcBoxShowMessage((void*)0x1B80, 0);
     }
     return box;
 }
@@ -353,7 +353,7 @@ static inline s32 findRosterRow(s32 partyIndex)
 }
 
 /* Handle an action selected for one party slot. */
-s32 fn_80059034(s32 slot)
+s32 menuPartySlotAction(s32 slot)
 {
     ColosseumPokemonBlob pokemonCopy;
     u8 pokemonName[0x20];
@@ -377,7 +377,7 @@ s32 fn_80059034(s32 slot)
     pokemonValid = pokemonCheckValid(heroPokemon);
     battleMode = 1;
 
-    if (fn_800576B4() != 3) {
+    if (pcBoxGetHoldState() != 3) {
         alternatePokemon = 0;
         if (!pokemonValid) {
             battleMode = 0;
@@ -385,7 +385,7 @@ s32 fn_80059034(s32 slot)
             context = 0;
         }
     } else {
-        alternatePokemon = fn_800574E0();
+        alternatePokemon = pcBoxGetHeld();
         if (!pokemonValid) {
             context = 1;
         } else {
@@ -398,13 +398,13 @@ s32 fn_80059034(s32 slot)
     }
     pokemon = alternatePokemon == 0 ? heroPokemon : alternatePokemon;
 
-    if (fn_80057694() == 0) {
+    if (pcBoxGetHeldFlag() == 0) {
         name = pokemonGetStatus(pokemon, 0, 0x77, 0);
         msgctrlSetValue(0x36, name);
         msgctrlSetValue(0x32, name);
-        fn_80058804((void*)0x1B74, 0);
-        battleMode = fn_80054B1C(context, 1);
-        fn_800587D8();
+        pcBoxShowMessage((void*)0x1B74, 0);
+        battleMode = pcBoxSelectCommand(context, 1);
+        pcBoxCloseMessage();
     } else {
         switch (context) {
         case 0:
@@ -427,15 +427,15 @@ s32 fn_80059034(s32 slot)
         if ((s32)pokemonGetStatus(pokemon, 0, 0x83, 0) > 0) {
             count = countMarkedParty();
             if (count <= 1) {
-                fn_80058804((void*)0x1B90, 1);
+                pcBoxShowMessage((void*)0x1B90, 1);
                 break;
             }
         }
-        fn_800576C4(1);
+        pcBoxSetHoldState(1);
         break;
 
     case 1:
-        fn_800576C4(4);
+        pcBoxSetHoldState(4);
         break;
 
     case 2:
@@ -443,36 +443,36 @@ s32 fn_80059034(s32 slot)
             (s32)pokemonGetStatus(heroPokemon, 0, 0x83, 0) > 0) {
             count = countMarkedParty();
             if (count < 2) {
-                fn_80058804((void*)0x1B90, 1);
+                pcBoxShowMessage((void*)0x1B90, 1);
                 break;
             }
         }
-        fn_80057458(heroPokemon);
+        pcBoxCopyToOtherHeld(heroPokemon);
         pokemonInit(heroPokemon);
-        fn_800576C4(6);
+        pcBoxSetHoldState(6);
         break;
 
     case 5:
-        if (fn_800576B4() == 0 &&
+        if (pcBoxGetHoldState() == 0 &&
             (s32)pokemonGetStatus(pokemon, 0, 0x83, 0) > 0) {
             count = countMarkedParty();
             if (count <= 1) {
-                fn_80058804((void*)0x1B90, 1);
+                pcBoxShowMessage((void*)0x1B90, 1);
                 break;
             }
         }
 
-        fn_80058804((void*)0x1B80, 0);
+        pcBoxShowMessage((void*)0x1B80, 0);
         box = selectPcBox();
-        fn_80055DE0();
+        menuPartyCloseMenuA3();
         if (box < 0) {
             break;
         }
 
         pcboxAddPokemon(0, pokemon, (s8)box);
-        if (fn_800576B4() == 3) {
-            fn_800574A8();
-            fn_800576C4(0);
+        if (pcBoxGetHoldState() == 3) {
+            pcBoxClearHeld();
+            pcBoxSetHoldState(0);
             break;
         }
         closePartyGap(slot);
@@ -481,30 +481,30 @@ s32 fn_80059034(s32 slot)
     case 3:
         fadeSet(3, lbl_8047BF10);
         fadeCheck(1);
-        fn_8005471C();
-        selection = fn_80056A78();
-        fn_80056A80();
+        pcBoxCloseDetail();
+        selection = pcBoxGetTab();
+        pcBoxCloseTabs();
 
-        if (fn_800576B4() == 3) {
+        if (pcBoxGetHoldState() == 3) {
             haveCopy = 1;
-            pokemonCopy = *(ColosseumPokemonBlob*)fn_800574E0();
+            pokemonCopy = *(ColosseumPokemonBlob*)pcBoxGetHeld();
         }
-        context = fn_80057694();
-        fn_80057A38();
+        context = pcBoxGetHeldFlag();
+        pcBoxCloseHeldWindow();
 
         navigation[0] = alternatePokemon != 0 ? 1 : 0;
         navigation[1] = slot;
-        fn_80057C9C(pokemon, fn_80058F40, navigation);
-        fn_80056B74(selection, 0);
-        fn_80054760(1, 0);
-        fn_80057A64(haveCopy ? &pokemonCopy : 0, context);
+        pcBoxRunStatus(pokemon, pcBoxStepPartyPokemon, navigation);
+        pcBoxOpenTabs(selection, 0);
+        pcBoxOpenDetail(1, 0);
+        pcBoxOpenHeldWindow(haveCopy ? &pokemonCopy : 0, context);
 
         if (navigation[0] == 0) {
             i = findRosterRow(navigation[1]);
             if (i < 7) {
                 MenuSprite* item = (MenuSprite*)menuItemBiosGetPtr(
                     lbl_802677D0[i].mode);
-                fn_80057830(*(s16*)((u8*)item + 2),
+                pcBoxSetCursorTarget(*(s16*)((u8*)item + 2),
                             *(s16*)((u8*)item + 4), 1);
             }
             slot = navigation[1];
@@ -520,31 +520,31 @@ s32 fn_80059034(s32 slot)
         break;
 
     case 6:
-        fn_80058804((void*)0x1B88, 0);
-        mark = fn_8005D738(pokemonBiosGetPcboxMark(pokemon));
+        pcBoxShowMessage((void*)0x1B88, 0);
+        mark = pcBoxConfirmRelease(pokemonBiosGetPcboxMark(pokemon));
         if (mark != 0xFF) {
             pokemonBiosSetPcboxMark(pokemon, mark);
         }
-        fn_800587D8();
+        pcBoxCloseMessage();
         break;
 
     case 7:
-        if (fn_80057DE8(pokemon)) {
-            fn_80058804((void*)0x1B94, 1);
+        if (pcBoxIsShadowPokemon(pokemon)) {
+            pcBoxShowMessage((void*)0x1B94, 1);
             break;
         }
         if (alternatePokemon == 0 &&
             (s32)pokemonGetStatus(pokemon, 0, 0x83, 0) > 0) {
             count = countMarkedParty();
             if (count <= 1) {
-                fn_80058804((void*)0x1B90, 1);
+                pcBoxShowMessage((void*)0x1B90, 1);
                 break;
             }
         }
 
-        fn_80058804((void*)0x1B91, 0);
-        selection = fn_8005D3D0(1);
-        fn_800587D8();
+        pcBoxShowMessage((void*)0x1B91, 0);
+        selection = pcBoxSelectMode(1);
+        pcBoxCloseMessage();
         if (selection == 1) {
             break;
         }
@@ -552,25 +552,25 @@ s32 fn_80059034(s32 slot)
         GScharCpy(pokemonName,
                   (void*)pokemonGetStatus(pokemon, 0, 0x77, 0));
         if (alternatePokemon == 0) {
-            fn_80054670(slot);
-            while (fn_8005464C() != 0) {
+            menuPartySlotFadeStart(slot);
+            while (menuPartySlotFadeDone() != 0) {
                 _threadSwitch();
             }
             if (slot >= 0 && slot < 6) {
                 pokemonInit(heroGetStatus(0, 3, (u16)slot));
             }
         } else {
-            fn_8005744C();
-            while (fn_80057428() != 0) {
+            pcBoxHeldFadeStart();
+            while (pcBoxHeldFadeDone() != 0) {
                 _threadSwitch();
             }
-            fn_800574A8();
-            fn_800576C4(0);
+            pcBoxClearHeld();
+            pcBoxSetHoldState(0);
         }
 
         msgctrlSetValue(0x36, pokemonName);
-        fn_80058804((void*)0x1B92, 1);
-        fn_80058804((void*)0x1B93, 1);
+        pcBoxShowMessage((void*)0x1B92, 1);
+        pcBoxShowMessage((void*)0x1B93, 1);
         if (alternatePokemon == 0) {
             closePartyGap(slot);
         }

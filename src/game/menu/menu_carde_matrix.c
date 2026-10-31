@@ -19,7 +19,7 @@ extern void windowGetParam();
 extern void windowGetActiveID();
 extern void windowSearchID();
 extern void windowGetKeyInfo();
-extern void fn_801081F8();
+extern void winSeqSetItem();
 extern void winSpriteGetDisp();
 extern void winSpriteSetDisp();
 extern void msgctrlSetValue();
@@ -123,8 +123,8 @@ extern u16 GSmemGetHandleByPtr(void*);
 extern void fn_800E24B0(u16);
 extern void GSmemFree(u16);
 extern void* windowSearchItemID(void*, s32);
-extern s32 fn_80083BF8(void* arena);
-extern struct MenuCardEEntry* fn_80083AF4(void* arena, s32 index);
+extern s32 cardeArenaCountRecords(void* arena);
+extern struct MenuCardEEntry* cardeArenaWalk(void* arena, s32 index);
 
 typedef struct MenuCardEItem {
     u8 pad0[0x50];
@@ -185,7 +185,7 @@ static inline void menuCardE_FillEntries(u8* ctx, s32 count) {
 
     for (k = 0; k < count; k++) {
         ((u32*)CARDE_CTX_U32(ctx, 0xB0))[k] =
-            (u32)fn_80083AF4(0, k);
+            (u32)cardeArenaWalk(0, k);
     }
     qsort((void*)CARDE_CTX_U32(ctx, 0xB0), count, 4,
           menuCardE_CompareEntryPtrs);
@@ -210,20 +210,20 @@ extern u8 lbl_80268DB4[];
 
 /* ===== Forward declarations ===== */
 void menuCardEMatrixSelectCard(u8 cardId, u8 subIndex);
-void fn_8007C414(void);
+void cardeMatrixClearAnimTimer(void);
 void menuCardEMatrixSetTarget(u8 cardId, u8 subIndex, s8 row, s8 column, s32 state);
-void fn_8007C634(void);
-void fn_8007C764(u8 arg);
-void fn_8007C7A8(u8 arg);
-void fn_8007C7EC(void);
-void fn_8007CAB0(void);
-void fn_8007CB54(u32 arg);
+void cardeMatrixCommitEntry(void);
+void cardeMatrixSetFlagC9(u8 arg);
+void cardeMatrixSetFlagC8(u8 arg);
+void cardeMatrixLoadEntries(void);
+void cardeMatrixUpdateSortKeys(void);
+void cardeMatrixSetTitle(u32 arg);
 struct MenuCardEMatrixItem;
-void fn_8007CBB4(void*, struct MenuCardEMatrixItem*);
-void fn_8007D4FC(void* window, u8* param);
-void fn_8007D564(void* window, u8* param);
-void fn_8007D79C(void* window, u8* param);
-void fn_8007D89C(void* window, u8* param);
+void cardeMatrixDrawText(void*, struct MenuCardEMatrixItem*);
+void cardeMatrixDrawText2(void* window, u8* param);
+void cardeMatrixDrawText3(void* window, u8* param);
+void cardeMatrixDrawText4(void* window, u8* param);
+void cardeMatrixDrawText5(void* window, u8* param);
 struct MenuCardEWindow;
 void menuCardEMatrixWindowProc(struct MenuCardEWindow* window);
 
@@ -330,7 +330,7 @@ void menuCardEMatrixSelectCard(u8 cardId, u8 subIndex) {
 }
 
 /* 0x8007C414 | size: 0x3C */
-void fn_8007C414(void) {
+void cardeMatrixClearAnimTimer(void) {
     extern void* windowSearchID(u32 id);
     extern u32* windowGetFreeWork(void* obj);
     u32 p;
@@ -390,7 +390,7 @@ void menuCardEMatrixSetTarget(u8 cardId, u8 subIndex, s8 row, s8 column, s32 sta
 }
 
 /* 0x8007C634 | size: 0x130 */
-void fn_8007C634(void) {
+void cardeMatrixCommitEntry(void) {
     MenuCardEMatrixContext* context;
 
     context = menuCardEWaitTransition();
@@ -413,7 +413,7 @@ void fn_8007C634(void) {
 }
 
 /* 0x8007C764 | size: 0x44 */
-void fn_8007C764(u8 arg) {
+void cardeMatrixSetFlagC9(u8 arg) {
     extern void* windowSearchID(u32 id);
     extern u32* windowGetFreeWork(void* obj);
     u32 p;
@@ -426,7 +426,7 @@ void fn_8007C764(u8 arg) {
 }
 
 /* 0x8007C7A8 | size: 0x44 */
-void fn_8007C7A8(u8 arg) {
+void cardeMatrixSetFlagC8(u8 arg) {
     extern void* windowSearchID(u32 id);
     extern u32* windowGetFreeWork(void* obj);
     u32 p;
@@ -480,14 +480,14 @@ static inline MenuCardEEntry** menuCardEMatrixAlloc(s32 count) {
 /* Allocate, fill and sort the context's entry-pointer array. */
 static inline void menuCardEMatrixFillEntries(MenuCardEMatrixContext* context,
                                               s32 count) {
-    extern MenuCardEEntry* fn_80083AF4(void* arena, s32 index);
+    extern MenuCardEEntry* cardeArenaWalk(void* arena, s32 index);
     extern void qsort(void* base, u32 count, u32 size, s32 (*compare)(const void*, const void*));
     extern s32 menuCardE_CompareEntryPtrs(const void* a, const void* b);
     s32 k;
 
     context->entries = menuCardEMatrixAlloc(count);
     for (k = 0; k < count; k++) {
-        context->entries[k] = fn_80083AF4(NULL, k);
+        context->entries[k] = cardeArenaWalk(NULL, k);
     }
     qsort(context->entries, count, 4, menuCardE_CompareEntryPtrs);
 }
@@ -516,11 +516,11 @@ static inline void menuCardEMatrixReselectSub(MenuCardEMatrixContext* context) {
 #endif
 #if defined(MENU_CARDE_R48_8007C7EC_O2_ACTIVE)
 /* Built with the unit flag -opt nopeephole (configure.py). */
-void fn_8007C7EC(void) {
+void cardeMatrixLoadEntries(void) {
     extern void* windowSearchID(s32 id);
     extern MenuCardEMatrixContext** windowGetFreeWork(void* window);
-    extern s32 fn_80083BF8(void* arena);
-    extern MenuCardEEntry* fn_80083AF4(void* arena, s32 index);
+    extern s32 cardeArenaCountRecords(void* arena);
+    extern MenuCardEEntry* cardeArenaWalk(void* arena, s32 index);
     extern void qsort(void* base, u32 count, u32 size, s32 (*compare)(const void*, const void*));
     extern s32 menuCardE_CompareEntryPtrs(const void* a, const void* b);
     extern u16 GSmemAlloc(u32 size, u32 align);
@@ -550,7 +550,7 @@ void fn_8007C7EC(void) {
         context->entries = NULL;
     }
 
-    count = context->entryCount = fn_80083BF8(NULL);
+    count = context->entryCount = cardeArenaCountRecords(NULL);
     if (count != 0) {
         menuCardE_FillEntries((u8*)context, count);
     }
@@ -565,7 +565,7 @@ void fn_8007C7EC(void) {
         context->entries = NULL;
     }
 
-    count = context->entryCount = fn_80083BF8(NULL);
+    count = context->entryCount = cardeArenaCountRecords(NULL);
     if (count != 0) {
         menuCardEMatrixFillEntries(context, count);
     }
@@ -596,7 +596,7 @@ void fn_8007C7EC(void) {
 /* RULE-EXCEPTION(user-approved): unit-wide local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8007CAB0(void) {
+void cardeMatrixUpdateSortKeys(void) {
     extern void* windowSearchID(s32 id);
     extern MenuCardEMatrixContext** windowGetFreeWork(void* window);
     MenuCardEMatrixContext* context;
@@ -622,7 +622,7 @@ void fn_8007CAB0(void) {
 }
 
 /* 0x8007CB54 | size: 0x60 */
-void fn_8007CB54(u32 arg) {
+void cardeMatrixSetTitle(u32 arg) {
     extern void* windowSearchID(u32 id);
     extern u32* windowGetFreeWork(void* obj);
     extern void GScharLenCpy(u32 p, u32 arg, u32 size);
@@ -675,7 +675,7 @@ static inline s32 menuCardEFindItemId(const u16* ids, u16 id) {
     return -1;
 }
 
-void fn_8007CBB4(void* window, MenuCardEMatrixItem* item) {
+void cardeMatrixDrawText(void* window, MenuCardEMatrixItem* item) {
     extern void* windowSearchID(s32 id);
     extern MenuCardEMatrixContext** windowGetFreeWork(void* window);
     extern u8 winSpriteGetDisp(MenuCardEMatrixItem* item);
@@ -812,7 +812,7 @@ void fn_8007CBB4(void* window, MenuCardEMatrixItem* item) {
 #pragma push
 #pragma peephole off
 
-void fn_8007D4FC(void* window, u8* param) {
+void cardeMatrixDrawText2(void* window, u8* param) {
     extern void* windowSearchID(u32 id);
     extern u16** windowGetFreeWork(void* window);
     extern void msgctrlSetValue(u32 id, void* value);
@@ -853,7 +853,7 @@ static inline void* menuCardEGetEntry(u8* work, s32 which) {
 }
 
 /* 0x8007D564 | size: 0x238 */
-void fn_8007D564(void* window, u8* param) {
+void cardeMatrixDrawText3(void* window, u8* param) {
     extern u8* cardeSaveGetLevel(void* entry, s8 sub_index);
     extern void msgctrlSetValue(u32 id, void* value);
     u8* work;
@@ -904,7 +904,7 @@ void fn_8007D564(void* window, u8* param) {
 }
 
 /* 0x8007D79C | size: 0x100 */
-void fn_8007D79C(void* window, u8* param) {
+void cardeMatrixDrawText4(void* window, u8* param) {
     extern u8* cardeSaveGetLevel(void* entry, u32 sub_index);
     extern void msgctrlSetValue(u32 id, u32 value);
     u8* work;
@@ -946,7 +946,7 @@ void fn_8007D79C(void* window, u8* param) {
 }
 
 /* 0x8007D89C | size: 0xDC */
-void fn_8007D89C(void* window, u8* param) {
+void cardeMatrixDrawText5(void* window, u8* param) {
     extern void msgctrlSetValue(u32 id, void* value);
     u8* work;
     void* entry;
@@ -1016,7 +1016,7 @@ typedef struct MenuCardEKeyInfo {
     u16 trigger;
 } MenuCardEKeyInfo;
 
-/* The full Card-E matrix work area built by fn_8007FDBC. */
+/* The full Card-E matrix work area built by menuCardEMatrixBuild. */
 typedef struct MenuCardEMatrixWork {
     u8 title[0xA0];
     s32 entryIndex[2];          /* 0xA0 previous, 0xA4 current */
@@ -1121,8 +1121,8 @@ void menuCardEMatrixWindowProc(MenuCardEWindow* window) {
     extern void* windowGetParam(void* window, s32 index);
     extern s32 windowGetActiveID(void);
     extern MenuCardEKeyInfo* windowGetKeyInfo(void);
-    extern MenuCardEMatrixWork* fn_8007FDBC(void* window, void* title);
-    extern void fn_801081F8(void* window, s32 itemId, s32 arg);
+    extern MenuCardEMatrixWork* menuCardEMatrixBuild(void* window, void* title);
+    extern void winSeqSetItem(void* window, s32 itemId, s32 arg);
     extern void winSpriteSetDisp(MenuCardESprite* sprite, s32 disp);
     extern void soundStartSE(s32 id);
     extern u8 cardeSaveLevelHasCard(MenuCardEEntry* entry, s8 layer);
@@ -1172,10 +1172,10 @@ void menuCardEMatrixWindowProc(MenuCardEWindow* window) {
     switch (window->state) {
     case 0:
         if (window->subState == 0) {
-            work = fn_8007FDBC(window, windowGetParam(window, 0));
+            work = menuCardEMatrixBuild(window, windowGetParam(window, 0));
             *windowGetFreeWork(window) = work;
-            fn_801081F8(window, 0x79A, 0x40);
-            fn_801081F8(window, 0x826, 0x48);
+            winSeqSetItem(window, 0x79A, 0x40);
+            winSeqSetItem(window, 0x826, 0x48);
         }
         break;
     case 3:
@@ -1624,7 +1624,7 @@ s32 menuCardE_CompareEntryPtrs(u32 r3, u32 r4) {
 /* 0x8007FDBC | size: 0x554 */
 #pragma push
 /* Both allocations assert on the same source line, so they share a helper. */
-void* fn_8007FDBC(void* window, const void* title) {
+void* menuCardEMatrixBuild(void* window, const void* title) {
     u8* ctx;
     u16* rowIds0;
     u8* rowItems;
@@ -1652,7 +1652,7 @@ void* fn_8007FDBC(void* window, const void* title) {
         CARDE_CTX_U32(ctx, 0xB0) = 0;
     }
 
-    count = CARDE_CTX_U32(ctx, 0xAC) = fn_80083BF8(0);
+    count = CARDE_CTX_U32(ctx, 0xAC) = cardeArenaCountRecords(0);
     if (count != 0) {
         menuCardE_FillEntries(ctx, count);
     }

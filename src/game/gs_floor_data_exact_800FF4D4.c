@@ -12,7 +12,7 @@ extern u32 lbl_8047ACC8;
 extern u32 lbl_8047ACE0;
 extern GSFloorResHandler lbl_80404918[];
 
-void fn_800FF4D4(void* data, u8 typeId)
+void floorRegisterHandler(void* data, u8 typeId)
 {
     GSFloorResHandler* handler;
 
@@ -24,22 +24,22 @@ void fn_800FF4D4(void* data, u8 typeId)
     }
 }
 
-u32 fn_800FF52C(void)
+u32 floorIsLinking(void)
 {
     return lbl_8047ACC4 != 0;
 }
 
-u32 fn_800FF540(void)
+u32 floorGetPendingLink(void)
 {
     return lbl_8047ACC4;
 }
 
-u8 fn_800FF548(void)
+u8 floorGetFadeOutFlag(void)
 {
     return *(u8*)((u8*)lbl_8047ACC8 + 0xB);
 }
 
-u8 fn_800FF554(void)
+u8 floorGetCurrentKind(void)
 {
     return *(u8*)((u8*)lbl_8047ACC8 + 0xA);
 }

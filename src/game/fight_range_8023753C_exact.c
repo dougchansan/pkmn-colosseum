@@ -59,7 +59,7 @@ u32 fightTrainerAiGetHpRatio(u32 r3, u32 r4)
   return (int)((int)uVar3 * 100) / (int)uVar4 <= (int)uVar5;
 }
 
-u16 fn_80237664(void* ctx, u32 param) {
+u16 fightTrainerAiGetMaxHp(void* ctx, u32 param) {
     extern void* fn_8012640C();
     extern u32 fn_801FB1C0();
     extern void* fn_80205BE8(void* ctx);
@@ -68,7 +68,7 @@ u16 fn_80237664(void* ctx, u32 param) {
     return (u16)fn_8012640C(fn_80205BE8(resolved), 0, 0x87, 0);
 }
 
-u16 fn_802376EC(void* ctx, u32 param) {
+u16 fightTrainerAiGetHp(void* ctx, u32 param) {
     extern void* fn_8012640C();
     extern u32 fn_801FB1C0();
     extern void* fn_80205BE8(void* ctx);
@@ -291,7 +291,7 @@ not_found:
 }
 
 
-u8 fn_80237F74(void* ctx, u32 param2, u32 param3) {
+u8 fightTrainerAiIsTokusei(void* ctx, u32 param2, u32 param3) {
     extern u32 fn_801F54A4();
     extern u32 fn_801FB1C0();
     extern u32 fn_80207BF4(void* param);

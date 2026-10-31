@@ -1,7 +1,7 @@
 /**
  * @file gs_pokemon_summary_r57b_8001501C_prefix.c
- * @brief gs_pokemon_summary carve, 0x8001501C - 0x800150E4: fn_8001501C
- *        (draw the summary label) and fn_80015050 (call the current page's
+ * @brief gs_pokemon_summary carve, 0x8001501C - 0x800150E4: pocketDrawMessage
+ *        (draw the summary label) and bagMenuDrawCursor (call the current page's
  *        draw handler with its cursor position).
  *
  * Text only, GC/1.3 -O4,p with the peephole pass off for the whole unit (the
@@ -31,13 +31,13 @@ extern u32 lbl_8047A2DC;
 extern void GSmsgPrintColor(s32 x, s32 y, s32 flags, u32 color);
 extern u32 cursorBiosGetPos(u32 id);
 
-s32 fn_8001501C(void)
+s32 pocketDrawMessage(void)
 {
     GSmsgPrintColor(0, 0, -1, lbl_8047A2DC);
     return 0;
 }
 
-s32 fn_80015050(u8* context, u8* param)
+s32 bagMenuDrawCursor(u8* context, u8* param)
 {
     SummaryPageEntry* entry = lbl_80266918;
     SummaryDrawHandler handler;

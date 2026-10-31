@@ -14,8 +14,8 @@
      | (((value) & 0x00FF0000) >> 8) | ((value) >> 24))
 
 #ifndef POKECONV_EXACT_SUFFIX
-/* fn_80089048 - 0x80089048 | size: 0x338 */
-s32 fn_80089048(u8* __restrict destination, const u8* source, void* pokemon)
+/* pokeconvToGBA - 0x80089048 | size: 0x338 */
+s32 pokeconvToGBA(u8* __restrict destination, const u8* source, void* pokemon)
 {
     extern u8 pokemonCheckValid(void*);
     extern u16 pokemonBiosGetPokemonDataId(void*);
@@ -84,8 +84,8 @@ s32 fn_80089048(u8* __restrict destination, const u8* source, void* pokemon)
 }
 
 #else
-/* fn_80089380 - 0x80089380 | size: 0x224 */
-s32 fn_80089380(u8* destination, const u8* source)
+/* pokeconvCheck - 0x80089380 | size: 0x224 */
+s32 pokeconvCheck(u8* destination, const u8* source)
 {
     extern volatile s32 lbl_8047A660;
     extern s32 lbl_8047A664;

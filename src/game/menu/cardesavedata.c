@@ -12,7 +12,7 @@
 extern void* memset(void* dst, int value, u32 len);
 
 /* Compiled on its own (the game/menu/cardesavedata.c unit), this file
- * builds only fn_8007FDBC; the tail units define CARDESAVEDATA_ALL. */
+ * builds only menuCardEMatrixBuild; the tail units define CARDESAVEDATA_ALL. */
 #if !defined(CARDESAVEDATA_ALL) && \
     !defined(CARDESAVEDATA_GRID_ONLY) && \
     !defined(CARDESAVEDATA_DECODE_TU) && \
@@ -25,18 +25,18 @@ extern void* memset(void* dst, int value, u32 len);
 #endif
 
 /* ===== External function declarations (fn_80084A8C only) ===== */
-extern void fn_8005CF2C();
+extern void menuColosseumShowPartyError();
 extern void menuRuleCheckPartyAndRule();
-extern void fn_8008ABA0();
+extern void gbaCommIsReady();
 extern void gbaCommStartTransferA();
 extern void gbaCommStartTransferB();
 extern void gbaCommStartTransferC();
 extern void gbaCommStartTransferFile();
 extern void gbaCommIsBusy();
-extern void fn_80093610();
+extern void gbaCommGetResult();
 extern void gbaCommEnd();
 extern void GSgetFrameStep();
-extern void fn_800D37CC();
+extern void GSgfxGetVsyncRate();
 extern void menuCloseCustom();
 extern s32 menuIsCheck();
 extern void menuGetEnablePort();
@@ -103,8 +103,8 @@ extern void* GSmemLock(u16);
 extern u16 GSmemGetHandleByPtr(void*);
 extern void fn_800E24B0(u16);
 extern void GSmemFree(u16);
-extern s32 fn_80083BF8(void*);
-extern void* fn_80083AF4(void*, s32);
+extern s32 cardeArenaCountRecords(void*);
+extern void* cardeArenaWalk(void*, s32);
 extern void* windowSearchItemID(void*, s32);
 extern void qsort(void*, u32, u32, s32 (*)(u32, u32));
 extern void __assert();
@@ -2423,7 +2423,7 @@ static inline void CardEGridSetCountOut(s32* countOut, s32 count)
     }
 }
 
-/* fn_80083BF8's body: count the well-formed records. */
+/* cardeArenaCountRecords's body: count the well-formed records. */
 static inline s32 CardEGridCountEntries(void* arena)
 {
     extern void* savedataGetStatus(u32, u32);
@@ -2521,9 +2521,9 @@ static inline u8* cardEGetCell(u8* card, s8 pageIndex, s8 row, s8 column)
 
 /* The grid functions, last to first: built with deferred inlining (see
  * cardesavedata_grid_80082650.c), MWCC emits them in reverse source order,
- * so fn_80082650 lands first at 0x80082650, and fn_80082738/fn_80082CF0
+ * so cardeSaveClearIfEmpty lands first at 0x80082650, and fn_80082738/fn_80082CF0
  * inline fn_80082A88/fn_80082EA4 although those come earlier in the file. */
-void* fn_800836AC(u8* arena, u8* descriptor, u8 create)
+void* cardeGridGetRecord(u8* arena, u8* descriptor, u8 create)
 {
     extern void wcscpy(void*, const void*);
     CardEGridEntry* series;
@@ -2587,7 +2587,7 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
     extern void wcscpy(void*, const void*);
     extern void darkPokemonSaveSet4A0(u8 type, u16 id);
     extern void darkPokemonSaveSetName(u8 type, void* data);
-    extern void fn_801EE10C(u8 type, u8 key);
+    extern void darkPokemonSaveSet49C(u8 type, u8 key);
     CardEPageLayout* layerData;
     CardEObjectData* object;
     CardEGridEntry* found;
@@ -2663,10 +2663,10 @@ void cardeGridSetShadowPokemon(u8* arena, u8* cardData, s8 layer)
     layerData->summary[0x61] = 0;
     layerData->summary[0x62] = pending[0x1E1];
     darkPokemonSaveSetName(pending[0x1E1], pending + 0x118);
-    fn_801EE10C(pending[0x1E1], pending[0x125]);
+    darkPokemonSaveSet49C(pending[0x1E1], pending[0x125]);
 }
 
-void fn_800830A4(u8* arena)
+void cardeSaveCompact(u8* arena)
 {
     extern void* savedataGetStatus(u32, u32);
     CardEGridEntry* series;
@@ -2826,7 +2826,7 @@ u32 cardeSaveRemoveCard(u8* card, const u8* window, s8 pageIndex)
 
 /* Clear an empty decoded card-e grid entry. */
 #pragma push
-void fn_80082650(CardEGridEntry* entry)
+void cardeSaveClearIfEmpty(CardEGridEntry* entry)
 {
     CardEGridLayer* layer;
     s32 i;
@@ -2864,7 +2864,7 @@ scan_done:
 
 /* Return one well-formed record, or the terminating slot for a negative index. */
 #pragma push
-void* fn_80083AF4(void* arena, s32 index)
+void* cardeArenaWalk(void* arena, s32 index)
 {
     extern void* savedataGetStatus(u32, u32);
     CardEGridEntry* entry;
@@ -2908,7 +2908,7 @@ static inline void CardEGridSetCount(s32* countOut, s32 count)
 }
 
 /* Count well-formed records in the Card-e save-data arena. */
-s32 fn_80083BF8(void* arena)
+s32 cardeArenaCountRecords(void* arena)
 {
     extern void* savedataGetStatus(u32, u32);
     CardEGridEntry* entry;
@@ -3020,13 +3020,13 @@ static inline void menuCardE_FillEntries(u8* ctx, s32 count) {
 
     for (k = 0; k < count; k++) {
         ((u32*)CARDE_CTX_U32(ctx, 0xB0))[k] =
-            (u32)fn_80083AF4(0, k);
+            (u32)cardeArenaWalk(0, k);
     }
     qsort((void*)CARDE_CTX_U32(ctx, 0xB0), count, 4,
           menuCardE_CompareEntryPtrs);
 }
 
-void* fn_8007FDBC(void* window, const void* title) {
+void* menuCardEMatrixBuild(void* window, const void* title) {
     u16 handle;
     u16* rowIds0;
     u8* rowItems;
@@ -3060,7 +3060,7 @@ void* fn_8007FDBC(void* window, const void* title) {
         CARDE_CTX_U32(ctx, 0xB0) = 0;
     }
 
-    count = CARDE_CTX_U32(ctx, 0xAC) = fn_80083BF8(0);
+    count = CARDE_CTX_U32(ctx, 0xAC) = cardeArenaCountRecords(0);
     if (count != 0) {
         menuCardE_FillEntries(ctx, count);
     }
@@ -3141,16 +3141,16 @@ void* fn_8007FDBC(void* window, const void* title) {
 
 #if defined(CARDESAVEDATA_ALL)
 /* 0x80084034 | size: 0x4 */
-void fn_80084034(void) {
+void cardeGBAMenuButton(void) {
 }
 
 /* 0x80083CBC | size: 0x40 */
-void fn_80083CBC(void* ptr) {
+void cardeArenaClear(void* ptr) {
     memset(ptr != 0 ? ptr : (void*)savedataGetStatus(0, 0xD), 0, 0x49CC);
 }
 
 /* 0x80083CFC | size: 0x34 */
-void* fn_80083CFC(void* ptr) {
+void* cardeArenaGetPtr(void* ptr) {
     return ptr != 0 ? ptr : (void*)savedataGetStatus(0, 0xD);
 }
 
@@ -3179,7 +3179,7 @@ typedef struct CardEMessageEntry {
 } CardEMessageEntry;
 
 extern char lbl_8047C198[] __attribute__((section(".sdata2")));
-extern void fn_801081F8(void* window, u16 itemId, u16 messageId);
+extern void winSeqSetItem(void* window, u16 itemId, u16 messageId);
 extern void winSpriteSetDisp(void* sprite, u32 enable);
 
 /* The status display's rodata: per-state sprite masks, then the item
@@ -3260,7 +3260,7 @@ static const char sCardEStatusFile[] = "menuGBAC.c";
 
 
 /* Show or hide one per-port option sprite. */
-/* RULE-EXCEPTION(user-approved): duplicate helper chosen for register allocation (fn_80084038's option sprites take a u8 enable; the status sprites use CardEShowStatusBit) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): duplicate helper chosen for register allocation (menuGBACRun's option sprites take a u8 enable; the status sprites use CardEShowStatusBit) - see docs/RULE_EXCEPTIONS.md */
 static inline void CardEShowStatusSprite(void* sprite, u8 enable)
 {
     if (sprite != NULL) {
@@ -3269,7 +3269,7 @@ static inline void CardEShowStatusSprite(void* sprite, u8 enable)
 }
 
 /* Show or hide one of the five status sprites from its state-mask bit. */
-/* RULE-EXCEPTION(user-approved): duplicate helper chosen for register allocation (fn_80084038's status sprites take a u32 bit; see CardEShowStatusSprite) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): duplicate helper chosen for register allocation (menuGBACRun's status sprites take a u32 bit; see CardEShowStatusSprite) - see docs/RULE_EXCEPTIONS.md */
 static inline void CardEShowStatusBit(void* sprite, u32 bit)
 {
     if (sprite != NULL) {
@@ -3281,37 +3281,37 @@ static inline void CardESetStatusMessage(u8* window, void* sprite, s32 active)
 {
     if (sprite != NULL) {
         if (active) {
-            fn_801081F8(window, *(s16*)((u8*)sprite + 6), 0x1BA);
+            winSeqSetItem(window, *(s16*)((u8*)sprite + 6), 0x1BA);
         } else {
-            fn_801081F8(window, *(s16*)((u8*)sprite + 6), 0);
+            winSeqSetItem(window, *(s16*)((u8*)sprite + 6), 0);
             *(s32*)((u8*)sprite + 0x64) = -1;
         }
     }
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper (fn_80084038's initial item messages) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper (menuGBACRun's initial item messages) - see docs/RULE_EXCEPTIONS.md */
 static inline void CardEShowInitialMessages(u8* window)
 {
     u32 n;
 
     for (n = 0; n < 46; n++) {
-        fn_801081F8(window, sCardEStatusMessages[n].itemId,
+        winSeqSetItem(window, sCardEStatusMessages[n].itemId,
                     sCardEStatusMessages[n].initialMessage);
     }
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper (fn_80084038's updated item messages) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper (menuGBACRun's updated item messages) - see docs/RULE_EXCEPTIONS.md */
 static inline void CardEShowUpdatedMessages(u8* window)
 {
     u32 n;
 
     for (n = 0; n < 46; n++) {
-        fn_801081F8(window, sCardEStatusMessages[n].itemId,
+        winSeqSetItem(window, sCardEStatusMessages[n].itemId,
                     sCardEStatusMessages[n].updatedMessage);
     }
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper (fn_80084038's status-work allocation) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper (menuGBACRun's status-work allocation) - see docs/RULE_EXCEPTIONS.md */
 static inline CardEStatusWork* CardEAllocStatus(void)
 {
     u16 handle = ((u16 (*)(u32, u32))GSmemAlloc)(0xE0, 0x20);
@@ -3322,7 +3322,7 @@ static inline CardEStatusWork* CardEAllocStatus(void)
     return ((CardEStatusWork* (*)(u16))GSmemLock)(handle);
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper (fn_80084038's status-work release) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper (menuGBACRun's status-work release) - see docs/RULE_EXCEPTIONS.md */
 static inline void CardEFreeStatus(CardEStatusWork* status)
 {
     u16 handle = ((u16 (*)(void*))GSmemGetHandleByPtr)(status);
@@ -3334,14 +3334,14 @@ static inline void CardEFreeStatus(CardEStatusWork* status)
     GSmemFree(handle);
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper (fn_80084038's lost-port loop) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper (menuGBACRun's lost-port loop) - see docs/RULE_EXCEPTIONS.md */
 static inline void CardEDropLostPorts(CardEStatusWork* work)
 {
     s32 i;
 
     for (i = 0; i <= 3; i++) {
         if ((work->state[i] == 5 || work->state[i] == 4) &&
-            !((u8 (*)(s32))fn_8008ABA0)(i + 1)) {
+            !((u8 (*)(s32))gbaCommIsReady)(i + 1)) {
             ((void (*)(u8))menuSetEnablePort)(
                 ((u32 (*)(void))menuGetEnablePort)() & ~lbl_80478950[i]);
             work->state[i] = 7;
@@ -3350,7 +3350,7 @@ static inline void CardEDropLostPorts(CardEStatusWork* work)
     }
 }
 
-void fn_80084038(u8* window)
+void menuGBACRun(u8* window)
 {
     s32 i;
     u8 changed;
@@ -3450,7 +3450,7 @@ void fn_80084038(u8* window)
         if (work->state[i + 4] != work->state[i]) {
             changed = 1;
         }
-        /* RULE-EXCEPTION(user-approved): codegen-only cast (fn_80084038's state copy reload) - see docs/RULE_EXCEPTIONS.md */
+        /* RULE-EXCEPTION(user-approved): codegen-only cast (menuGBACRun's state copy reload) - see docs/RULE_EXCEPTIONS.md */
         work->state[i + 4] = ((CardEStatusWork*)work)->state[i];
     }
     if (!changed) {
@@ -3512,7 +3512,7 @@ void fn_80084038(u8* window)
             if ((flags & 4) != 0) {
                 sprite = work->optionSprite[2][i];
                 if (*(u32*)((u8*)sprite + 0x0C) == 0) {
-                    fn_801081F8(window, *(s16*)((u8*)sprite + 6),
+                    winSeqSetItem(window, *(s16*)((u8*)sprite + 6),
                                 lbl_8047C190[i]);
                 }
             }
@@ -3525,7 +3525,7 @@ void fn_80084038(u8* window)
 #if defined(CARDESAVEDATA_ALL) || defined(CARDESAVEDATA_EXACT_800849B4_ONLY)
 #pragma push
 /* Run the Card-e transfer UI while temporarily reserving controller port 1. */
-s32 fn_800849B4(s32 mode, s32 command, void* input, void* output)
+s32 cardeTransferUI(s32 mode, s32 command, void* input, void* output)
 {
     extern void gbaCommEnd(s32);
     extern u8 cardeGbaTransfer(s32, u32, void*, void*);
@@ -3629,18 +3629,18 @@ static const char cardETransferFile[16] = "colbtl.bin";
 #define CardE_menuIsCheck(id) ((u8 (*)(s32))menuIsCheck)(id)
 #define CardE_menuGetEnablePort() ((u32 (*)(void))menuGetEnablePort)()
 #define CardE_menuSetEnablePort(mask) ((u8 (*)(u8))menuSetEnablePort)(mask)
-#define CardE_portConnected(port) ((u8 (*)(s32))fn_8008ABA0)(port)
+#define CardE_portConnected(port) ((u8 (*)(s32))gbaCommIsReady)(port)
 #define CardE_portBusy(port) ((s32 (*)(s32))gbaCommIsBusy)(port)
-#define CardE_portResult(port) ((s32 (*)(s32))fn_80093610)(port)
+#define CardE_portResult(port) ((s32 (*)(s32))gbaCommGetResult)(port)
 #define CardE_portClose(port) ((void (*)(s32))gbaCommEnd)(port)
 #define CardE_msgOpen(a, id, b, c) ((void (*)(s32, s32, s32, s32))winMsgOpen)(a, id, b, c)
 
 extern void msgctrlSetValue(s32 id, s32 value);
 extern void soundStartSE(s32 se);
-extern s32 fn_80087AE8();
+extern s32 cardeWaitMessage();
 #define CardE_step(work, flags) \
-    ((u8 (*)(CardEStatusWork*, s32))fn_80087AE8)(work, flags)
-extern void* fn_80128E04(void);
+    ((u8 (*)(CardEStatusWork*, s32))cardeWaitMessage)(work, flags)
+extern void* savedataGetSection0(void);
 extern u32 savedataGetWorkPtr(void);
 extern u8 gamedataAttestBiosGetLangareaId(void*);
 extern u32 gamedataBiosGetGamedataAtttestPtr(void*);
@@ -3763,7 +3763,7 @@ static inline void CardEWaitSecond(void)
     while (t < 1.0f) {
         CardE_threadSwitch();
         t += (f32)((u32 (*)(void))GSgetFrameStep)() /
-             (f32)((s32 (*)(void))fn_800D37CC)();
+             (f32)((s32 (*)(void))GSgfxGetVsyncRate)();
     }
 }
 
@@ -3772,7 +3772,7 @@ static inline u8 CardEIsLangArea(u8 lang)
     void* bios;
     u32 attest;
 
-    if (savedataGetWorkPtr() != 0 && (bios = fn_80128E04()) != NULL &&
+    if (savedataGetWorkPtr() != 0 && (bios = savedataGetSection0()) != NULL &&
         (attest = gamedataBiosGetGamedataAtttestPtr(bios)) != 0) {
         u8 area = gamedataAttestBiosGetLangareaId((void*)attest);
         if (area == lang) {
@@ -3878,7 +3878,7 @@ u8 cardeGbaTransfer(s32 mode, u32 command, void* input, void* output)
             CardEWaitSecond();
             if (!((u8 (*)(void*))menuRuleCheckPartyAndRule)(status)) {
                 ((void (*)(s32, s32, s32))menuCloseCustom)(0xE4, 0, 1);
-                ((void (*)(void*, s32))fn_8005CF2C)(status, 0);
+                ((void (*)(void*, s32))menuColosseumShowPartyError)(status, 0);
                 return 0;
             }
         }
@@ -4011,7 +4011,7 @@ u8 cardeGbaTransfer(s32 mode, u32 command, void* input, void* output)
             }
             if (!((u8 (*)(void*))menuRuleCheckPartyAndRule)(hero)) {
                 ((void (*)(s32, s32, s32))menuCloseCustom)(0xE4, 0, 1);
-                ((void (*)(void*, s32))fn_8005CF2C)(hero, 1);
+                ((void (*)(void*, s32))menuColosseumShowPartyError)(hero, 1);
                 if ((command & 8) == 0) {
                     return 0;
                 }
@@ -4231,14 +4231,14 @@ static inline void cardGridCountRow(const CardGridTiles* tiles, CardGridTiles* r
 {
     s32 x;
 
-    /* RULE-EXCEPTION(user-approved): carrier copy (fn_80087C64's tile-grid stack copies, retail slot order) - see docs/RULE_EXCEPTIONS.md */
+    /* RULE-EXCEPTION(user-approved): carrier copy (cardeGridPrompt's tile-grid stack copies, retail slot order) - see docs/RULE_EXCEPTIONS.md */
     *row = *tiles;
     for (x = 0; x < 3; x++) {
         if (occupied[x] != 0) {
             u16 tile;
             s32 k;
 
-            /* RULE-EXCEPTION(user-approved): carrier copy (fn_80087C64's tile-grid stack copies, retail slot order) - see docs/RULE_EXCEPTIONS.md */
+            /* RULE-EXCEPTION(user-approved): carrier copy (cardeGridPrompt's tile-grid stack copies, retail slot order) - see docs/RULE_EXCEPTIONS.md */
             *read = *row;
             tile = cardGridTileAt(read, x, y);
             for (k = 0; k < 3; k++) {
@@ -4325,7 +4325,7 @@ static inline BOOL cardGridMove(const CardGridData* data, CardGridCursor* cursor
     }
 
     if (moved) {
-        /* RULE-EXCEPTION(user-approved): carrier copy (fn_80087C64's tile-grid stack copies, retail slot order) - see docs/RULE_EXCEPTIONS.md */
+        /* RULE-EXCEPTION(user-approved): carrier copy (cardeGridPrompt's tile-grid stack copies, retail slot order) - see docs/RULE_EXCEPTIONS.md */
         *cursor = data->cursor;
         cardGridShowCursor(cursor, nextX, nextY);
         *px = nextX;
@@ -4336,11 +4336,11 @@ static inline BOOL cardGridMove(const CardGridData* data, CardGridCursor* cursor
 
 /* Run the card-e three-tile grid prompt.  A zero return means that three
  * cells were accepted; one means the player backed out before completing it. */
-u32 fn_80087C64(const u16* expected)
+u32 cardeGridPrompt(const u16* expected)
 {
     s32 occupied[3][3];
     CardGridChoice choices[3];
-    /* RULE-EXCEPTION(user-approved): carrier copy (fn_80087C64's tile-grid stack copies, retail slot order) - see docs/RULE_EXCEPTIONS.md */
+    /* RULE-EXCEPTION(user-approved): carrier copy (cardeGridPrompt's tile-grid stack copies, retail slot order) - see docs/RULE_EXCEPTIONS.md */
     CardGridTiles readTiles;
     CardGridCursor cursor;
     CardGridTiles rowTiles;

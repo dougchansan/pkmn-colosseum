@@ -76,8 +76,8 @@ extern u32 std092_getCurrentRoomID(void);
 extern void* savedataGetStatus(u8* data, u16 index);
 extern s32 heroItemDecItemDataId(u8* ptr, u32 itemId, u32 count, s32 arg4);
 extern s32 heroItemAddItemDataId(u8* ptr, u32 itemId, u32 count, s32 arg4);
-extern void fn_8012F1FC(s32 slot);
-extern void fn_8012F40C(s32 slot);
+extern void partnerSetFollowing(s32 slot);
+extern void partnerSetFollowState(s32 slot);
 extern s32 heroMoveDismissMember(s32 idx);
 extern void heroBiosSetPokedoru(u8* ptr, s32 value);
 extern void floorChangePos(u32 floorId, s16 direction, f32 x, f32 y, f32 z);
@@ -98,7 +98,7 @@ extern void floorChangePos(u32 floorId, s16 direction, f32 x, f32 y, f32 z);
  * the or, and declaring `word` before `bitPosition` gives retail's r6/r7
  * colouring of the bit position and word pointer. Counting the leading zeros
  * into `zeros` before the width/position reads numbers the cntlzw result
- * before the typeAndWidth reload, as fn_8018FE30's colouring needs. */
+ * before the typeAndWidth reload, as dbgFlagApplyPreset's colouring needs. */
 static inline void flagSetValue(u32* buffer, FlagDefinition* defs, s32 flagId,
                                 u32 value)
 {
@@ -153,8 +153,8 @@ static inline void flagSetValue(u32* buffer, FlagDefinition* defs, s32 flagId,
 extern FlagDefinition* lbl_80478F9C;
 extern FlagStateEntry* lbl_80478EEC;
 
-/* fn_8018FE30's own unit (GS_RANGE_8018FE30_FN_8018FE30_ONLY, set by
- * configure.py) links only fn_8018FE30: the setters it expands inline stay
+/* dbgFlagApplyPreset's own unit (GS_RANGE_8018FE30_FN_8018FE30_ONLY, set by
+ * configure.py) links only dbgFlagApplyPreset: the setters it expands inline stay
  * defined there, as static inline copies, and fn_80190528 / GSflagClear are
  * left to their own units. */
 #if defined(GS_RANGE_8018FE30_FN_8018FE30_ONLY)
@@ -208,13 +208,13 @@ static inline void flagSetPartyMembers(u8 members)
     s32 i;
     s32 slot;
 
-    fn_8012F1FC(0);
-    fn_8012F40C(0);
+    partnerSetFollowing(0);
+    partnerSetFollowState(0);
     heroMoveDismissMember(1);
     for (i = 0; i < 2; i++) {
         slot = flagMemberSlot(i);
         if (slot >= 0 && lbl_80478EE4[members][i] != 0) {
-            fn_8012F1FC(slot);
+            partnerSetFollowing(slot);
         }
     }
 }
@@ -251,7 +251,7 @@ static inline void flagSwapItems(u8 itemSwap)
     heroItemAddItemDataId(0, *(u16*)((u8*)(itemSwap * 4) + (u32)lbl_80478EF4), 1, -1);
 }
 
-void fn_8018FE30(int flagId)
+void dbgFlagApplyPreset(int flagId)
 {
     extern FlagConfig* lbl_80478F98;
     extern u32* lbl_80478ED4;

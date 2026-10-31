@@ -13,13 +13,13 @@
 #include "dolphin/types.h"
 
 extern void winSeqSetMenu(void* ctx, s32 state);
-extern u8 fn_801F18DC(s32 controller);
+extern u8 fightFloorIsKind10(s32 controller);
 extern u8 fightFloorIsUseFightTimerCommand(s32 controller);
 extern u8 fightTimerCommandIsOver(void);
 extern u16 std103_battleGetResult(void);
 extern void _threadSwitch(void);
 extern u32 GSinputButtonsChanged(s32 slot);
-extern u32 fn_800F7BC4(s32 slot);
+extern u32 GSinputGetButtons(s32 slot);
 extern u32 menuIsCheck(u32 id);
 extern s32 menuOpenCustom(s32 id, ...);
 extern void winMsgOpenFight();
@@ -28,7 +28,7 @@ extern void winMsgCloseFight();
 /* TRUE when the battle timer forces the current menu closed. */
 static inline u8 menuFightIsTimeUp(void)
 {
-    if (fn_801F18DC(0) != 0) {
+    if (fightFloorIsKind10(0) != 0) {
         if (fightFloorIsUseFightTimerCommand(0) == 1 && fightTimerCommandIsOver() == 1) {
             return 1;
         }
@@ -74,7 +74,7 @@ s32 menuFightOpenWaza(u8* status, u32 arg1, u32 arg2) {
             menuCloseCustom(0xf7, 0, 1);
         }
         winMsgOpenFight(msg, 1, 1);
-        while ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x300) == 0) {
+        while ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x300) == 0) {
             if (menuFightIsTimeUp() != 0) {
                 break;
             }

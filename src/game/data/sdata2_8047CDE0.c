@@ -21,6 +21,6 @@ SDATA2 const f32 lbl_8047CDFC = 56.0f;
 SDATA2 const f32 lbl_8047CE00 = 0.017453292f;
 SDATA2 const f64 lbl_8047CE08 = 6.2831854820251465;
 /* 0x8047CE10-0x8047CE20 holds the int-to-float bias doubles MWCC emits for
- * fn_80105634's conversions; game/window_candidate_80105634.c owns them.
+ * winMsgDrawItem's conversions; game/window_candidate_80105634.c owns them.
  * 0x8047CE20-0x8047CE48 is the literal pool of win_sprite.c (winSeq/winSprite
  * TU); 0x8047CE48-0x8047CE70 is menu_offscreen.c's. */

@@ -1,6 +1,6 @@
 /**
  * @file gs_npc_event_candidate_8003037C_r40_80031648_gc20.c
- * @brief fn_80031648 carve, 0x80031648 - 0x800318D8.
+ * @brief gbaTradeMenuDrawNickname carve, 0x80031648 - 0x800318D8.
  *
  * NPC event callback: look the event id up in the name column of the
  * twelve-entry table lbl_80266E90 and print, centred on the sprite, the
@@ -30,7 +30,7 @@ typedef struct {
 extern NpcPokemonEvent lbl_80266E90[];
 extern u8 lbl_803A2688[];
 
-void fn_80031648(u8* r3, u8* r4)
+void gbaTradeMenuDrawNickname(u8* r3, u8* r4)
 {
     void* pokemon;
     s32 i;

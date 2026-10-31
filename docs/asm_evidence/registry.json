@@ -4,7 +4,7 @@
     {
       "path": "src/musyx/runtime/reverb_candidate_80164520.c",
       "function": "DoCrossTalk",
-      "address": "fn_80164C40",
+      "address": "ReverbHIFilterBlock",
       "mnemonics": [
         "addi",
         "bdnz",
@@ -1050,7 +1050,7 @@
     },
     {
       "path": "src/game/gs_thread_exact_800F0030.c",
-      "function": "fn_800F02F4",
+      "function": "GSthreadGetArg",
       "tier": "first-party",
       "mnemonics": [
         "addi",
@@ -1664,7 +1664,7 @@
     },
     {
       "path": "src/dolphin/sdk_candidate_8009FADC.c",
-      "function": "fn_8009FADC",
+      "function": "Run_8009FADC",
       "mnemonics": [
         "blr",
         "isync",

@@ -29,10 +29,10 @@ extern void* heroGetStatus(s32, s32, u16);
 extern u8 pokemonCheckValid(void*);
 extern MenuCursorItem* windowGetCursorToItem(MenuWindow*);
 extern s32 windowGetActiveID(void);
-extern void fn_80057830(s32, s32, s32);
-extern s32 fn_80058AF0(MenuWindow*);
+extern void pcBoxSetCursorTarget(s32, s32, s32);
+extern s32 pcBoxHeldDrop(MenuWindow*);
 
-s32 fn_80058DCC(MenuWindow* window)
+s32 menu94Ctrl(MenuWindow* window)
 {
     MenuCursorItem* item;
     s32 slot;
@@ -58,11 +58,11 @@ s32 fn_80058DCC(MenuWindow* window)
             }
         }
         item = windowGetCursorToItem(window);
-        fn_80057830(item->row, item->column, 0);
+        pcBoxSetCursorTarget(item->row, item->column, 0);
         break;
     case 2:
         if (window->windowId == windowGetActiveID() &&
-            fn_80058AF0(window) == 0) {
+            pcBoxHeldDrop(window) == 0) {
             window->accepted = 1;
             window->canceled = 1;
         }

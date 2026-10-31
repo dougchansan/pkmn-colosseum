@@ -38,7 +38,7 @@ static inline u32 fn_80219E10_checkMove(u16 move)
 #pragma optimize_for_size on
 void wsCmd9E(void)
 {
-    extern u32 fn_8000814C();
+    extern u32 dbgMenuFightGetFlag8047A282();
     extern u32 GSrand();
     extern u32 wazaGetStatus();
     extern u32 fightTargetGetPtrAsNowFightType();
@@ -86,7 +86,7 @@ void wsCmd9E(void)
 
     random = (u16)GSrand();
     selected = local_338[random % count];
-    result = fn_8000814C();
+    result = dbgMenuFightGetFlag8047A282();
     if ((u16)result != 0) {
         selected = result;
     }

@@ -13,24 +13,24 @@
  * object id); battle_waza_types.h keeps older prototypes for its other
  * users, so they are renamed out of the way while it is included. */
 #define mailGetEntryField0 fn_801D1650_hdr
-#define fn_801D1364 fn_801D1364_hdr
+#define mailBiosSetCounter fn_801D1364_hdr
 #define mailDataBiosGet08 fn_801D139C_hdr
 #define shadowGroupGetEntryId fn_801D1864_hdr
 #define shadowGroupGetEntryByte fn_801D1734_hdr
-#define fn_801D19A4 fn_801D19A4_hdr
+#define shadowGroupGetEntryCount fn_801D19A4_hdr
 #include "game/battle/battle_waza_types.h"
 #undef mailGetEntryField0
-#undef fn_801D1364
+#undef mailBiosSetCounter
 #undef mailDataBiosGet08
 #undef shadowGroupGetEntryId
 #undef shadowGroupGetEntryByte
-#undef fn_801D19A4
+#undef shadowGroupGetEntryCount
 extern u32 mailGetEntryField0(u8 idx);
-extern void fn_801D1364(u16 mode);
+extern void mailBiosSetCounter(u16 mode);
 extern u16 mailDataBiosGet08(s32 idx);
 extern u32 shadowGroupGetEntryId(s32 sequence, s32 index);
 extern u8 shadowGroupGetEntryByte(s32 sequence, s32 index);
-extern u16 fn_801D19A4(s32 idx);
+extern u16 shadowGroupGetEntryCount(s32 idx);
 
 
 /**
@@ -40,7 +40,7 @@ extern u16 fn_801D19A4(s32 idx);
 static inline void mailMainStartSe(void) {
     extern u32 soundPauseMusic(void);
     extern void* GSresAllocResourceAlign(u32, u32, u32, u32, u32);
-    extern u32 fn_801654E0(u32, void*, u32);
+    extern u32 soundLoadGroupForSlot(u32, void*, u32);
     extern u32 soundAttachWork(u32, u32, u32);
     extern u32 soundStart(u32, u32, u32, u32);
     u32 workId;
@@ -49,7 +49,7 @@ static inline void mailMainStartSe(void) {
     soundId = mailGetEntryField0(mailGetCurrentIndex());
     if (soundId != 0) {
         workId = soundPauseMusic();
-        fn_801654E0(soundId,
+        soundLoadGroupForSlot(soundId,
                     GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0),
                     0x10000);
         soundAttachWork(soundId, 0, 0x408);
@@ -99,14 +99,14 @@ void mailMainSendAllMail(s32 seqHandle, f32 targetScale, f32 speed) {
 }
 
 /**
- * fn_801D228C - Waza effect rotation animation.
+ * mailApplyReward - Waza effect rotation animation.
  * Address: 0x801D228C | Size: 0x134
  *
  * fn_801EE67C takes (id, value) (its prologue saves r4); passing the limit
  * as its second argument is what puts the limit's u8->int conversion in r4
  * at the level compare.
  */
-void fn_801D228C(s32 seqHandle) {
+void mailApplyReward(s32 seqHandle) {
     extern void std078_flagSetFalse(s32);
     extern void darkPokemonSetFlag0E(u32, s32);
     extern u16 darkPokemonGetFlag1C(u32);
@@ -129,10 +129,10 @@ void fn_801D228C(s32 seqHandle) {
 
     mode = mailDataBiosGet08(handle);
     if (mode != 0xFFFF) {
-        fn_801D1364(mode);
+        mailBiosSetCounter(mode);
     }
 
-    count = fn_801D19A4(handle);
+    count = shadowGroupGetEntryCount(handle);
     if (count != 0xFFFF) {
         for (i = 0; i < count; i++) {
             object = shadowGroupGetEntryId(handle, i);
@@ -170,17 +170,17 @@ void mailMainReceiveTerminate(void) {
 }
 
 /**
- * fn_801D2404 - Waza effect complex transform.
+ * menuDrawBlinkIcon - Waza effect complex transform.
  * Address: 0x801D2404 | Size: 0x288
  */
-void fn_801D2404(void) {
+void menuDrawBlinkIcon(void) {
     extern void* GSresFindById(u32);
     extern s32 GStextureGetXsize(void*);
     extern s32 GStextureGetYsize(void*);
-    extern void fn_800FE6D0(s32, s32);
+    extern void spriteSetOrigin(s32, s32);
     extern void fn_800FE35C(void);
     extern void spriteSetEnv(void);
-    extern void fn_800D9ED8(s32);
+    extern void gfxSetFlag1A(s32);
     extern void gfxSetVtxDesc(void*);
     extern void gfxSetFlags(s32);
     extern void gfxClearFlags(s32);
@@ -195,7 +195,7 @@ void fn_801D2404(void) {
     extern void GSinputMotorStart(s32, s32, s32, s32, s32);
     extern s32 GSgetFrameStep(void);
     extern s32 GSsndGetStatus(u32);
-    extern void fn_800F9210(s32, s32);
+    extern void GSresReleaseOwnerItem(s32, s32);
     extern void soundKill(u32);
     extern void soundResumeSong(u32, s32, s32);
     extern u8 lbl_80314F98[];
@@ -219,10 +219,10 @@ void fn_801D2404(void) {
         texture = GSresFindById(0x0C881200);
         width = GStextureGetXsize(texture);
         height = GStextureGetYsize(texture);
-        fn_800FE6D0(0, 0);
+        spriteSetOrigin(0, 0);
         fn_800FE35C();
         spriteSetEnv();
-        fn_800D9ED8(1);
+        gfxSetFlag1A(1);
         gfxSetVtxDesc(lbl_80314F98);
         gfxSetFlags(3);
         gfxClearFlags(4);
@@ -236,7 +236,7 @@ void fn_801D2404(void) {
         gfxVtxColor4u8(0, 0xFF, 0xFF, 0xFF, 0xFF);
         gfxVtxTexCoord(0, 1.0f, 1.0f);
         gfxEnd();
-        fn_800D9ED8(0);
+        gfxSetFlag1A(0);
         if (gamedatasaveGetStatus(0, 9) == 0 &&
             (f32)lbl_80467390[1] < 180.0f) {
             GSinputMotorStart(1, 0, 0xFF, 0x1E, 0);
@@ -246,7 +246,7 @@ void fn_801D2404(void) {
     lbl_80467390[1] += GSgetFrameStep();
     sound = lbl_80467390[2];
     if (sound != 0 && GSsndGetStatus(sound) != 2) {
-        fn_800F9210(0, 0x408);
+        GSresReleaseOwnerItem(0, 0x408);
         soundKill(sound);
         work = lbl_80467390[3];
         if (work != 0 && work != 0xFFFFFFFF) {
@@ -266,7 +266,7 @@ void fn_801D2404(void) {
 void mailMainReceiveStart(s32 seqHandle, s32 slot, s32 boneIdx) {
     extern u32 soundPauseMusic(void);
     extern void* GSresAllocResourceAlign(u32, u32, u32, u32, u32);
-    extern u32 fn_801654E0(u32, void*, u32);
+    extern u32 soundLoadGroupForSlot(u32, void*, u32);
     extern u32 soundAttachWork(u32, u32, u32);
     extern u32 soundStart(u32, u32, u32, u32);
     u32 workId;
@@ -283,7 +283,7 @@ void mailMainReceiveStart(s32 seqHandle, s32 slot, s32 boneIdx) {
     if (soundId != 0) {
         workId = soundPauseMusic();
         buffer = GSresAllocResourceAlign(0x10000, 0x20, 0, 0x408, 0);
-        fn_801654E0(soundId, buffer, 0x10000);
+        soundLoadGroupForSlot(soundId, buffer, 0x10000);
         soundAttachWork(soundId, 0, 0x408);
         soundStart(soundId, 0, 0xFF, 0);
     } else {

@@ -4,7 +4,7 @@
  *
  * Function-boundary carve of the GS flag module (see gs_range_8018FE30.c
  * for its neighbours), made so the title-floor flag test links while
- * fn_8018FE30 and the setters stay candidates. No local data: the
+ * dbgFlagApplyPreset and the setters stay candidates. No local data: the
  * definition and state tables (.sdata), the bit-mask table (XD: _flagAND)
  * and the error string are extern.
  *

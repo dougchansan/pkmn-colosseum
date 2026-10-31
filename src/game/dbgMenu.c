@@ -111,9 +111,9 @@ static inline void dbgMenuInitItems(u32* itemTable, u32 total)
  * GSmem/frame-rate items) and dbgMenu.o (dbgMenuInit is UNUSED there, size
  * 0xD4).  Neither object lists a pool init with the (count, max, a, b)
  * shape or a per-item reset helper, so the map has no helper name either.
- * Linking lead: with every `#pragma` removed, fn_80132F7C and
+ * Linking lead: with every `#pragma` removed, dbgMenuToggleMenuAB and
  * dbgMenuMovieTest compile exactly under the unit's plain flags (with and
- * without -schedule on).  Once fn_80132C6C is exact, this prefix unit needs
+ * without -schedule on).  Once GSparticleInitPool is exact, this prefix unit needs
  * no compiler-control pragma.
  * Lane D15 (2026-09-28), IRO trace (GC/2.6, lane B7b's irolog): with the
  * per-item helper the argument is the front end's temp @25 before any IRO
@@ -132,18 +132,18 @@ static inline void dbgMenuInitItems(u32* itemTable, u32 total)
  * nothing but register colouring, so it is a judgement call and is not
  * linked; it lives in the C++ prefix candidate
  * dbgMenu_r61_prefix_80132C6C.cpp, where the whole range (with
- * fn_80132F7C and dbgMenuMovieTest, no pragmas) is exact.  The item table
+ * dbgMenuToggleMenuAB and dbgMenuMovieTest, no pragmas) is exact.  The item table
  * (lbl_8047AEBC) has no other reference in the DOL, and
  * tools/find_inline_expansions.py finds the nine-store block only in this
  * function's own unrolled copies, so repeated expansion cannot admit the
  * helper either.
  */
 #if 0
-asm void fn_80132C6C(void) {
+asm void GSparticleInitPool(void) {
 #include "src/game/effect/effect_util_fn_80132C6C.inc"
 }
 #else
-void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3) {
+void GSparticleInitPool(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3) {
     extern u32 lbl_8047AEB0;
     extern u32 lbl_8047AEB4;
     extern u16 lbl_8047AEB8;
@@ -188,11 +188,11 @@ void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3) {
 #endif
 
 #if 0
-asm void fn_80132F7C(void) {
+asm void dbgMenuToggleMenuAB(void) {
 #include "src/game/effect/effect_util_fn_80132F7C.inc"
 }
 #else
-u32 fn_80132F7C(void) {
+u32 dbgMenuToggleMenuAB(void) {
     if (menuIsCheck(0xab) & 0xFF) {
         menuClose(0xab);
     } else {
@@ -224,27 +224,27 @@ u32 dbgMenuMovieTest(void) {
 #endif
 
 
-/* 0x80133050 | 0x3C -- fn_800D37D4(3, 2, 0, 2, 0, 0), return 0 */
-u32 fn_80133050(void) {
-    fn_800D37D4(3, 2, 0, 2, 0, 0);
+/* 0x80133050 | 0x3C -- GSgfxSetVideoMode_800D37D4(3, 2, 0, 2, 0, 0), return 0 */
+u32 dbgMenuSetVideoModePal(void) {
+    GSgfxSetVideoMode_800D37D4(3, 2, 0, 2, 0, 0);
     return 0;
 }
 
 
-/* 0x8013308C | 0x3C -- fn_800D37D4(2, 2, 0, 2, 0, 0), return 0 */
-u32 fn_8013308C(void) {
-    fn_800D37D4(2, 2, 0, 2, 0, 0);
+/* 0x8013308C | 0x3C -- GSgfxSetVideoMode_800D37D4(2, 2, 0, 2, 0, 0), return 0 */
+u32 dbgMenuSetVideoModeEurgb60(void) {
+    GSgfxSetVideoMode_800D37D4(2, 2, 0, 2, 0, 0);
     return 0;
 }
 
 
 /* 0x801330C8 | 0x150 */
 #if 0
-asm void fn_801330C8(void) {
+asm void dbgMenuDrawTestTriangle(void) {
 #include "src/game/effect/effect_util_fn_801330C8.inc"
 }
 #else
-u32 fn_801330C8(void) {
+u32 dbgMenuDrawTestTriangle(void) {
     gfxSetFlags(1);
     gfxClearFlags(6);
     gfxSetOrtho(lbl_8047D0F0, lbl_8047D0F0, lbl_8047D0F4, lbl_8047D0F8);
@@ -301,16 +301,16 @@ u32 dbgMenuGSmemCheck(void) {
 
 
 /* 0x5C | dbgMenuGSmemCheck -- GSmemDumpMap(1,0) check then print */
-/* 0x801332D8 | 0x28 -- fn_800D3074(2), return 0 */
+/* 0x801332D8 | 0x28 -- GSgfxSetFrameInterval(2), return 0 */
 u32 dbgMenuFrameRate20(void) {
-    fn_800D3074(2);
+    GSgfxSetFrameInterval(2);
     return 0;
 }
 
 
-/* 0x80133300 | 0x28 -- fn_800D3074(1), return 0 */
+/* 0x80133300 | 0x28 -- GSgfxSetFrameInterval(1), return 0 */
 u32 dbgMenuFrameRate30(void) {
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     return 0;
 }
 
@@ -402,12 +402,12 @@ u32 debugMenuShadowBorderDisp(void) {
 }
 
 
-/* 0x801334DC | 0x34 -- toggle lbl_8047AED8 (cntlzw/extrwi), call fn_800D4610 */
-u32 fn_801334DC(void) {
+/* 0x801334DC | 0x34 -- toggle lbl_8047AED8 (cntlzw/extrwi), call GSgfxSetFlag49C */
+u32 dbgMenuToggleGfxFlag49C(void) {
     u32 clz = __cntlzw(lbl_8047AED8);
     u8 val = (u8)((clz >> 5) & 0xFF);
     lbl_8047AED8 = val;
-    fn_800D4610(val);
+    GSgfxSetFlag49C(val);
     return 0;
 }
 
@@ -427,20 +427,20 @@ u32 debugMenuNodrawArea(void) {
 #endif
 
 #if 0
-asm void fn_8013356C(void) {
+asm void dbgMenuTogglePartner(void) {
 #include "src/game/effect/effect_util_fn_8013356C.inc"
 }
 #else
-u32 fn_8013356C(u32 arg1, s32 arg2) {
+u32 dbgMenuTogglePartner(u32 arg1, s32 arg2) {
     extern u32 heroMoveIsMember(s32);
     extern void heroMoveDismissMember(s32);
-    extern void fn_8012F1FC(s32);
+    extern void partnerSetFollowing(s32);
     s32 r31 = (arg2 != 0) ? -1 : 1;
     if (r31 >= 0) {
         if (heroMoveIsMember(r31) & 0xFF) {
             heroMoveDismissMember(r31);
         } else {
-            fn_8012F1FC(r31);
+            partnerSetFollowing(r31);
         }
     }
     return 0;
@@ -463,11 +463,11 @@ u32 debugMenuChangeMemInfo(void) {
 #endif
 
 
-/* 0x80133630 | 0x34 -- toggle lbl_8047AED4 (cntlzw>>5), call fn_80101B88 */
-u32 fn_80133630(void) {
+/* 0x80133630 | 0x34 -- toggle lbl_8047AED4 (cntlzw>>5), call gappSetDrawSyncEnable */
+u32 dbgMenuToggleDrawSync(void) {
     u32 clz = __cntlzw(lbl_8047AED4);
     lbl_8047AED4 = clz >> 5;
-    fn_80101B88(clz >> 5);
+    gappSetDrawSyncEnable(clz >> 5);
     return 0;
 }
 

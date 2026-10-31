@@ -1,6 +1,6 @@
 /**
  * @file people_data_exact_80142B24.c
- * @brief fn_80142B24 (0x80142B24 - 0x80142CF4): sets one field of an item
+ * @brief fightItemCreate_80142B24 (0x80142B24 - 0x80142CF4): sets one field of an item
  *        record (item data kinds 1-10, ball data 11-23, fight/bag records
  *        24-34) by kind.
  *
@@ -33,7 +33,7 @@ extern void fightItemBiosSetCount(u8* p, u32 val);
 extern void fightItemBiosSetBuff(u8* p, u32 val);
 
 /* 0x80142B24 | 0x1D0 */
-void fn_80142B24(u8* target, u16 id, u16 kind, u32 index, u32 value) {
+void fightItemCreate_80142B24(u8* target, u16 id, u16 kind, u32 index, u32 value) {
 
     if (kind == 0 || kind >= 0x23) {
         return;

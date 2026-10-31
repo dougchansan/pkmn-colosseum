@@ -27,7 +27,7 @@ void pdaReadPadInput(void* scene)
 {
     extern s8 GSinputGetLeftStickYData(s32 chan, s32 index);
     extern s8 GSinputGetLeftStickXData(s32 chan, s32 index);
-    extern u32 fn_800F7BC4(s32 chan);
+    extern u32 GSinputGetButtons(s32 chan);
     extern s8 GSgetFrameStep(void);
     extern f64 atan2(f64 y, f64 x);
     s8 x;
@@ -59,7 +59,7 @@ void pdaReadPadInput(void* scene)
             }
         }
     }
-    raw = fn_800F7BC4(1);
+    raw = GSinputGetButtons(1);
     if ((raw & 0x8) != 0) {
         buttons |= 1;
     }

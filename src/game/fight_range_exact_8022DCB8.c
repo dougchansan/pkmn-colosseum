@@ -23,8 +23,8 @@ extern u8 lbl_80378968[];
 extern u8 lbl_80378A4D[];
 extern u8 lbl_80378A7C[];
 extern u8 lbl_80378A8E[];
-extern u32 fn_80232024();
-extern void fn_80234A0C();
+extern u32 _fightJoutai35TurnEndSub();
+extern void fightTrainerAiDecide();
 extern u32 fightOutPokemonGetPokemonPtr();
 extern u16 GSrand(void);
 extern u8* fn_801440A0(u16 idx);
@@ -76,7 +76,7 @@ extern void fn_801F37B0();
 extern u32 _fightDoTraceSub();
 extern s32 _fightSeqWsKuroikiriSub__FPvUsPv(void*, u16, void*);
 extern u8  fn_80136468();
-extern u8  fn_802025B8();
+extern u8  fightOutPokemonCheckWritePokemonJoutaiDataId();
 extern u32 _wsAnnounceEnemyTokuseiSub();
 extern int  fn_801F000C();
 extern int  fightMainWaitFrame();
@@ -87,7 +87,7 @@ extern u8 lbl_80379F58[];
 extern void fn_80201600();
 extern void* lbl_8047B64C;
 extern u8    lbl_80478278[0x10];
-extern void  fn_801DA36C(void* obj, u32 val);
+extern void  wazaSequenceOwnerClearFlag(void* obj, u32 val);
 extern void  fn_80209484(void* ctx, u32 param);
 extern u16   fn_8020147C(void* context, u16 moveId, u8 slot, u8 updateFlag);
 extern void  fn_801FE468(void* context, u8* dest);
@@ -103,16 +103,16 @@ extern void  wsRunScript(void* a, void* b, u8 c);
 extern u8    fn_80207AE0(void* obj, u8 v);
 extern void* fightFloorGetFightOutPokemonPtrAryPokemonTokuseiDataIdFirst(u32 a, u8 b, u32 c, u32 d, u32 e);
 extern void  fn_801254B4(void* a, u32 b, u32 c, u32 d, u32 e);
-extern u32  fn_80239984();
+extern u32  fightTrainerAiAddValueClamped();
 extern u32  fn_80205B8C(u32);
-extern u8 fn_80239EE8();
-extern u8 fn_80239CCC();
+extern u8 fightTrainerAiAddValueLog2();
+extern u8 fightTrainerAiLogValue();
 extern u16  fightTrainerAiGetPokemonDataId(void*, u32);
 extern u16  fn_801F1990(u32, void*, u32, u32, u32, u32);
 extern u16  fn_801F1C18(u32, void*, void*, u32, u32);
 extern u8   fn_801F4C14(u32, u16, u32, u16, u32);
 extern u32  fn_802096E8(void*);
-extern u32  fn_80077AF4(void);
+extern u32  menuCBRule_GetRule11(void);
 extern u8    wsStatBuffChange();
 extern u8    lbl_80279F7C[12];
 extern void  fn_802653FC(void* ptr, u16 a, s32 b);
@@ -184,7 +184,7 @@ extern void fn_80203EDC();
 extern void fn_801FAA58();
 extern u16  lbl_80279FD0[8];
 extern u8   lbl_80379B06[];
-extern u32 fn_80232FE4();
+extern u32 _fightCheckJoutai16Sub();
 extern void fn_8020A2B8();
 extern u8   joutaiDataBiosGetMaxStack();
 extern u16  fightFloorGetValidFightOutPokemonCount(u32, u8, u32, u8);
@@ -193,10 +193,10 @@ extern u8   lbl_8037984D[27];
 extern u8   lbl_80375FDF[9];
 extern void heroAddPokedoru(u32, s32);
 extern u8   lbl_8037939C[9];
-extern u8  fn_801DDD28();
+extern u8  wazaSequenceOwnerLoadWaza();
 extern void wazaSequenceSysStartWaza();
 extern u16 lbl_8047B60C;
-extern int fn_80215008();
+extern int fightTrainerCollectTemotiWaza();
 extern u32 fightSeqSelectTarget();
 extern void fn_801F6EEC();
 extern void fightSideInitJoutaiDataId();
@@ -213,10 +213,10 @@ extern u16 fightOutPokemonGetZokuseiDataId(u32 poke, u8 idx);
 extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
 extern int fightOutPokemonIsPokemonJoutaiDataId();
-extern u8 fn_80235714();
+extern u8 fightTrainerAiIsAbiCntAbove();
 extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
-extern u32 fn_80239984();
+extern u32 fightTrainerAiAddValueClamped();
 extern s32 fightTrainerAiAddValue();
 extern u32* lbl_80478DF8;
 extern int wazaGetStatus();
@@ -242,7 +242,7 @@ u8 fightCheckTokuseiWazaKyuushuu(u32 p1, u32 p2, u32 extra) {
     extern u32 fn_8012640C();
     extern u32 fn_802062FC();
     extern u8  fightOutPokemonIsPokemonJoutaiDataId();
-    extern u8  fn_802025B8();
+    extern u8  fightOutPokemonCheckWritePokemonJoutaiDataId();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8  lbl_80379714[];
     extern u8  lbl_80379715[];
@@ -281,7 +281,7 @@ u8 fightCheckTokuseiWazaKyuushuu(u32 p1, u32 p2, u32 extra) {
             break;
         case 0x12:
             if (val27 == 0xa && (u8)fightOutPokemonIsPokemonJoutaiDataId(p2, 7) == 0) {
-                if ((u8)fn_802025B8(p2, 0x3a) == 2) {
+                if ((u8)fightOutPokemonCheckWritePokemonJoutaiDataId(p2, 0x3a) == 2) {
                     fightOutPokemonWritePokemonJoutaiDataId(p2, 0x3a, 0);
                     lbl_80478D78[5] = 0;
                 } else {
@@ -317,8 +317,8 @@ done:
 #undef fn_8011BEB4
 #undef fn_80207BF4
 
-/* fn_8022DF08 */
-void fn_8022DF08(u32 ctx)
+/* _fightTokuseiTurnEndSub */
+void _fightTokuseiTurnEndSub(u32 ctx)
 {
     extern u32 fightOutPokemonGetPokemonPtr();
     extern u8 fightFloorGetNowTenkouDataId();
@@ -566,7 +566,7 @@ void fightOutPokemonTokuseiCheckAppear(int r3)
     extern void fn_801F37B0();
     extern void fn_801F4C14();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
-    extern u8 fn_802025B8();
+    extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
     extern u8 fn_802062FC();
     extern void wsRunScript();
     extern u8 fightGetForecastForm();
@@ -615,7 +615,7 @@ void fightOutPokemonTokuseiCheckAppear(int r3)
       if ((int)fn_8012640C(r3,0,0x116,0) != 0) {
         return;
       }
-      cVar3 = fn_802025B8(r3,0x3b);
+      cVar3 = fightOutPokemonCheckWritePokemonJoutaiDataId(r3,0x3b);
       if (cVar3 == 2) {
         fightOutPokemonWritePokemonJoutaiDataId(r3,0x3b,0);
       }
@@ -625,7 +625,7 @@ void fightOutPokemonTokuseiCheckAppear(int r3)
       if ((int)fn_8012640C(r3,0,0x117,0) != 0) {
         return;
       }
-      cVar3 = fn_802025B8(r3,0x3c);
+      cVar3 = fightOutPokemonCheckWritePokemonJoutaiDataId(r3,0x3c);
       if (cVar3 == 2) {
         fightOutPokemonWritePokemonJoutaiDataId(r3,0x3c,0);
       }
@@ -698,9 +698,9 @@ void fightCheckRuiShadowSense(u32 r3, u8 r4)
     extern u8 wazaSequenceSysIsPlayingWaza();
     extern void wazaSequenceSysStartWaza();
     extern void wazaSequenceOwnerFree();
-    extern void fn_801DDD28();
+    extern void wazaSequenceOwnerLoadWaza();
     extern u32 wazaSequenceTrainerCreate();
-    extern void fn_801EF7C4();
+    extern void fightPreloadTrainerWaza();
     extern void fn_801F000C();
     extern u32 fn_801F2A7C();
     extern void fn_801F4C14();
@@ -715,7 +715,7 @@ void fightCheckRuiShadowSense(u32 r3, u8 r4)
     extern u32 fn_80205B8C();
     extern u8 fn_802062FC();
     extern void fn_80208404();
-    extern void fn_80208554();
+    extern void fightPokemonWaitWazaEnd();
     extern void fn_802085C4();
     extern void fn_802086E8();
     extern void fn_80208750();
@@ -780,12 +780,12 @@ void fightCheckRuiShadowSense(u32 r3, u8 r4)
             uVar4 = fn_801F54A4(0,0,0x36,0);
             fn_801F4C14(0,0,0x36,0,r3);
             uVar5 = wazaSequenceTrainerCreate(0x32);
-            fn_801DDD28(uVar5,0xa0,4,0);
+            wazaSequenceOwnerLoadWaza(uVar5,0xa0,4,0);
             fn_80208404(r3,0,uVar10,0);
             battleGridReplaceTrainer(uVar3,uVar5);
             fn_801C3430();
             wazaSequenceSysStartWaza(uVar5,0xa0,4);
-            fn_801EF7C4(0);
+            fightPreloadTrainerWaza(0);
             wazaSequenceOwnerSetVisibility(uVar5,1);
             while (1) {
               cVar9 = wazaSequenceSysIsPlayingWaza(uVar5,0xa0,4);
@@ -794,7 +794,7 @@ void fightCheckRuiShadowSense(u32 r3, u8 r4)
             }
             battleGridReplaceTrainer(uVar5,uVar3);
             fn_801C3430();
-            fn_801EF7C4(1);
+            fightPreloadTrainerWaza(1);
             wazaSequenceOwnerSetVisibility(uVar5,0);
             fn_80208404(r3,0,uVar10,1);
             if (sVar7 == 0x11) {
@@ -802,7 +802,7 @@ void fightCheckRuiShadowSense(u32 r3, u8 r4)
               fn_8026246C();
               fn_80208404(r3,0,uVar10,4);
               fn_802085C4(r3,1,1,0, (void*)0xffffffff);
-              fn_80208554(r3,1,1,6);
+              fightPokemonWaitWazaEnd(r3,1,1,6);
               fightTrainerWazaSeq74(uVar2,1);
               fightTrainerWazaSeq74(uVar2,2);
               fn_80208404(r3,0,uVar10,1);
@@ -1008,19 +1008,19 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
     extern void fn_801FE7EC();
     extern u8 fn_801FECD4();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
-    extern u8 fn_802025B8();
+    extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fn_80202810();
     extern u8 fn_80204A10();
     extern void fn_80205B8C();
     extern u8 fn_802062FC();
-    extern void fn_802080A8();
+    extern void fightPlayDarkPokemonSeq();
     extern void fn_80208404();
     extern void fn_8026246C();
     extern void fn_802624CC();
     extern void fightMenuStatusMenuClose();
     extern void fn_802653FC();
-    extern void fn_80265598();
+    extern void fightMenuStatusMenuOpen();
   u16 uVar4;
   u32 uVar1;
   u8 cVar6;
@@ -1074,7 +1074,7 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
                 fn_80208404(r3,1,1,0);
                 uVar1 = fn_801F54A4(0,0,0x36,0);
                 fn_801F4C14(0,0,0x36,0,r3);
-                cVar6 = fn_802025B8(r3,0x3e);
+                cVar6 = fightOutPokemonCheckWritePokemonJoutaiDataId(r3,0x3e);
                 if (cVar6 == 2) {
                   fightOutPokemonWritePokemonJoutaiDataId(r3,0x3e,0);
                 }
@@ -1104,7 +1104,7 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
               uVar1 = fn_801F54A4(0,0,0x36,0);
               fn_801F4C14(0,0,0x36,0,r3);
               fn_80208404(r3,0,2,1);
-              fn_80265598(r3,uVar4,1);
+              fightMenuStatusMenuOpen(r3,uVar4,1);
               fn_802624CC(0x771c);
               fn_80208404(r3,0,2,2);
               fn_8026246C();
@@ -1124,7 +1124,7 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
               if (fightOutPokemonIsPokemonJoutaiDataId(r3,8) == 1) {
                 __memcpy((void*)r3,(void*)r3,0);
               }
-              fn_802080A8(r3,1,1,0,0);
+              fightPlayDarkPokemonSeq(r3,1,1,0,0);
               uVar1 = fn_801F54A4(0,0,0x36,0);
               fn_801F4C14(0,0,0x36,0,r3);
               fn_80202810(r3,0x3e);
@@ -1138,12 +1138,12 @@ u32 _fightCheckDarkPokemonAppear(u32 r3, u8 r4)
               if (cVar6 == 1) {
                 fn_801FE7EC(r3,0x7c,0,0);
               }
-              fn_802080A8(r3,1,1,0x771e,1);
-              fn_802080A8(r3,1,1,0,2);
+              fightPlayDarkPokemonSeq(r3,1,1,0x771e,1);
+              fightPlayDarkPokemonSeq(r3,1,1,0,2);
               fn_8026246C();
               fightMenuStatusMenuClose(r3,uVar4,0);
               fn_801F4C14(0,0,0x36,0,uVar1);
-              fn_802080A8(r3,1,1,0,3);
+              fightPlayDarkPokemonSeq(r3,1,1,0,3);
             }
             uVar1 = 1;
           }

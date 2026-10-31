@@ -369,7 +369,7 @@ extern u32 lbl_8047AE14;
 
 extern void fightFloorGetFightOutPokemonPtrToFightTrainerPtr(void);
 
-extern void fn_801F18DC(void);
+extern void fightFloorIsKind10(void);
 
 extern void fightTrainerGetNamePtr(void);
 
@@ -443,7 +443,7 @@ extern u16 lbl_8047AEC4;
 
 extern u32 lbl_8047AEBC;
 
-extern void fn_800D37D4(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
+extern void GSgfxSetVideoMode_800D37D4(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f);
 
 extern void gfxSetFlags(u32);
 
@@ -499,7 +499,7 @@ extern const char lbl_80272AE0[];
 
 extern const char lbl_80272AF0[];
 
-extern void fn_800D3074(u32 mode);
+extern void GSgfxSetFrameInterval(u32 mode);
 
 extern void GSresGetResource(void);
 
@@ -511,7 +511,7 @@ extern void GSmodelSetShadowDebug(u32 val);
 
 extern u8   lbl_8047AED8;
 
-extern void fn_800D4610(u32 val);
+extern void GSgfxSetFlag49C(u32 val);
 
 extern u32  lbl_8047AED4;
 
@@ -533,7 +533,7 @@ extern u32 GSmsgGetRect(u32 val);
 
 extern void GSgetVersionMinor(void);
 
-extern void fn_80140A9C(void);
+extern void itemSwapSlots(void);
 
 extern u8 pokemonCheckValid(u8* ptr);
 
@@ -547,7 +547,7 @@ extern void GSmsgGetText(void);
 
 extern void pokemonInitAry(void);
 
-extern void fn_80142A88(void);
+extern void itemSlotsClear(void);
 
 extern f64 lbl_8047D108;
 
@@ -557,7 +557,7 @@ extern f32 lbl_8047D110;
 
 extern u32 heroSetStatus();
 
-extern u32 fn_80142B24();
+extern u32 fightItemCreate_80142B24();
 
 extern u32 pokemonSetStatus();
 
@@ -593,9 +593,9 @@ extern EffectLinkedStatusRow lbl_80363B78[];
 
 extern u32 fightTargetGetTragetPtrToRelativeHostSideFightTargetId(void* arg, u16 handle);
 
-extern void fn_800D37CC(void);
+extern void GSgfxGetVsyncRate(void);
 
-extern u8* fn_80137780(u8* work, u8* params);
+extern u8* _wazaEffectParseFilter(u8* work, u8* params);
 
 extern void GSvecCopy(void);
 
@@ -603,9 +603,9 @@ extern void GSmemAlloc(void);
 
 extern void GStextureLoad(void);
 
-extern void fn_800EFD14(void);
+extern void GStextureClaimHandle(void);
 
-extern u8* fn_8013757C(u8* work, u8* params, s32 frames);
+extern u8* _wazaEffectParseLightning(u8* work, u8* params, s32 frames);
 
 extern void GStextureSetWrap(void);
 
@@ -617,11 +617,11 @@ extern void loadModel(void);
 
 extern void GSmodelSetVisibility(void);
 
-extern void fn_8013735C(void);
+extern void _wazaEffectParseSea(void);
 
 extern void envMapAddKey(void);
 
-extern void fn_80137114(void);
+extern void _wazaEffectParseBlur(void);
 
 extern void* memset(void* dst, int val, u32 n);
 
@@ -679,6 +679,6 @@ extern void heroMoveIsMember(void);
 
 extern void heroMoveDismissMember(void);
 
-extern void fn_8012F1FC(void);
+extern void partnerSetFollowing(void);
 
 #endif /* GAME_EFFECT_EFFECT_UTIL_TYPES_H */

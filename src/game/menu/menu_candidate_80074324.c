@@ -2,9 +2,9 @@
  * @file menu_candidate_80074324.c
  * @brief pkjb_uploader.c carve, 0x80074324 - 0x8007480C.
  *
- * The link-reset entry points of the uploader: fn_80074324 drops the key
+ * The link-reset entry points of the uploader: pkjbResetLink drops the key
  * state and resets the link, fn_80074360 resets the GBA and waits for the
- * "AXVE" (Pokemon Ruby) boot key, and fn_800745B4 retries the 0xAA ping
+ * "AXVE" (Pokemon Ruby) boot key, and pkjbUploadStep retries the 0xAA ping
  * for up to 2 s once fn_8007480C has booted the GBA.
  *
  * Same unit flags as the rest of pkjb_uploader.c (GC/2.0, -O4,p,
@@ -17,7 +17,7 @@ s32 pkjbProbe(s32 chan);
 s32 pkjbValidateKey(s32 chan, s32 use_primary_image);
 
 /* 0x80074324 | 0x3C: drop the key state, then reset the link. */
-s32 fn_80074324(s32 chan)
+s32 pkjbResetLink(s32 chan)
 {
     gbaCommandSetKeyState(chan + 1, 0);
     return pkjbProbe(chan);
@@ -100,7 +100,7 @@ s32 pkjbProbe(s32 chan)
 
 /* 0x800745B4 | 0x258: boot the GBA, then retry the 0xAA ping for 2 s.
  * use_primary_image picks the multiboot image fn_8007480C sends. */
-s32 fn_800745B4(s32 chan, s32 use_primary_image)
+s32 pkjbUploadStep(s32 chan, s32 use_primary_image)
 {
     s32 result;
     u32 timeout;

@@ -1,7 +1,7 @@
 /**
  * @file pda_exact_8003DC54.c
  * @brief PDA memo list filter by the active type tabs, 0x8003DC54 - 0x8003E394.
- *        Standalone copy of fn_8003DC54 (and the helpers it inlines) from
+ *        Standalone copy of pdaMemoBuildTypeIndex (and the helpers it inlines) from
  *        pda_range_80037158.c, linked on its own.
  */
 #include "dolphin/types.h"
@@ -42,7 +42,7 @@ static inline BOOL pdaMemoSeen(u16 id)
 }
 
 /* Catch-trainer random value of a memo entry's species (single-type filter loader). */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003DC54_TrainerRnd (fn_8003DC54) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003DC54_TrainerRnd (pdaMemoBuildTypeIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline u32 pda_8003DC54_TrainerRnd(u32 species)
 {
     u32 trainerRnd = memoDataGetPokemonTrainerRndFromID(0, species);
@@ -86,7 +86,7 @@ static inline u16 pdaGetTypeIcon(u32 id, s32 slot)
 }
 
 /* Random value of a memo entry's species (both-types filter loader). */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003DC54_Rnd (fn_8003DC54) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003DC54_Rnd (pdaMemoBuildTypeIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline u32 pda_8003DC54_Rnd(u32 species)
 {
     u32 rnd = memoDataGetPokemonRndFromID(0, species);
@@ -95,7 +95,7 @@ static inline u32 pda_8003DC54_Rnd(u32 species)
 }
 
 /* pdaLoadPokemonId for the both-types filter (its rnd read goes through pda_8003DC54_Rnd). */
-/* RULE-EXCEPTION(user-approved): single-use inline helper copy pda_8003DC54_LoadBoth for the both-types filter (fn_8003DC54) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper copy pda_8003DC54_LoadBoth for the both-types filter (pdaMemoBuildTypeIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline u32 pda_8003DC54_LoadBoth(u32 id)
 {
     u32 work;
@@ -120,7 +120,7 @@ static inline u32 pda_8003DC54_LoadBoth(u32 id)
 
 /* pdaLoadPokemonId for the both-types filter's first load, whose result is unused; the trainer
  * argument is read into a local before pokemonCreate. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003DC54_LoadSlot (fn_8003DC54) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003DC54_LoadSlot (pdaMemoBuildTypeIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_8003DC54_LoadSlot(u32 id)
 {
     u32 work;
@@ -144,7 +144,7 @@ static inline void pda_8003DC54_LoadSlot(u32 id)
 }
 
 /* pdaGetTypeIcon for the both-types filter. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper copy pda_8003DC54_TypeIconBoth for the both-types filter (fn_8003DC54) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper copy pda_8003DC54_TypeIconBoth for the both-types filter (pdaMemoBuildTypeIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline u16 pda_8003DC54_TypeIconBoth(u32 id, s32 slot)
 {
     u32 type = (u16)pokemonGetStatus(
@@ -157,7 +157,7 @@ static inline u16 pda_8003DC54_TypeIconBoth(u32 id, s32 slot)
 }
 
 /* Copy the seen entries that have both tab types into buf; returns the count. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003DC54_FilterBoth (fn_8003DC54) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003DC54_FilterBoth (pdaMemoBuildTypeIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline u16 pda_8003DC54_FilterBoth(u16* buf, u16 type0, u16 type1)
 {
     u16 i;
@@ -182,7 +182,7 @@ static inline u16 pda_8003DC54_FilterBoth(u16* buf, u16 type0, u16 type1)
 }
 
 /* Copy the seen entries that have the tab type into buf; returns the count. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pdaFilterTypes (fn_8003DC54) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pdaFilterTypes (pdaMemoBuildTypeIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline u16 pdaFilterTypes(u16* buf, u16 type0)
 {
     u16 i;
@@ -207,7 +207,7 @@ static inline u16 pdaFilterTypes(u16* buf, u16 type0)
 }
 
 /* Filter the memo index table down to the active type tabs. */
-void fn_8003DC54(void)
+void pdaMemoBuildTypeIndex(void)
 {
     u8* S = (u8*)&lbl_803A6818;
     u16 buf1[500];

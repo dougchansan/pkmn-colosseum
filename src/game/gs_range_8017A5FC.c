@@ -17,9 +17,9 @@
 
 /* Address: 0x8017A5FC | size: 0x28 */
 extern FSYSManager lbl_80453FEC;
-void fn_8017A5FC(void);
+void fsysSetReadStatus12F(void);
 #if !defined(GS_RANGE_8017A5FC_SPLIT) || defined(GS_RANGE_8017A5FC_PREFIX)
-void fn_8017A5FC(void)
+void fsysSetReadStatus12F(void)
 {
     FSYSSlot* slot;
 
@@ -30,24 +30,24 @@ void fn_8017A5FC(void)
 
 /* Address: 0x8017A624 | size: 0x1F0 */
 #if !defined(GS_RANGE_8017A5FC_SPLIT) || defined(GS_RANGE_8017A624_MIDDLE)
-extern s32 fn_801808B4(void* req);
-extern void* fn_801807A8(void* src, void* dst, u32 size);
+extern s32 fsysARQIsBusy(void* req);
+extern void* fsysARQPost(void* src, void* dst, u32 size);
 extern u8 GSdvdReadAsync(void* work, void* addr, s32 length, s32 offset,
                        void* callback);
 extern void* lbl_8047B1C0[2]; /* DVD staging buffers */
 
-s32 fn_8017A624(FSYSSlot* slot)
+s32 fsysSlotReadTOC(FSYSSlot* slot)
 {
     FSYSArchiveHeader* archive;
     void* dvdBuf;
 
     archive = slot->archiveData;
     if (slot->dmaAsyncRequest) {
-        while (fn_801808B4(slot->dmaAsyncRequest)) {
+        while (fsysARQIsBusy(slot->dmaAsyncRequest)) {
         }
     }
     if (slot->dmaCopyDst) {
-        slot->dmaAsyncRequest = fn_801807A8(lbl_8047B1C0[lbl_80453FEC.field_24],
+        slot->dmaAsyncRequest = fsysARQPost(lbl_8047B1C0[lbl_80453FEC.field_24],
                                             slot->dmaCopyDst, slot->dmaChunkSize);
     } else {
         slot->dmaAsyncRequest = 0;
@@ -76,14 +76,14 @@ s32 fn_8017A624(FSYSSlot* slot)
     if (archive->flags & 1) {
         if (!slot->tocBuffer) {
             GSdvdReadAsync((void*)slot->fileInfo0, dvdBuf, slot->dmaChunkSize,
-                        slot->dmaDstOffset, fn_8017A5FC);
+                        slot->dmaDstOffset, fsysSetReadStatus12F);
         } else {
             GSdvdReadAsync(slot->tocBuffer, dvdBuf, slot->dmaChunkSize,
-                        slot->dmaDstOffset, fn_8017A5FC);
+                        slot->dmaDstOffset, fsysSetReadStatus12F);
         }
     } else {
         GSdvdReadAsync((void*)slot->fileInfo0, dvdBuf, slot->dmaChunkSize,
-                    slot->dmaDstOffset, fn_8017A5FC);
+                    slot->dmaDstOffset, fsysSetReadStatus12F);
     }
     return 0;
 }
@@ -102,11 +102,11 @@ extern void OSRestoreInterrupts(u32 level);
 extern void GSdvdClose(void* file);
 
 /*
- * fn_8017A814 and fn_8017A95C are the ARQ completion callbacks that
- * fsysLoadEntryCompressed and fsysLoadEntryUncompressed pass to fn_80180584 (userData = the slot).
+ * fsysARQDoneCompressed and fsysARQDoneUncompressed are the ARQ completion callbacks that
+ * fsysLoadEntryCompressed and fsysLoadEntryUncompressed pass to fsysARAMToMainAsync (userData = the slot).
  * Both advance the active slot's status past its read step and close the
  * slot's external file. fsysSlotStatusFinishRead expands the same body after its
- * fn_8017A624 call.
+ * fsysSlotReadTOC call.
  *
  * The long-standing r4/r5 wall (docs/recon/fsys_8017C414_wall.md): retail
  * builds the lbl_80453FEC address in r5 because r4 is still live after
@@ -115,7 +115,7 @@ extern void GSdvdClose(void* file);
  * Retail also copies userData into r30 and never reads it; the dead
  * `request` reference reproduces that.
  */
-void fn_8017A814(s32 result, void* userData)
+void fsysARQDoneCompressed(s32 result, void* userData)
 {
     FSYSSlot* slot;
     FSYSSlot* request;
@@ -167,7 +167,7 @@ void fn_8017A814(s32 result, void* userData)
 }
 
 /* Address: 0x8017A95C | size: 0x148 */
-void fn_8017A95C(s32 result, void* userData)
+void fsysARQDoneUncompressed(s32 result, void* userData)
 {
     FSYSSlot* slot;
     FSYSSlot* request;

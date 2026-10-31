@@ -1,6 +1,6 @@
 #include "dolphin/types.h"
 
-s32 fn_80167E54(void)
+s32 soundReturnMinusOne(void)
 {
     return -1;
 }

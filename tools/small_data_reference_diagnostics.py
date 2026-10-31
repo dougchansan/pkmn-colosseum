@@ -44,7 +44,7 @@ HANDLERS = {
 # families with an explicit field switch in matching C are accepted here.
 FAMILIES = {
     3: ("hero", "heroSetStatus", "src/game/hero_bios_exact_8012A450.c"),
-    4: ("item", "fn_80142B24", "src/game/people/people_data_exact_80142B24.c"),
+    4: ("item", "fightItemCreate_80142B24", "src/game/people/people_data_exact_80142B24.c"),
     5: ("pokemon", "pokemonSetStatus", "src/game/pokemon_range_8011F5FC.c"),
     6: ("waza", "wazaSetStatus", "src/game/waza.c"),
     7: ("fight_floor", "fightFloorSetStatus", "src/game/fight_floor.c"),

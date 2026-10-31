@@ -152,16 +152,16 @@ static inline u16 pda_8003D4C8_Filter(u16* buf)
 /* Rebuild the memo index table, optionally filtered by the active color tab. */
 u16 pdaMemoLoadPokemon(void)
 {
-    extern void fn_8003D8CC(void);
-    extern void fn_8003DC54(void);
-    extern void fn_8003E394(void);
+    extern void pdaMemoBuildNameIndex(void);
+    extern void pdaMemoBuildTypeIndex(void);
+    extern void pdaMemoDrawData(void);
     u16 total;
     u16 buf[500];
     u16 i;
     u16 count;
 
     lbl_8047A4E8 = pda_8003D818_LoadIds();
-    fn_8003D8CC();
+    pdaMemoBuildNameIndex();
     if (*(s8*)((u8*)&lbl_803A6818 + 0x159) != 0) {
         count = pda_8003D4C8_Filter(buf);
         for (i = 0; i < count; i++) {
@@ -169,8 +169,8 @@ u16 pdaMemoLoadPokemon(void)
         }
         lbl_8047A4E8 = count;
     }
-    fn_8003DC54();
-    fn_8003E394();
+    pdaMemoBuildTypeIndex();
+    pdaMemoDrawData();
     total = lbl_8047A4E8;
     *(s32*)((u8*)&lbl_803A6818 + 0x8) = -5;
     if (total >= 5) {

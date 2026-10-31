@@ -15,12 +15,12 @@
  *   GSmemFree          free a handle
  *   fn_800E24B0          unlock (decrement the lock count)
  *   GSmemLock          lock (increment the lock count, return pointer)
- *   fn_800E2AF8          always returns 1
+ *   GSmemReturnTrue          always returns 1
  *   fn_800E2B00          aligned allocation from the top of a free block
  *   GSmemAlloc          aligned allocation (first/best/worst fit)
  *   GSmemShrink          place an allocation at a fixed address
  *   _toolentryAlloc__FUl 32-byte aligned allocation (GSmemAlloc)
- *   fn_800E3560          select the fit strategy (GSMEM_FIT_*)
+ *   GSmemSetDebugFlag          select the fit strategy (GSMEM_FIT_*)
  *   GSmemInit            initialise the heap
  *
  * The allocation functions are declared by each caller: several of them

@@ -12,7 +12,7 @@
 
 extern void* std093_getCurrentGroupID(void);
 extern void cameraPlayAnime(s32, u32, s32, s32);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern void _threadSwitch(void);
 extern void std115_mapObjectPlayAnimation(u32 object, s32 arg1, s32 arg2, s32 arg3);
@@ -25,7 +25,7 @@ extern f32 lbl_8047C0C0;
 extern f32 lbl_8047C0C4;
 
 /* 0x80075DC8 | 0x118: open menu 0xE2, then link to the chosen floor. */
-void fn_80075DC8(void)
+void exDiscFloorSelect(void)
 {
     u32 elapsed;
     u32 waitTicks;
@@ -33,7 +33,7 @@ void fn_80075DC8(void)
 
     cameraPlayAnime((s32)std093_getCurrentGroupID(), 0x0B561800, 0, 0);
     waitTicks = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitTicks = (u32)lbl_8047C0C0;
         if (waitTicks < 1) {
             waitTicks = 1;

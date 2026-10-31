@@ -113,7 +113,7 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1,
 void HSD_VISetBlack(BOOL black);                   /* HSD_VISetBlack */
 void HSD_VISetConfigure(GXRenderModeObj* rmode);       /* HSD_VISetConfigure */
 int HSD_VIGetXFBLastDrawDone(void);                          /* HSD_VIGetXFBLastDrawDone */
-void fn_801BF8A0(HSD_RenderPass rpass);         /* HSD_VICopyXFBAsync */
+void HSD_VICopyEFB2XFBWait(HSD_RenderPass rpass);         /* HSD_VICopyXFBAsync */
 void HSD_VICopyEFB2XFB(HSD_VIStatus* vi, void* buffer,
                  HSD_RenderPass rpass);         /* HSD_VICopyEFB2XFBPtr */
 HSD_VIGXDrawDoneCallback

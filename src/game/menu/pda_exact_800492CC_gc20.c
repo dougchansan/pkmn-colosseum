@@ -31,7 +31,7 @@ extern u32 gfxSetFlags();
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_800492CC(u8* context, PdaSprite* sprite)
+void pdaMemoDrawModelSprite(u8* context, PdaSprite* sprite)
 {
     u32 firstTexture;
     u32 secondTexture;

@@ -116,7 +116,7 @@ extern u8 sndPushGroup(void* resource, u16 soundId, void* sampleData,
                       void* resource2, void* resource3);
 extern void winMsgOpenError(u32 message, u32 mode, u32 wait);
 extern void winMsgCloseError(u32 wait);
-extern void fn_800056D4(void);
+extern void mainTakePauseFlag(void);
 
 extern void _AsyncCallback(s32 result, void* fileInfo);
 extern void GSdvdClose(u8* file);
@@ -171,7 +171,7 @@ void _soundReleaseFinishedVoice(u32 handle)
 
 u8 _soundSlotRelease(u32 index, u32 stop)
 {
-    extern void fn_8016782C(u8* flag);
+    extern void _soundPool2Free(u8* flag);
     GSsndEntry* entry = &lbl_80478FAC[index];
     GSsndWork* work;
 
@@ -186,7 +186,7 @@ u8 _soundSlotRelease(u32 index, u32 stop)
         soundStopRaw(index, 0, 0);
     }
     _sndInitParms(entry, work);
-    fn_8016782C((u8*)work);
+    _soundPool2Free((u8*)work);
     entry->work = NULL;
     ((GSsndFlagBits*)&entry->flags)->active = 0;
     return 1;
@@ -439,7 +439,7 @@ u32 soundFindOwner(u32 unkC, u32 unk10)
     return -1;
 }
 
-void fn_801677BC(u8* flag)
+void _soundPool0Free(u8* flag)
 {
     BOOL enabled;
 
@@ -448,7 +448,7 @@ void fn_801677BC(u8* flag)
     OSRestoreInterrupts(enabled);
 }
 
-void fn_801677F4(u8* flag)
+void _soundPool1Free(u8* flag)
 {
     BOOL enabled;
 
@@ -457,7 +457,7 @@ void fn_801677F4(u8* flag)
     OSRestoreInterrupts(enabled);
 }
 
-void fn_8016782C(u8* flag)
+void _soundPool2Free(u8* flag)
 {
     BOOL enabled;
 
@@ -489,7 +489,7 @@ u8* _soundPool0Alloc(void)
     return result;
 }
 
-u8* fn_801678E4(void)
+u8* _soundPool1Alloc(void)
 {
     BOOL enabled;
     u8* entry;
@@ -543,7 +543,7 @@ u8* _soundPool2Alloc(void)
     return result;
 }
 
-void fn_801679E4(void)
+void _soundPool0Init(void)
 {
     u32 i;
 
@@ -552,7 +552,7 @@ void fn_801679E4(void)
     }
 }
 
-void fn_80167A14(void)
+void _soundPool1Init(void)
 {
     u32 i;
 
@@ -570,7 +570,7 @@ void _sndInitStack(void)
     }
 }
 
-void fn_80167A6C(void)
+void _soundPool2Init(void)
 {
     u32 i;
 
@@ -681,7 +681,7 @@ void _gsdvdErrorTask(void)
         }
         break;
     case 9:
-        fn_800056D4();
+        mainTakePauseFlag();
         _gsdvdError_MsgOpen(lbl_80478C20);
         lbl_8047B0F0 = 10;
         break;
@@ -735,7 +735,7 @@ u8 GSdvdSeekAsync(GSDVDWork* work, s32 offset,
     return DVDSeekAsyncPrio(work->fileInfo, offset, _AsyncCallback, 2);
 }
 
-s32 fn_80167E10(u8* handle)
+s32 GSdvdGetCommandBlockStatus(u8* handle)
 {
     return DVDGetCommandBlockStatus(handle + 4);
 }

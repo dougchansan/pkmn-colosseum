@@ -118,12 +118,12 @@ extern void GSlogWrite(const char* fmt, ...);
 extern u32 GSthreadGetCurrentThread(void);
 extern void _threadSwitch(void);
 extern u32 GSgetFrameStep(void);
-extern void fn_800D9E4C(s32);
-extern void fn_800D9ED8(s32);
+extern void gfxSetFog_800D9E4C(s32);
+extern void gfxSetFlag1A(s32);
 extern void gfxSetBlendMode(s32, s32, s32);
-extern void fn_801D2404(void);
+extern void menuDrawBlinkIcon(void);
 extern void fadeDaemon(void);
-extern void fn_800FE6D0();
+extern void spriteSetOrigin();
 extern void fn_800FE35C(void);
 extern void spriteSetEnv(void);
 extern u16 menuSeTableLookup(void*, s32);
@@ -157,7 +157,7 @@ extern void winSpriteSetDisp(MenuSprite* sprite, u32 enable);
 extern void winSpriteDraw(MenuWindow* window, MenuSprite* sprite);
 extern void _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(MenuSystem* system);
 extern void menuOffScreenDraw(void);
-extern void fn_80106F98(u32 id);
+extern void winSeqUpdateAll(u32 id);
 extern s32 winSeqCheckMove(u32 id);
 extern void winSeqMoveMenu(MenuWindow* window);
 extern void menuCursorNormal(MenuWindow* window);
@@ -242,7 +242,7 @@ s32 menuGetCursorFromItemID(u32 id, u32 itemId) {
 }
 
 /* 0x801021F8 | 0x5C */
-void fn_801021F8(u32 id, u32 enable) {
+void windowSetAllSpritesDisp(u32 id, u32 enable) {
     MenuWindow* window = windowSearchID(id);
     MenuSprite* sprite;
 
@@ -357,7 +357,7 @@ void menuCloseFloor(void) {
 }
 
 /* 0x801024E8 | 0x28 */
-void fn_801024E8(void) {
+void windowCloseAll4(void) {
     windowClose(NULL, 4);
 }
 
@@ -467,12 +467,12 @@ void menuDaemon(void) {
     u16 keys;
     u8 doFade = 1;
 
-    fn_801D2404();
+    menuDrawBlinkIcon();
     active = windowSearchID(windowGetActiveID());
     _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(&lbl_80404ACC);
-    fn_800D9E4C(0);
+    gfxSetFog_800D9E4C(0);
     menuOffScreenDraw();
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     system = &lbl_80404ACC;
 
     for (node = system->head; node != NULL; node = node->next) {
@@ -564,7 +564,7 @@ void menuDaemon(void) {
                     MENU_PLAY_SE(node, 2);
                 }
                 if (node->close != 0) {
-                    fn_80106F98(node->id);
+                    winSeqUpdateAll(node->id);
                 }
             }
 
@@ -627,10 +627,10 @@ void menuDaemon(void) {
         if (doFade != 0 && node->fadePriority >= 0x50) {
             doFade = 0;
             fadeDaemon();
-            fn_800D9ED8(1);
+            gfxSetFlag1A(1);
         }
         if ((node->flags & 2) != 0) {
-            fn_800FE6D0(node->x, node->y);
+            spriteSetOrigin(node->x, node->y);
             fn_800FE35C();
             spriteSetEnv();
             for (sprite = node->sprites; sprite != NULL; sprite = sprite->next) {
@@ -647,14 +647,14 @@ void menuDaemon(void) {
         }
     }
 
-    fn_800FE6D0(0, 0);
+    spriteSetOrigin(0, 0);
     fn_800FE35C();
     gfxSetBlendMode(1, 6, 7);
     if (doFade != 0) {
         fadeDaemon();
     }
-    fn_800D9ED8(0);
-    fn_800D9E4C(1);
+    gfxSetFlag1A(0);
+    gfxSetFog_800D9E4C(1);
 }
 
 /* 0x80102ED4 | 0x64 */

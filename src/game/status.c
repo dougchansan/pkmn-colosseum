@@ -20,7 +20,7 @@ u32 statusSetStatus(u32 kind, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5) 
     extern u32 heroSetStatus();
     extern u32 pcboxSetStatus();
     extern u32 gamedataSetStatus();
-    extern u32 fn_80142B24();
+    extern u32 fightItemCreate_80142B24();
     extern u32 fightFloorSetStatus();
     extern u32 fightSideSetStatus();
     extern u32 fightTrainerSetStatus();
@@ -39,7 +39,7 @@ u32 statusSetStatus(u32 kind, u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5) 
         heroSetStatus(arg1, arg3, arg5);
         break;
     case 4:
-        fn_80142B24(arg1, arg2, arg3, arg4, arg5);
+        fightItemCreate_80142B24(arg1, arg2, arg3, arg4, arg5);
         break;
     case 5:
         pokemonSetStatus(arg1, arg2, arg3, arg4, arg5);

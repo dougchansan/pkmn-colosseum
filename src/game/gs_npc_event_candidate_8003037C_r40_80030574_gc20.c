@@ -1,6 +1,6 @@
 /**
  * @file gs_npc_event_candidate_8003037C_r40_80030574_gc20.c
- * @brief fn_80030574 carve, 0x80030574 - 0x800307A8.
+ * @brief menuDBDrawMove carve, 0x80030574 - 0x800307A8.
  *
  * NPC event callback: look the event id up in the move-slot columns of
  * the two-entry table lbl_80266F68, fetch the party (1) or storage (2)
@@ -22,7 +22,7 @@ extern u8 lbl_803A2688[];
 extern u32 lbl_8047A420;
 extern u32 lbl_8047A424;
 
-void fn_80030574(u8* r3, u8* r4)
+void menuDBDrawMove(u8* r3, u8* r4)
 {
     u32 combined;
     u8* table;

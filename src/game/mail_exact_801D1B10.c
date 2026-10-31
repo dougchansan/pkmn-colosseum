@@ -2,7 +2,7 @@
  * @file mail_exact_801D1B10.c
  * @brief mail TU, 0x801D1B10 - 0x801D1E50: the mailbox selection byte, the
  *        per-mail received flags and the mailbox append (mailSetFlag442,
- *        mailGetSortMode, fn_801D1B78, fn_801D1C20, mailChkReceiveMail,
+ *        mailGetSortMode, saveFlagBitsTest, saveFlagBitsSet, mailChkReceiveMail,
  *        mailAddMailbox).
  *
  * Function-boundary carve of mail.c, built with the mail group's flags
@@ -45,7 +45,7 @@ static inline s32 mailGetFlagPos(s32 mailId, u8* mask)
  * Test whether a mailbox ID has already been received.
  * Address: 0x801D1B78 | Size: 0xA8
  */
-BOOL fn_801D1B78(s32 mailId) {
+BOOL saveFlagBitsTest(s32 mailId) {
     WazaPartyScratch* party =
         (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     u8 mask;
@@ -61,7 +61,7 @@ BOOL fn_801D1B78(s32 mailId) {
  * Mark a mailbox ID as received.
  * Address: 0x801D1C20 | Size: 0xA4
  */
-BOOL fn_801D1C20(s32 mailId) {
+BOOL saveFlagBitsSet(s32 mailId) {
     WazaPartyScratch* party =
         (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     u8 mask;

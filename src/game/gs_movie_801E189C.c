@@ -4,11 +4,11 @@
  *
  * Address range: 0x801E189C - 0x801E1B54 (.text) plus its string pool at
  * 0x80279A68 - 0x80279AE8 (.rodata; the three "ERROR(GSmovie): ..." log
- * messages). fn_801E1924 addresses the pool through one base register
+ * messages). GSmovieOpen_801E1924 addresses the pool through one base register
  * (base + 0x00 / 0x30 / 0x5C), which only a TU-local literal pool produces,
  * so this unit owns that .rodata range.
  *
- * Built with GC/1.3.2 -O4,s: fn_801E1924's stmw r29 register save and
+ * Built with GC/1.3.2 -O4,s: GSmovieOpen_801E1924's stmw r29 register save and
  * pooled base register need -O4,s, and fn_801E189C's argument scheduling
  * needs 1.3.2+ (GC/1.3 cannot reproduce it at either optimisation level).
  */
@@ -74,14 +74,14 @@ extern void THPPlayerPlay(void);
 extern BOOL THPPlayerInit(void);
 
 /* Loader thread entry: opens the THP file and prepares playback. */
-void* fn_801E1924(void* param);
+void* GSmovieOpen_801E1924(void* param);
 
 void GSmovieOpen(const char* path, u8 onMemory)
 {
     lbl_8047B444 = 0;
     lbl_8047B448.onMemory = onMemory;
     lbl_8047B448.path = path;
-    OSCreateThread(&lbl_80467D08, fn_801E1924, &lbl_8047B448, lbl_80468020 + 0xFFC, 0x1000,
+    OSCreateThread(&lbl_80467D08, GSmovieOpen_801E1924, &lbl_8047B448, lbl_80468020 + 0xFFC, 0x1000,
                    0x10, 1);
     OSResumeThread(&lbl_80467D08);
     while (lbl_8047B444 == 0) {
@@ -89,7 +89,7 @@ void GSmovieOpen(const char* path, u8 onMemory)
     }
 }
 
-void* fn_801E1924(void* param)
+void* GSmovieOpen_801E1924(void* param)
 {
     GsMovieStartArgs* args = param;
     const char* path;

@@ -18,7 +18,7 @@ extern void GSvecCopy(void* dst, const void* src);
 extern void HSD_CObjReqAnim(void* cobj, f32 frame);
 extern void HSD_CObjAnim(void* cobj);
 
-void fn_800D1070(u32 ticks)
+void cameraObjectAnimUpdate(u32 ticks)
 {
     u32 offset;
     u32 i;

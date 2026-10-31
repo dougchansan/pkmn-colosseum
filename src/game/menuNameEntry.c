@@ -43,8 +43,8 @@ typedef struct NameEntryChoiceList {
 } NameEntryChoiceList;
 
 #if !(defined(MENU_NAME_ENTRY_80027740_ONLY) || defined(MENU_NAME_ENTRY_80027AA4_ONLY))
-/* fn_80026370 - 0x80026370 | size: 0x20 */
-s32 fn_80026370(void* r3, u8* r4) {
+/* menuNameEntryDrawItem - 0x80026370 | size: 0x20 */
+s32 menuNameEntryDrawItem(void* r3, u8* r4) {
     r4[0x64] = 0;
     r4[0x65] = 0x35;
     r4[0x66] = 0x3c;
@@ -52,17 +52,17 @@ s32 fn_80026370(void* r3, u8* r4) {
 }
 
 
-/* fn_80026390 - 0x80026390 | size: 0x20 */
+/* menuNameEntryDrawItem2 - 0x80026390 | size: 0x20 */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimization_level 4) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
-s32 fn_80026390(void* r3, u8* r4) {
+s32 menuNameEntryDrawItem2(void* r3, u8* r4) {
     r4[0x64] = 0;
     r4[0x65] = 0x35;
     r4[0x66] = 0x3c;
     return 0;
 }
 
-/* fn_800263B0 - 0x800263B0 | size: 0x6c */
-s32 fn_800263B0(void* r3, u8* r4) {
+/* menuNameEntryDrawItem3 - 0x800263B0 | size: 0x6c */
+s32 menuNameEntryDrawItem3(void* r3, u8* r4) {
     void* ctx;
     s32 idx;
     NameEntryRgb c;
@@ -82,9 +82,9 @@ s32 fn_800263B0(void* r3, u8* r4) {
     return 0;
 }
 
-/* fn_8002641C - 0x8002641C | size: 0x5c */
+/* menuNameEntryDrawItem4 - 0x8002641C | size: 0x5c */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (optimization_level 4) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
-s32 fn_8002641C(void* r3, u8* r4) {
+s32 menuNameEntryDrawItem4(void* r3, u8* r4) {
     void* ctx;
     s32 idx;
     NameEntryRgb c;
@@ -106,14 +106,14 @@ s32 fn_8002641C(void* r3, u8* r4) {
 
 #if !defined(MENU_NAME_ENTRY_80026370_ONLY)
 
-/* fn_80026478 - 0x80026478 | size: 0xa4 */
+/* menuNameEntryDrawGender - 0x80026478 | size: 0xa4 */
 extern void* heroGetStatus(s32, s32, u32);
 extern u8 pokemonCheckValid(void);
 extern u8 pokemonGetSex(void*);
 extern u8 lbl_80266DD8[];
 
 #if !(defined(MENU_NAME_ENTRY_80027740_ONLY) || defined(MENU_NAME_ENTRY_80027AA4_ONLY))
-s32 fn_80026478(void* r3, u8* r4) {
+s32 menuNameEntryDrawGender(void* r3, u8* r4) {
     void* ctx;
     void* r31;
     u8 r30;
@@ -132,8 +132,8 @@ L_done:
     return 0;
 }
 
-/* fn_8002651C - 0x8002651C | size: 0xa4 */
-s32 fn_8002651C(void* r3, u8* r4) {
+/* menuNameEntryDrawGender2 - 0x8002651C | size: 0xa4 */
+s32 menuNameEntryDrawGender2(void* r3, u8* r4) {
     void* ctx;
     void* r31;
     u8 r30;
@@ -152,8 +152,8 @@ L_done2:
     return 0;
 }
 
-/* fn_800265C0 - 0x800265C0 | size: 0x40 */
-s32 fn_800265C0(void* r3, u8* r4) {
+/* menuNameEntryDrawItem5 - 0x800265C0 | size: 0x40 */
+s32 menuNameEntryDrawItem5(void* r3, u8* r4) {
     void* ctx;
     u8* new_var;
     s32* entry;
@@ -166,8 +166,8 @@ s32 fn_800265C0(void* r3, u8* r4) {
     return 0;
 }
 
-/* fn_80026600 - 0x80026600 | size: 0x40 */
-s32 fn_80026600(void* r3, u8* r4) {
+/* menuNameEntryDrawItem6 - 0x80026600 | size: 0x40 */
+s32 menuNameEntryDrawItem6(void* r3, u8* r4) {
     void* ctx;
     u8* new_var;
     s32* entry;
@@ -180,8 +180,8 @@ s32 fn_80026600(void* r3, u8* r4) {
     return 0;
 }
 
-/* fn_80026640 - 0x80026640 | size: 0x40 */
-s32 fn_80026640(void* r3, u8* r4) {
+/* menuNameEntryDrawItem7 - 0x80026640 | size: 0x40 */
+s32 menuNameEntryDrawItem7(void* r3, u8* r4) {
     void* ctx;
     u8* new_var;
     s32* entry;
@@ -198,8 +198,8 @@ L_40_end:
     return 0;
 }
 
-/* fn_80026680 - 0x80026680 | size: 0x40 */
-s32 fn_80026680(void* r3, u8* r4) {
+/* menuNameEntryDrawItem8 - 0x80026680 | size: 0x40 */
+s32 menuNameEntryDrawItem8(void* r3, u8* r4) {
     void* ctx;
     u8* new_var;
     s32* entry;
@@ -216,8 +216,8 @@ L_80_end:
     return 0;
 }
 
-/* fn_800266C0 - 0x800266C0 | size: 0x40 */
-s32 fn_800266C0(void* r3, u8* r4) {
+/* menuNameEntryDrawItem9 - 0x800266C0 | size: 0x40 */
+s32 menuNameEntryDrawItem9(void* r3, u8* r4) {
     void* ctx;
     s32* entry;
     u8* base;
@@ -234,8 +234,8 @@ L_C0_end:
     return 0;
 }
 
-/* fn_80026700 - 0x80026700 | size: 0x40 */
-s32 fn_80026700(void* r3, u8* r4) {
+/* menuNameEntryDrawItem10 - 0x80026700 | size: 0x40 */
+s32 menuNameEntryDrawItem10(void* r3, u8* r4) {
     void* ctx;
     u8* new_var;
     s32* entry;
@@ -252,7 +252,7 @@ L_700_end:
     return 0;
 }
 
-/* fn_80026740 - 0x80026740 | size: 0x90 | active C 65.8% (2026-06-29)
+/* menuNameEntryDrawItem11 - 0x80026740 | size: 0x90 | active C 65.8% (2026-06-29)
  *
  * The active C below is FAITHFUL, byte-correct logic and measures 65.8% after
  * activation. The inactive asm wrapper measured 96.67% under
@@ -277,11 +277,11 @@ L_700_end:
  *      it in r0 (`mulli r0,r0,0x1a`).
  *   3. float const-load schedule: target interleaves lfs f2/f0 into the X-mul
  *      load-delay slots; CW won't hoist them across the sth store.
- * -> permuter territory. Same wall applies to siblings fn_800267D0/fn_80026860.
+ * -> permuter territory. Same wall applies to siblings menuNameEntryDrawItem12/menuNameEntryDrawItem13.
  */
 extern f32 lbl_8047B938;
 extern f32 lbl_8047B934;
-s32 fn_80026740(void* r3, u8* r4)
+s32 menuNameEntryDrawItem11(void* r3, u8* r4)
 {
     extern u8  lbl_80266DD8[];   /* state-machine entry table: each entry 16 bytes */
     s32  state;
@@ -317,14 +317,14 @@ s32 fn_80026740(void* r3, u8* r4)
     return 0;
 }
 
-/* fn_800267D0 - 0x800267D0 | size: 0x90 | WALL ~85.7% - sibling of fn_80026740.
+/* menuNameEntryDrawItem12 - 0x800267D0 | size: 0x90 | WALL ~85.7% - sibling of menuNameEntryDrawItem11.
  * selector=8, base ptr ctx+0x44. The inactive asm measured 96.67% (mostly
- * the numeric-vs-named float-reloc artifact). See fn_80026740 for the full lever
+ * the numeric-vs-named float-reloc artifact). See menuNameEntryDrawItem11 for the full lever
  * analysis + residual reg-alloc/scheduler ties. The C is active for honest
  * decomp progress. */
 extern f32 lbl_8047B938;
 extern f32 lbl_8047B934;
-s32 fn_800267D0(void* r3, u8* r4)
+s32 menuNameEntryDrawItem12(void* r3, u8* r4)
 {
     extern u8  lbl_80266DD8[];
     s32  state;
@@ -360,15 +360,15 @@ s32 fn_800267D0(void* r3, u8* r4)
     return 0;
 }
 
-/* fn_80026860 - 0x80026860 | size: 0x90 */
-/* fn_80026860 - 0x80026860 | size: 0x90 | WALL ~85.7% - sibling of fn_80026740.
+/* menuNameEntryDrawItem13 - 0x80026860 | size: 0x90 */
+/* menuNameEntryDrawItem13 - 0x80026860 | size: 0x90 | WALL ~85.7% - sibling of menuNameEntryDrawItem11.
  * selector=0xa, base ptr ctx+0x40. The inactive asm measured 96.67% (mostly
- * the numeric-vs-named float-reloc artifact). See fn_80026740 for the full lever
+ * the numeric-vs-named float-reloc artifact). See menuNameEntryDrawItem11 for the full lever
  * analysis + residual reg-alloc/scheduler ties. The C is active for honest
  * decomp progress. */
 extern f32 lbl_8047B938;
 extern f32 lbl_8047B934;
-s32 fn_80026860(void* r3, u8* r4)
+s32 menuNameEntryDrawItem13(void* r3, u8* r4)
 {
     extern u8  lbl_80266DD8[];
     s32  state;
@@ -405,7 +405,7 @@ s32 fn_80026860(void* r3, u8* r4)
 }
 #endif /* not a single-range build */
 
-/* fn_800268F0 - 0x800268F0 | size: 0x254 */
+/* menuNameEntryDrawText - 0x800268F0 | size: 0x254 */
 extern void msgctrlSetValue(s32, void*);
 extern u32 GSmsgGetRect(u32);
 extern void GSmsgPrintColor(s32, s32, s32, u32);
@@ -541,21 +541,21 @@ static inline void menuNameEntryDrawName(u8* self, u8* draw, s32 type)
     }
 }
 
-s32 fn_800268F0(void* window, u8* draw)
+s32 menuNameEntryDrawText(void* window, u8* draw)
 {
     menuNameEntryDrawName(window, draw, 7);
     return 0;
 }
 
-/* fn_80026B44 - 0x80026B44 | size: 0x254 */
-s32 fn_80026B44(void* window, u8* draw)
+/* menuNameEntryDrawText2 - 0x80026B44 | size: 0x254 */
+s32 menuNameEntryDrawText2(void* window, u8* draw)
 {
     menuNameEntryDrawName(window, draw, 8);
     return 0;
 }
 
-/* fn_80026D98 - 0x80026D98 | size: 0x254 */
-s32 fn_80026D98(void* window, u8* draw)
+/* menuNameEntryDrawText3 - 0x80026D98 | size: 0x254 */
+s32 menuNameEntryDrawText3(void* window, u8* draw)
 {
     menuNameEntryDrawName(window, draw, 0xa);
     return 0;
@@ -573,8 +573,8 @@ extern f32 lbl_8047B940;
 extern f32 lbl_8047B934;
 extern f32 lbl_8047B938;
 
-/* fn_80026FEC - 0x80026FEC | size: 0x190 */
-s32 fn_80026FEC(void* window, u8* draw)
+/* menuNameEntryDrawItem14 - 0x80026FEC | size: 0x190 */
+s32 menuNameEntryDrawItem14(void* window, u8* draw)
 {
     u8* ctx;
     s16* rect;
@@ -627,8 +627,8 @@ s32 fn_80026FEC(void* window, u8* draw)
     return 0;
 }
 
-/* fn_8002717C - 0x8002717C | size: 0x190 */
-s32 fn_8002717C(void* window, u8* draw)
+/* menuNameEntryDrawItem15 - 0x8002717C | size: 0x190 */
+s32 menuNameEntryDrawItem15(void* window, u8* draw)
 {
     u8* ctx;
     s16* rect;
@@ -681,8 +681,8 @@ s32 fn_8002717C(void* window, u8* draw)
     return 0;
 }
 
-/* fn_8002730C - 0x8002730C | size: 0x190 */
-s32 fn_8002730C(void* window, u8* draw)
+/* menuNameEntryDrawItem16 - 0x8002730C | size: 0x190 */
+s32 menuNameEntryDrawItem16(void* window, u8* draw)
 {
     u8* ctx;
     s16* rect;
@@ -818,24 +818,24 @@ s32 menuNameEntryDraw50Text(void* window) {
 
 #if !defined(MENU_NAME_ENTRY_80027AA4_ONLY)
 
-/* fn_80027740 - 0x80027740 | size: 0x3c */
+/* menuNameEntryDrawText4 - 0x80027740 | size: 0x3c */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off; optimization_level 1) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
 #pragma optimization_level 1
-s32 fn_80027740(void* r3) {
+s32 menuNameEntryDrawText4(void* r3) {
     u32 alpha = ((MenuNameEntryObject*)r3)->alpha;
     GSmsgPrintColor(0, 0, alpha | 0x509100, 0x2ef5);
     return 0;
 }
 #pragma pop
 
-/* fn_8002777C - 0x8002777C | size: 0x3c */
+/* menuNameEntryDrawText5 - 0x8002777C | size: 0x3c */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off; optimization_level 1) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
 #pragma optimization_level 1
-s32 fn_8002777C(void* r3) {
+s32 menuNameEntryDrawText5(void* r3) {
     s32 mask = -0x100;
     u32 alpha = ((MenuNameEntryObject*)r3)->alpha;
     GSmsgPrintColor(0, 0, alpha | mask, 0x2ef3);
@@ -843,12 +843,12 @@ s32 fn_8002777C(void* r3) {
 }
 #pragma pop
 
-/* fn_800277B8 - 0x800277B8 | size: 0x3c */
+/* menuNameEntryDrawText6 - 0x800277B8 | size: 0x3c */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off; optimization_level 1) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
 #pragma optimization_level 1
-s32 fn_800277B8(void* r3) {
+s32 menuNameEntryDrawText6(void* r3) {
     s32 mask = -0x100;
     u32 alpha = ((MenuNameEntryObject*)r3)->alpha;
     GSmsgPrintColor(0, 0, alpha | mask, 0x2ef4);
@@ -1700,7 +1700,7 @@ extern void menuItemBiosGetPtr(void);
 extern void menuModelInit(void);
 extern void menuPokemonModelRequestById(void);
 extern void peopleInfoBiosGetPtr(void);
-extern void fn_8018F4C8(void);
+extern void peopleInfoGetMotion(void);
 extern void menuPokemonModelRequest(void);
 extern void menuModelCheck(void);
 extern void fadeSet(void);
@@ -1761,7 +1761,7 @@ void menuNameEntry(void) {
     extern void menuModelInit(void* handle, s16 a, s16 b);
     extern void menuPokemonModelRequestById(void* handle, s32 v);
     extern void* peopleInfoBiosGetPtr(s32 v);
-    extern void fn_8018F4C8(void* info, s32 a, s32* outA, s32* outB);
+    extern void peopleInfoGetMotion(void* info, s32 a, s32* outA, s32* outB);
     extern void menuModelSetMotion(void* handle, s32 motion);
     extern void menuPokemonModelRequest(void* handle, u32 v);
     extern void menuModelCheck(void* handle, s32 v);
@@ -1804,8 +1804,8 @@ void menuNameEntry(void) {
     u16 nameBuf[12];
     s32 menuArg[2];
     s32 listArg[2];
-    s32 motOut;     /* fn_8018F4C8 out word @ sp+0xc        */
-    s32 motTmp;     /* fn_8018F4C8 out word @ sp+0x8        */
+    s32 motOut;     /* peopleInfoGetMotion out word @ sp+0xc        */
+    s32 motTmp;     /* peopleInfoGetMotion out word @ sp+0x8        */
     s32 ans;
 
     data = lbl_80266DC0;
@@ -1879,7 +1879,7 @@ void menuNameEntry(void) {
     case 1:
         sel = entryBuf[mode];
         menuPokemonModelRequestById(lbl_803A2094, sel);
-        fn_8018F4C8(peopleInfoBiosGetPtr(sel), 1, &motOut, &motTmp);
+        peopleInfoGetMotion(peopleInfoBiosGetPtr(sel), 1, &motOut, &motTmp);
         menuModelSetMotion(lbl_803A2094, motOut);
         break;
     case 2:

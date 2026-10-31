@@ -90,7 +90,7 @@ static inline s32 chkCrossObj(GSFieldVec3f* start, GSFieldVec3f* end) {
     f32 inv[12];
     f32 fwd[12];
 
-    wzx = (GSFieldWzxData*)fn_8010CBC0();
+    wzx = (GSFieldWzxData*)GScolsys2GetCurFloor_8010CBC0();
     PSVECSubtract(end, start, &dir);
     region = wzx->regions;
     for (i = 0; i < wzx->regionCount; i++, region++) {
@@ -111,7 +111,7 @@ static inline s32 chkCrossObj(GSFieldVec3f* start, GSFieldVec3f* end) {
 
 /* 0x80111C24 | 0x1D4 */
 s32 GScolsys2Sun(void* origin, void* dir) {
-    if (fn_8010CBC0() == NULL) {
+    if (GScolsys2GetCurFloor_8010CBC0() == NULL) {
         return 0;
     }
     if (PSVECDistance(dir, origin) <= 0.0f) {

@@ -4,14 +4,14 @@
 extern u16 lbl_80467CD4[16];
 extern void fn_800E24B0(u16 handle);
 extern void GSmemFree(u16 handle);
-extern void fn_801D2F94(void);
+extern void battleCameraWazaStop(void);
 
 /* Retail expands wazaSequenceOwnerFree's 0x54-byte entry-clear body in this loop. */
 static inline void wazaSequenceClearEntry(WazaEffect* entry)
 {
     if (entry != NULL) {
         if (entry->active != 0) {
-            fn_801DD3E4(entry);
+            wazaSequenceOwnerFreeAll(entry);
             wazaSequenceOwnerRelease(entry);
         }
         memset(entry, 0, sizeof(*entry));
@@ -26,7 +26,7 @@ static inline void wazaSequenceReleaseResources(void)
     u16* resource = lbl_80467CD4;
     do {
         if (*resource != 0) {
-            fn_800F915C(*resource);
+            GSresReleaseOwner(*resource);
             GSresReleaseById(*resource);
             *resource = 0;
         }
@@ -50,11 +50,11 @@ void wazaSequenceSysRelease(void)
     GSmemFree(handle);
     memset(lbl_80467CC0, 0, 0x14);
     wazaSequenceReleaseResources();
-    fn_801D2F94();
+    battleCameraWazaStop();
     lbl_8047B414 = 0;
     lbl_8047B418 = 0;
     if (lbl_80467CC0[6] == 0) {
-        fn_800F915C(0x6F7);
+        GSresReleaseOwner(0x6F7);
         GSresReleaseById(0x6F7);
     }
 }

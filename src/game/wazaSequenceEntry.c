@@ -209,8 +209,8 @@ static inline u8 wazaEntrySoundRunning(u32 id) {
 u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed) {
     extern u8 GSmodelHasAnimationEnded(void* model);
     extern u8 GSmodelHasTexAnimationEnded(void* model);
-    extern s32 fn_80118DA8(void* ptr);
-    extern u32 fn_80118D84(void* obj);
+    extern s32 gsParticleGetMaxLife(void* ptr);
+    extern u32 gsParticleGetChildCount(void* obj);
     extern u8 GSthreadIsRunning(u32 task);
     extern BOOL GSeffectIsRunning(u32 effectId);
     extern void* GSeffectGetData(u32 arg);
@@ -319,8 +319,8 @@ u8 wazaSequenceEntryUpdate(void* entry, s32 elapsed) {
         if (*(void**)(node + 0x8C) == NULL) {
             break;
         }
-        if ((u32)fn_80118DA8(*(void**)(node + 0x8C)) != 0 ||
-            fn_80118D84(*(void**)(node + 0x8C)) != 0) {
+        if ((u32)gsParticleGetMaxLife(*(void**)(node + 0x8C)) != 0 ||
+            gsParticleGetChildCount(*(void**)(node + 0x8C)) != 0) {
             return TRUE;
         }
         return FALSE;
@@ -480,17 +480,17 @@ u8 wazaSequenceEntryStart(void* entry) {
             wazaSequenceOwnerSetNull(owner);
             break;
         case 6:
-            fn_801DCEA8(owner);
+            wazaSequenceOwnerClearNull(owner);
             break;
         case 7:
-            fn_801DCFD8(owner);
+            wazaSequenceOwnerSetStop(owner);
             break;
         case 9:
             wazaSequenceOwnerClearStop(owner);
             break;
         case 8:
             if (node->sequence == owner->currentSequence) {
-                fn_801DBC30(owner->currentSequence);
+                wazaSequenceEntryStop_801DBC30(owner->currentSequence);
             }
             break;
         default:
@@ -585,7 +585,7 @@ u8 _wazaSequenceEffectEntryStart(void* entry) {
             return FALSE;
         }
 
-        fn_801D9950(*(void**)(node + 0xB0), scale, *(s32*)(owner + 0x10));
+        wazaSequenceGetScaleVec(*(void**)(node + 0xB0), scale, *(s32*)(owner + 0x10));
 
         switch (*(s32*)(node + 0x88)) {
         case 0:
@@ -758,18 +758,18 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
     extern void GSmodelGetRotation(void* model, void* out);
     extern void GSpartGetTransform(void* part, void* pos, void* rot,
                                    void* scale);
-    extern void fn_800E0108(void* dst, void* lhs, void* rhs);
+    extern void GSvecMulComponents(void* dst, void* lhs, void* rhs);
     extern void GSvecAdd(void* dst, void* lhs, void* rhs);
-    extern void fn_80118CF4(void* particleNode, u8 enabledA, u8 enabledB,
+    extern void gsParticleSetTornadoScale(void* particleNode, u8 enabledA, u8 enabledB,
                            u8 applyToGenerator);
     extern const char lbl_80279658[];
-    extern void fn_80118D3C(void* obj, u8 enabledA, u8 enabledB);
-    extern void fn_80118D60(void* obj, u8 enabled);
-    extern void fn_80118CD0(void* obj, u8 enabled);
-    extern void fn_80118F7C(u8* obj, f32* arg);
+    extern void gsParticleSetOffsetRotationLocal(void* obj, u8 enabledA, u8 enabledB);
+    extern void gsParticleSetVelocityRotationLocal(void* obj, u8 enabled);
+    extern void gsParticleSetNodeScale(void* obj, u8 enabled);
+    extern void GSmodelGetPositionVec(u8* obj, f32* arg);
     extern void clear__5GSvecFv(f32* vec);
     extern void gsParticleSetVecB(u8* obj, f32* vec);
-    extern void fn_80118E8C(u8* obj, f32* vec);
+    extern void gsParticleSetVecA(u8* obj, f32* vec);
 
     resource = node->resource;
     owner = node->sequence->owner;
@@ -799,7 +799,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
 
     GSmodelGetPosition(model, position);
     GSmodelGetRotation(model, rotation);
-    fn_801D9950(node->sequence, scale, *(s32*)((u8*)owner + 0x10));
+    wazaSequenceGetScaleVec(node->sequence, scale, *(s32*)((u8*)owner + 0x10));
 
     if (resource == NULL) {
         if (GSgetVersionMinor() == 2) {
@@ -821,49 +821,49 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
     }
 
     if (((u32)node->animationMode & 0x4) != 0) {
-        fn_80118D3C(*(void**)((u8*) node + 0x8C), 1,
+        gsParticleSetOffsetRotationLocal(*(void**)((u8*) node + 0x8C), 1,
                     ((u32)node->animationMode >> 4) & 1);
     }
     if (((u32)node->animationMode & 0x8) != 0) {
-        fn_80118D60(*(void**)((u8*) node + 0x8C), 1);
+        gsParticleSetVelocityRotationLocal(*(void**)((u8*) node + 0x8C), 1);
     }
     if (((u32)node->animationMode & 0x80) != 0) {
-        fn_80118D18(*(void**)((u8*) node + 0x8C), 1);
+        gsParticleSetTexScale(*(void**)((u8*) node + 0x8C), 1);
     }
     if (((u32)node->animationMode & 0x800) != 0) {
-        fn_80118CD0(*(void**)((u8*) node + 0x8C), 1);
+        gsParticleSetNodeScale(*(void**)((u8*) node + 0x8C), 1);
     }
     if (((u32)node->animationMode & 0x1000) != 0) {
-        fn_80118CAC(*(void**)((u8*) node + 0x8C), 1);
+        gsParticleSetRandomVelocityScale(*(void**)((u8*) node + 0x8C), 1);
     }
     animationMode = (u32)node->animationMode;
     applyToGenerator = (animationMode >> 5) & 1;
     angleRadiusScale = (u8)((animationMode >> 9) & 1);
-    fn_80118CF4(*(void**)((u8*) node + 0x8C),
+    gsParticleSetTornadoScale(*(void**)((u8*) node + 0x8C),
                 (animationMode >> 8) & 1,
                 (animationMode >> 10) & 1,
                 (animationMode >> 5) & 1);
-    fn_80118F7C(*(void**)((u8*) node + 0x8C), offset);
+    GSmodelGetPositionVec(*(void**)((u8*) node + 0x8C), offset);
     *(u32*)((u8*) node + 0x90) = 0;
 
     if ((s32)(node->flags & 4) == 4) {
         clear__5GSvecFv(offset);
         gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
-        fn_80118E8C(*(void**)((u8*) node + 0x8C), offset);
+        gsParticleSetVecA(*(void**)((u8*) node + 0x8C), offset);
 
         if ((s32)(node->flags & 8) == 8) {
             battleGridGetNormalisedScale(scale);
-            fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+            gsParticleSetAngleRadiusScale(*(void**)((u8*) node + 0x8C), scale,
                         applyToGenerator, angleRadiusScale);
         } else {
             set__5GSvecFfff(scale, 1.0f, 1.0f, 1.0f);
-            fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+            gsParticleSetAngleRadiusScale(*(void**)((u8*) node + 0x8C), scale,
                         applyToGenerator, angleRadiusScale);
         }
         return TRUE;
     }
 
-    part = fn_801D97F0(node);
+    part = wazaSequenceEntryGetAttachPart(node);
     if (part != NULL) {
         if (selector != 0) {
             gsParticleLinkToJObj(*(void**)((u8*) node + 0x8C), part, selector,
@@ -872,7 +872,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
             *(u32*)((u8*) node + 0x90) = 1;
 
             GSpartGetTransform(part, NULL, NULL, temp);
-            fn_800E0108(temp, temp, scale);
+            GSvecMulComponents(temp, temp, scale);
 
             switch (selector) {
             case 7:
@@ -886,7 +886,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[1] *= scale[1] - 1.0f;
                 offset[2] *= scale[2] - 1.0f;
                 gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
-                fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+                gsParticleSetAngleRadiusScale(*(void**)((u8*) node + 0x8C), scale,
                             applyToGenerator, angleRadiusScale);
                 break;
             case 1:
@@ -894,9 +894,9 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[1] *= scale[1] - 1.0f;
                 offset[2] *= scale[2] - 1.0f;
                 gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
-                fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+                gsParticleSetAngleRadiusScale(*(void**)((u8*) node + 0x8C), scale,
                             applyToGenerator, angleRadiusScale);
-                fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
+                gsParticleSetVecA(*(void**)((u8*) node + 0x8C), rotation);
                 break;
             case 5:
                 offset[0] *= temp[0] - 1.0f;
@@ -911,7 +911,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[2] *= scale[2] - 1.0f;
                 GSvecAdd(offset, offset, position);
                 gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
-                fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+                gsParticleSetAngleRadiusScale(*(void**)((u8*) node + 0x8C), scale,
                             applyToGenerator, angleRadiusScale);
                 break;
             case 6:
@@ -919,7 +919,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[1] *= temp[1] - 1.0f;
                 offset[2] *= temp[2] - 1.0f;
                 gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
-                fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
+                gsParticleSetVecA(*(void**)((u8*) node + 0x8C), rotation);
                 break;
             case 3:
                 offset[0] *= temp[0] - 1.0f;
@@ -927,7 +927,7 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
                 offset[2] *= temp[2] - 1.0f;
                 GSvecAdd(offset, offset, position);
                 gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
-                fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
+                gsParticleSetVecA(*(void**)((u8*) node + 0x8C), rotation);
                 break;
             default:
                 if (GSgetVersionMinor() == 2) {
@@ -942,8 +942,8 @@ u8 _wazaSequenceParticleEntryStart(WazaSequenceNode* node) {
             offset[2] *= scale[2] - 1.0f;
             GSvecAdd(offset, position, offset);
             gsParticleSetVecB(*(void**)((u8*) node + 0x8C), offset);
-            fn_80118E8C(*(void**)((u8*) node + 0x8C), rotation);
-            fn_80118DE0(*(void**)((u8*) node + 0x8C), scale,
+            gsParticleSetVecA(*(void**)((u8*) node + 0x8C), rotation);
+            gsParticleSetAngleRadiusScale(*(void**)((u8*) node + 0x8C), scale,
                         applyToGenerator, angleRadiusScale);
         }
 
@@ -985,11 +985,11 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
     extern void GSlerpGetLinearInterpolationVector(void* dst, void* src,
                                                    void* target, f32 t);
     extern void GSvecAdd(void* dst, void* lhs, void* rhs);
-    extern void fn_800E00E0(void* dst, void* src);
+    extern void GSvecNegate(void* dst, void* src);
     extern void GSmodelAttachToGSpart(void* model, void* part, s32 arg2,
                                       s32 arg3, s32 arg4);
     extern void GSmodelSetVisibility(void* model, u8 visible);
-    extern void fn_800E3CC8(void* model, u8 enable);
+    extern void GSmodelSetFlag200(void* model, u8 enable);
     extern void GSmodelSet60fpsAnimFlag(void* model, u8 enable);
     extern u8 GSmodelCanAnimate(void* model);
     extern void GSmodelSetAnimIndex(void* model, s32 index);
@@ -1009,7 +1009,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
     extern void GSmodelSetShadowSurface(struct GSmodel* model, s32 count,
                                         const void* vertices);
     extern void GSmodelSetBoundCheck(void* model, u8 enable);
-    extern void fn_800E3B44(void* model, u8 enable);
+    extern void GSmodelSetFlag400(void* model, u8 enable);
     extern const char lbl_80279694[];
     extern const char lbl_802796CC[];
     extern f32 lbl_8047E348;
@@ -1048,7 +1048,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
 
     GSmodelGetPosition(sourceModel, position);
     GSmodelGetRotation(sourceModel, rotation);
-    fn_801D9950(node->sequence, scale, owner->scale_selector);
+    wazaSequenceGetScaleVec(node->sequence, scale, owner->scale_selector);
     node->attached = 0;
 
     if ((s32)(node->flags & 4) == 4) {
@@ -1079,7 +1079,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
                     temp, (u8*)bound + 0x10, (u8*)bound + 0x1C, lbl_8047E348);
                 GSvecAdd(position, position, temp);
                 GSmodelSetPosition(model, position);
-                fn_800E00E0(temp, temp);
+                GSvecNegate(temp, temp);
                 GSmodelAddNull(ownerModel, (GSvec*)temp, NULL, NULL);
                 GSmodelAttachToGSpart(ownerModel, part, selector, 0, 1);
                 node->attached = 1;
@@ -1123,7 +1123,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
     } else if (selector != 0) {
         GSpart* part;
 
-        part = fn_801D97F0(node);
+        part = wazaSequenceEntryGetAttachPart(node);
         if (part != NULL) {
             GSmodelAttachToGSpart(model, part, selector,
                                   (node->flags >> 1) & 1, 1);
@@ -1165,7 +1165,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
     }
 
     GSmodelSetVisibility(model, 1);
-    fn_800E3CC8(model, *(u32*)((u8*)node + 0x9C) & 1);
+    GSmodelSetFlag200(model, *(u32*)((u8*)node + 0x9C) & 1);
     GSmodelSet60fpsAnimFlag(
         model, (*(u32*)((u8*)node + 0x9C) >> 2) & 1);
 
@@ -1213,7 +1213,7 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
             model, wazaSequenceSysGetModelShadowCount__Fv(),
             wazaSequenceSysGetModelShadowList__Fv());
         GSmodelSetBoundCheck(model, 1);
-        fn_800E3B44(model, 1);
+        GSmodelSetFlag400(model, 1);
     }
 
     return TRUE;
@@ -1225,14 +1225,14 @@ u8 _wazaSequenceModelEntryStart(WazaSequenceNode* node) {
     !defined(WAZA_SEQUENCE_MODEL_ENTRY_START_ONLY)
 #if !defined(WAZA_SEQUENCE_POKEMON_MOTION_START_ONLY)
 #if defined(WAZA_SEQUENCE_PARTICLE_TO_SCALE_ONLY)
-/* RULE-EXCEPTION(title-path): preserve fn_801D97F0's original prologue mode;
+/* RULE-EXCEPTION(title-path): preserve wazaSequenceEntryGetAttachPart's original prologue mode;
  * see docs/RULE_EXCEPTIONS.md. */
 #endif
 /**
- * fn_801D97F0 - Waza entry camera movement init.
+ * wazaSequenceEntryGetAttachPart - Waza entry camera movement init.
  * Address: 0x801D97F0 | Size: 0x160
  */
-void* fn_801D97F0(void* entry) {
+void* wazaSequenceEntryGetAttachPart(void* entry) {
     WazaSequenceNode* linked;
     WazaSequenceNode* node = entry;
     void* part = NULL;
@@ -1297,13 +1297,13 @@ failed:
 #if !defined(WAZA_SEQUENCE_FN_801D97F0_ONLY)
 #if !defined(WAZA_SEQUENCE_POKEMON_MOTION_START_ONLY)
 /**
- * fn_801D9950 / wazaSequencePokemonMotionStart - Pokemon motion during move.
+ * wazaSequenceGetScaleVec / wazaSequencePokemonMotionStart - Pokemon motion during move.
  * Address: 0x801D9950 | Size: 0x2CC
  * Proposed name from symbols: wazaSequencePokemonMotionStart.
  * Controls the Pokemon's physical movement during an attack animation
  * (e.g., lunging forward for Tackle, jumping for Bounce).
  */
-void fn_801D9950(void* owner, f32* scale, s32 selector) {
+void wazaSequenceGetScaleVec(void* owner, f32* scale, s32 selector) {
     typedef struct WazaSequenceScaleCtx {
         u8 pad_00[0x2C];
         u16 field_2C;
@@ -1419,7 +1419,7 @@ void fn_801D9950(void* owner, f32* scale, s32 selector) {
  * Address: 0x801D9C1C | Size: 0x200
  */
 u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
-    extern void fn_800E3CC8(void* model, s32 enable);
+    extern void GSmodelSetFlag200(void* model, s32 enable);
     extern void GSmodelLinkTexAnimToAnim(void* model, s32 enable);
     extern void GSmodelSetAnimIndex(void* model, s32 index);
     extern void GSmodelSetAnimType(void* model, s32 type);
@@ -1447,7 +1447,7 @@ u8 wazaSequencePokemonMotionStart(void* ownerPtr, BOOL enabled) {
         return FALSE;
     }
     if (model != NULL) {
-        fn_800E3CC8(model, enabled);
+        GSmodelSetFlag200(model, enabled);
         table = *(u8**)(owner + 0x2C) +
                 *(u16*)(owner + 0x32) * 0xD4 + 0x8C;
         if ((*(u8*)(owner + 0x18) & 8) == 8) {

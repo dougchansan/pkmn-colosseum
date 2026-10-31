@@ -1,6 +1,6 @@
 /**
  * @file gba_conv_candidate_80088F58.c
- * @brief gba_conv.c carve: fn_80088F58 .. dbgToolBattleDebugSetAGBConnectionMode, 0x80088F58 - 0x80089028.
+ * @brief gba_conv.c carve: debugCounterNextA .. dbgToolBattleDebugSetAGBConnectionMode, 0x80088F58 - 0x80089028.
  *
  * Standalone: gba_conv.c's declarations plus only these bodies, copied
  * from gba_conv.c.
@@ -11,8 +11,8 @@
 
 /* ===== External function declarations ===== */
 extern void fn_8001E074();
-extern void fn_8005CF2C();
-extern void fn_8006A76C();
+extern void menuColosseumShowPartyError();
+extern void memcardIsUnavailable();
 extern void savedataBattleClearFlagC98B();
 extern void savedataBattleSetFlagC98B();
 extern void savedataBattleGetFlagC98B();
@@ -22,17 +22,17 @@ extern void savedataBattleGetSavedHeroKind();
 extern void menuCommonFree();
 extern void menuCommonAlloc();
 extern void menuRuleCheckPartyAndRule();
-extern void fn_8008ABA0();
+extern void gbaCommIsReady();
 extern void gbaCommStartTransferA();
 extern void gbaCommStartTransferB();
 extern void gbaCommStartTransferC();
 extern void gbaCommStartTransferFile();
 extern void gbaCommIsBusy();
-extern void fn_80093610();
+extern void gbaCommGetResult();
 extern void gbaCommEnd();
 extern void SIProbe();
 extern void GSgetFrameStep();
-extern void fn_800D37CC();
+extern void GSgfxGetVsyncRate();
 extern void GSmemGetHandleByPtr();
 extern void GSmemFree();
 extern void fn_800E24B0();
@@ -65,7 +65,7 @@ extern void windowGetKeyInfo();
 extern void winMsgCheck();
 extern void winMsgClose();
 extern void winMsgOpen();
-extern void fn_801081F8();
+extern void winSeqSetItem();
 extern void winSpriteSetDisp();
 extern void floorGetPrevFloorID();
 extern void wazaDataBiosGetDoc();
@@ -102,40 +102,40 @@ extern u8 lbl_8026F4F8[];
 extern u8 lbl_803FB2F8[];
 
 /* ===== Forward declarations ===== */
-void fn_80083AF4(void);
-void fn_80083BF8(void);
-void fn_80083CBC(void);
-void fn_80083CFC(void);
-void fn_80083D30(void);
-void fn_80083ECC(void);
-void fn_80084034(void);
-void fn_80084038(void);
-void fn_800849B4(void);
+void cardeArenaWalk(void);
+void cardeArenaCountRecords(void);
+void cardeArenaClear(void);
+void cardeArenaGetPtr(void);
+void cardeEncodePartyMoveText(void);
+void cardeEncodeMoveText(void);
+void cardeGBAMenuButton(void);
+void menuGBACRun(void);
+void cardeTransferUI(void);
 void cardeGbaTransfer(void);
-void fn_80087AE8(void);
-void fn_80087C64(void);
-void fn_80088428(void);
+void cardeWaitMessage(void);
+void cardeGridPrompt(void);
+void cardeGridPromptScene(void);
 void dnaKeyCodeCheck(void);
 void menuSaveLoadReceiveGift(void);
-s32 fn_80088964(void);
-s32 fn_800889A4(void);
+s32 menuMemcardTaskA(void);
+s32 menuMemcardTaskB(void);
 void menuSaveLoadSaveGame(void);
 void menuSaveLoadCommitA(void);
-void fn_80088D84(void);
+void menuSaveLoadCommitB(void);
 void menuSaveLoadStorePosition(u8* p);
-s32 fn_80088F58(void);
-s32 fn_80088F74(void);
-s32 fn_80088F88(void);
+s32 debugCounterNextA(void);
+s32 debugCounterIncA(void);
+s32 debugCounterNextB(void);
 s32 dbgMenuGBAAddCoupon(void);
 s32 dbgToolBattleDebugSetAGBConnectionMode(s32 a, s32 b);
-s32 fn_80089028(void);
-void fn_80089030(u8 x);
+s32 gbaGetConnectionMode(void);
+void gbaSetConnectionMode(u8 x);
 
 /* ===== Function implementations ===== */
 
 
 /* 0x80088F58 | size: 0x1C */
-s32 fn_80088F58(void) {
+s32 debugCounterNextA(void) {
     u32 count;
 
     count = *(volatile u32*)&lbl_8047A66C;
@@ -146,13 +146,13 @@ s32 fn_80088F58(void) {
 }
 
 /* 0x80088F74 | size: 0x14 */
-s32 fn_80088F74(void) {
+s32 debugCounterIncA(void) {
     *(u32*)&lbl_8047A668 += 1;
     return 0;
 }
 
 /* 0x80088F88 | size: 0x1C */
-s32 fn_80088F88(void) {
+s32 debugCounterNextB(void) {
     u32 count;
 
     count = *(volatile u32*)&lbl_8047A664;
@@ -180,7 +180,7 @@ s32 dbgMenuGBAAddCoupon(void) {
 
 /* 0x80088FF8 | size: 0x30 */
 s32 dbgToolBattleDebugSetAGBConnectionMode(s32 a, s32 b) {
-    fn_80089030(b == 0);
+    gbaSetConnectionMode(b == 0);
     return 0;
 }
 

@@ -4,6 +4,6 @@
 
 extern GSThreadCtx* lbl_8047AC1C;
 
-u32 fn_800F02F4(u32 arg) {
+u32 GSthreadGetArg(u32 arg) {
     return arg;
 }

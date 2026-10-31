@@ -52,7 +52,7 @@
  * a fresh volatile register, r12). Neither survives as a symbol.
  *
  * The symbols keep their address names: lbl_8036D3F0 is hsdTObj,
- * lbl_8047B378 default_class, lbl_8047B37C tobj_head, fn_801BEEDC
+ * lbl_8047B378 default_class, lbl_8047B37C tobj_head, HSD_TObjAddAnim_801BEEDC
  * HSD_TObjAddAnimAll, HSD_TObjReqAnimAllByFlags HSD_TObjReqAnimAllByFlags, TObjUpdateFunc
  * TObjUpdateFunc, HSD_TObjAnimAll HSD_TObjAnimAll, fn_801BDA58
  * HSD_TObjSetupTextureCoordGen, fn_801BD8D0 HSD_TObjSetupVolatileTev,
@@ -77,25 +77,25 @@ extern void OSReport(const char* fmt, ...);
 extern void HSD_Panic(const char* file, u32 line, const char* msg);
 
 /* class.c / memory.c, still under their address names */
-extern HSD_ClassInfo* fn_80193748(const char* name); /* hsdSearchClassInfo */
-extern void* fn_80193828(HSD_ClassInfo* info);       /* hsdNew */
-extern void* fn_80193B10(s32 size);                  /* hsdAllocMemPiece */
-extern void fn_80193AF0(void* mem, s32 size);        /* hsdFreeMemPiece */
+extern HSD_ClassInfo* hsdSearchClassInfo_80193748(const char* name); /* hsdSearchClassInfo */
+extern void* hsdNew_80193828(HSD_ClassInfo* info);       /* hsdNew */
+extern void* hsdAllocMemPiece_80193B10(s32 size);                  /* hsdAllocMemPiece */
+extern void hsdFreeMemPiece_80193AF0(void* mem, s32 size);        /* hsdFreeMemPiece */
 extern void* HSD_MemAlloc(s32 size);                  /* HSD_MemAlloc */
 extern void HSD_Free(void* mem);                  /* HSD_Free */
-#define hsdSearchClassInfo fn_80193748
-#define hsdNew fn_80193828
-#define hsdAllocMemPiece fn_80193B10
-#define hsdFreeMemPiece fn_80193AF0
+#define hsdSearchClassInfo hsdSearchClassInfo_80193748
+#define hsdNew hsdNew_80193828
+#define hsdAllocMemPiece hsdAllocMemPiece_80193B10
+#define hsdFreeMemPiece hsdFreeMemPiece_80193AF0
 #define HSD_MemAlloc HSD_MemAlloc
 #define HSD_Free HSD_Free
 
 /* state.c / tev.c */
-extern void fn_8019C6EC(u32 mask); /* HSD_StateInvalidate */
+extern void HSD_RequestInvalidate(u32 mask); /* HSD_StateInvalidate */
 extern void HSD_StateRegisterTexGen(int coord);
 extern int HSD_StateAssignTev(void);
 extern void HSD_SetupTevStage(HSD_TevDesc* desc); /* HSD_SetupTevStage */
-#define HSD_StateInvalidate fn_8019C6EC
+#define HSD_StateInvalidate HSD_RequestInvalidate
 
 /* texp.c (declared in hsd_texp.h under their address names) */
 
@@ -260,7 +260,7 @@ void HSD_TObjAddAnim(HSD_TObj* tobj, HSD_TexAnim* texanim)
 }
 
 /* HSD_TObjAddAnimAll */
-void fn_801BEEDC(HSD_TObj* tobj, HSD_TexAnim* texanim)
+void HSD_TObjAddAnim_801BEEDC(HSD_TObj* tobj, HSD_TexAnim* texanim)
 {
     HSD_TObj* tp;
 

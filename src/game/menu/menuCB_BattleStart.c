@@ -6,7 +6,7 @@
  * Split out of the former game/menu/menuCB_Battle.c bucket (2026-07-07) into
  * true XD source-unit segments. XD has __sinit_menuCB_BattleStart_cpp at
  * 0x800477F4; includes menuCBBattleStart* + menuCB_BattleResult* locals
- * (XD 0x80046594-0x800477F8). SMOKING GUN: fn_8005DFC8 takes the address of
+ * (XD 0x80046594-0x800477F8). SMOKING GUN: menuTaisenBattleUpdate takes the address of
  * local symbol _menuCBBattleStartDispTrainerTexCallBack__FlPvl (0x800626CC),
  * proving same-TU membership. The battle-entry callback core is reconstructed
  * below while the remaining residual functions stay source candidates.
@@ -222,16 +222,16 @@ static inline u8 battleStartDrainHp(void)
 }
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005DFC8_ONLY)
-void fn_8005DFC8(void* arg)
+void menuTaisenBattleUpdate(void* arg)
 {
     extern u8 menuCBPokemonEntryGetReadFlag(void);
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern s32 GSsndGetStatus(u32);
     extern s32 toolentryTaisenGetBattleType(void);
     extern u8 menuCBPokemonEntryGetReadFlag(void);
-    extern void fn_80060A28(void);
-    extern void fn_8017B000();
+    extern void menuTaisenBattleUpdatePanels(void);
+    extern void fsysStartLoadInto();
     extern void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(void);
     extern void winSeqSetMenu(s32 sequence, s32 menu);
     extern const f32 lbl_8047BF60;
@@ -261,7 +261,7 @@ void fn_8005DFC8(void* arg)
 #define STATE_U32(off) (*(u32*) ((u8*)&lbl_803A9A60 + (off)))
 #define STATE_F32(off) (*(f32*) ((u8*)&lbl_803A9A60 + (off)))
 
-    rate = fn_800D37CC();
+    rate = GSgfxGetVsyncRate();
     lbl_803A9A60.deltaTime = GSgetFrameStep() / rate;
     delta_time = lbl_803A9A60.deltaTime;
 
@@ -293,7 +293,7 @@ void fn_8005DFC8(void* arg)
                 ready = 1;
             }
             *(u8*)(base + 0x34) = 1;
-            fn_8017B000(ready == 0 ? 0x5C4 : 0x5C3, 0,
+            fsysStartLoadInto(ready == 0 ? 0x5C4 : 0x5C3, 0,
                         _menuCBBattleStartDispTrainerTexCallBack__FlPvl, 0, 0);
             STATE_U32(0x38) = 1;
         } else {
@@ -308,7 +308,7 @@ void fn_8005DFC8(void* arg)
         break;
 
     case 2:
-        fn_80060A28();
+        menuTaisenBattleUpdatePanels();
         if (battleStartSettled()) {
             if (lbl_803A9A60.status == 0) {
                 STATE_U32(0x38) = 3;
@@ -388,7 +388,7 @@ void fn_8005DFC8(void* arg)
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005E7F0_ONLY)
-void fn_8005E690(MenuCBBattleStartButton* button) {
+void menuTaisenBattleButton(MenuCBBattleStartButton* button) {
     extern void menuButtonNormal(void* button);
 
     switch (lbl_803A9A60.status) {
@@ -413,15 +413,15 @@ void fn_8005E690(MenuCBBattleStartButton* button) {
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005E7F0_ONLY)
-void fn_8005DFC8(void* arg);
+void menuTaisenBattleUpdate(void* arg);
 
-void fn_8005E730(void* arg) {
-    fn_8005DFC8(arg);
+void menuTaisenBattleCtrl(void* arg) {
+    menuTaisenBattleUpdate(arg);
 }
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005E7F0_ONLY)
-s32 fn_8005E750(MenuCBBattleStartParams* params) {
+s32 menuTaisenBattleOpen(MenuCBBattleStartParams* params) {
     extern void menuCBBattleStartInit(void* params, s32 mode);
     extern void menuSetEnablePort(s32 enabled);
     extern void menuOpen(s32 menuId, s32 mode);
@@ -504,7 +504,7 @@ static inline void battleStartDrawPair(MenuCBBattleStartMessageContext* context,
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80060434_ONLY)
-void fn_80060434(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
+void menuTaisenDrawResult(MenuCBBattleStartMessageContext* context, UICmdMsg* message)
 {
     extern s32 toolentryTaisenGetBattleType(void);
     extern s32 battleResultGet00(void);
@@ -607,7 +607,7 @@ typedef struct MenuCBBattleStartDrawParams {
 } MenuCBBattleStartDrawParams;
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80060434_ONLY)
-void fn_800608C4(void* context, MenuCBBattleStartDrawParams* params) {
+void menuTaisenBattleDrawModel(void* context, MenuCBBattleStartDrawParams* params) {
     extern void* menuModelRender(void* model);
     extern void gfxSetFlags(s32 mode);
     extern void gfxClearFlags(s32 mode);
@@ -670,24 +670,24 @@ typedef struct MenuCBBattleStartSpriteEntry {
 #if defined(MENUCB_BATTLESTART_8006106C_ONLY) || \
     defined(MENUCB_BATTLESTART_80061BBC_ONLY)
 /*
- * RULE-EXCEPTION(user-approved): the fn_8006106C and fn_80061BBC carves keep a
- * static copy of fn_800609B4 so their calls are inlined as retail's are; the
- * real fn_800609B4 stays in its own unit — see docs/RULE_EXCEPTIONS.md
+ * RULE-EXCEPTION(user-approved): the menuTaisenBattleDrawEntryFace and menuTaisenBattleDrawFaintMark carves keep a
+ * static copy of menuTaisenBattleDrawSlide so their calls are inlined as retail's are; the
+ * real menuTaisenBattleDrawSlide stays in its own unit — see docs/RULE_EXCEPTIONS.md
  */
 #define MENUCB_BATTLESTART_SPRITE_LINKAGE static inline
 #else
 #define MENUCB_BATTLESTART_SPRITE_LINKAGE
 #endif
 MENUCB_BATTLESTART_SPRITE_LINKAGE
-void fn_800609B4(MenuCBBattleStartSpriteContext* context,
+void menuTaisenBattleDrawSlide(MenuCBBattleStartSpriteContext* context,
                  MenuCBBattleStartSprite* sprite, f32 xOffset) {
     extern MenuCBBattleStartSpriteEntry lbl_802EF0A8[];
-    extern void fn_800FE6D0(s16 x, s16 y);
+    extern void spriteSetOrigin(s16 x, s16 y);
     extern void spriteSetEnv(void);
     MenuCBBattleStartSpriteEntry* entry = &lbl_802EF0A8[sprite->tableIndex];
 
     sprite->x = (s16)(entry->x + (s32)xOffset);
-    fn_800FE6D0(context->x + sprite->x, context->y + sprite->y);
+    spriteSetOrigin(context->x + sprite->x, context->y + sprite->y);
     spriteSetEnv();
 }
 #endif
@@ -697,7 +697,7 @@ typedef struct MenuCBBattleStartMessage {
     s8 flags;
 } MenuCBBattleStartMessage;
 
-void fn_80061B74(void*, MenuCBBattleStartMessage*, s32, s32, s32);
+void menuTaisenBattleHideInPreview(void*, MenuCBBattleStartMessage*, s32, s32, s32);
 
 typedef struct MenuCBBattleStartOrderRow {
     u32 slot[6];
@@ -867,8 +867,8 @@ void menuCBBattleStartInit(void* menu, s32 mode)
     extern u32 fightTrainerKindDataBiosGetPrefixName(void*);
     extern s32 battleResultGet14(void);
     extern void _menuCBBattleStartSetIndex__Fv(void);
-    extern void fn_80062334(void);
-    extern void fn_80068F84(void);
+    extern void menuTaisenBattleInitPanels(void);
+    extern void menuTaisenEntryReset(void);
     extern void menuCBPokemonEntryLoadTex(void);
     extern s32 battleResultGet00(void);
     extern void std104_soundSetBackgroundMusic(u32, s32, s32);
@@ -906,12 +906,12 @@ void menuCBBattleStartInit(void* menu, s32 mode)
     lbl_803A9A60.status = mode;
     lbl_803A9A60.timer = 0;
     _menuCBBattleStartSetIndex__Fv();
-    fn_80062334();
+    menuTaisenBattleInitPanels();
     lbl_803A9A60.model.scale = lbl_8047BF60;
 
     switch (mode) {
     case 0:
-        fn_80068F84();
+        menuTaisenEntryReset();
         menuCBPokemonEntryLoadTex();
         battleId = battleResultGet14();
         switch (battleResultGet00()) {
@@ -935,7 +935,7 @@ void menuCBBattleStartInit(void* menu, s32 mode)
         std104_soundSetBackgroundMusic(lbl_803A9A60.model.soundId, 0, 0xFF);
         break;
     case 1:
-        fn_80068F84();
+        menuTaisenEntryReset();
         menuCBPokemonEntryLoadTex();
         battleStartInitHp();
         lbl_803A9A60.model.soundId = 0x1E;
@@ -946,7 +946,7 @@ void menuCBBattleStartInit(void* menu, s32 mode)
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80062284_ONLY)
-s32 fn_80062284(s32 trainer) {
+s32 menuTaisenEntryAllHealthy(s32 trainer) {
     extern u16 toolentryTaisenGetEntryPokemonNum(s32 trainer);
     extern void* toolentryTaisenGetEntryPokemonPtr(s32 trainer, s32 index);
     extern u8 pokemonCheckValid(void* pokemon);
@@ -969,7 +969,7 @@ s32 fn_80062284(s32 trainer) {
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80062334_ONLY)
-void fn_80062334(void)
+void menuTaisenBattleInitPanels(void)
 {
     extern s32 toolentryTaisenGetBattleType(void);
     extern const f32 lbl_8047BFA4;
@@ -1129,7 +1129,7 @@ static inline void battleStartInterpolate(f32* current, f32* target, f32 delta)
 }
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80060A28_ONLY)
-void fn_80060A28(void)
+void menuTaisenBattleUpdatePanels(void)
 {
     MenuCBBattleStartPlayerView* view;
     MenuCBBattleStartPosition* position;
@@ -1182,50 +1182,50 @@ void fn_80060A28(void)
 }
 #endif
 
-void fn_80060D70(void*, UICmdMsg*, s32, s32);
-void fn_80060EF4(void*, UICmdMsg*, s32);
-void fn_8006106C(void*, UICmdMsg*, s32, s32, s32);
-void fn_80061240(void*, UICmdMsg*, s32, s32, s32);
-void fn_80061454(void*, UICmdMsg*, s32, s32);
-void fn_800615F4(void*, UICmdMsg*, s32, s32);
-void fn_800617E0(void*, UICmdMsg*, s32, s32);
-void fn_80061A2C(void*, UICmdMsg*, s32, s32, s32);
-void fn_80061BBC(void*, UICmdMsg*, s32, s32, s32);
-u8 fn_80061D34(void*, UICmdMsg*, s32, s32, s32);
+void menuTaisenBattleDrawResultMark(void*, UICmdMsg*, s32, s32);
+void menuTaisenBattleSetResultVisible(void*, UICmdMsg*, s32);
+void menuTaisenBattleDrawEntryFace(void*, UICmdMsg*, s32, s32, s32);
+void menuTaisenBattleDrawHpBar(void*, UICmdMsg*, s32, s32, s32);
+void menuTaisenBattleDrawPlayerTexture(void*, UICmdMsg*, s32, s32);
+void menuTaisenBattleDrawTrainerName(void*, UICmdMsg*, s32, s32);
+void menuTaisenBattleDrawPlayerName(void*, UICmdMsg*, s32, s32);
+void menuTaisenBattleDrawHpItem(void*, UICmdMsg*, s32, s32, s32);
+void menuTaisenBattleDrawFaintMark(void*, UICmdMsg*, s32, s32, s32);
+u8 menuTaisenBattleSlotVisible(void*, UICmdMsg*, s32, s32, s32);
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8005E7F0_ONLY)
-void fn_80060434(MenuCBBattleStartMessageContext* context, UICmdMsg* message);
-void fn_800608C4(void* context, MenuCBBattleStartDrawParams* params);
-void fn_800609B4(MenuCBBattleStartSpriteContext* context,
+void menuTaisenDrawResult(MenuCBBattleStartMessageContext* context, UICmdMsg* message);
+void menuTaisenBattleDrawModel(void* context, MenuCBBattleStartDrawParams* params);
+void menuTaisenBattleDrawSlide(MenuCBBattleStartSpriteContext* context,
                  MenuCBBattleStartSprite* sprite, f32 xOffset);
 
 /* Battle-start command dispatcher. */
-void fn_8005E7F0(void* ctx, void* arg1)
+void menuTaisenBattleDrawItem(void* ctx, void* arg1)
 {
     UICmdMsg* msg = (UICmdMsg*) arg1;
     u32* tbl = (u32*) lbl_803A9E40;
 
     switch (msg->cmd) {
     case 0x8A6:
-        fn_800608C4(ctx, (MenuCBBattleStartDrawParams*)msg);
+        menuTaisenBattleDrawModel(ctx, (MenuCBBattleStartDrawParams*)msg);
         break;
     case 0xC01:
-        fn_8006106C(ctx, msg, 0, tbl[0], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[0], 2);
         break;
     case 0xC02:
-        fn_8006106C(ctx, msg, 0, tbl[1], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[1], 2);
         break;
     case 0xC03:
-        fn_8006106C(ctx, msg, 0, tbl[2], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[2], 2);
         break;
     case 0xC04:
-        fn_8006106C(ctx, msg, 0, tbl[3], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[3], 2);
         break;
     case 0xC05:
-        fn_8006106C(ctx, msg, 0, tbl[4], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[4], 2);
         break;
     case 0xC06:
-        fn_8006106C(ctx, msg, 0, tbl[5], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[5], 2);
         break;
     case 0xC0D:
         msg->flags4 &= ~2;
@@ -1246,76 +1246,76 @@ void fn_8005E7F0(void* ctx, void* arg1)
         msg->flags4 &= ~2;
         break;
     case 0xC13:
-        fn_80061A2C(ctx, msg, 0, tbl[0], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[0], 2);
         break;
     case 0xC14:
-        fn_80061A2C(ctx, msg, 0, tbl[1], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[1], 2);
         break;
     case 0xC15:
-        fn_80061A2C(ctx, msg, 0, tbl[2], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[2], 2);
         break;
     case 0xC16:
-        fn_80061A2C(ctx, msg, 0, tbl[3], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[3], 2);
         break;
     case 0xC17:
-        fn_80061A2C(ctx, msg, 0, tbl[4], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[4], 2);
         break;
     case 0xC18:
-        fn_80061A2C(ctx, msg, 0, tbl[5], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[5], 2);
         break;
     case 0xC19:
-        fn_80061BBC(ctx, msg, 0, tbl[0], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[0], 2);
         break;
     case 0xC1A:
-        fn_80061BBC(ctx, msg, 0, tbl[1], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[1], 2);
         break;
     case 0xC1B:
-        fn_80061BBC(ctx, msg, 0, tbl[2], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[2], 2);
         break;
     case 0xC1C:
-        fn_80061BBC(ctx, msg, 0, tbl[3], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[3], 2);
         break;
     case 0xC1D:
-        fn_80061BBC(ctx, msg, 0, tbl[4], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[4], 2);
         break;
     case 0xC1E:
-        fn_80061BBC(ctx, msg, 0, tbl[5], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[5], 2);
         break;
     case 0xDB5:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[0], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[0], 2);
         break;
     case 0xC1F:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[1], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[1], 2);
         break;
     case 0xC20:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[2], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[2], 2);
         break;
     case 0xC21:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[3], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[3], 2);
         break;
     case 0xC22:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[4], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[4], 2);
         break;
     case 0xC23:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[5], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 0, tbl[5], 2);
         break;
     case 0xC27:
-        fn_8006106C(ctx, msg, 1, tbl[6], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[6], 2);
         break;
     case 0xC28:
-        fn_8006106C(ctx, msg, 1, tbl[7], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[7], 2);
         break;
     case 0xC29:
-        fn_8006106C(ctx, msg, 1, tbl[8], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[8], 2);
         break;
     case 0xC2A:
-        fn_8006106C(ctx, msg, 1, tbl[9], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[9], 2);
         break;
     case 0xC2B:
-        fn_8006106C(ctx, msg, 1, tbl[10], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[10], 2);
         break;
     case 0xC2C:
-        fn_8006106C(ctx, msg, 1, tbl[11], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[11], 2);
         break;
     case 0xC33:
         msg->flags4 &= ~2;
@@ -1336,76 +1336,76 @@ void fn_8005E7F0(void* ctx, void* arg1)
         msg->flags4 &= ~2;
         break;
     case 0xC39:
-        fn_80061A2C(ctx, msg, 1, tbl[6], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[6], 2);
         break;
     case 0xC3A:
-        fn_80061A2C(ctx, msg, 1, tbl[7], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[7], 2);
         break;
     case 0xC3B:
-        fn_80061A2C(ctx, msg, 1, tbl[8], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[8], 2);
         break;
     case 0xC3C:
-        fn_80061A2C(ctx, msg, 1, tbl[9], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[9], 2);
         break;
     case 0xC3D:
-        fn_80061A2C(ctx, msg, 1, tbl[10], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[10], 2);
         break;
     case 0xC3E:
-        fn_80061A2C(ctx, msg, 1, tbl[11], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[11], 2);
         break;
     case 0xC3F:
-        fn_80061BBC(ctx, msg, 1, tbl[6], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[6], 2);
         break;
     case 0xC40:
-        fn_80061BBC(ctx, msg, 1, tbl[7], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[7], 2);
         break;
     case 0xC41:
-        fn_80061BBC(ctx, msg, 1, tbl[8], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[8], 2);
         break;
     case 0xC42:
-        fn_80061BBC(ctx, msg, 1, tbl[9], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[9], 2);
         break;
     case 0xC43:
-        fn_80061BBC(ctx, msg, 1, tbl[10], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[10], 2);
         break;
     case 0xC44:
-        fn_80061BBC(ctx, msg, 1, tbl[11], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[11], 2);
         break;
     case 0xDB4:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[6], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[6], 2);
         break;
     case 0xC45:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[7], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[7], 2);
         break;
     case 0xC46:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[8], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[8], 2);
         break;
     case 0xC47:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[9], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[9], 2);
         break;
     case 0xC48:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[10], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[10], 2);
         break;
     case 0xC49:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[11], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 1, tbl[11], 2);
         break;
     case 0xC4D:
-        fn_8006106C(ctx, msg, 2, tbl[12], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 2, tbl[12], 2);
         break;
     case 0xC4E:
-        fn_8006106C(ctx, msg, 2, tbl[13], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 2, tbl[13], 2);
         break;
     case 0xC4F:
-        fn_8006106C(ctx, msg, 2, tbl[14], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 2, tbl[14], 2);
         break;
     case 0xC50:
-        fn_8006106C(ctx, msg, 2, tbl[15], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 2, tbl[15], 2);
         break;
     case 0xC51:
-        fn_8006106C(ctx, msg, 2, tbl[16], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 2, tbl[16], 2);
         break;
     case 0xC52:
-        fn_8006106C(ctx, msg, 2, tbl[17], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 2, tbl[17], 2);
         break;
     case 0xC59:
         msg->flags4 &= ~2;
@@ -1426,76 +1426,76 @@ void fn_8005E7F0(void* ctx, void* arg1)
         msg->flags4 &= ~2;
         break;
     case 0xC5F:
-        fn_80061A2C(ctx, msg, 2, tbl[12], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 2, tbl[12], 2);
         break;
     case 0xC60:
-        fn_80061A2C(ctx, msg, 2, tbl[13], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 2, tbl[13], 2);
         break;
     case 0xC61:
-        fn_80061A2C(ctx, msg, 2, tbl[14], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 2, tbl[14], 2);
         break;
     case 0xC62:
-        fn_80061A2C(ctx, msg, 2, tbl[15], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 2, tbl[15], 2);
         break;
     case 0xC63:
-        fn_80061A2C(ctx, msg, 2, tbl[16], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 2, tbl[16], 2);
         break;
     case 0xC64:
-        fn_80061A2C(ctx, msg, 2, tbl[17], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 2, tbl[17], 2);
         break;
     case 0xC65:
-        fn_80061BBC(ctx, msg, 2, tbl[12], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 2, tbl[12], 2);
         break;
     case 0xC66:
-        fn_80061BBC(ctx, msg, 2, tbl[13], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 2, tbl[13], 2);
         break;
     case 0xC67:
-        fn_80061BBC(ctx, msg, 2, tbl[14], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 2, tbl[14], 2);
         break;
     case 0xC68:
-        fn_80061BBC(ctx, msg, 2, tbl[15], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 2, tbl[15], 2);
         break;
     case 0xC69:
-        fn_80061BBC(ctx, msg, 2, tbl[16], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 2, tbl[16], 2);
         break;
     case 0xC6A:
-        fn_80061BBC(ctx, msg, 2, tbl[17], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 2, tbl[17], 2);
         break;
     case 0xDAF:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[12], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[12], 2);
         break;
     case 0xC6B:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[13], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[13], 2);
         break;
     case 0xC6C:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[14], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[14], 2);
         break;
     case 0xC6D:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[15], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[15], 2);
         break;
     case 0xC6E:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[16], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[16], 2);
         break;
     case 0xC6F:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[17], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 2, tbl[17], 2);
         break;
     case 0xC73:
-        fn_8006106C(ctx, msg, 3, tbl[18], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 3, tbl[18], 2);
         break;
     case 0xC74:
-        fn_8006106C(ctx, msg, 3, tbl[19], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 3, tbl[19], 2);
         break;
     case 0xC75:
-        fn_8006106C(ctx, msg, 3, tbl[20], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 3, tbl[20], 2);
         break;
     case 0xC76:
-        fn_8006106C(ctx, msg, 3, tbl[21], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 3, tbl[21], 2);
         break;
     case 0xC77:
-        fn_8006106C(ctx, msg, 3, tbl[22], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 3, tbl[22], 2);
         break;
     case 0xC78:
-        fn_8006106C(ctx, msg, 3, tbl[23], 2);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 3, tbl[23], 2);
         break;
     case 0xC7F:
         msg->flags4 &= ~2;
@@ -1516,67 +1516,67 @@ void fn_8005E7F0(void* ctx, void* arg1)
         msg->flags4 &= ~2;
         break;
     case 0xC85:
-        fn_80061A2C(ctx, msg, 3, tbl[18], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 3, tbl[18], 2);
         break;
     case 0xC86:
-        fn_80061A2C(ctx, msg, 3, tbl[19], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 3, tbl[19], 2);
         break;
     case 0xC87:
-        fn_80061A2C(ctx, msg, 3, tbl[20], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 3, tbl[20], 2);
         break;
     case 0xC88:
-        fn_80061A2C(ctx, msg, 3, tbl[21], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 3, tbl[21], 2);
         break;
     case 0xC89:
-        fn_80061A2C(ctx, msg, 3, tbl[22], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 3, tbl[22], 2);
         break;
     case 0xC8A:
-        fn_80061A2C(ctx, msg, 3, tbl[23], 2);
+        menuTaisenBattleDrawHpItem(ctx, msg, 3, tbl[23], 2);
         break;
     case 0xC8B:
-        fn_80061BBC(ctx, msg, 3, tbl[18], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 3, tbl[18], 2);
         break;
     case 0xC8C:
-        fn_80061BBC(ctx, msg, 3, tbl[19], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 3, tbl[19], 2);
         break;
     case 0xC8D:
-        fn_80061BBC(ctx, msg, 3, tbl[20], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 3, tbl[20], 2);
         break;
     case 0xC8E:
-        fn_80061BBC(ctx, msg, 3, tbl[21], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 3, tbl[21], 2);
         break;
     case 0xC8F:
-        fn_80061BBC(ctx, msg, 3, tbl[22], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 3, tbl[22], 2);
         break;
     case 0xC90:
-        fn_80061BBC(ctx, msg, 3, tbl[23], 2);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 3, tbl[23], 2);
         break;
     case 0xDB3:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[18], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[18], 2);
         break;
     case 0xC91:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[19], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[19], 2);
         break;
     case 0xC92:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[20], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[20], 2);
         break;
     case 0xC93:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[21], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[21], 2);
         break;
     case 0xC94:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[22], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[22], 2);
         break;
     case 0xC95:
-        fn_80061B74(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[23], 2);
+        menuTaisenBattleHideInPreview(ctx, (MenuCBBattleStartMessage*)msg, 3, tbl[23], 2);
         break;
     case 0xDB6:
-        fn_8006106C(ctx, msg, 0, tbl[0], 0);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[0], 0);
         break;
     case 0xDB7:
-        fn_8006106C(ctx, msg, 0, tbl[1], 0);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[1], 0);
         break;
     case 0xDB8:
-        fn_8006106C(ctx, msg, 0, tbl[2], 0);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[2], 0);
         break;
     case 0xDB9:
         msg->flags4 &= ~2;
@@ -1588,31 +1588,31 @@ void fn_8005E7F0(void* ctx, void* arg1)
         msg->flags4 &= ~2;
         break;
     case 0xDBC:
-        fn_80061A2C(ctx, msg, 0, tbl[0], 0);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[0], 0);
         break;
     case 0xDBD:
-        fn_80061A2C(ctx, msg, 0, tbl[1], 0);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[1], 0);
         break;
     case 0xDBE:
-        fn_80061A2C(ctx, msg, 0, tbl[2], 0);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[2], 0);
         break;
     case 0xDBF:
-        fn_80061BBC(ctx, msg, 0, tbl[0], 0);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[0], 0);
         break;
     case 0xDC0:
-        fn_80061BBC(ctx, msg, 0, tbl[1], 0);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[1], 0);
         break;
     case 0xDC1:
-        fn_80061BBC(ctx, msg, 0, tbl[2], 0);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[2], 0);
         break;
     case 0xDC2:
-        fn_8006106C(ctx, msg, 1, tbl[6], 0);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[6], 0);
         break;
     case 0xDC3:
-        fn_8006106C(ctx, msg, 1, tbl[7], 0);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[7], 0);
         break;
     case 0xDC4:
-        fn_8006106C(ctx, msg, 1, tbl[8], 0);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[8], 0);
         break;
     case 0xDC5:
         msg->flags4 &= ~2;
@@ -1624,40 +1624,40 @@ void fn_8005E7F0(void* ctx, void* arg1)
         msg->flags4 &= ~2;
         break;
     case 0xDC8:
-        fn_80061A2C(ctx, msg, 1, tbl[6], 0);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[6], 0);
         break;
     case 0xDC9:
-        fn_80061A2C(ctx, msg, 1, tbl[7], 0);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[7], 0);
         break;
     case 0xDCA:
-        fn_80061A2C(ctx, msg, 1, tbl[8], 0);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[8], 0);
         break;
     case 0xDCB:
-        fn_80061BBC(ctx, msg, 1, tbl[6], 0);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[6], 0);
         break;
     case 0xDCC:
-        fn_80061BBC(ctx, msg, 1, tbl[7], 0);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[7], 0);
         break;
     case 0xDCD:
-        fn_80061BBC(ctx, msg, 1, tbl[8], 0);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[8], 0);
         break;
     case 0xDD8:
-        fn_8006106C(ctx, msg, 0, tbl[0], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[0], 1);
         break;
     case 0xDD9:
-        fn_8006106C(ctx, msg, 0, tbl[1], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[1], 1);
         break;
     case 0xDDA:
-        fn_8006106C(ctx, msg, 0, tbl[2], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[2], 1);
         break;
     case 0xDE4:
-        fn_8006106C(ctx, msg, 0, tbl[3], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[3], 1);
         break;
     case 0xDE5:
-        fn_8006106C(ctx, msg, 0, tbl[4], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[4], 1);
         break;
     case 0xDE6:
-        fn_8006106C(ctx, msg, 0, tbl[5], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 0, tbl[5], 1);
         break;
     case 0xDDB:
         msg->flags4 &= ~2;
@@ -1678,40 +1678,40 @@ void fn_8005E7F0(void* ctx, void* arg1)
         msg->flags4 &= ~2;
         break;
     case 0xDDE:
-        fn_80061A2C(ctx, msg, 0, tbl[0], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[0], 1);
         break;
     case 0xDDF:
-        fn_80061A2C(ctx, msg, 0, tbl[1], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[1], 1);
         break;
     case 0xDE0:
-        fn_80061A2C(ctx, msg, 0, tbl[2], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[2], 1);
         break;
     case 0xDEA:
-        fn_80061A2C(ctx, msg, 0, tbl[3], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[3], 1);
         break;
     case 0xDEB:
-        fn_80061A2C(ctx, msg, 0, tbl[4], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[4], 1);
         break;
     case 0xDEC:
-        fn_80061A2C(ctx, msg, 0, tbl[5], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 0, tbl[5], 1);
         break;
     case 0xDE1:
-        fn_80061BBC(ctx, msg, 0, tbl[0], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[0], 1);
         break;
     case 0xDE2:
-        fn_80061BBC(ctx, msg, 0, tbl[1], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[1], 1);
         break;
     case 0xDE3:
-        fn_80061BBC(ctx, msg, 0, tbl[2], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[2], 1);
         break;
     case 0xDED:
-        fn_80061BBC(ctx, msg, 0, tbl[3], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[3], 1);
         break;
     case 0xDEE:
-        fn_80061BBC(ctx, msg, 0, tbl[4], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[4], 1);
         break;
     case 0xDEF:
-        fn_80061BBC(ctx, msg, 0, tbl[5], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 0, tbl[5], 1);
         break;
     case 0xDF3:
         msg->flags4 &= ~2;
@@ -1732,175 +1732,175 @@ void fn_8005E7F0(void* ctx, void* arg1)
         msg->flags4 &= ~2;
         break;
     case 0xDF6:
-        fn_80061A2C(ctx, msg, 1, tbl[6], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[6], 1);
         break;
     case 0xDF7:
-        fn_80061A2C(ctx, msg, 1, tbl[7], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[7], 1);
         break;
     case 0xDF8:
-        fn_80061A2C(ctx, msg, 1, tbl[8], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[8], 1);
         break;
     case 0xE02:
-        fn_80061A2C(ctx, msg, 1, tbl[9], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[9], 1);
         break;
     case 0xE03:
-        fn_80061A2C(ctx, msg, 1, tbl[10], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[10], 1);
         break;
     case 0xE04:
-        fn_80061A2C(ctx, msg, 1, tbl[11], 1);
+        menuTaisenBattleDrawHpItem(ctx, msg, 1, tbl[11], 1);
         break;
     case 0xDF0:
-        fn_8006106C(ctx, msg, 1, tbl[6], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[6], 1);
         break;
     case 0xDF1:
-        fn_8006106C(ctx, msg, 1, tbl[7], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[7], 1);
         break;
     case 0xDF2:
-        fn_8006106C(ctx, msg, 1, tbl[8], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[8], 1);
         break;
     case 0xDFC:
-        fn_8006106C(ctx, msg, 1, tbl[9], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[9], 1);
         break;
     case 0xDFD:
-        fn_8006106C(ctx, msg, 1, tbl[10], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[10], 1);
         break;
     case 0xDFE:
-        fn_8006106C(ctx, msg, 1, tbl[11], 1);
+        menuTaisenBattleDrawEntryFace(ctx, msg, 1, tbl[11], 1);
         break;
     case 0xDF9:
-        fn_80061BBC(ctx, msg, 1, tbl[6], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[6], 1);
         break;
     case 0xDFA:
-        fn_80061BBC(ctx, msg, 1, tbl[7], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[7], 1);
         break;
     case 0xDFB:
-        fn_80061BBC(ctx, msg, 1, tbl[8], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[8], 1);
         break;
     case 0xE05:
-        fn_80061BBC(ctx, msg, 1, tbl[9], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[9], 1);
         break;
     case 0xE06:
-        fn_80061BBC(ctx, msg, 1, tbl[10], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[10], 1);
         break;
     case 0xE07:
-        fn_80061BBC(ctx, msg, 1, tbl[11], 1);
+        menuTaisenBattleDrawFaintMark(ctx, msg, 1, tbl[11], 1);
         break;
     case 0xDD4:
-        fn_80060D70(ctx, msg, 0, 0);
+        menuTaisenBattleDrawResultMark(ctx, msg, 0, 0);
         break;
     case 0xDD5:
-        fn_80060D70(ctx, msg, 0, 1);
+        menuTaisenBattleDrawResultMark(ctx, msg, 0, 1);
         break;
     case 0xDD6:
-        fn_80060D70(ctx, msg, 1, 0);
+        menuTaisenBattleDrawResultMark(ctx, msg, 1, 0);
         break;
     case 0xDD7:
-        fn_80060D70(ctx, msg, 1, 1);
+        menuTaisenBattleDrawResultMark(ctx, msg, 1, 1);
         break;
     case 0x102C:
-        fn_80060D70(ctx, msg, 1, 2);
+        menuTaisenBattleDrawResultMark(ctx, msg, 1, 2);
         break;
     case 0x102D:
-        fn_80060D70(ctx, msg, 1, 2);
+        menuTaisenBattleDrawResultMark(ctx, msg, 1, 2);
         break;
     case 0xBF1:
     case 0xBF2:
-        fn_80060EF4(ctx, msg, 6);
+        menuTaisenBattleSetResultVisible(ctx, msg, 6);
         break;
     case 0xBF3:
     case 0xBF4:
-        fn_80060EF4(ctx, msg, 6);
+        menuTaisenBattleSetResultVisible(ctx, msg, 6);
         break;
     case 0xBF5:
-        fn_80060EF4(ctx, msg, -1);
+        menuTaisenBattleSetResultVisible(ctx, msg, -1);
         break;
     case 0xBF6:
     case 0xBF7:
-        fn_80060EF4(ctx, msg, 3);
+        menuTaisenBattleSetResultVisible(ctx, msg, 3);
         break;
     case 0xBF8:
     case 0xBF9:
-        fn_80060EF4(ctx, msg, 4);
+        menuTaisenBattleSetResultVisible(ctx, msg, 4);
         break;
     case 0xBFA:
     case 0xBFB:
-        fn_80060EF4(ctx, msg, 2);
+        menuTaisenBattleSetResultVisible(ctx, msg, 2);
         break;
     case 0xBFC:
     case 0xBFD:
-        fn_80060EF4(ctx, msg, 1);
+        menuTaisenBattleSetResultVisible(ctx, msg, 1);
         break;
     case 0xBFE:
-        fn_80060EF4(ctx, msg, 0);
+        menuTaisenBattleSetResultVisible(ctx, msg, 0);
         break;
     case 0xDD0:
-        fn_800617E0(ctx, msg, 0, 0);
+        menuTaisenBattleDrawPlayerName(ctx, msg, 0, 0);
         break;
     case 0xDD1:
-        fn_800617E0(ctx, msg, 1, 0);
+        menuTaisenBattleDrawPlayerName(ctx, msg, 1, 0);
         break;
     case 0xDCF:
-        fn_800615F4(ctx, msg, 0, 0);
+        menuTaisenBattleDrawTrainerName(ctx, msg, 0, 0);
         break;
     case 0xDCE:
-        fn_800615F4(ctx, msg, 1, 0);
+        menuTaisenBattleDrawTrainerName(ctx, msg, 1, 0);
         break;
     case 0xDD3:
-        fn_80061454(ctx, msg, 0, 0);
+        menuTaisenBattleDrawPlayerTexture(ctx, msg, 0, 0);
         break;
     case 0xDD2:
-        fn_80061454(ctx, msg, 1, 0);
+        menuTaisenBattleDrawPlayerTexture(ctx, msg, 1, 0);
         break;
     case 0xC26:
-        fn_800617E0(ctx, msg, 0, 2);
+        menuTaisenBattleDrawPlayerName(ctx, msg, 0, 2);
         break;
     case 0xC4C:
-        fn_800617E0(ctx, msg, 1, 2);
+        menuTaisenBattleDrawPlayerName(ctx, msg, 1, 2);
         break;
     case 0xC72:
-        fn_800617E0(ctx, msg, 2, 2);
+        menuTaisenBattleDrawPlayerName(ctx, msg, 2, 2);
         break;
     case 0xC98:
-        fn_800617E0(ctx, msg, 3, 2);
+        menuTaisenBattleDrawPlayerName(ctx, msg, 3, 2);
         break;
     case 0xC24:
-        fn_80061454(ctx, msg, 0, 2);
+        menuTaisenBattleDrawPlayerTexture(ctx, msg, 0, 2);
         break;
     case 0xC4A:
-        fn_80061454(ctx, msg, 1, 2);
+        menuTaisenBattleDrawPlayerTexture(ctx, msg, 1, 2);
         break;
     case 0xC70:
-        fn_80061454(ctx, msg, 2, 2);
+        menuTaisenBattleDrawPlayerTexture(ctx, msg, 2, 2);
         break;
     case 0xC96:
-        fn_80061454(ctx, msg, 3, 2);
+        menuTaisenBattleDrawPlayerTexture(ctx, msg, 3, 2);
         break;
     case 0xC25:
-        fn_800615F4(ctx, msg, 0, 2);
+        menuTaisenBattleDrawTrainerName(ctx, msg, 0, 2);
         break;
     case 0xC4B:
-        fn_800615F4(ctx, msg, 1, 2);
+        menuTaisenBattleDrawTrainerName(ctx, msg, 1, 2);
         break;
     case 0xC71:
-        fn_800615F4(ctx, msg, 2, 2);
+        menuTaisenBattleDrawTrainerName(ctx, msg, 2, 2);
         break;
     case 0xC97:
-        fn_800615F4(ctx, msg, 3, 2);
+        menuTaisenBattleDrawTrainerName(ctx, msg, 3, 2);
         break;
     case 0xBFF:
-        fn_800609B4(ctx, (MenuCBBattleStartSprite*)msg, *(f32*) ((u8*)&lbl_803A9A60 + 0x48));
+        menuTaisenBattleDrawSlide(ctx, (MenuCBBattleStartSprite*)msg, *(f32*) ((u8*)&lbl_803A9A60 + 0x48));
         break;
     case 0xC00:
-        fn_800609B4(ctx, (MenuCBBattleStartSprite*)msg, *(f32*) ((u8*)&lbl_803A9A60 + 0x4c));
+        menuTaisenBattleDrawSlide(ctx, (MenuCBBattleStartSprite*)msg, *(f32*) ((u8*)&lbl_803A9A60 + 0x4c));
         break;
     case 0x1096:
-        fn_80060434(ctx, msg);
+        menuTaisenDrawResult(ctx, msg);
         break;
     }
 }
 #endif
 
-extern u8 fn_80061D34(void*, UICmdMsg*, s32, s32, s32);
+extern u8 menuTaisenBattleSlotVisible(void*, UICmdMsg*, s32, s32, s32);
 extern u8 fn_80069A08(void*, UICmdMsg*, s32, s32);
 extern u16 toolentryTaisenGetEntryPokemonNum(s32);
 extern u16 toolentryTaisenGetPokemonNum(s32);
@@ -1916,7 +1916,7 @@ extern void* GSmsgGetGSchar(s32);
 extern void msgctrlSetValue();
 extern void GSmsgPrintColor();
 extern void GSmsgPrintRect();
-extern void fn_800FE6D0(s32, s32);
+extern void spriteSetOrigin(s32, s32);
 extern void spriteSetEnv(void);
 extern void fn_801040F0();
 extern void gfxSetFlags(s32);
@@ -1953,7 +1953,7 @@ static inline void menuCBBattleStartPlace(
     u8* entry = &lbl_802EF0A8[msg->cmd * 0x1C];
 
     msg->field50 = (s16)(*(s16*)(entry + 2) + (s32)offset);
-    fn_800FE6D0((s16)(*(s16*)(menu + 0x84) + msg->field50),
+    spriteSetOrigin((s16)(*(s16*)(menu + 0x84) + msg->field50),
                 (s16)(*(s16*)(menu + 0x86) + msg->field52));
     spriteSetEnv();
 }
@@ -1964,7 +1964,7 @@ static inline void menuCBBattleStartPlace(
 #endif
 #if !defined(MENUCB_BATTLESTART_80060D70_ONLY)
 #endif
-void fn_80060D70(void* context, UICmdMsg* msg, s32 player, s32 kind)
+void menuTaisenBattleDrawResultMark(void* context, UICmdMsg* msg, s32 player, s32 kind)
 {
     extern const u32 lbl_8047BF50;
     extern const u32 lbl_8047BF54;
@@ -2028,7 +2028,7 @@ void fn_80060D70(void* context, UICmdMsg* msg, s32 player, s32 kind)
 #endif
 #if !defined(MENUCB_BATTLESTART_80060D70_ONLY)
 #endif
-void fn_80060EF4(void* context, UICmdMsg* msg, s32 index)
+void menuTaisenBattleSetResultVisible(void* context, UICmdMsg* msg, s32 index)
 {
     s32 count = *(s32*)((u8*)lbl_803A9A60.menu + 0xC);
     s32 mode = battleResultGet00();
@@ -2076,7 +2076,7 @@ s32 menuCBBattleStartGetStatus(void) {
 #endif
 #if !defined(MENUCB_BATTLESTART_80060D70_ONLY)
 #endif
-void fn_80061028(s32 status) {
+void menuTaisenBattleSetState(s32 status) {
     extern void menuCloseCustom(s32 menuId, s32 arg1, s32 arg2);
 
     menuCloseCustom(0xBA, 0, 1);
@@ -2093,14 +2093,14 @@ typedef struct MenuCBBattleStartGroup {
     f32 wait[12];
 } MenuCBBattleStartGroup;
 
-/* RULE-EXCEPTION(user-approved): single-function inline helper (fn_8006106C) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-function inline helper (menuTaisenBattleDrawEntryFace) — see docs/RULE_EXCEPTIONS.md */
 static inline u8* menuCBBattleStartGroupPtr(s32 player)
 {
     return (u8*)&lbl_803A9A60 + 0x58 + player * 0xB4;
 }
 
-/* Shared by fn_8006106C and fn_80061BBC. Read through an inline call, the
- * offset is evaluated before fn_800609B4's inlined body, which numbers its
+/* Shared by menuTaisenBattleDrawEntryFace and menuTaisenBattleDrawFaintMark. Read through an inline call, the
+ * offset is evaluated before menuTaisenBattleDrawSlide's inlined body, which numbers its
  * address temp before the sprite-table temps as retail's colouring needs. */
 static inline f32 menuCBBattleStartGroupOffset(u8* group, s32 slot)
 {
@@ -2108,7 +2108,7 @@ static inline f32 menuCBBattleStartGroupOffset(u8* group, s32 slot)
 }
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8006106C_ONLY)
-void fn_8006106C(
+void menuTaisenBattleDrawEntryFace(
     void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
 {
     extern const f32 lbl_8047BFA4;
@@ -2116,9 +2116,9 @@ void fn_8006106C(
     extern void windowDrawSprite(s32 x, s32 y, void* context, s32 id, s32 flags);
     u8* group;
 
-    if (fn_80061D34(context, msg, player, slot, kind)) {
+    if (menuTaisenBattleSlotVisible(context, msg, player, slot, kind)) {
         group = menuCBBattleStartGroupPtr(player);
-        fn_800609B4(context, (MenuCBBattleStartSprite*)msg,
+        menuTaisenBattleDrawSlide(context, (MenuCBBattleStartSprite*)msg,
                     menuCBBattleStartGroupOffset(group, slot));
         if (menuCBPokemonEntryDispPokemonFace(context, msg, player, slot)) {
             if (((s16*)group)[slot] != 0) {
@@ -2135,7 +2135,7 @@ void fn_8006106C(
             windowDrawSprite(0, 0, context, lbl_80478910[((s16*)group)[slot]], 0);
         }
     }
-    if (fn_80061D34(context, msg, player, slot, kind)) {
+    if (menuTaisenBattleSlotVisible(context, msg, player, slot, kind)) {
         windowDrawSprite(-8, -8, context, 0x40, 0);
     }
 }
@@ -2160,7 +2160,7 @@ static inline void menuCBBattleStartDrawGauge(
 }
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_8006106C_ONLY)
-void fn_80061240(void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
+void menuTaisenBattleDrawHpBar(void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
 {
     u8* group = (u8*)&lbl_803A9A60 + 0x58 + player * 0xB4;
     /* RULE-EXCEPTION(user-approved): alpha read as int and copied to a u8 carrier after the ratio store, chosen for register allocation — see docs/RULE_EXCEPTIONS.md */
@@ -2201,7 +2201,7 @@ void fn_80061240(void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061454_ONLY)
-void fn_80061454(void* context, UICmdMsg* msg, s32 player, s32 kind)
+void menuTaisenBattleDrawPlayerTexture(void* context, UICmdMsg* msg, s32 player, s32 kind)
 {
     u8 alpha = *((u8*)context + 0x8B);
     void** imageSlot = (void**)((u8*)&lbl_803A9A60 + 0x0C + player * 8);
@@ -2241,7 +2241,7 @@ void fn_80061454(void* context, UICmdMsg* msg, s32 player, s32 kind)
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061454_ONLY)
-void fn_800615F4(void* context, UICmdMsg* msg, s32 player, s32 kind)
+void menuTaisenBattleDrawTrainerName(void* context, UICmdMsg* msg, s32 player, s32 kind)
 {
     extern void* fightTrainerDataBiosGetPtr(s32 id);
     extern u16 fightTrainerDataBiosGetKindDataId(void* data);
@@ -2298,7 +2298,7 @@ void fn_800615F4(void* context, UICmdMsg* msg, s32 player, s32 kind)
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061454_ONLY)
-void fn_800617E0(void* context, UICmdMsg* msg, s32 player, s32 kind)
+void menuTaisenBattleDrawPlayerName(void* context, UICmdMsg* msg, s32 player, s32 kind)
 {
     void* text;
     u8 visible = 1;
@@ -2355,7 +2355,7 @@ void fn_800617E0(void* context, UICmdMsg* msg, s32 player, s32 kind)
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061454_ONLY)
-void fn_80061A2C(
+void menuTaisenBattleDrawHpItem(
     void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
 {
     extern void windowDrawSprite(s32 x, s32 y, void* context, s32 id, s32 flags);
@@ -2365,12 +2365,12 @@ void fn_80061A2C(
         msg->flags4 &= ~2;
         break;
     case 1:
-        if (fn_80061D34(context, msg, player, slot, kind)) {
+        if (menuTaisenBattleSlotVisible(context, msg, player, slot, kind)) {
             menuCBBattleStartPlace(context, msg,
                 *(f32*)((u8*)&lbl_803A9A60 + player * 0xB4 + 0x94 + slot * 4));
             msg->flags4 &= ~2;
             windowDrawSprite(0, 0, context, 0x314, 0);
-            fn_80061240(context, msg, player, slot, kind);
+            menuTaisenBattleDrawHpBar(context, msg, player, slot, kind);
         } else {
             msg->flags4 &= ~2;
         }
@@ -2380,7 +2380,7 @@ void fn_80061A2C(
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061454_ONLY)
-void fn_80061B74(void* context, MenuCBBattleStartMessage* message,
+void menuTaisenBattleHideInPreview(void* context, MenuCBBattleStartMessage* message,
                  s32 player, s32 slot, s32 kind) {
     switch (lbl_803A9A60.status) {
     case 0:
@@ -2394,7 +2394,7 @@ void fn_80061B74(void* context, MenuCBBattleStartMessage* message,
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061BBC_ONLY)
-void fn_80061BBC(
+void menuTaisenBattleDrawFaintMark(
     void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
 {
     u8* group;
@@ -2405,10 +2405,10 @@ void fn_80061BBC(
         break;
     case 1:
         group = (u8*)&lbl_803A9A60 + 0x58 + player * 0xB4;
-        fn_800609B4(context, (MenuCBBattleStartSprite*)msg,
+        menuTaisenBattleDrawSlide(context, (MenuCBBattleStartSprite*)msg,
                     menuCBBattleStartGroupOffset(group, slot));
         if (lbl_803A9A60.timer >= 5) {
-            if (fn_80061D34(context, msg, player, slot, kind)) {
+            if (menuTaisenBattleSlotVisible(context, msg, player, slot, kind)) {
                 if (lbl_8047BF60 == ((f32*)(group + 0x84))[slot]) {
                     msg->flags4 |= 2;
                 } else {
@@ -2426,7 +2426,7 @@ void fn_80061BBC(
 #endif
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_80061D34_ONLY)
-u8 fn_80061D34(
+u8 menuTaisenBattleSlotVisible(
     void* context, UICmdMsg* msg, s32 player, s32 slot, s32 kind)
 {
     s32 selection;
@@ -2518,12 +2518,12 @@ extern s32 toolentryTaisenGetBattleType(void);
 extern u32 toolentryGetTrainerBicFaceResID(s32, s32);
 extern u32 toolentryGetTrainerSamllFaceResID(s32, s32);
 extern void* GSresFindById(u32);
-extern void fn_8017B000(
+extern void fsysStartLoadInto(
     u32, u32, void (*)(s32, MenuCBBattleStartTrainerTexture*),
     MenuCBBattleStartTrainerTexture*, u32);
 extern void GSresReleaseById(u32);
-extern void fn_800F915C(u32);
-extern void fn_800F9210(u32, u32);
+extern void GSresReleaseOwner(u32);
+extern void GSresReleaseOwnerItem(u32, u32);
 
 #if !defined(MENUCB_BATTLESTART_SPLIT_UNIT) || defined(MENUCB_BATTLESTART_800626CC_ONLY)
 void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(
@@ -2571,7 +2571,7 @@ void _menuCBBattleStartDispTrainerTexCallBack__FlPvl(
             if (entry->texture != 0) {
                 state->current++;
             } else {
-                fn_8017B000(
+                fsysStartLoadInto(
                     imageId, resource,
                     _menuCBBattleStartDispTrainerTexCallBack__FlPvl,
                     entry, resource);
@@ -2603,7 +2603,7 @@ void menuCBBattleStartTrainerFaceFree(void)
         imageId = 0x5C4;
     }
     GSresReleaseById(imageId);
-    fn_800F915C(imageId);
+    GSresReleaseOwner(imageId);
 
     entries = ((MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60)->entries;
     entry = entries;
@@ -2614,7 +2614,7 @@ void menuCBBattleStartTrainerFaceFree(void)
     }
     state = (MenuCBBattleStartTrainerTextureState*)&lbl_803A9A60;
     for (i = 0; i < state->count; i++) {
-        fn_800F9210(imageId, entry->resource);
+        GSresReleaseOwnerItem(imageId, entry->resource);
         entry++;
     }
 

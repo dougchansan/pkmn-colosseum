@@ -376,7 +376,7 @@ typedef struct ColDrawScene {
     u32 count;
 } ColDrawScene;
 
-extern ColDrawScene* fn_8010CBC0(void);
+extern ColDrawScene* GScolsys2GetCurFloor_8010CBC0(void);
 extern s32 GScolsys2GetObjEnable(s32 index, s32* enabled);
 extern s32 colsysMakeSRTMatrix(ColMtx out, u32 index);
 extern s32 colsysMakeRotMatrix(ColMtx out, u32 index);
@@ -400,7 +400,7 @@ s32 colsysWallAll(Vec3f* segStart, Vec3f* segEnd, f32 radius,
     ColDrawGroup* group;
 
     current = *segEnd;
-    scene = fn_8010CBC0();
+    scene = GScolsys2GetCurFloor_8010CBC0();
     hitPointPtr = result == NULL ? NULL : &hitPoint;
 
     for (pass = 0; pass < 10; pass++) {
@@ -467,7 +467,7 @@ s32 GScolsys2HitNpcCollision(Vec3f* start, Vec3f* end, f32 radius, Vec3f* result
     f32 next;
     f32 position;
 
-    if (fn_8010CBC0() == NULL) {
+    if (GScolsys2GetCurFloor_8010CBC0() == NULL) {
         return 0;
     }
 
@@ -517,7 +517,7 @@ s32 colsysWallSweep(Vec3f* start, Vec3f* end, f32 radius, Vec3f* result)
     f32 next;
     f32 position;
 
-    if (fn_8010CBC0() == NULL) {
+    if (GScolsys2GetCurFloor_8010CBC0() == NULL) {
         return 0;
     }
 

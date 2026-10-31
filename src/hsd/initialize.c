@@ -451,7 +451,7 @@ void HSD_StartRender(HSD_RenderPass pass)
 
 /* Melee: HSD_Init_803755A8. Retail loads and compares the render pass and
  * returns; the body after the test is compiled out. */
-void fn_8019C6FC(void)
+void HSD_ShadowNop(void)
 {
     if (current_render_pass == HSD_RP_OFFSCREEN) {
         return;
@@ -460,7 +460,7 @@ void fn_8019C6FC(void)
 
 /* Requests cache invalidations for the next HSD_StartRender
  * (1: vertex cache, 2: all textures). */
-void fn_8019C6EC(s32 flags)
+void HSD_RequestInvalidate(s32 flags)
 {
     invalidate_flags |= flags;
 }
@@ -482,7 +482,7 @@ static void HSD_ObjInit(void)
 /* Sets the pixel and Z formats HSD_StartRender uses outside anti-aliasing
  * (which always renders RGB565_Z16). HAL name unknown; Melee's
  * initialize.c keeps only its assert string. */
-void fn_8019C690(int pix_fmt, int z_fmt)
+void HSD_SetPixelFormat(int pix_fmt, int z_fmt)
 {
     HSD_ASSERT(758, pix_fmt != GX_PF_RGB565_Z16);
     current_pix_fmt = pix_fmt;

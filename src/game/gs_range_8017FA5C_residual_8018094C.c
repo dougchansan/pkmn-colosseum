@@ -1,6 +1,6 @@
 /**
  * @file gs_range_8017FA5C_residual_8018094C.c
- * @brief GSgapp job pool update fn_8018094C (0x8018094C - 0x80180B94).
+ * @brief GSgapp job pool update fsysJobPoolUpdate (0x8018094C - 0x80180B94).
  *
  * Carve of the 0x8017FA5C - 0x80180C78 retail unit, built at
  * `-opt level=0` with `-inline deferred` like the rest of the unit.
@@ -52,10 +52,10 @@ extern void fn_800E24B0(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void fsysLZSSJobFinish(void*, void*, u32, void*);
 extern void fsysLZSSJobSetup(void*, void*, u32, void*);
-extern s32 fn_8017AC30(void);
+extern s32 fsysGetLoadMode(void);
 extern void* GSgappCreate(s32, s32, void*, void*);
-extern void fn_8018114C(void);
-extern void fn_80181224(void);
+extern void _fsysJobDecodeTask(void);
+extern void _fsysJobReadS1Task(void);
 extern void* GSdvdOpen(const char*);
 extern s32 GSdvdGetLength(void*);
 extern void GSdvdClose(void*);
@@ -97,7 +97,7 @@ static inline void jobStartLoad(GsRangePoolElem* job)
     void* file;
     u32 length;
 
-    job->app = GSgappCreate(2, 0x1E, NULL, fn_80181224);
+    job->app = GSgappCreate(2, 0x1E, NULL, _fsysJobReadS1Task);
     if (job->app) {
         job->active = 1;
         job->state = 1;
@@ -109,7 +109,7 @@ static inline void jobStartLoad(GsRangePoolElem* job)
     }
 }
 
-void fn_8018094C(void)
+void fsysJobPoolUpdate(void)
 {
     GsRangePoolElem* entry;
     GsRangePoolElem* job;
@@ -150,8 +150,8 @@ void fn_8018094C(void)
                         lbl_8047B1E4 = job;
                         fsysLZSSJobSetup(lbl_8047B1E4->slot, lbl_8047B1E4->subEntry,
                                     lbl_8047B1E4->index, lbl_8047B1E4);
-                        job->app = GSgappCreate(fn_8017AC30(), 0xC8,
-                                                job->slot->taskParam, fn_8018114C);
+                        job->app = GSgappCreate(fsysGetLoadMode(), 0xC8,
+                                                job->slot->taskParam, _fsysJobDecodeTask);
                         if (job->app) {
                             job->active = 1;
                             job->state = 1;

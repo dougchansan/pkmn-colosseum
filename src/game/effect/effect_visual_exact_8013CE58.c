@@ -8,7 +8,7 @@
  */
 #include "dolphin/types.h"
 
-extern void* fn_8019FF48(void* model);
+extern void* HSD_JObjGetDObj_8019FF48(void* model);
 
 /*
  * The display object's material (HSD_DObj.mobj at +0xC), or NULL for no
@@ -38,7 +38,7 @@ u32 _seaResetMaterial(void* inner, void* ptr) {
     s32 found11;
     s32 stageIndex;
 
-    displayObject = fn_8019FF48(*(void**)((u8*)inner + 0x8));
+    displayObject = HSD_JObjGetDObj_8019FF48(*(void**)((u8*)inner + 0x8));
     found9 = 0;
     found10 = 0;
     found13 = 0;

@@ -35,7 +35,7 @@ Retail address 0x8009DF64, size 0x24; unit `dolphin/sdk_candidate_8009DF3C.c`.
 - Other decompilations: [zeldaret/tww, commit f5234ec8, `src/dolphin/os/OSInterrupt.c`](https://github.com/zeldaret/tww/blob/f5234ec8f4b8f4119b8db4a018c1ca25572988b1/src/dolphin/os/OSInterrupt.c#L48) and [doldecomp/melee, commit e78dc834, `libs/dolphin/src/dolphin/os/OSInterrupt.c`](https://github.com/doldecomp/melee/blob/e78dc8349c587ca5d2f97322834b625d3bd1abc3/libs/dolphin/src/dolphin/os/OSInterrupt.c#L85) keep `OSRestoreInterrupts` as an `asm` function.
 - Origin: Nintendo Dolphin SDK, `os/OSInterrupt.c`, hand-written assembly in the vendor source.
 
-## fn_8009FADC
+## Run_8009FADC
 
 Retail address 0x8009FADC, size 0x10; unit `dolphin/sdk_candidate_8009FADC.c`.
 This is `OSReboot.c`'s static `Run`: `OSResetSystem` calls it with 0x81300000

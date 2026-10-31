@@ -10,7 +10,7 @@ extern f32 lbl_80478ACC[];
 extern volatile f32 lbl_8047C998;
 extern double lbl_8047C9A0;
 
-extern void fn_800E0628(void* dst, void* src);
+extern void GSmtxCopy(void* dst, void* src);
 extern void* HSD_CObjGetViewingMtxPtr(void* cobj);
 extern void HSD_CObjGetEyePosition(void* cobj, void* data);
 extern void HSD_CObjGetUpVector(void* cobj, void* data);
@@ -20,14 +20,14 @@ extern void GSmtxLookAt(void* mtx, void* eye, void* up, void* interest);
 extern void GSmtxMakeXRotation(void* mtx, f32 angle);
 extern void GSmtxMakeYRotation(void* mtx, f32 angle);
 extern void GSmtxMakeZRotation(void* mtx, f32 angle);
-extern void fn_800E05C0(void* mtx, f32 x, f32 y, f32 z);
+extern void GSmtxMakeTrans(void* mtx, f32 x, f32 y, f32 z);
 extern void GSmtxConcat(void* dst, void* lhs, void* rhs);
 
-void fn_800D258C(void* obj) {
+void GScameraSetCurrent(void* obj) {
     GSRenderCamera* c = (GSRenderCamera*)obj;
     lbl_8047AA74 = (u32)obj;
     if (c->isAnimating != 0) {
-        fn_800E0628(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
+        GSmtxCopy(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
         HSD_CObjGetEyePosition(c->cobj, &c->eye);
         HSD_CObjGetUpVector(c->cobj, &c->upVector);
         HSD_CObjGetInterest(c->cobj, &c->interest);
@@ -58,7 +58,7 @@ void fn_800D258C(void* obj) {
         GSmtxMakeXRotation(c->viewMtx, -c->rotation.x);
         GSmtxMakeYRotation(tmp1, -c->rotation.y);
         GSmtxMakeZRotation(tmp2, -c->rotation.z);
-        fn_800E05C0(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
+        GSmtxMakeTrans(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
         GSmtxConcat(c->viewMtx, c->viewMtx, tmp1);
         GSmtxConcat(c->viewMtx, c->viewMtx, tmp2);
         GSmtxConcat(c->viewMtx, c->viewMtx, tmp3);

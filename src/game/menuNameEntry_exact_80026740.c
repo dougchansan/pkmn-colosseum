@@ -7,7 +7,7 @@
 extern f32 lbl_8047B938;
 extern f32 lbl_8047B934;
 
-s32 fn_80026740(void* r3, u8* r4)
+s32 menuNameEntryDrawItem11(void* r3, u8* r4)
 {
     extern u8  lbl_80266DD8[];   /* state-machine entry table: each entry 16 bytes */
     s32  state;
@@ -43,7 +43,7 @@ s32 fn_80026740(void* r3, u8* r4)
     return 0;
 }
 
-s32 fn_800267D0(void* r3, u8* r4)
+s32 menuNameEntryDrawItem12(void* r3, u8* r4)
 {
     extern u8  lbl_80266DD8[];
     s32  state;
@@ -79,7 +79,7 @@ s32 fn_800267D0(void* r3, u8* r4)
     return 0;
 }
 
-s32 fn_80026860(void* r3, u8* r4)
+s32 menuNameEntryDrawItem13(void* r3, u8* r4)
 {
     extern u8  lbl_80266DD8[];
     s32  state;

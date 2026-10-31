@@ -693,7 +693,7 @@ extern BOOL SIBusy(void);
 
 /*
  * PADSync, as in the SDK's PAD.c. Nothing in the game calls it, so the
- * linker strips it; OnReset (fn_800ABD68) inlines it, as it does
+ * linker strips it; OnReset (OnReset_800ABD68) inlines it, as it does
  * PADRecalibrate (PADRecalibrate).
  */
 /* RULE-EXCEPTION(user-approved): reconstructed linker-stripped function — see docs/RULE_EXCEPTIONS.md */
@@ -702,7 +702,7 @@ BOOL PADSync(void) {
 }
 
 
-BOOL fn_800ABD68(BOOL final) {
+BOOL OnReset_800ABD68(BOOL final) {
     BOOL sync;
 
     if (lbl_8047A8BC != NULL) {

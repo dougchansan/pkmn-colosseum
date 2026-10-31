@@ -24,7 +24,7 @@ extern u8 fightOutPokemonGetFightOutPokemonEnemyOumuWazaDataIdAry(u32, u16*);
 extern u32 fightFloorLoopValidFightOutPokemon(u32, FightFloorCallback, void*, u32);
 extern u32 fightOutPokemonCheckFightOut(void*);
 extern u32 fightTrainerAiIsPokemonJoutai(void*, void*, u32);
-extern u32 fn_80237F74();
+extern u32 fightTrainerAiIsTokusei();
 
 u32 _fightTrainerAiSimerikeCheckSub(void*, u32, void*);
 u32 _fightTrainerAiSawaguCheckSub(void*, u32, void*);
@@ -86,7 +86,7 @@ u32 _fightTrainerAiSimerikeCheckSub(void* pokemon, u32 slot, void* data)
     if ((fightOutPokemonCheckFightOut(pokemon) & 0xFF) == 0) {
         return 1;
     }
-    return (fn_80237F74(trainer, pokemon, 6) & 0xFF) != 1;
+    return (fightTrainerAiIsTokusei(trainer, pokemon, 6) & 0xFF) != 1;
 }
 
 u32 fightTrainerAiCheckSawagu(void* trainer, u32 target, u32 unused)
@@ -111,7 +111,7 @@ u32 _fightTrainerAiSawaguCheckSub(void* pokemon, u32 slot, void* data)
         return 1;
     }
     if ((fightTrainerAiIsPokemonJoutai(trainer, pokemon, 0xB) & 0xFF) == 1 &&
-        (fn_80237F74(trainer, target, 0x2B) & 0xFF) == 0) {
+        (fightTrainerAiIsTokusei(trainer, target, 0x2B) & 0xFF) == 0) {
         return 0;
     }
     return 1;

@@ -1,2 +1,2 @@
-void fn_800C459C(void) {
+void TRKInitializeMutex_800C459C(void) {
 }

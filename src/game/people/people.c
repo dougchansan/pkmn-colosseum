@@ -15,7 +15,7 @@
  *   .sdata2  0x8047D798 - 0x8047D8A8  (the literal pool; it ends with
  *                                      2500.0f plus padding)
  *
- * The TU ends at fn_8018F30C. 0x8018F470-0x8018FE30 (peopleInit, the entry
+ * The TU ends at peopleUpdateShadowLights. 0x8018F470-0x8018FE30 (peopleInit, the entry
  * accessors, the info-bios getters and the save/load hooks) is a separate
  * unit: it has its own .sdata2 pool (0x8047D8A8-0x8047D8B8, repeating 0.0f,
  * 1.0f and the degree factor this pool already holds), its own .sbss
@@ -41,7 +41,7 @@
  *     calls the 40-byte fn_80188F78 out of line under -inline auto: GC/2.0
  *     never auto-inlines a function whose body keeps a call to an in-TU
  *     candidate it could not expand (fn_80188F78 -> fn_80188FA0,
- *     fn_80185AAC -> fn_80188214; checked with one-line wrappers,
+ *     peopleStepToTarget -> fn_80188214; checked with one-line wrappers,
  *     2026-09-28);
  *   - the log formats are in .rodata (readonly strings) while the
  *     __FUNCTION__ names are in .data.
@@ -52,7 +52,7 @@
  * and the .rodata strings and images follow in retail order. The two data
  * items below are closed by RULE-EXCEPTION(title-path) forms (user
  * directive, 2026-09-28): the unused zero GSvec local in fn_801845E4 and
- * the block-scope extern of fn_8018F30C in fn_80181850.
+ * the block-scope extern of peopleUpdateShadowLights in fn_80181850.
  *
  * Linked (2026-09-28, lane P30r): every function is exact, and the whole TU
  * is one Matching object with the .rodata/.data/.sbss/.sdata2 ranges above
@@ -70,7 +70,7 @@
  * @-literals do not pair by name with retail's lbl_ labels; the bytes are
  * identical (SHA1), and .rodata/.sdata2 differ only in their tail padding.
  *
- * Why 0x801812C4-0x80181EB0 (fn_801812C4, fn_801812E8, fn_80181478,
+ * Why 0x801812C4-0x80181EB0 (peopleMoveStep, fn_801812E8, fn_80181478,
  * fn_80181850; all four 100%) cannot be linked as a standalone carve like
  * the people_exact_*.c pieces (checked 2026-09-28): compiled on their own
  * with this TU's flags, the four functions (with the XD-named
@@ -81,7 +81,7 @@
  * pi/2, 2pi as double and float, 2.0f, then the signed and unsigned
  * int-to-float magic doubles). The pieces carved so far read pool literals
  * by symbol (lbl_8047D7A0, lbl_8047D828) and emit no .sdata2, but
- * fn_80181850 converts fn_800D37CC()'s and fn_800D3088()'s results to
+ * fn_80181850 converts GSgfxGetVsyncRate()'s and fn_800D3088()'s results to
  * float (the random-rotation wait and the per-tick step), and MWCC emits the
  * magic constants of such conversions itself; C cannot name
  * lbl_8047D7C8/lbl_8047D7D0 for them. The object therefore has its own
@@ -105,17 +105,17 @@
  * (0x8029A0C8) was rewritten in XD; fn_80188214 is XD's peopleMoveForward
  * (0x8029C6C4) with peopleMoveAlongAngle (0x8029C194) expanded, but XD's
  * peopleMoveAlongAngle makes different calls (sin/cos,
- * GScolsys2HumanGetWalkHeight instead of fn_800E0718/GSvecTransformQuat);
+ * GScolsys2HumanGetWalkHeight instead of GSquatRotAxisRad/GSvecTransformQuat);
  * fn_80188214 is exact through that helper form anyway, as a
  * RULE-EXCEPTION(title-path) (see fn_80188214; lane P30r, 2026-09-28).
- * (fn_80186B5C and fn_80189990 became exact on 2026-09-28, lane B30r;
+ * (peopleMoveByPad and fn_80189990 became exact on 2026-09-28, lane B30r;
  * fn_8018ECEC on 2026-09-28, lane P30r, through MSL's atan2f.)
  *
  * The two data items, re-examined 2026-09-28 (lane U1):
  *   - The sixth .rodata image (0x80273FCC). The images belong to
  *     peopleSystemInit (0x80273F90, the three bios callbacks), fn_8018CD08
  *     (0x80273F9C, read as base+0xC), fn_80188214 (0x80273FA8),
- *     fn_80186B5C (0x80273FB4) and peopleMoveWander (0x80273FC0); nothing in the
+ *     peopleMoveByPad (0x80273FB4) and peopleMoveWander (0x80273FC0); nothing in the
  *     TU reads 0x80273FCC, by symbol or as an offset from another base.
  *     GC/1.3 creates a local's initializer image when it parses the
  *     definition, so the images follow source order, and it keeps the
@@ -138,12 +138,12 @@
  *       StarsMmd/Colo-XD-PBR-symbol-maps 6b51d3af) lists people.o's live
  *       and stripped ("UNUSED") functions in object order, and its live
  *       ones run in exactly this TU's address order (_peopleDoNeckUpdate =
- *       fn_801812C4, peopleWalkPauseTalkMode = fn_801812E8,
+ *       peopleMoveStep, peopleWalkPauseTalkMode = fn_801812E8,
  *       peopleWalkPause = fn_80181478, peopleDaemon = fn_80181850,
  *       peopleDispMark = fn_80181EB0, peopleFallAppear = fn_801821B8, ...,
  *       _peopleMoveTypeRandomWalk = peopleMoveWander, _peopleMoveTypeList =
  *       peopleMoveWalkList, _peopleMoveTypeLinear = peopleMoveToTarget, _peopleMoveSub =
- *       fn_80185AAC, peopleUpdateAnimation = peopleUpdateMotion). The image must
+ *       peopleStepToTarget, peopleUpdateAnimation = peopleUpdateMotion). The image must
  *       come from below peopleMoveWander in that order. The stripped functions
  *       there are peopleSetHeroMove (8 bytes, before _peopleDoNeckUpdate)
  *       and peopleRandomWalkPause (0xA4, between peopleWalkPause and
@@ -173,7 +173,7 @@
  *     an expansion) only with -inline auto, and -inline auto,deferred (or
  *     all,deferred) on this TU leaves peopleWaitSyncMotion out of line in
  *     fn_801821B8 (0xD28 bytes, retail 0xE60) while wrongly expanding
- *     fn_80185AAC in peopleMoveWander/peopleMoveToTarget and fn_801845E4 in
+ *     peopleStepToTarget in peopleMoveWander/peopleMoveToTarget and fn_801845E4 in
  *     fn_80181EB0. An explicit `inline` definition is expanded but not
  *     emitted out of line (its __FUNCTION__ becomes a weak
  *     __FUNCTION__$localstatic1$ object) unless its address is taken, and
@@ -190,17 +190,17 @@
  *     other flags unchanged) reproduces retail's decisions: fn_801821B8 is
  *     identical to retail (0xE60, peopleWaitSyncMotion expanded), .data
  *     holds exactly four __FUNCTION__ objects in retail order (peopleOpenSub,
- *     peopleWaitSyncMotion, ...Blend, peopleMoveCheck), and fn_80185AAC,
+ *     peopleWaitSyncMotion, ...Blend, peopleMoveCheck), and peopleStepToTarget,
  *     fn_80188F78 and fn_80188FA0 stay out of line as in retail. Every
  *     other function is unchanged except two expansions retail does not
- *     make: fn_801845E4 into fn_80181EB0 (both calls) and fn_8018F30C into
+ *     make: fn_801845E4 into fn_80181EB0 (both calls) and peopleUpdateShadowLights into
  *     fn_80181850 (0x774 bytes, retail 0x660). Both are just under the
  *     limit. One extra store statement puts fn_801845E4 over it, two extra
- *     calls do, and three extra calls put fn_8018F30C over it. Nothing
+ *     calls do, and three extra calls put peopleUpdateShadowLights over it. Nothing
  *     evidences a larger source form for either, and restating them only to
  *     cross the limit would be shaping. `-inline level=2` keeps fn_801845E4
  *     out of line but refuses depth-3 expansions retail makes, and cannot
- *     stop fn_8018F30C (depth 2, as deep as peopleWaitSyncMotion's).
+ *     stop peopleUpdateShadowLights (depth 2, as deep as peopleWaitSyncMotion's).
  *     -inline auto therefore stays off. Its evidence is recorded here: it
  *     is the only mechanism found for the shared __FUNCTION__ object.
  *     Applied 2026-09-28 (lane P30d, title-path rule exceptions): the unit
@@ -210,13 +210,13 @@
  *     owner by position: fn_801845E4 comes after peopleMoveWander in source and
  *     no image-bearing function follows it) both places the sixth image at
  *     0x80273FCC and puts fn_801845E4 over the auto limit, so one construct
- *     explains both retail artifacts; fn_8018F30C is kept out of
+ *     explains both retail artifacts; peopleUpdateShadowLights is kept out of
  *     fn_80181850 by a block-scope extern. Every other function keeps its
  *     code, and peopleOpen, peopleOpenSub and fn_8018CD08 become exact.
  *     GC/2.0's -inline auto has two limits (probes 2026-09-28): the
  *     callee's own lowered statement count (29 plain statements; an `if`
  *     costs 2, a `for` about 6) and its size with its explicit inlines
- *     expanded (about 72 calls' worth); fn_8018F30C passes both, and a
+ *     expanded (about 72 calls' worth); peopleUpdateShadowLights passes both, and a
  *     natural -inline auto source that calls the global twins instead of
  *     the static inlines loses retail's expansions of fn_8018B76C (over the
  *     statement limit), so the static inline twins stay.
@@ -235,14 +235,14 @@ typedef struct GSvec {
     f32 z;
 } GSvec;
 
-/* One floor height hit from fn_8010E138. */
+/* One floor height hit from GScolsys2CollectWalkHeight. */
 typedef struct PeopleFloorHit {
     f32 height;
     f32 field_04;
     f32 field_08;
 } PeopleFloorHit;
 
-/* A person's cylinder as registered with the human-collision system (fn_80110084). */
+/* A person's cylinder as registered with the human-collision system (GScolsys2HumanRegister). */
 typedef struct PeopleHumanCollision {
     u32 groupId;
     u32 index;
@@ -252,7 +252,7 @@ typedef struct PeopleHumanCollision {
 
 /*
  * Floor save/restore handler triple (load, save, size), the layout
- * fn_800FF4D4 copies into its GSFloorResHandler table.
+ * floorRegisterHandler copies into its GSFloorResHandler table.
  */
 typedef struct PeopleFloorResFuncs {
     void* func[3];
@@ -266,8 +266,8 @@ extern void _threadSwitch(void);
 extern void GSthreadBlock(void* thread);
 extern void GSthreadUnblock(void* thread);
 extern u32 GSgetFrameStep(void);
-extern s32 fn_800D37CC(void);
-extern f32 fn_800E0BA0(void);
+extern s32 GSgfxGetVsyncRate(void);
+extern f32 GSrandfSigned(void);
 extern f32 GSrandf(void);
 
 /* GSvec */
@@ -280,7 +280,7 @@ extern f32 vecMag(void* vec);
 extern void vecNormalize(void* dst, void* src, f32 length);
 extern f32 GSvecDot(void* a, void* b);
 extern void GSvecNormalize(void* dst, void* src);
-extern void fn_800E0718(void* quat, void* axis, f32 angle);
+extern void GSquatRotAxisRad(void* quat, void* axis, f32 angle);
 extern void GSvecTransformQuat(void* dst, void* quat, void* src);
 extern f32 GSvecDistance(void* a, void* b);
 extern void PSVECAdd(void* a, void* b, void* out);
@@ -330,8 +330,8 @@ extern void GSmodelDetachFromGSpart(void* model, s32 index);
 extern void GSpartFree(void* part);
 extern void GSpartGetTransform(void* part, void* out, void* a, void* b);
 extern void GSpartRegisterRotation(void* part, void* rotation, s32 order);
-extern void fn_800E3CC8(void* model, s32 mode);
-extern void fn_800EE288(void* part);
+extern void GSmodelSetFlag200(void* model, s32 mode);
+extern void characterClearLookTarget(void* part);
 
 /* Lights */
 extern void* GSlightCreate(void);
@@ -343,12 +343,12 @@ extern void GSlightSetPosition(void* light, void* position);
 /* Pad, flags, scripts, messages */
 extern s8 GSinputGetLeftStickXData(s32 pad, s32 stick);
 extern s8 GSinputGetLeftStickYData(s32 pad, s32 stick);
-extern u32 fn_800F7BC4(s32 pad);
-extern void* fn_800F7108(u16 id);
+extern u32 GSinputGetButtons(s32 pad);
+extern void* GSvmGetThreadByKey(u16 id);
 extern u16 _vmThreadCreate(u32 type, u32 scriptId, u32 stackSize, u32 a, u32 b, s32 argc, ...);
-extern void fn_800F9210(u32 groupId, u32 index);
-extern void fn_800FF4D4(void* funcs, u8 typeId);
-extern void fn_80101B90(u32 color);
+extern void GSresReleaseOwnerItem(u32 groupId, u32 index);
+extern void floorRegisterHandler(void* funcs, u8 typeId);
+extern void gappLoadMeterDraw(u32 color);
 extern void soundStartSE(u32 id);
 extern u8 std081_flagCheckTrue(u32 flag);
 extern void msgctrlSetValue(u32 id, u32 value);
@@ -383,10 +383,10 @@ extern u32 std093_getCurrentGroupID(void);
 extern u8 GScolsys2WalkGetLayer(void* position, u8* layer, u8* subLayer);
 extern s32 GScolsys2ThruGetEventID(void* from, void* to, void* events, f32 radius);
 extern s32 GScolsys2HumanCollision(s32 id, void* from, void* to, void* hit);
-extern s32 fn_8010E138(void* position, PeopleFloorHit* hits);
+extern s32 GScolsys2CollectWalkHeight(void* position, PeopleFloorHit* hits);
 extern s32 GScolsys2HitNpcCollision(void* from, void* to, void* hit, f32 radius);
 extern s32 colsysWallSweep(void* from, void* to, void* hit, f32 radius);
-extern s32 fn_80110084(s32* result, void* query);
+extern s32 GScolsys2HumanRegister(s32* result, void* query);
 extern s32 colsysPassGetEventID(void* from, void* to, void* events);
 extern f32 GScolsy2UtilGetSidePlanePoint(void* normal, void* verts, void* point);
 extern void GScolsy2UtilGetCpPlanePoint(void* out, void* normal, void* verts, void* point);
@@ -394,13 +394,13 @@ extern s32 GScolsy2UtilChkInTri(void* point, void* verts, void* normal);
 extern void GScolsy2UtilGetPointExtentionLine(void* out, void* from, void* to, f32 length);
 
 /* Debug drawing */
-extern void fn_800D258C(void);
+extern void GScameraSetCurrent(void);
 extern void gfxSetCullMode(s32 a);
 extern void gfxSetVtxDesc(void* a);
 extern void gfxSetFlags(s32 a);
 extern void gfxClearFlags(s32 a);
 extern void gfxSetBlendMode(s32 a, s32 b, s32 c);
-extern void fn_800D9ED8(s32 a);
+extern void gfxSetFlag1A(s32 a);
 extern void gfxSetPrimitive(s32 a);
 extern void gfxBegin(s32 a);
 extern void gfxVtxPos(f32 x, f32 y, f32 z);
@@ -409,12 +409,12 @@ extern void gfxEnd(void);
 extern u8 lbl_80314638[];
 
 /* ===== The people core unit (0x8018F470-0x8018FE30) ===== */
-extern u32 fn_8018F490(const PeopleInfoBiosEntry* info);
+extern u32 peopleInfoGetFlag4(const PeopleInfoBiosEntry* info);
 extern u32 characterModelGetTalkSE(const PeopleInfoBiosEntry* info);
-extern void fn_8018F4C8(void* info, u8 motion, s32* outAnim, u8* outLoop);
-extern f32 fn_8018F5B4(const PeopleInfoBiosEntry* info);
-extern f32 fn_8018F5CC(const PeopleInfoBiosEntry* info);
-extern f32 fn_8018F5E4(const PeopleInfoBiosEntry* info);
+extern void peopleInfoGetMotion(void* info, u8 motion, s32* outAnim, u8* outLoop);
+extern f32 peopleInfoGetHeight(const PeopleInfoBiosEntry* info);
+extern f32 peopleInfoGetRadius(const PeopleInfoBiosEntry* info);
+extern f32 charModelGetRadius(const PeopleInfoBiosEntry* info);
 
 extern f32 charModelGetHeadPitchMax(const PeopleInfoBiosEntry* info);
 extern f32 charModelGetHeadPitchMin(const PeopleInfoBiosEntry* info);
@@ -426,7 +426,7 @@ extern void peopleBiosPopData(u8* src, u32 size);
 extern void peopleBiosPushData(u8* dst, u32 size);
 extern u32 peopleBiosGetPushDataSize(void);
 extern void peopleSetHumanCollision(PeopleEntry* entry, u8 animId);
-extern void fn_8018FB60(PeopleEntry* entry, u8 animId);
+extern void peopleSetModelVisible(PeopleEntry* entry, u8 animId);
 extern void peopleApplyRotation(PeopleEntry* entry, void* rotation);
 extern void peopleGetRotation(PeopleEntry* entry, void* rotation);
 extern GSvec* peopleGetPosition(PeopleEntry* entry);
@@ -462,7 +462,7 @@ void* lbl_8047B1F0[2]; /* the shadow lights: player characters, others */
 
 
 /* ===== Functions of this unit (retail order is the reverse) ===== */
-void fn_801812C4(PeopleEntry* entry);
+void peopleMoveStep(PeopleEntry* entry);
 s32 peopleTalkPause(u32 groupId, u32 index, u8 doInteract);
 s32 std231_characterSetPathPaused(u32 groupId, u32 index, u8 doSetup);
 void peopleMain(void);
@@ -470,12 +470,12 @@ void std131_characterSurpriseAnimation(u32 groupId, u32 index);
 void std178_characterPlayAnimationAndWait(u32 groupId, u32 index);
 void std077_characterEventFlagsSet(u32 groupId, u32 index);
 void std076_characterEventFlagsClear(u32 groupId, u32 index);
-s32 fn_80183688(PeopleEntry* self);
-s32 fn_80183730(PeopleEntry* self);
+s32 peopleShowAndResumeBySelf(PeopleEntry* self);
+s32 peopleHideAndSuspendBySelf(PeopleEntry* self);
 s32 peopleStartScript(u32 groupId, u32 index, u32 flagId, u32 param1, u32 param2);
-u32 fn_80183958(u32 groupId, u32 index);
+u32 peopleGetMoveScriptId(u32 groupId, u32 index);
 u32 peopleGetTalkScript(u32 groupId, u32 index);
-s32 fn_801839A0(u32 groupId, u32 index, f32 field88, f32 field8C);
+s32 peopleFindNear(u32 groupId, u32 index, f32 field88, f32 field8C);
 s32 peopleStartWander(u32 groupId, u32 index, f32 field80);
 s32 std075_characterAllocPathAlt(u32 groupId, u32 index);
 BOOL peopleStartWalkList(u32 groupId, u32 index, u32 loop);
@@ -484,13 +484,13 @@ u8 peopleReserveWalkList(u32 groupId, u32 index, u16 count);
 void std071_threadYield(void);
 void std168_characterDetachFromCharacter(u32 groupId, u32 index);
 void std070_characterAttachToCharacter(u32 groupId, u32 index, s32 group, s32 id, s32 partIndex);
-void fn_801848D0(void* model, s32 group, s32 id, s32 partIndex);
+void peopleAttachModelPart(void* model, s32 group, s32 id, s32 partIndex);
 void peopleSetWalkSpeed(u32 groupId, u32 index, f32 speed);
 void peopleTurnUpdate(PeopleEntry* entry);
 void peopleMoveWander(PeopleEntry* entry);
 void peopleMoveWalkList(PeopleEntry* entry, u8 loop);
 void peopleMoveToTarget(PeopleEntry* entry);
-s32 fn_80185AAC(PeopleEntry* entry);
+s32 peopleStepToTarget(PeopleEntry* entry);
 void peopleUpdateMotion(PeopleEntry* entry, f32 speed);
 void std061_characterMoveToPosition(u32 groupId, u32 index, u8 keepFacing, f32 x, f32 y, f32 z);
 void peopleSetRotationDeg(u32 groupId, u32 index, f32 x, f32 y, f32 z);
@@ -498,8 +498,8 @@ void std059_characterSetPosition(u32 groupId, u32 index, f32 x, f32 y, f32 z);
 u8 peopleGazeHeroCheck(u32 groupId, u32 index);
 u8 peopleCanSee(u32 groupId, u32 index, f32 range, u32 targetGroupId, u32 targetIndex, f32 fov);
 u8 std170_cameraFocusOnCharacter(u32 groupId, u32 index, u8 push, f32 x0, f32 z0, f32 x1, f32 z1);
-GSvec fn_80186B5C(u32 groupId, u32 index);
-u8 fn_801870E8(GSvec* position, GSvec* point, GSvec* start, GSvec* end, void* normal, f32 reach);
+GSvec peopleMoveByPad(u32 groupId, u32 index);
+u8 peopleCheckWallQuad(GSvec* position, GSvec* point, GSvec* start, GSvec* end, void* normal, f32 reach);
 u8 std058_characterCheckWithinBounds(u32 groupId, u32 index, f32 x0, f32 z0, f32 x1, f32 z1);
 void peopleStopTurn(u32 groupId, u32 index);
 void std165_characterFaceCharacter(u32 groupId, u32 index, u32 targetGroupId, u32 targetIndex, f32 speed);
@@ -513,7 +513,7 @@ void std067_characterStopLookAt(u32 groupId, u32 index);
 void std066_characterLookAtPosition(u32 groupId, u32 index, s32 x, s32 y, s32 z);
 void std065_characterLookAtPlayer(u32 groupId, u32 index);
 void std181_characterTurnHeadTowardsCharacter(u32 groupId, u32 index, u32 targetGroupId, u32 targetIndex);
-u8 fn_80189328(u32 groupId, u32 index, u8 enable);
+u8 peopleSetTalkable_80189328(u32 groupId, u32 index, u8 enable);
 void std055_characterEndSpeech(u32 groupId, u32 index);
 void std054_characterTalk(u32 groupId, u32 index, s32 messageId);
 BOOL peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
@@ -524,7 +524,7 @@ u8 peopleWaitSyncMotionBlend(u32 groupId, u32 index, u8 wait);
 BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait);
 void peopleStopAnimation(u32 groupId, u32 index);
 void std154_characterPlayAnimation(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 looping);
-u8 fn_8018B558(u32 groupId, u32 index, s32 blendAnimation, s32 animation, u32 frames);
+u8 peopleSetAnimation(u32 groupId, u32 index, s32 blendAnimation, s32 animation, u32 frames);
 u8 std051_characterSetAnimation(u32 groupId, u32 index, s32 animIndex, s32 frame, u8 loop);
 void peopleGetHeadGroundPos(u32 groupId, u32 index, GSvec* position);
 void peopleGetPositionByIndex(u32 groupId, u32 index, s32 partIndex, GSvec* position);
@@ -533,19 +533,19 @@ void peopleSetRotation(u32 groupId, u32 index, GSvec* rotation);
 void peopleSetPositionByIndex(u32 groupId, u32 index, void* position);
 void peopleSetVisible(u32 groupId, u32 index, u8 visible);
 u8 peopleTestFlagsByID(u32 groupId, u32 index, u32 mask);
-u32 fn_8018C558(u32 groupId, u32 index);
+u32 peopleGetFlags(u32 groupId, u32 index);
 void peopleClearFlagsByIndex(u32 groupId, u32 index, u32 mask);
 void peopleSetFlagsByIndex(u32 groupId, u32 index, u32 mask);
-void fn_8018C8F4(u32 groupId, u32 index, u32 flags);
+void peopleWriteFlagsByID_8018C8F4(u32 groupId, u32 index, u32 flags);
 void std151_characterFaceDirection(u32 groupId, u32 index, u8 visible);
 void peopleRegisterHumanCollision(u32 groupId, u32 index);
 PeopleEntry* peopleFindTalkTarget(u32 groupId, u32 index, f32 range, f32 fov);
-u8 fn_8018D680(GSvec* a, GSvec* b, GSvec* point, f32 width);
+u8 peopleIsPointNearSegment(GSvec* a, GSvec* b, GSvec* point, f32 width);
 u8 peopleIsTreasure(u32 groupId, u32 index);
 PeopleEntry* peopleSearchID(PeopleEntry* self);
 PeopleEntry* peopleIsInGroup(u32 groupId, u32 index);
-void fn_8018DA88(void);
-void fn_8018DB04(u8 releaseWalkList);
+void peopleHideAllAndSuspend(void);
+void peopleCloseAll(u8 releaseWalkList);
 void peopleCloseByID(u32 groupId, u32 index);
 void peopleClose(PeopleEntry* entry, u8 releaseWalkList);
 void* peopleOpen(u32 groupId, u32 index, s32 objectId);
@@ -554,7 +554,7 @@ void peopleSystemInit(u32 maxPeople);
 u8 peopleMoveCommit(PeopleEntry* entry, GSvec* position, GSvec* transform);
 void peopleHeadLookUpdate(PeopleEntry* entry, f32 step);
 void peopleSetMotionSlot(PeopleEntry* entry, s32 motionIndex);
-void fn_8018F30C(void);
+void peopleUpdateShadowLights(void);
 /* ===== end prototypes ===== */
 
 /*
@@ -722,7 +722,7 @@ static inline void peopleSetMotionIndex(PeopleEntry* entry, s32 motionIndex)
     if (info == NULL) {
         return;
     }
-    fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+    peopleInfoGetMotion(info, (u8)entry->motionIndex, &animIndex, &loop);
     if (animIndex == -1) {
         return;
     }
@@ -787,7 +787,7 @@ static inline void peopleSetLookTarget(u32 groupId, u32 index, void* position)
 
 /*
  * The player characters are people 100 and 101 of group 0. Both shadow-light
- * users (peopleOpenSub and fn_8018F30C) expand this test identically before
+ * users (peopleOpenSub and peopleUpdateShadowLights) expand this test identically before
  * turning it into a light number with `!= TRUE`.
  */
 static inline u8 peopleIsHero(u32 groupId, u32 index)
@@ -802,7 +802,7 @@ static inline u8 peopleIsHero(u32 groupId, u32 index)
  * Turn from `facing` to the direction from `from` to `to` in the XZ plane,
  * wrapped into [-pi, pi] (fmod by a full turn after adding one, then fold the
  * halves). Expanded wherever the TU aims a person (peopleMoveWander, peopleMoveWalkList
- * twice, peopleCanSee, fn_801885C4, fn_8018CD08 three times, fn_8018D680,
+ * twice, peopleCanSee, fn_801885C4, fn_8018CD08 three times, peopleIsPointNearSegment,
  * fn_8018ECEC); `facing` is read before the subtraction's call, as retail
  * loads it ahead of fn_800E0168.
  *
@@ -820,7 +820,7 @@ static inline u8 peopleIsHero(u32 groupId, u32 index)
  * two-statement form the replay gives `width` 32 interferences instead of
  * 33, it leaves the first pass there, and the colours are retail's. The
  * form makes both functions exact and leaves every other expansion
- * (peopleMoveWander, peopleCanSee, fn_801885C4, fn_8018D680, fn_8018ECEC)
+ * (peopleMoveWander, peopleCanSee, fn_801885C4, peopleIsPointNearSegment, fn_8018ECEC)
  * unchanged. peopleWalkTo writes the same heading statement.
  */
 static inline f32 peopleTurnTo(void* to, void* from, f32 facing)
@@ -858,7 +858,7 @@ static inline f32 peopleNormalizeYaw(f32 yaw)
 }
 
 /*
- * fn_8018D680: whether `point` lies within `width` of the segment a..b and
+ * peopleIsPointNearSegment: whether `point` lies within `width` of the segment a..b and
  * no farther along it than its half length (measured from the midpoint in
  * the segment's frame). fn_8018CD08 expands it for the party member check.
  * `point` is moved into the midpoint's frame.
@@ -872,7 +872,7 @@ static inline u8 peopleIsBetween(GSvec* a, GSvec* b, GSvec* point, f32 width)
 
     GSvecAdd(&midpoint, a, b);
     vecScale(&midpoint, &midpoint, 0.5f);
-    fn_800E0718(rotation, &lbl_8031554C, peopleTurnTo(b, a, 0.0f));
+    GSquatRotAxisRad(rotation, &lbl_8031554C, peopleTurnTo(b, a, 0.0f));
     GSvecSub(point, point, &midpoint);
     GSvecTransformQuat(&rotated, rotation, point);
     halfLength = GSvecDistance(&midpoint, b);
@@ -882,7 +882,7 @@ static inline u8 peopleIsBetween(GSvec* a, GSvec* b, GSvec* point, f32 width)
     return FALSE;
 }
 
-/* fn_8018C558: a person's flag word (0 for a missing person). */
+/* peopleGetFlags: a person's flag word (0 for a missing person). */
 static inline u32 peopleGetFlagsByID(u32 groupId, u32 index)
 {
     PeopleEntry* entry;
@@ -894,7 +894,7 @@ static inline u32 peopleGetFlagsByID(u32 groupId, u32 index)
     return entry->flags;
 }
 
-/* fn_80189328: set or clear a person's talkable flag; returns its previous state. */
+/* peopleSetTalkable_80189328: set or clear a person's talkable flag; returns its previous state. */
 static inline u8 peopleSetTalkable(u32 groupId, u32 index, u8 enable)
 {
     PeopleEntry* entry;
@@ -994,7 +994,7 @@ static inline void peopleTurnToModel(u32 groupId, u32 index, u32 targetGroupId, 
 /*
  * Whether `point` touches the triangle `verts` (facing `normal`) within
  * `reach`: in front of its plane, the closest plane point near enough and
- * inside the triangle. On a hit `result` receives that point. fn_801870E8
+ * inside the triangle. On a hit `result` receives that point. peopleCheckWallQuad
  * expands it for each of the wall quad's four triangles.
  */
 static inline BOOL peopleTouchTriangle(GSvec* result, void* normal, GSvec* verts, GSvec* point, f32 reach)
@@ -1038,7 +1038,7 @@ static inline void peopleSetVisibleInline(u32 groupId, u32 index, u8 visible)
     if (entry == NULL) {
         return;
     }
-    fn_8018FB60(entry, visible);
+    peopleSetModelVisible(entry, visible);
     peopleSetShadowVisible(groupId, index, visible);
 }
 
@@ -1083,7 +1083,7 @@ static inline void peopleDetachHeld(u32 groupId, u32 index)
     }
 }
 
-/* fn_801848D0: attach part `partIndex` of the model of resource (group, id) to `model`. */
+/* peopleAttachModelPart: attach part `partIndex` of the model of resource (group, id) to `model`. */
 static inline void peopleAttachPart(void* model, s32 group, s32 id, s32 partIndex)
 {
     void* resource;
@@ -1119,7 +1119,7 @@ static inline void peopleGetPartPosition(u32 groupId, u32 index, s32 partIndex, 
     }
 }
 
-/* fn_8018C8F4: overwrite a person's flag word. */
+/* peopleWriteFlagsByID_8018C8F4: overwrite a person's flag word. */
 static inline void peopleWriteFlagsByID(u32 groupId, u32 index, u32 flags)
 {
     PeopleEntry* entry;
@@ -1206,7 +1206,7 @@ static inline void peopleApproach(f32* value, f32 target, f32 step)
  * Aim the two shadow lights at the first visible person of each kind (light
  * 0: the player characters, light 1: everyone else) from 2500 units above.
  */
-void fn_8018F30C(void)
+void peopleUpdateShadowLights(void)
 {
     s32 lightIndex;
     s32 i;
@@ -1255,7 +1255,7 @@ void peopleSetMotionSlot(PeopleEntry* entry, s32 motionIndex)
     if (info == NULL) {
         return;
     }
-    fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+    peopleInfoGetMotion(info, (u8)entry->motionIndex, &animIndex, &loop);
     if (animIndex == -1) {
         return;
     }
@@ -1405,12 +1405,12 @@ u8 peopleMoveCommit(PeopleEntry* entry, GSvec* position, GSvec* transform)
     BOOL foundStep;
 
     resource = GSresGetResource(0, 2);
-    if (resource != NULL && resource[1] != 0 && (fn_800F7BC4(1) & 0x200)) {
+    if (resource != NULL && resource[1] != 0 && (GSinputGetButtons(1) & 0x200)) {
         peopleApplyPosition(entry, position);
         return 1;
     }
 
-    fn_80101B90(0xFF);
+    gappLoadMeterDraw(0xFF);
     if (peopleTestFlags(entry, 0x700)) {
         result = *position;
         last = *transform;
@@ -1423,7 +1423,7 @@ u8 peopleMoveCommit(PeopleEntry* entry, GSvec* position, GSvec* transform)
         if (info == NULL) {
             radius = 3.0f;
         } else {
-            radius = fn_8018F5E4(info);
+            radius = charModelGetRadius(info);
         }
 
         if (peopleTestFlags(entry, 0x800)) {
@@ -1451,7 +1451,7 @@ u8 peopleMoveCommit(PeopleEntry* entry, GSvec* position, GSvec* transform)
         }
 
         if (peopleTestFlags(entry, 0x200)) {
-            count = fn_8010E138(&result, hits);
+            count = GScolsys2CollectWalkHeight(&result, hits);
             if (count >= 2) {
                 bestStep = -1000000.0f;
                 bestAny = bestStep;
@@ -1482,7 +1482,7 @@ u8 peopleMoveCommit(PeopleEntry* entry, GSvec* position, GSvec* transform)
 
         *position = result;
     }
-    fn_80101B90(0xFF0000);
+    gappLoadMeterDraw(0xFF0000);
     peopleApplyPosition(entry, position);
     return 1;
 }
@@ -1499,7 +1499,7 @@ void peopleSystemInit(u32 maxPeople)
         GSlightSetType(*light, 2);
         GSlightSetActive(*light, 0);
     }
-    fn_800FF4D4(&funcs, 1);
+    floorRegisterHandler(&funcs, 1);
 }
 
 /*
@@ -1556,33 +1556,33 @@ u8 peopleOpenSub(PeopleEntry* entry, u32 groupId, u32 index, s32 objectId)
 
     info = peopleInfoBiosGetPtr((void*)objectId);
     if (info != NULL) {
-        fn_8018F4C8(info, 2, &animIndex, &loop);
+        peopleInfoGetMotion(info, 2, &animIndex, &loop);
         if (animIndex != -1) {
             GSmodelSetAnimIndex(model, animIndex);
             GSmodelGetFrameCount(model, &frames, NULL);
             if (frames > 0.0f) {
-                entry->field_34 = fn_8018F5CC(info) / frames;
+                entry->field_34 = peopleInfoGetRadius(info) / frames;
             } else {
                 GSlogWrite("ERROR! [%s]: People[%d,%d] WalkMotion[%d] is frame zero.\n",
                            __FUNCTION__, groupId, index, animIndex);
             }
         }
-        fn_8018F4C8(info, 3, &animIndex, &loop);
+        peopleInfoGetMotion(info, 3, &animIndex, &loop);
         if (animIndex != -1) {
             GSmodelSetAnimIndex(model, animIndex);
             GSmodelGetFrameCount(model, &frames, NULL);
             if (frames > 0.0f) {
-                entry->field_38 = fn_8018F5B4(info) / frames;
+                entry->field_38 = peopleInfoGetHeight(info) / frames;
             } else {
                 GSlogWrite("ERROR! [%s]: People[%d,%d] RunMotion[%d] is frame zero.\n",
                            __FUNCTION__, groupId, index, animIndex);
             }
         }
-        fn_8018F4C8(info, 1, &animIndex, &loop);
+        peopleInfoGetMotion(info, 1, &animIndex, &loop);
         if (animIndex != -1) {
             peoplePlayMotion(groupId, index, animIndex, 0, TRUE);
         }
-        GSmodelSetBoundCheck(model, fn_8018F490(info));
+        GSmodelSetBoundCheck(model, peopleInfoGetFlag4(info));
     }
 
     character = floorCharacterGetInfo(groupId, index);
@@ -1649,7 +1649,7 @@ void peopleClose(PeopleEntry* entry, u8 releaseWalkList)
     if (releaseWalkList) {
         peopleFreeWalkList(entry->groupId, entry->index);
     }
-    fn_800F9210(entry->groupId, entry->index);
+    GSresReleaseOwnerItem(entry->groupId, entry->index);
     if (entry->modelHandle != NULL) {
         GSmodelFree(entry->modelHandle);
         entry->modelHandle = NULL;
@@ -1669,7 +1669,7 @@ void peopleCloseByID(u32 groupId, u32 index)
 }
 
 /* Close every active person. */
-void fn_8018DB04(u8 releaseWalkList)
+void peopleCloseAll(u8 releaseWalkList)
 {
     s32 i;
     PeopleEntry* entry;
@@ -1682,7 +1682,7 @@ void fn_8018DB04(u8 releaseWalkList)
 }
 
 /* Hide every active person and block its script thread. */
-void fn_8018DA88(void)
+void peopleHideAllAndSuspend(void)
 {
     s32 i;
     PeopleEntry* entry;
@@ -1693,7 +1693,7 @@ void fn_8018DA88(void)
         if (!entry->active) continue;
         if (entry == NULL) continue;
         entry->visible = 0;
-        thread = fn_800F7108(entry->flagId);
+        thread = GSvmGetThreadByKey(entry->flagId);
         if (thread != NULL) {
             GSthreadBlock(thread);
         }
@@ -1758,7 +1758,7 @@ u8 peopleIsTreasure(u32 groupId, u32 index)
  * along it than its half length (measured from the midpoint in the
  * segment's frame). `point` is moved into the midpoint's frame.
  */
-u8 fn_8018D680(GSvec* a, GSvec* b, GSvec* point, f32 width)
+u8 peopleIsPointNearSegment(GSvec* a, GSvec* b, GSvec* point, f32 width)
 {
     GSvec midpoint;
     GSvec rotated;
@@ -1767,7 +1767,7 @@ u8 fn_8018D680(GSvec* a, GSvec* b, GSvec* point, f32 width)
 
     GSvecAdd(&midpoint, a, b);
     vecScale(&midpoint, &midpoint, 0.5f);
-    fn_800E0718(rotation, &lbl_8031554C, peopleTurnTo(b, a, 0.0f));
+    GSquatRotAxisRad(rotation, &lbl_8031554C, peopleTurnTo(b, a, 0.0f));
     GSvecSub(point, point, &midpoint);
     GSvecTransformQuat(&rotated, rotation, point);
     halfLength = GSvecDistance(&midpoint, b);
@@ -1840,7 +1840,7 @@ PeopleEntry* peopleFindTalkTarget(u32 groupId, u32 index, f32 range, f32 fov)
     GSvecCopy(&sourcePosition, peopleGetPositionPtr(source));
     info = peopleInfoBiosGetPtr(source->scriptRef);
     if (info != NULL) {
-        sourceRadius = fn_8018F5E4(info);
+        sourceRadius = charModelGetRadius(info);
     } else {
         sourceRadius = 4.0f;
     }
@@ -1875,7 +1875,7 @@ PeopleEntry* peopleFindTalkTarget(u32 groupId, u32 index, f32 range, f32 fov)
         }
         peopleGetHeadPosition(candidate->groupId, candidate->index, &candidatePosition);
         distance = GSvecDistance(&sourcePosition, &candidatePosition);
-        if (distance > range + fn_8018F5E4(candidateInfo)) {
+        if (distance > range + charModelGetRadius(candidateInfo)) {
             continue;
         }
         angle = peopleTurnTo(&candidatePosition, &sourcePosition, source->field_40);
@@ -1898,7 +1898,7 @@ PeopleEntry* peopleFindTalkTarget(u32 groupId, u32 index, f32 range, f32 fov)
             continue;
         }
         if (hasMember && peopleIsBetween(&sourcePosition, &candidatePosition, &memberPosition,
-                                         fn_8018F5E4(candidateInfo))) {
+                                         charModelGetRadius(candidateInfo))) {
             continue;
         }
         score = distance * distance * fabs(angle) / 2.0;
@@ -1924,7 +1924,7 @@ PeopleEntry* peopleFindTalkTarget(u32 groupId, u32 index, f32 range, f32 fov)
 }
 
 /*
- * Register a person with the human-collision system (fn_80110084) if its
+ * Register a person with the human-collision system (GScolsys2HumanRegister) if its
  * info asks for it (collision type 1) and it has no collision yet; the
  * cylinder has the info's radius and a height of 17.
  */
@@ -1946,14 +1946,14 @@ void peopleRegisterHumanCollision(u32 groupId, u32 index)
     if (entry->shadowId >= 0) {
         return;
     }
-    if (fn_8018F5FC(info) != 1) {
+    if (peopleInfoGetCollisionType(info) != 1) {
         return;
     }
     collision.groupId = groupId;
     collision.index = index;
-    collision.radius = fn_8018F5E4(info);
+    collision.radius = charModelGetRadius(info);
     collision.height = 17.0f;
-    if (fn_80110084(&id, &collision) == 0) {
+    if (GScolsys2HumanRegister(&id, &collision) == 0) {
         entry->shadowId = id;
     } else {
         entry->shadowId = -1;
@@ -1974,7 +1974,7 @@ void std151_characterFaceDirection(u32 groupId, u32 index, u8 visible)
     }
 }
 
-void fn_8018C8F4(u32 groupId, u32 index, u32 flags)
+void peopleWriteFlagsByID_8018C8F4(u32 groupId, u32 index, u32 flags)
 {
     PeopleEntry* entry;
 
@@ -2005,7 +2005,7 @@ void peopleClearFlagsByIndex(u32 groupId, u32 index, u32 mask)
 }
 
 /* A person's flag word (0 for a missing person). */
-u32 fn_8018C558(u32 groupId, u32 index)
+u32 peopleGetFlags(u32 groupId, u32 index)
 {
     return peopleGetFlagsByID(groupId, index);
 }
@@ -2030,7 +2030,7 @@ void peopleSetVisible(u32 groupId, u32 index, u8 visible)
     if (entry == NULL) {
         return;
     }
-    fn_8018FB60(entry, visible);
+    peopleSetModelVisible(entry, visible);
     peopleSetShadowVisible(groupId, index, visible);
 }
 
@@ -2172,7 +2172,7 @@ u8 std051_characterSetAnimation(u32 groupId, u32 index, s32 animIndex, s32 frame
     return restart;
 }
 
-u8 fn_8018B558(u32 groupId, u32 index, s32 blendAnimation,
+u8 peopleSetAnimation(u32 groupId, u32 index, s32 blendAnimation,
                 s32 animation, u32 frames) {
     PeopleEntry* entry;
     void* model;
@@ -2292,7 +2292,7 @@ BOOL peopleWaitSyncMotion(u32 groupId, u32 index, u8 wait)
 }
 
 /*
- * Whether a person's motion blend (fn_8018B558) is still running. With
+ * Whether a person's motion blend (peopleSetAnimation) is still running. With
  * `wait`, yield until it completes (logging and giving up if the model's
  * motion loops) and return FALSE.
  */
@@ -2428,7 +2428,7 @@ BOOL peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag)
         }
         if (entry->visible != 0) {
             isVisible = TRUE;
-        } else if (fn_800F7108(entry->flagId) == NULL) {
+        } else if (GSvmGetThreadByKey(entry->flagId) == NULL) {
             isVisible = TRUE;
         } else {
             isVisible = FALSE;
@@ -2532,7 +2532,7 @@ void std055_characterEndSpeech(u32 groupId, u32 index)
 }
 
 /* Set or clear a person's talkable flag; returns its previous state. */
-u8 fn_80189328(u32 groupId, u32 index, u8 enable)
+u8 peopleSetTalkable_80189328(u32 groupId, u32 index, u8 enable)
 {
     PeopleEntry* entry;
     u8 wasTalkable;
@@ -2616,7 +2616,7 @@ void std067_characterStopLookAt(u32 groupId, u32 index)
         return;
     }
     part = GSmodelGetPart(model, partIndex);
-    fn_800EE288(part);
+    characterClearLookTarget(part);
     GSpartFree(part);
     entry->threadHandle = NULL;
     set__5GSvecFfff(entry->headTarget, 0.0f, 0.0f, 0.0f);
@@ -2706,7 +2706,7 @@ void peopleMoveByVector(u32 groupId, u32 index, GSvec* offset, u8 face)
  * timeGetLastFrameTime, sin/cos, GScolsys2HumanGetWalkHeight,
  * gimmickBoxOnBox, ...; trevor403/xd-asm b1087f18), so the sister-title
  * clause is not met; nothing else in Colosseum repeats the block
- * (tools/find_inline_expansions.py, best 0.585 in fn_80186B5C); and the
+ * (tools/find_inline_expansions.py, best 0.585 in peopleMoveByPad); and the
  * expansion leaves no written fingerprint. Its only evidence is the
  * colouring: retail gives the second lookup's entry r29 and the model r28,
  * which MWCC does only when `model` is an inline's local (coloured before
@@ -2741,7 +2741,7 @@ static inline u8 peopleMoveAlongAngle(u32 groupId, u32 index, f32 yaw, f32 speed
 
     fn_8018FC98(entry, &position);
     GSmodelGetFrameCount(model, &frameStart, &frameEnd);
-    if (fn_800D37CC() == 50) {
+    if (GSgfxGetVsyncRate() == 50) {
         speed *= 1.2f;
     }
 
@@ -2754,7 +2754,7 @@ static inline u8 peopleMoveAlongAngle(u32 groupId, u32 index, f32 yaw, f32 speed
         speed = (speed - 1.0f) * (entry->field_38 - entry->field_34) + entry->field_34;
     }
 
-    fn_800E0718(rotation, &lbl_8031554C, yaw);
+    GSquatRotAxisRad(rotation, &lbl_8031554C, yaw);
     set__5GSvecFfff(&localStep, 0.0f, 0.0f, speed);
     GSvecTransformQuat(&worldStep, rotation, &localStep);
     ticks = (f32)GSgetFrameStep();
@@ -2867,14 +2867,14 @@ u8 std058_characterCheckWithinBounds(u32 groupId, u32 index, f32 x0, f32 z0, f32
     debug = GSresGetResource(0, 2);
     if (debug != NULL && debug[0] != 0) {
         cameraGetActive();
-        fn_800D258C();
+        GScameraSetCurrent();
         _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
         gfxSetCullMode(0);
         gfxSetVtxDesc(lbl_80314638);
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetBlendMode(1, 6, 7);
-        fn_800D9ED8(0);
+        gfxSetFlag1A(0);
         gfxSetPrimitive(4);
         gfxBegin(10);
         gfxVtxPos(x0, position.y, z0);
@@ -2925,7 +2925,7 @@ u8 std058_characterCheckWithinBounds(u32 groupId, u32 index, f32 x0, f32 z0, f32
  * segment start..end from 50 below to 50 above `position`'s height (tested
  * as four triangles). On a hit `position` receives the contact point.
  */
-u8 fn_801870E8(GSvec* position, GSvec* point, GSvec* start, GSvec* end, void* normal, f32 reach)
+u8 peopleCheckWallQuad(GSvec* position, GSvec* point, GSvec* start, GSvec* end, void* normal, f32 reach)
 {
     GSvec verts[3];
 
@@ -2990,7 +2990,7 @@ u8 fn_801870E8(GSvec* position, GSvec* point, GSvec* start, GSvec* end, void* no
  * first, so it took tilt's f31). A static inline shared with fn_80188214
  * therefore did not reproduce this function.
  */
-GSvec fn_80186B5C(u32 groupId, u32 index)
+GSvec peopleMoveByPad(u32 groupId, u32 index)
 {
     PeopleEntry* entry;
     GSvec result = {0.0f, 0.0f, 0.0f};
@@ -3018,16 +3018,16 @@ GSvec fn_80186B5C(u32 groupId, u32 index)
     subStickX = GSinputGetLeftStickXData(1, 0);
     subStickY = GSinputGetLeftStickYData(1, 0);
     if (stickX == 0 && stickY == 0) {
-        if (fn_800F7BC4(1) & 8) {
+        if (GSinputGetButtons(1) & 8) {
             stickY = -56;
         }
-        if (fn_800F7BC4(1) & 4) {
+        if (GSinputGetButtons(1) & 4) {
             stickY = 56;
         }
-        if (fn_800F7BC4(1) & 1) {
+        if (GSinputGetButtons(1) & 1) {
             stickX = -56;
         }
-        if (fn_800F7BC4(1) & 2) {
+        if (GSinputGetButtons(1) & 2) {
             stickX = 56;
         }
         subStickX = stickX;
@@ -3084,7 +3084,7 @@ GSvec fn_80186B5C(u32 groupId, u32 index)
         } else {
             speed = (tilt - 1.0f) * (entry->field_38 - entry->field_34) + entry->field_34;
         }
-        fn_800E0718(rotation, &lbl_8031554C, angle);
+        GSquatRotAxisRad(rotation, &lbl_8031554C, angle);
         set__5GSvecFfff(&localStep, 0.0f, 0.0f, speed);
         GSvecTransformQuat(&worldStep, rotation, &localStep);
         vecScale(&result, &worldStep, (f32)GSgetFrameStep());
@@ -3132,7 +3132,7 @@ u8 std170_cameraFocusOnCharacter(u32 groupId, u32 index, u8 push, f32 x0, f32 z0
     if (peopleTestFlags(entry, 0x40000000)) {
         GSvecCopy(&direction, &entry->collisionX);
         vecScale(&scaledDirection, &direction, 0.1f);
-        direction = fn_80186B5C(0, 100);
+        direction = peopleMoveByPad(0, 100);
         GSvecCopy(&transform, peopleGetTransform(entry));
         GSvecAdd(&position, &transform, &direction);
     } else {
@@ -3146,14 +3146,14 @@ u8 std170_cameraFocusOnCharacter(u32 groupId, u32 index, u8 push, f32 x0, f32 z0
     debug = GSresGetResource(0, 2);
     if (debug != NULL && debug[0] != 0) {
         cameraGetActive();
-        fn_800D258C();
+        GScameraSetCurrent();
         _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
         gfxSetCullMode(0);
         gfxSetVtxDesc(lbl_80314638);
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetBlendMode(1, 6, 7);
-        fn_800D9ED8(0);
+        gfxSetFlag1A(0);
         gfxSetPrimitive(4);
         gfxBegin(4);
         gfxVtxPos(x0, position.y - 50.0f, z0);
@@ -3169,7 +3169,7 @@ u8 std170_cameraFocusOnCharacter(u32 groupId, u32 index, u8 push, f32 x0, f32 z0
 
     info = peopleInfoBiosGetPtr(entry->scriptRef);
     if (info != NULL) {
-        radius = fn_8018F5E4(info);
+        radius = charModelGetRadius(info);
     } else {
         radius = 4.0f;
     }
@@ -3201,7 +3201,7 @@ u8 std170_cameraFocusOnCharacter(u32 groupId, u32 index, u8 push, f32 x0, f32 z0
         }
         vecScale(&testPoint, &direction, next);
         GSvecAdd(&testPoint, &transform, &testPoint);
-        if (fn_801870E8(&projectedStart, &testPoint, &lineStart, &lineEnd, &projectedDelta, reach)) {
+        if (peopleCheckWallQuad(&projectedStart, &testPoint, &lineStart, &lineEnd, &projectedDelta, reach)) {
             if (push) {
                 GScolsy2UtilGetPointExtentionLine(&contact, &projectedStart, &testPoint, reach + 0.0001f);
                 if (colsysWallSweep(&transform, &contact, &hit, 4.0f)) {
@@ -3257,7 +3257,7 @@ u8 peopleCanSee(u32 groupId, u32 index, f32 range, u32 targetGroupId, u32 target
     }
     info = peopleInfoBiosGetPtr(entry->scriptRef);
     if (info != NULL) {
-        radius = fn_8018F5E4(info);
+        radius = charModelGetRadius(info);
     }
     if (GScolsys2HitNpcCollision(&position, &targetPosition, NULL, radius)) {
         return FALSE;
@@ -3349,7 +3349,7 @@ void peopleUpdateMotion(PeopleEntry* entry, f32 speed)
  * Step a person toward field_5C. Returns 2 if the step failed, 1 if it
  * overshot (the person is then placed on the target), 0 otherwise.
  */
-s32 fn_80185AAC(PeopleEntry* entry)
+s32 peopleStepToTarget(PeopleEntry* entry)
 {
     GSvec delta;
     f32 oldLength;
@@ -3378,7 +3378,7 @@ void peopleMoveToTarget(PeopleEntry* entry)
     void* transform;
     GSvec delta;
 
-    if (fn_80185AAC(entry) != 0) {
+    if (peopleStepToTarget(entry) != 0) {
         entry->state = 0;
     }
     if (entry == NULL) {
@@ -3493,7 +3493,7 @@ void peopleMoveWander(PeopleEntry* entry)
     switch (entry->subState) {
     case 0:
         if (entry->animBlendFactor > 0.0f) {
-            frameRate = (f32)fn_800D37CC();
+            frameRate = (f32)GSgfxGetVsyncRate();
             entry->animBlendFactor -= (f32)GSgetFrameStep() / frameRate;
             if (entry->animBlendFactor < 0.0f) {
                 entry->animBlendFactor = 0.0f;
@@ -3512,12 +3512,12 @@ void peopleMoveWander(PeopleEntry* entry)
         entry->subState = 2;
         /* fallthrough */
     case 2:
-        result = fn_80185AAC(entry);
+        result = peopleStepToTarget(entry);
         if (result == 2) {
             peopleStartTurnInline(entry->groupId, entry->index, 3.141592653589793 + entry->field_40, 1.0f);
             entry->subState = 2;
         } else if (result == 1) {
-            entry->animBlendFactor = entry->field_8C * fn_800E0BA0() + entry->field_88;
+            entry->animBlendFactor = entry->field_8C * GSrandfSigned() + entry->field_88;
             entry->subState = 0;
         }
         break;
@@ -3611,7 +3611,7 @@ void peopleSetWalkSpeed(u32 groupId, u32 index, f32 speed) {
 }
 
 /* Attach part `partIndex` of the model of resource (group, id) to `model`. */
-void fn_801848D0(void* model, s32 group, s32 id, s32 partIndex)
+void peopleAttachModelPart(void* model, s32 group, s32 id, s32 partIndex)
 {
     void* resource;
     void* part;
@@ -3794,7 +3794,7 @@ s32 peopleStartWander(u32 groupId, u32 index, f32 field80) {
     return 1;
 }
 
-s32 fn_801839A0(u32 groupId, u32 index, f32 field88, f32 field8C) {
+s32 peopleFindNear(u32 groupId, u32 index, f32 field88, f32 field8C) {
     PeopleEntry* entry;
 
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
@@ -3819,7 +3819,7 @@ u32 peopleGetTalkScript(u32 groupId, u32 index)
 }
 
 /* The move script of a person's floor-character record. */
-u32 fn_80183958(u32 groupId, u32 index)
+u32 peopleGetMoveScriptId(u32 groupId, u32 index)
 {
     return floorCharacterBiosGetMoveSctID(floorCharacterGetInfo(groupId, index));
 }
@@ -3842,7 +3842,7 @@ s32 peopleStartScript(u32 groupId, u32 index, u32 flagId, u32 param1, u32 param2
 }
 
 /* Hide the person whose self pointer is `self` and suspend its script thread. */
-s32 fn_80183730(PeopleEntry* self)
+s32 peopleHideAndSuspendBySelf(PeopleEntry* self)
 {
     PeopleEntry* entry;
     void* thread;
@@ -3852,7 +3852,7 @@ s32 fn_80183730(PeopleEntry* self)
         return 0;
     }
     entry->visible = 0;
-    thread = fn_800F7108(entry->flagId);
+    thread = GSvmGetThreadByKey(entry->flagId);
     if (thread == NULL) {
         return 0;
     }
@@ -3861,7 +3861,7 @@ s32 fn_80183730(PeopleEntry* self)
 }
 
 /* Show the person whose self pointer is `self` and resume its script thread. */
-s32 fn_80183688(PeopleEntry* self)
+s32 peopleShowAndResumeBySelf(PeopleEntry* self)
 {
     PeopleEntry* entry;
     void* thread;
@@ -3871,7 +3871,7 @@ s32 fn_80183688(PeopleEntry* self)
         return 0;
     }
     entry->visible = 1;
-    thread = fn_800F7108(entry->flagId);
+    thread = GSvmGetThreadByKey(entry->flagId);
     if (thread == NULL) {
         return 0;
     }
@@ -3986,7 +3986,7 @@ void std131_characterSurpriseAnimation(u32 groupId, u32 index) {
 
     model = GSresGetResource(modelGroup, modelIndex);
     if (model != NULL) {
-        fn_800E3CC8(model, 1);
+        GSmodelSetFlag200(model, 1);
         GSmodelClearShadowFlags(model, 1);
     }
 
@@ -4023,7 +4023,7 @@ static inline void peopleMoveTypeRandomRot(PeopleEntry* entry)
     switch (entry->subState) {
     case 0:
         if (entry->animBlendFactor > 0.0f) {
-            frameCount = (f32)fn_800D37CC();
+            frameCount = (f32)GSgfxGetVsyncRate();
             entry->animBlendFactor -= (f32)GSgetFrameStep() / frameCount;
             if (entry->animBlendFactor < 0.0f) {
                 entry->animBlendFactor = 0.0f;
@@ -4034,14 +4034,14 @@ static inline void peopleMoveTypeRandomRot(PeopleEntry* entry)
         /* fallthrough */
     case 1:
         angle = 3.141592653589793 + entry->field_40 +
-                1.5707963267948966 * fn_800E0BA0();
+                1.5707963267948966 * GSrandfSigned();
         angle = fmod(angle, 6.2831855f);
         peopleStartTurnInline(entry->groupId, entry->index, angle, 1.0f);
         entry->subState = 2;
         /* fallthrough */
     case 2:
         entry->animBlendFactor =
-            entry->field_8C * fn_800E0BA0() + entry->field_88;
+            entry->field_8C * GSrandfSigned() + entry->field_88;
         entry->subState = 0;
         break;
     }
@@ -4088,12 +4088,12 @@ void peopleMain(void)
     /*
      * RULE-EXCEPTION(title-path): block-scope extern used to stop an
      * inline - see docs/RULE_EXCEPTIONS.md. Under the TU's -inline auto,
-     * fn_8018F30C (defined above) is just under the auto-inline limit and
+     * peopleUpdateShadowLights (defined above) is just under the auto-inline limit and
      * would be expanded here; retail calls it. A clean fix needs the source
-     * form that puts fn_8018F30C over the limit (or keeps it out of the TU's
+     * form that puts peopleUpdateShadowLights over the limit (or keeps it out of the TU's
      * auto-inline candidates) without dead code.
      */
-    extern void fn_8018F30C(void);
+    extern void peopleUpdateShadowLights(void);
     s32 i;
     PeopleEntry* entry;
     GSvec currentPosition;
@@ -4120,7 +4120,7 @@ void peopleMain(void)
 
         if (entry->visible) {
             visible = TRUE;
-        } else if (!fn_800F7108(entry->flagId)) {
+        } else if (!GSvmGetThreadByKey(entry->flagId)) {
             visible = TRUE;
         } else {
             visible = FALSE;
@@ -4160,7 +4160,7 @@ void peopleMain(void)
         peopleUpdateShadows(entry);
     }
 
-    fn_8018F30C();
+    peopleUpdateShadowLights();
 }
 
 /* Lock a person for talking (playing motion slot 1), or release the lock. */
@@ -4222,7 +4222,7 @@ s32 peopleTalkPause(u32 groupId, u32 index, u8 doInteract)
 }
 
 /* The people movement step (auto-inlined into the per-frame update). */
-void fn_801812C4(PeopleEntry* entry)
+void peopleMoveStep(PeopleEntry* entry)
 {
     peopleHeadLookUpdate(entry, 75.0f);
 }

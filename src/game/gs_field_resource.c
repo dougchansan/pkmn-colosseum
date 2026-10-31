@@ -115,7 +115,7 @@ extern void _unloadColsys__FPvUlUl(void);  /* resource completion callback (Col/
 
 extern void* GSresGetResource();        /* GSres simple alloc */
 extern void* GSresRegisterResource();        /* GSres install loader */
-extern void  fn_8010CFE4();        /* PKX overlap setup */
+extern void  GScolsys2SetFloor();        /* PKX overlap setup */
 extern u32   GStextureLoad();        /* WZX overlap check */
 extern void* gsParticleBankLoad();        /* node lookup */
 
@@ -296,7 +296,7 @@ void* floorReadTexPreFunc(u32 resId, u32 loadMode, u32 dataSize) {
 /* 0x801147D4 | 0x34 | matched, unproven name */
 void* floorReadColPostFunc(void) {
     void* result = GSresGetResource();
-    fn_8010CFE4();
+    GScolsys2SetFloor();
     return result;
 }
 

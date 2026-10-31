@@ -1,6 +1,6 @@
 /**
  * @file menuFight_exact_800119A8.c
- * @brief menuFightCloseTop / fn_80011A1C, 0x800119A8 - 0x80011B4C.
+ * @brief menuFightCloseTop / menuFightOpenCommandMenu, 0x800119A8 - 0x80011B4C.
  *
  * Function-boundary carve of the menuFight TU (see menuFight.c): close the
  * top fight menu (window 0x4B, or 0xF6 on the alternate layout), and open
@@ -20,7 +20,7 @@ u32 menuFightCloseTop(void* obj) {
     return 0;
 }
 
-s32 fn_80011A1C(u8* obj, s32 a1, s32 a2) {
+s32 menuFightOpenCommandMenu(u8* obj, s32 a1, s32 a2) {
     u32 sp8;
     s32 ret;
     u8 locked;

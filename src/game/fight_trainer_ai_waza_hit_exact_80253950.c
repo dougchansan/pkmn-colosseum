@@ -40,14 +40,14 @@ u32 fightTrainerAiWazaHit212(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 u32 fightTrainerAiWazaHit211(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_80235974(void*, u32);
-    extern u32 fn_802359D8(void*, u32);
+    extern u32 fightTrainerAiGetAbicntSpeDef(void*, u32);
+    extern u32 fightTrainerAiGetAbicntSpeAtk(void*, u32);
     extern u8 fightTrainerAiCheckAbiCnt(void*, u32, u32, u32, u32, u32, u32);
     u32 firstStatus;
     u32 secondStatus;
 
-    firstStatus = fn_802359D8(ctx, param1);
-    secondStatus = fn_80235974(ctx, param1);
+    firstStatus = fightTrainerAiGetAbicntSpeAtk(ctx, param1);
+    secondStatus = fightTrainerAiGetAbicntSpeDef(ctx, param1);
     if ((firstStatus & 0xff) >= 0xc) {
         if ((secondStatus & 0xff) >= 0xc) {
             return 0;
@@ -120,14 +120,14 @@ s32 fightTrainerAiWazaHit207(void* ctx, u32 param1, u32 param2, u32 param3) {
 }
 
 u32 fightTrainerAiWazaHit206(void* ctx, u32 param1, u32 param2, u32 param3) {
-    extern u32 fn_80235974(void*, u32);
+    extern u32 fightTrainerAiGetAbicntSpeDef(void*, u32);
     extern u32 fightTrainerAiGetAbicntPhyDef(void*, u32);
     extern u8 fightTrainerAiCheckAbiCnt(void*, u32, u32, u32, u32, u32, u32);
     u32 firstStatus;
     u32 secondStatus;
 
     firstStatus = fightTrainerAiGetAbicntPhyDef(ctx, param1);
-    secondStatus = fn_80235974(ctx, param1);
+    secondStatus = fightTrainerAiGetAbicntSpeDef(ctx, param1);
     if ((firstStatus & 0xff) >= 0xc) {
         if ((secondStatus & 0xff) >= 0xc) {
             return 0;
@@ -177,7 +177,7 @@ s32 fightTrainerAiWazaHit204(void* ctx, u32 param1, u32 param2, u32 param3) {
 
 s32 fightTrainerAiWazaHit203(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u8 fightTrainerAiGetNowTenkou(void* ctx, u32 zero, u32 one);
-    extern u32 fn_80239500(void* ctx, u32 param2);
+    extern u32 fightTrainerAiGetWazaIryoku(void* ctx, u32 param2);
     extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     u8 state = fightTrainerAiGetNowTenkou(ctx, 0, 1);
@@ -196,7 +196,7 @@ s32 fightTrainerAiWazaHit203(void* ctx, u32 param1, u32 param2, u32 param3) {
         v1 = 0;
     }
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
-    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fightTrainerAiGetWazaIryoku(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {
@@ -248,26 +248,26 @@ s32 fightTrainerAiWazaHit199(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightTargetGetPtrAsNowFightType(u32 type, u32 elem);
     extern u8 fightSideIsJoutaiDataId(u32 a, u32 b);
     extern u8 fightTrainerAiIsPokemonJoutai(void* ctx, u32 elem, u32 type);
-    extern u8 fn_80237F74(void* ctx, u32 elem, u32 type);
+    extern u8 fightTrainerAiIsTokusei(void* ctx, u32 elem, u32 type);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     u32 side = fightTargetGetPtrAsNowFightType(2, param3);
     s32 gate;
     u8 flag;
 
-    if (fn_80237F74(ctx, param3, 0x14) == 1) {
+    if (fightTrainerAiIsTokusei(ctx, param3, 0x14) == 1) {
         return 0;
     }
-    if (fn_80237F74(ctx, param3, 0x11) == 1) goto allowedLabel;
-    if (fn_80237F74(ctx, param3, 0x14) == 1) {
+    if (fightTrainerAiIsTokusei(ctx, param3, 0x11) == 1) goto allowedLabel;
+    if (fightTrainerAiIsTokusei(ctx, param3, 0x14) == 1) {
         flag = 0;
         goto flagCheckDone;
     }
-    if (fn_80237F74(ctx, param3, 0x7) == 1) goto allowedLabel;
-    if (fn_80237F74(ctx, param3, 0xf) == 1) goto allowedLabel;
-    if (fn_80237F74(ctx, param3, 0x48) == 1) goto allowedLabel;
-    if (fn_80237F74(ctx, param3, 0x29) == 1) goto allowedLabel;
-    if (fn_80237F74(ctx, param3, 0x28) == 1) goto allowedLabel;
-    fn_80237F74(ctx, param3, 0xc);
+    if (fightTrainerAiIsTokusei(ctx, param3, 0x7) == 1) goto allowedLabel;
+    if (fightTrainerAiIsTokusei(ctx, param3, 0xf) == 1) goto allowedLabel;
+    if (fightTrainerAiIsTokusei(ctx, param3, 0x48) == 1) goto allowedLabel;
+    if (fightTrainerAiIsTokusei(ctx, param3, 0x29) == 1) goto allowedLabel;
+    if (fightTrainerAiIsTokusei(ctx, param3, 0x28) == 1) goto allowedLabel;
+    fightTrainerAiIsTokusei(ctx, param3, 0xc);
 allowedLabel:
     flag = 1;
 flagCheckDone:
@@ -321,14 +321,14 @@ s32 fightTrainerAiWazaHit197(void* ctx, u32 param1, u32 param2, u32 param3) {
 
 s32 fightTrainerAiWazaHit196(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
-    extern u32 fn_80239500(void* ctx, u32 param2);
+    extern u32 fightTrainerAiGetWazaIryoku(void* ctx, u32 param2);
     extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
     u32 v1 = fightTrainerAiGetWazaTenkouValue(ctx, param2, param1);
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fightTrainerAiGetWazaIryoku(ctx, param2)) == 0x43) {
         gate = 0;
     }
     if (gate == 0) {

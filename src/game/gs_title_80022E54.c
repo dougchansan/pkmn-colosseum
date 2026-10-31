@@ -1,5 +1,5 @@
 /**
- * Linked gs_title unit 0x80022E54 - 0x80023DA8 (fn_80022E54 .. itemFieldUseStatBoost)
+ * Linked gs_title unit 0x80022E54 - 0x80023DA8 (itemFieldUseOpenMenu .. itemFieldUseStatBoost)
  * and .sdata2 0x8047B8A0-0x8047B8A8, compiled from gs_title.c. The 0.5f
  * fade speed (0x8047B8A4) is this range's own literal; the 0.0f before it
  * belongs to the same pool but is read only by itemFieldUseCologne and fn_80022B3C,

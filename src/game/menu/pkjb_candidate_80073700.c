@@ -11,7 +11,7 @@
 #include "game/menu/pkjb_uploader_shared.h"
 
 /* 0x80073700 | 0x290: command 0x99, receive 0x278 bytes. */
-s32 fn_80073700(s32 chan, u8* data)
+s32 gbaCmdRecv99(s32 chan, u8* data)
 {
     u32 response;
     u8 status;
@@ -20,7 +20,7 @@ s32 fn_80073700(s32 chan, u8* data)
     u32 timeout;
     u32 start;
 
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }

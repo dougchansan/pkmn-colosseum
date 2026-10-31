@@ -1,6 +1,6 @@
 /**
  * @file pda_exact_8004A47C.c
- * @brief PDA mail screen layout, 0x8004A47C - 0x8004A7A8: fn_8004A47C points
+ * @brief PDA mail screen layout, 0x8004A47C - 0x8004A7A8: pdaTrainerDataLayout points
  *        the mail window's layout records at the wide or narrow variant.
  *        Copied from pda_range_80037158.c.
  */
@@ -39,7 +39,7 @@ extern PdaSpan12 lbl_8026719C;
 extern PdaSpan12 lbl_802671B4;
 
 /* Re-point the mail window layout tables at the wide or narrow variant. */
-void fn_8004A47C(void)
+void pdaTrainerDataLayout(void)
 {
     PdaSpan12 wide;
     PdaSpan12 narrow;

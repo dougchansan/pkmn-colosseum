@@ -7,7 +7,7 @@
  *   GSthreadUnblock, GSthreadBlock, GSthreadExecuteAll, GSthreadExecuteGroup,
  *   GSthreadClose, GSthreadIsRunning, GSthreadTerminateGroup,
  *   GSthreadTerminate, GSthreadSetArgs, GSthreadCreate, GSthread,
- *   fn_800F0A74 (dispatcher), fn_800F0F4C (exit trampoline).
+ *   _GSthreadDispatch (dispatcher), _GSthreadExitTrampoline (exit trampoline).
  *
  * The TU ends at 0x800F106C: the GSthread strings end at 0x80271062 and the
  * next string (lbl_80271068) starts on a fresh 8-byte boundary, and the
@@ -30,7 +30,7 @@ extern u16 _toolentryAlloc__FUl(u32 size);
 extern void threadSaveGPRRegisters(void);
 extern void threadSaveFPRRegisters(void);
 extern void threadExecute(void);
-extern void fn_800F02F4(void);
+extern void GSthreadGetArg(void);
 extern void _threadSwitch(void);
 extern void GSscratchFree(void*);
 extern u8 GSscratchIsPtr(void*);
@@ -54,7 +54,7 @@ extern GSThread* lbl_8047AC28; /* thread array */
 extern u16 lbl_8047AC2C;   /* thread array GSmem handle */
 extern u32 lbl_8047AC30;   /* maximum thread count */
 
-extern void fn_800F0F4C(u32 result);
+extern void _GSthreadExitTrampoline(u32 result);
 
 /* 0x800F0424 | 0x14 */
 void GSthreadUnblock(GSThread* thr) {
@@ -69,19 +69,19 @@ void GSthreadBlock(u8* p) {
 }
 
 /* thread wake/sleep dispatch -- declared old-style (no prototype) because
- * the real definition of fn_800F0A74 (further below) is itself an old-style
+ * the real definition of _GSthreadDispatch (further below) is itself an old-style
  * K&R definition, which mwcc treats as an unprototyped "(...)" type; a
  * modern prototype here would conflict with that declaration. */
-extern void fn_800F0A74();
+extern void _GSthreadDispatch();
 
 /* 0x800F0448 | 0x28 */
 void GSthreadExecuteAll(void) {
-    fn_800F0A74(0, 0);
+    _GSthreadDispatch(0, 0);
 }
 
 /* 0x800F0470 | 0x24 */
 void GSthreadExecuteGroup(u32 priority) {
-    fn_800F0A74(priority, 1);
+    _GSthreadDispatch(priority, 1);
 }
 
 /* 0x800F0494 | 0x28 */
@@ -151,7 +151,7 @@ void GSthreadTerminateGroup(u32 priority) {
  * GSmemFree (GSmemFree).
  *
  * Parameter kept as u32 (not GSThread*) to match the other GSthreadTerminate
- * extern declarations/call sites (fn_800F716C, fn_800F7274), which pass a
+ * extern declarations/call sites (GSvmStopGroup, fn_800F7274), which pass a
  * raw GSThread* value stored in a u32 slot.
  */
 void GSthreadTerminate(u32 ctxArg) {
@@ -245,7 +245,7 @@ void GSthreadSetArgs(void* threadPtr, s32 count, ...)
  *  Creates a cooperative thread: claims a free slot, allocates its stack
  *  (GSmemAlloc, 32-byte aligned) and register context block
  *  (_toolentryAlloc__FUl; 0x88 bytes, or 0x188 with FPU state), seeds the
- *  context so the thread starts in fn_800F0F4C, and links it into the
+ *  context so the thread starts in _GSthreadExitTrampoline, and links it into the
  *  affinity-sorted thread list.
  * ======================================================================= */
 /*
@@ -312,7 +312,7 @@ GSThread* GSthreadCreate(u32 affinity, u32 priority, u32 stackSize,
     thread->autoStart = autoStart;
 
     /* Build the initial register context: the new thread starts in the
-     * fn_800F0F4C trampoline with entryFunc in the saved LR slot and its
+     * _GSthreadExitTrampoline trampoline with entryFunc in the saved LR slot and its
      * stack pointer 8 bytes below the top of its stack. */
     ctx = GSmemLock(thread->ctxHandle);
     stack = GSmemLock(thread->stackHandle);
@@ -325,7 +325,7 @@ GSThread* GSthreadCreate(u32 affinity, u32 priority, u32 stackSize,
 
     ctx->gpr[1] = thread->stackSize - 8;
     ctx->lr = (u32)thread->entryFunc;
-    ctx->ctr = (u32)fn_800F0F4C;
+    ctx->ctr = (u32)_GSthreadExitTrampoline;
     *stack = -1; /* stack-overflow sentinel */
 
     fn_800E24B0(thread->ctxHandle);
@@ -397,7 +397,7 @@ s32 GSthread(u32 maxThreads) {
  * Return the first runnable thread after @p from (or from the list head when
  * @p from is NULL) -- active, not suspended, not sleeping, not pending
  * destruction and, when @p groupOnly is set, of priority @p priority.
- * Inlined four times into fn_800F0A74: every expansion materialises the NULL
+ * Inlined four times into _GSthreadDispatch: every expansion materialises the NULL
  * result (li rN, 0) on list exhaustion and re-tests it in the caller, and the
  * found path branches straight to that re-test (same idiom as
  * threadFindFreeSlot above).
@@ -430,7 +430,7 @@ static inline GSThread* threadFindRunnable(GSThread* from, u32 priority, u8 grou
  * marked for destruction meanwhile) and the search is repeated. nextStack is
  * only assigned when a next thread exists -- the target has no initialiser.
  */
-void fn_800F0A74(arg0, arg1)
+void _GSthreadDispatch(arg0, arg1)
     u32 arg0;
     u8 arg1;
 {
@@ -461,7 +461,7 @@ void fn_800F0A74(arg0, arg1)
         lbl_8047AC00 = (u32)thread;
         thread->pad0 = 1;
         ctx->gpr[1] = (u32)(scratchStack + ctx->gpr[1]);
-        ((GSThreadCtx *)lbl_804019F0)->ctr = (u32)fn_800F02F4;
+        ((GSThreadCtx *)lbl_804019F0)->ctr = (u32)GSthreadGetArg;
         lbl_8047AC24 = (u32)&lbl_804019F0;
         lbl_8047AC20 = (u32)ctx;
         lbl_8047AC10 = thread->usesFPU;
@@ -569,7 +569,7 @@ void fn_800F0A74(arg0, arg1)
  * thread is only marked finished and unlinked, leaving its slot and GSmem
  * handles for GSthreadClose. Either way control switches away for good.
  */
-void fn_800F0F4C(u32 result) {
+void _GSthreadExitTrampoline(u32 result) {
     GSThread* thread = (GSThread*)lbl_8047AC00;
 
     thread->unused = result;

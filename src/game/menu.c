@@ -138,23 +138,23 @@ void GSlogWrite(const char* fmt, ...);
 u32 GSthreadGetCurrentThread(void);
 void _threadSwitch(void);
 u32 GSgetFrameStep(void);
-void fn_800D9E4C(s32);
-void fn_800D9ED8(s32);
+void gfxSetFog_800D9E4C(s32);
+void gfxSetFlag1A(s32);
 void gfxSetBlendMode(s32, s32, s32);
-void fn_801D2404(void);
+void menuDrawBlinkIcon(void);
 void fadeDaemon(void);
-void fn_800FE6D0(s32 x, s32 y);
+void spriteSetOrigin(s32 x, s32 y);
 void fn_800FE35C(void);
 void spriteSetEnv(void);
 u16 menuSeTableLookup(void*, s32);
 void cmsRunSync(void*, u32, ...);
 int soundStartSE(u16);
-u8 fn_8008ABA0(s32);
-s32 fn_8008AB8C(s32);
+u8 gbaCommIsReady(s32);
+s32 gbaCommGetKeys(s32);
 u8 GSinputIsConnected(s32 pad_id);
 u32 GSinputGetLeftStickYData(s32 pad_id, s32 axis);
 u32 GSinputGetLeftStickXData(s32 pad_id, s32 axis);
-u32 fn_800F7BC4(s32 pad_id);
+u32 GSinputGetButtons(s32 pad_id);
 u32 gfxVtxDescAlloc(void);
 void gfxVtxDescSetAttr(u32, u32, u32, u32, u32, u32, u32, u32);
 void* GStextureLoad(void* data);
@@ -191,7 +191,7 @@ void windowCreateCursorSprite(MenuWindow* window);
 void winSpriteSetDisp(MenuSprite* sprite, u32 enable);
 void winSpriteDraw(MenuWindow* window, MenuSprite* sprite);
 void menuOffScreenDraw(void);
-void fn_80106F98(u32 id);
+void winSeqUpdateAll(u32 id);
 s32 winSeqCheckMove(u32 id);
 void winSeqMoveMenu(MenuWindow* window);
 void menuFaceInit(u32 count);
@@ -203,14 +203,14 @@ void menuReleaseOffScreen(f32 time);
 void menuCreateOffScreen(f32 time);
 s32 menuGetSelectItemNum(u32 id);
 s32 menuGetCursorFromItemID(u32 id, u32 itemId);
-void fn_801021F8(u32 id, u32 enable);
+void windowSetAllSpritesDisp(u32 id, u32 enable);
 void menuSetDisp(u32 id, u8 enable);
 s32 menuGetCursorItemID(u32 id);
 s32 menuSetCursor(u32 id, s32 cursor);
 s32 menuGetCursor(u32 id);
 s32 menuCloseSync(u32 id, u8 wait);
 void menuCloseFloor(void);
-void fn_801024E8(void);
+void windowCloseAll4(void);
 void menuClose(s32 id);
 s32 menuCloseCustom(u32 id, u32 mode, u8 wait);
 s32 menuIsCheck(u32 id);
@@ -316,7 +316,7 @@ s32 menuGetCursorFromItemID(u32 id, u32 itemId) {
 }
 
 /* 0x801021F8 | 0x5C */
-void fn_801021F8(u32 id, u32 enable) {
+void windowSetAllSpritesDisp(u32 id, u32 enable) {
     MenuWindow* window = windowSearchID(id);
     MenuSprite* sprite;
 
@@ -431,7 +431,7 @@ void menuCloseFloor(void) {
 }
 
 /* 0x801024E8 | 0x28 */
-void fn_801024E8(void) {
+void windowCloseAll4(void) {
     windowClose(NULL, 4);
 }
 
@@ -538,12 +538,12 @@ void menuDaemon(void) {
     u16 keys;
     u8 doFade = 1;
 
-    fn_801D2404();
+    menuDrawBlinkIcon();
     active = windowSearchID(windowGetActiveID());
     _menuUpdateKeyInfo__FP15WINDOW_SYS_WORK(&lbl_80404ACC);
-    fn_800D9E4C(0);
+    gfxSetFog_800D9E4C(0);
     menuOffScreenDraw();
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
     system = &lbl_80404ACC;
 
     for (node = system->head; node != NULL; node = node->next) {
@@ -635,7 +635,7 @@ void menuDaemon(void) {
                     MENU_PLAY_SE(node, 2);
                 }
                 if (node->close != 0) {
-                    fn_80106F98(node->id);
+                    winSeqUpdateAll(node->id);
                 }
             }
 
@@ -698,10 +698,10 @@ void menuDaemon(void) {
         if (doFade != 0 && node->fadePriority >= 0x50) {
             doFade = 0;
             fadeDaemon();
-            fn_800D9ED8(1);
+            gfxSetFlag1A(1);
         }
         if ((node->flags & 2) != 0) {
-            fn_800FE6D0(node->x, node->y);
+            spriteSetOrigin(node->x, node->y);
             fn_800FE35C();
             spriteSetEnv();
             for (sprite = node->sprites; sprite != NULL; sprite = sprite->next) {
@@ -718,14 +718,14 @@ void menuDaemon(void) {
         }
     }
 
-    fn_800FE6D0(0, 0);
+    spriteSetOrigin(0, 0);
     fn_800FE35C();
     gfxSetBlendMode(1, 6, 7);
     if (doFade != 0) {
         fadeDaemon();
     }
-    fn_800D9ED8(0);
-    fn_800D9E4C(1);
+    gfxSetFlag1A(0);
+    gfxSetFog_800D9E4C(1);
 }
 
 /* 0x80102ED4 | 0x64 */
@@ -1041,11 +1041,11 @@ u8 _menuGetAgbKeyInfo__FlPUs(s32 port, u16* keys) {
 
     device = port + 1;
     result = 0;
-    if (fn_8008ABA0(device) == 0) {
+    if (gbaCommIsReady(device) == 0) {
         return 0;
     }
 
-    buttons = fn_8008AB8C(device);
+    buttons = gbaCommGetKeys(device);
     if (buttons & 0x40) result |= 0x1;
     if (buttons & 0x80) result |= 0x2;
     if (buttons & 0x20) result |= 0x4;
@@ -1096,7 +1096,7 @@ u8 _menuGetGcKeyInfo__FlPUs(s32 port, u16* keys) {
         }
     }
 
-    buttons = fn_800F7BC4(padId);
+    buttons = GSinputGetButtons(padId);
     if (buttons & 0x8) result |= 0x1;
     if (buttons & 0x4) result |= 0x2;
     if (buttons & 0x1) result |= 0x4;

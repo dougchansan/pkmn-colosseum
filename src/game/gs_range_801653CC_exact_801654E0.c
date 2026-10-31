@@ -4,7 +4,7 @@
  */
 #include "game/gs_range_801653CC_shared.h"
 
-u32 fn_801654E0(u32 id, void* buffer, u32 size)
+u32 soundLoadGroupForSlot(u32 id, void* buffer, u32 size)
 {
     void* wave;
     u32 waveIndex = lbl_80478FAC[id].waveIndex;
@@ -18,7 +18,7 @@ u32 fn_801654E0(u32 id, void* buffer, u32 size)
     if (wave == 0) {
         return 0;
     }
-    fn_80165EE0(wave, buffer, size);
+    soundLoadGroupBuffer(wave, buffer, size);
     return 1;
 }
 
@@ -33,7 +33,7 @@ void soundResumeMusic(u32 id)
 
 u32 soundPauseMusic(void)
 {
-    u32 id = fn_801662E8(0, 0x406);
+    u32 id = soundFindOwnerWrapper(0, 0x406);
 
     if (id != (u32)-1) {
         soundPauseSong(id, 0x32, 0);
@@ -66,9 +66,9 @@ u32 std130_soundUnk_801653cc(u32 id, void* buffer, u32 size)
     return result;
 }
 
-u32 fn_801656D8(u32 id)
+u32 soundGetSlotVoiceState(u32 id)
 {
-    return fn_80166098(id);
+    return soundGetSlotVoiceByte(id);
 }
 
 u32 std137_soundStopAll(u32 id, u32 arg1, u32 arg2)
@@ -92,13 +92,13 @@ u32 std108_soundIsAnyPlaying(void)
     return (result | -result) >> 31;
 }
 
-u32 fn_80165788(u32 id, f32 x, f32 y, f32 z)
+u32 soundPlayAtPosition(u32 id, f32 x, f32 y, f32 z)
 {
     GSvec position;
     u32 result;
 
     set__5GSvecFfff(&position, x, y, z);
-    result = fn_80166308(id, &position);
+    result = soundEmitterAt(id, &position);
     result = (result | -result) >> 31;
     return result;
 }
@@ -127,7 +127,7 @@ u32 soundStop(u32 id, u32 fade)
         restartSe = 0;
     }
 
-    if (!(u8)fn_80166084(id)) {
+    if (!(u8)soundSlotIsActive(id)) {
         soundFadeSlot(fade, restartSe, 1);
         if (restartSe != 0) {
             GSlogWrite(lbl_8027358C, id);
@@ -140,7 +140,7 @@ u32 soundStop(u32 id, u32 fade)
     }
 }
 
-u32 fn_801658FC(u32 id, u32 fade, u32 volume, u32 priority)
+u32 soundPlayAfterFade(u32 id, u32 fade, u32 volume, u32 priority)
 {
     if (id == 0 || id >= *lbl_80478FA8) {
         return 0;
@@ -214,7 +214,7 @@ u32 soundPlay(u32 id, u32 volume, u32 priority, s32 kind)
             return 0;
         }
 
-        currentId = fn_801662E8(0, resourceId);
+        currentId = soundFindOwnerWrapper(0, resourceId);
         if (currentId != id) {
             if (currentId != (u32)-1) {
                 s32 status = GSsndGetStatus(currentId);
@@ -228,7 +228,7 @@ u32 soundPlay(u32 id, u32 volume, u32 priority, s32 kind)
 
             wave = lbl_80478E34[waveIndex].data;
             if (wave != 0) {
-                fn_80165EE0(wave, GSresGetResource(0, resourceId), resourceSize);
+                soundLoadGroupBuffer(wave, GSresGetResource(0, resourceId), resourceSize);
             } else {
                 wave = lbl_80478E34[waveIndex].archive;
                 if (wave != 0) {
@@ -254,7 +254,7 @@ u32 soundPlay(u32 id, u32 volume, u32 priority, s32 kind)
 void soundFadeSlot(u32 volume, u32 isSe, s32 wait)
 {
     u32 resourceId = isSe != 0 ? 0x406 : 0x407;
-    u32 id = fn_801662E8(0, resourceId);
+    u32 id = soundFindOwnerWrapper(0, resourceId);
 
     if (id != (u32)-1) {
         s32 status = GSsndGetStatus(id);

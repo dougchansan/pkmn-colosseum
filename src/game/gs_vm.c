@@ -22,7 +22,7 @@
  * moved here from game/data/sdata2_8047CC98.c because they are this TU's
  * own literals) and the .sbss2 zero initializer. The range was extended
  * through fn_800F7434 after the pooled-literal caller matched exactly;
- * fn_800F7068 through fn_800F7434 now link in this same object. The
+ * GSvmIsRunning through fn_800F7434 now link in this same object. The
  * definitions outside that range remain under GS_VM_WHOLE_UNIT; the linked
  * .text-only pieces are gs_vm_exact_800F10E8.c,
  * gs_vm_exact_800F13D0.c, gs_vm_exact_800F16C0.c,
@@ -42,8 +42,8 @@
  * GSvmPush/GSvmPushValue/GSvmPop/GSvmFrameSlot/GSvmEnterNative/GSvmReturn
  * (gs_vm.h), GSvmGetOperand (every operand read: two per binary operator,
  * one in fn_800F24F4/fn_800F5404/fn_800F55DC/fn_800F57F0/fn_800F5A3C/
- * fn_800F5CA0), and in gs_vm.h GSvmFindByKey (fn_800F6D18, fn_800F7068,
- * fn_800F7108, fn_800F716C, fn_800F7274) and GSvmStopByKey (fn_800F716C,
+ * fn_800F5CA0), and in gs_vm.h GSvmFindByKey (fn_800F6D18, GSvmIsRunning,
+ * GSvmGetThreadByKey, GSvmStopGroup, fn_800F7274) and GSvmStopByKey (GSvmStopGroup,
  * fn_800F7274).
  * setValue (fn_800F24F4) is named by retail's own message, "setValue
  * 例外エラー...", the same way "_codeStructAssign:" names fn_800F2264; it
@@ -248,7 +248,7 @@ extern void GSlogWritef(const char* fmt, ...);
 extern u32 cms_CallStdTrampoline(void);
 extern u32 GSgetFrameStep(void);
 extern void _threadSwitch(void);
-extern u32 fn_800F0374(GSThread* thread);
+extern u32 GSvmGetOwner(GSThread* thread);
 extern void GSthreadTerminate(GSThread* thread);
 extern u32 floorGetCurrentContext(void);
 extern void GSthreadSetArgs(void* thread, s32 count, ...);
@@ -1389,7 +1389,7 @@ const char lbl_802712E4[] = "GSvmの初期化に失敗しました\n";
 
 /* 0x800F7068 | 0xA0: is the script with `key` still running?  With `wait`,
  * yields until it is not. */
-s32 fn_800F7068(u16 key, u8 wait)
+s32 GSvmIsRunning(u16 key, u8 wait)
 {
     for (;;) {
         if (GSvmFindByKey(key) == NULL) {
@@ -1404,7 +1404,7 @@ s32 fn_800F7068(u16 key, u8 wait)
 }
 
 /* 0x800F7108 | 0x64: the thread running the script with `key`. */
-GSThread* fn_800F7108(u16 key)
+GSThread* GSvmGetThreadByKey(u16 key)
 {
     GSVMCtx* ctx;
 
@@ -1416,17 +1416,17 @@ GSThread* fn_800F7108(u16 key)
 }
 
 /* 0x800F716C | 0x108: stop every script running on a thread of `group`
- * (the thread's +0x0C field, read by fn_800F0374; floor teardown passes
+ * (the thread's +0x0C field, read by GSvmGetOwner; floor teardown passes
  * the floor id).
  * The thread's group is read into its own variable before the compare:
  * retail compares "cmplw r3,r30" (the group read, then the argument).
  * MWCC (GC/1.3 through 2.7, -O4,p/-O4,s/-O3/-O2) turns an integer equality
- * with a call on either side, fn_800F0374(t) == group or
- * group == fn_800F0374(t), into "cmplw r30,r3"; the call-first order only
+ * with a call on either side, GSvmGetOwner(t) == group or
+ * group == GSvmGetOwner(t), into "cmplw r30,r3"; the call-first order only
  * comes out when the call's value is a named variable (or when both sides
  * are pointers, as in fight_target.c's (void*)fightTrainerGetStatus(...)
  * == (void*)target, which is not the case for a floor id). */
-s32 fn_800F716C(u32 group)
+s32 GSvmStopGroup(u32 group)
 {
     GSVMCtx* ctx;
     u32 threadGroup;
@@ -1435,7 +1435,7 @@ s32 fn_800F716C(u32 group)
     for (i = 0; i < lbl_80478B00->count; i++) {
         ctx = &lbl_80478B00->contexts[i];
         if (ctx->status != 0 && ctx->thread != NULL) {
-            threadGroup = fn_800F0374(ctx->thread);
+            threadGroup = GSvmGetOwner(ctx->thread);
             if (threadGroup == group) {
                 GSvmStopByKey(ctx->key);
             }
@@ -1503,7 +1503,7 @@ u32 cmsRunSync(u32 script, u32 argc, ...)
 
 /* 0x800F75FC | 0x10: install the native-function table. */
 #ifdef GS_VM_WHOLE_UNIT
-s32 fn_800F75FC(void* natives)
+s32 cms_PoolSetParam(void* natives)
 {
     lbl_80478B00->natives = natives;
     return 0;

@@ -84,7 +84,7 @@ extern const char lbl_80270E98[]; /* "shadow.h" */
 extern const f32 lbl_80478AC0[]; /* NaN */
 extern void* modelGetRenderJObj(GSmodel* model);
 extern GSmodel* GSmodelSearchModelList(void* jobj);
-extern void fn_800E3D14(GSmodel* model, GSshadowVec* out);
+extern void GSmodelCopyPosition(GSmodel* model, GSshadowVec* out);
 extern void GSvecAdd(GSshadowVec* dst, GSshadowVec* a, GSshadowVec* b);
 extern void set__5GSvecFfff(GSshadowVec* dst, f32 x, f32 y, f32 z);
 extern void vecNormalize(GSshadowVec* dst, GSshadowVec* src, f32 scalar);
@@ -95,7 +95,7 @@ extern void HSD_ViewingRectInit(GSshadowRect* rect, GSshadowVec* eye,
                         GSshadowVec* interest, GSshadowVec* up, int perspective);
 extern void HSD_ShadowSetViewingRect(GSshadowObj* shadow, f32 top, f32 bottom, f32 left,
                         f32 right);
-extern void fn_801B06DC(GSshadowObj* shadow);
+extern void modelShadowFreeTexture(GSshadowObj* shadow);
 extern void HSD_ShadowDeleteObject(GSshadowObj* shadow, void* object);
 extern void HSD_ShadowAddObject(GSshadowObj* shadow, void* object);
 extern void HSD_ShadowSetLight(GSshadowObj* shadow, void* lightData, f32 value);
@@ -110,7 +110,7 @@ extern void HSD_CObjSetFar(void* cobj, f32 value);
 extern f32 HSD_CObjGetEyeDistance(void* cobj);
 extern void HSD_CObjGetEyePosition(void* cobj, GSshadowVec* out);
 extern void HSD_CObjGetUpVector(void* cobj, GSshadowVec* out);
-extern void fn_8019C6FC(void);
+extern void HSD_ShadowNop(void);
 extern void HSD_StartRender(u32 arg);
 extern void __assert(const char*, s32, const char*);
 extern GSshadowSlot*
@@ -260,7 +260,7 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
     for (slotIndex = 0; slotIndex < 6; slotIndex++) {
         slot = &lbl_80401490[slotIndex];
         if (slot->model == NULL) {
-            fn_801B06DC(slot->obj);
+            modelShadowFreeTexture(slot->obj);
             slot->flag = 0;
             continue;
         }
@@ -273,7 +273,7 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
             receiver = slot->receivers[k];
             if (receiver != NULL && (*(u32*)receiver & 1)) {
                 HSD_ShadowAddObject(slot->obj, modelGetRenderJObj(receiver));
-                fn_800E3D14(receiver, &pos);
+                GSmodelCopyPosition(receiver, &pos);
                 GSvecAdd(&avg, &avg, &pos);
                 count++;
             }
@@ -321,7 +321,7 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
             hop4 = (GSmodel*)hop3;
             hop5 = (u32)hop4;
             listModel = (GSmodel*)hop5;
-            fn_800E3D14(listModel, &pos);
+            GSmodelCopyPosition(listModel, &pos);
             if (count == 1) {
                 size = modelShadowBoundToSize(
                            &((GSshadowModel*)listModel)->bound) +
@@ -353,7 +353,7 @@ void modelShadowRender__FP10GSgfxLayer(void* layer)
         HSD_ShadowInit(slot->obj);
         HSD_ShadowStartRender(slot->obj);
         HSD_ShadowEndRender(slot->obj);
-        fn_8019C6FC();
+        HSD_ShadowNop();
         HSD_ShadowDeleteObject(slot->obj, NULL);
     }
 }

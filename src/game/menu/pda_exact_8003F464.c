@@ -3,7 +3,7 @@
  * @file pda_exact_8003F464.c
  * @brief PDA summary-page widget layout and visibility, 0x8003F464 - 0x80040018.
  *
- * fn_8003F464 is copied from pda_range_80037158.c. Its float literals are
+ * pdaMemoMainDrawText is copied from pda_range_80037158.c. Its float literals are
  * redirected by the temporary constant_import build step to the shared
  * lbl_8047BCxx pool.
  */
@@ -53,14 +53,14 @@ extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
 extern void fn_800FE35C(void);
 
-extern s32 fn_800FE6D0(s16 x, s16 y);
+extern s32 spriteSetOrigin(s16 x, s16 y);
 extern void spriteSetEnv(s32 env);
 extern u32 GSmsgGetGSchar(u32 msg);
 extern void msgctrlSetValue(s32 id, u32 value);
 
 /*
  * The summary page's .data, 0x802E52C8 - 0x802E61D8 (the switch table below
- * closes it at 0x802E60C4). fn_8003F464 reads its tab tables off this
+ * closes it at 0x802E60C4). pdaMemoMainDrawText reads its tab tables off this
  * section's base, so they are statics of this unit.
  */
 extern u8 lbl_8047BB08[];
@@ -1063,7 +1063,7 @@ static inline void pdaPlaceSprite(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     s16 base = *(s16*)(lbl_802EF0A8 + sprite->eventId * 0x1c + 2);
     sprite->field_50 = (s16)(base + (s32)*(f32*)((u8*)&lbl_803A6818 + 0x1dc));
-    spriteSetEnv(fn_800FE6D0(
+    spriteSetEnv(spriteSetOrigin(
         (s16)(*(s16*)((u8*)alphaSprite + 0x84) + sprite->field_50),
         (s16)(*(s16*)((u8*)alphaSprite + 0x86) + sprite->field_52)));
 }
@@ -1092,7 +1092,7 @@ static inline void pdaDrawTabList(PdaSprite* alphaSprite, u8* S, s8 i)
 }
 
 /* Per-widget layout and visibility for the PDA's summary page. */
-void fn_8003F464(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaMemoMainDrawText(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     extern f64 sin(f64 x);
     u8* S = (u8*)&lbl_803A6818;

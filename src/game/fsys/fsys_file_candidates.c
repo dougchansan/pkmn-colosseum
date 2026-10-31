@@ -16,7 +16,7 @@
  *   - FSYSCacheLookup: claimed address 0x8017F794 is actually outside
  *     this unit entirely (belongs to game/gs_range_8017F2C4.c per
  *     splits.txt); its one caller in fsysLoadEntrySync now calls the real,
- *     not-yet-decompiled fn_8017F794 directly instead, matching how
+ *     not-yet-decompiled fsysCacheLookup directly instead, matching how
  *     the rest of this file already calls it.
  *   - FSYSBeginLoad: renamed (not deleted) to its real name,
  *     _fsysGetFilename - strong evidence from matching address/size
@@ -51,7 +51,7 @@ extern void  strcpy(void* dst, const void* src);
 extern u32   GSdvdOpen(const char* path);
 extern u32   GSdvdGetLength(u32 fileInfo);
 extern void  GSdvdClose(u32 fileInfo);
-extern u8    fn_80167EF8(void* path);
+extern u8    GSdvdConvertPathToEntrynum(void* path);
 extern void  GSdvdRead(u32 fileInfo, void* buf, u32 len, u32 offset);
 
 /* DMA / cache */
@@ -75,7 +75,7 @@ extern void fsysStartLoadMode3(FSYSSlot* slot, u32 fileHandle,
                          u32 callbackA, u32 callbackB, u32 callbackC);
 
 /* DMA copy (defined in DVD layer) */
-extern void fn_80180320(void* dst, void* src, u32 size);
+extern void fsysARAMToMainSync(void* dst, void* src, u32 size);
 
 /* ===================================================================
  * External globals
@@ -118,7 +118,7 @@ extern FSYSSlot* fsysFindSlotByHandle(u32 fileHandle, s32 mode);
  * 2. If found, checks the compression flag (entry->flags bit 0).
  * 3. For compressed entries:
  *    a. Allocates a temporary buffer for the compressed data.
- *    b. Reads compressed data via DMA (fn_80180320).
+ *    b. Reads compressed data via DMA (fsysARAMToMainSync).
  *    c. Copies the 16-byte LZSS header to gLZSSContext.
  *    d. Clears the LZSS sliding window (4078 bytes).
  *    e. Calls FSYSDecompressLZSS to decompress in-place.
@@ -175,13 +175,13 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
         return 0;
     }
 
-    /* Try to find the data in the cache first. fn_8017F794 (not yet
+    /* Try to find the data in the cache first. fsysCacheLookup (not yet
      * decompiled; belongs to game/gs_range_8017F2C4.c per splits.txt)
      * is called the same way throughout the rest of this file - see
      * the 2026-07-02 note near FSYSCacheLookup's old location below. */
     {
-        extern u32 fn_8017F794();
-        cachedBuf = (void*)fn_8017F794(slot->fileHandle,
+        extern u32 fsysCacheLookup();
+        cachedBuf = (void*)fsysCacheLookup(slot->fileHandle,
                                       fileEntry->groupID,
                                       fileEntry->nameHash);
     }
@@ -212,7 +212,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
         subEntry->buffer = compBuf;
 
         /* Read compressed data from DVD into temporary buffer */
-        fn_80180320(subEntry->buffer, cachedBuf, decompSize);
+        fsysARAMToMainSync(subEntry->buffer, cachedBuf, decompSize);
 
         /* Flush the D-cache for the compressed data */
         DCFlushRange(subEntry->buffer, decompSize);
@@ -342,7 +342,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
 
             if ((*(u32*)(archive + 0x10) & 1) != 0) {
                 slot->tocBuffer = NULL;
-                if (fn_80167EF8(archive + fileEntry->dataOffset) != 0) {
+                if (GSdvdConvertPathToEntrynum(archive + fileEntry->dataOffset) != 0) {
                     slot->tocBuffer =
                         (void*)GSdvdOpen((char*)archive + fileEntry->dataOffset);
                 }
@@ -400,7 +400,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
 
     /* Read uncompressed data (or already have decompressed data) */
     if (isCompressed == 0) {
-        fn_80180320(subEntry->buffer, cachedBuf, fileEntry->decompressedSize);
+        fsysARAMToMainSync(subEntry->buffer, cachedBuf, fileEntry->decompressedSize);
         DCFlushRange(subEntry->buffer, fileEntry->decompressedSize);
     }
 
@@ -455,12 +455,12 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
  * symbols.txt; its claimed address (0x8017F794) belongs to
  * game/gs_range_8017F2C4.c per splits.txt, not this unit at all. The
  * rest of this file already calls the real (not-yet-decompiled)
- * function at that address correctly as `extern u32 fn_8017F794()`
+ * function at that address correctly as `extern u32 fsysCacheLookup()`
  * (see e.g. lines below and fsysLoadEntrySync above, which was updated to do
  * the same instead of calling this fictional wrapper).
  */
 
-/* fn_80180320 is declared at the top of this file */
+/* fsysARAMToMainSync is declared at the top of this file */
 
 
 /* ===================================================================
@@ -527,7 +527,7 @@ u32 fsysStatus0(void) { return 1; }
 extern void GSdvdGetDriveStatus(void);
 extern u32 lbl_8047B1B4;
 extern FSYSManager lbl_80453FEC;
-void fn_8017B1AC(void) {
+void fsysCheckDrive(void) {
     GSdvdGetDriveStatus();
 }
 
@@ -591,7 +591,7 @@ done:
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
-s32 fn_8017B2CC(u32 fileHandle) {
+s32 GSresGroupGetState(u32 fileHandle) {
     FSYSSlot* slot;
     FSYSSlot* hit;
     FSYSSlot* found;
@@ -626,7 +626,7 @@ done:
 /* 0x8017B370 | 0x74 */
 #pragma push
 #pragma optimization_level 0
-s32 fn_8017B370(u32 fileHandle) {
+s32 fsysStartLoadExclusive(u32 fileHandle) {
     FSYSSlot* slot;
     extern void fsysStartLoadMode0(FSYSSlot*, u32, u32, u32, u32);
 
@@ -643,7 +643,7 @@ s32 fn_8017B370(u32 fileHandle) {
 /* 0x8017B3E4 | 0x64 */
 #pragma push
 #pragma optimization_level 0
-s32 fn_8017B3E4(u32 fileHandle) {
+s32 fsysStartLoad(u32 fileHandle) {
     FSYSSlot* slot;
     extern void fsysStartLoadMode0(FSYSSlot*, u32, u32, u32, u32);
 
@@ -675,7 +675,7 @@ typedef struct fn8017B448_Node {
 #define COUNT_8017B448 lbl_80453FEC.maxSlots
 #pragma push
 #pragma optimization_level 0
-s32 fn_8017B448(u32 handle) {
+s32 fsysGetEntryCount_8017B448(u32 handle) {
     u32 i;
     fn8017B448_Node* node;
     s32 value;
@@ -697,9 +697,9 @@ done:
 }
 #pragma pop
 
-extern void fn_8017F800(u32 fileHandle);
-extern u32 fn_8017FA5C(void);
-extern u32 fn_8017F794();
+extern void fsysCacheFreeHandle(u32 fileHandle);
+extern u32 fsysCacheGetFreeSize(void);
+extern u32 fsysCacheLookup();
 extern void GSdvdReadAsync();
 extern void fsysDVDReadCallback(s32 result);
 extern void fsysInitTOC();
@@ -833,12 +833,12 @@ static void FSYSEvictUntilSpace(FSYSSlot* slot, u32 neededSize) {
         return;
     }
 
-    while (neededSize > fn_8017FA5C()) {
+    while (neededSize > fsysCacheGetFreeSize()) {
         handleID = ((FSYSFileHandle*)lbl_8047B1B8)->handleID;
         if (handleID < 0) {
             break;
         }
-        fn_8017F800((u32)handleID);
+        fsysCacheFreeHandle((u32)handleID);
         if (FSYSRemoveHandleID(handleID) < 0) {
             break;
         }
@@ -876,7 +876,7 @@ static u32 FSYSRefreshExternalEntrySize(FSYSSlot* slot, FSYSFileEntry* entry) {
     }
 
     FSYS_SLOT_FILE1(slot) = 0;
-    if (fn_80167EF8(archive + entry->dataOffset) != 0) {
+    if (GSdvdConvertPathToEntrynum(archive + entry->dataOffset) != 0) {
         FSYS_SLOT_FILE1(slot) = GSdvdOpen((char*)archive + entry->dataOffset);
     }
 
@@ -947,7 +947,7 @@ static void FSYSReadEntryAsync(FSYSSlot* slot, FSYSSubEntry* sub, FSYSFileEntry*
 
     if (archive != NULL && (*(u32*)(archive + 0x10) & 1) != 0) {
         FSYS_SLOT_FILE1(slot) = 0;
-        if (fn_80167EF8(archive + entry->dataOffset) != 0) {
+        if (GSdvdConvertPathToEntrynum(archive + entry->dataOffset) != 0) {
             FSYS_SLOT_FILE1(slot) = GSdvdOpen((char*)archive + entry->dataOffset);
         }
 
@@ -978,7 +978,7 @@ static void FSYSScheduleSceneRead(FSYSSlot* slot, FSYSFileEntry* entry,
     entryTable = (u32*)(archive + firstTable[0]);
     readEntry = (FSYSFileEntry*)(archive + entryTable[index]);
     /* Retail queries the live slot handle, not the archive header copy. */
-    cached = fn_8017F794(slot->fileHandle, readEntry->groupID,
+    cached = fsysCacheLookup(slot->fileHandle, readEntry->groupID,
                           readEntry->nameHash);
 
     if (cached != 0) {
@@ -1087,9 +1087,9 @@ u32 fsysEntryGetType(u32 val) {
  *       slot->status = 0x65;
  *       size = (entry->decompressedSize + 0x1F) & ~0x1Fu;
  *       sub->buffer = fsysAllocTemp(size);    // fsysLoadEntrySync's helper
- *       cached = fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
- *       offset = fn_8017F728(slot->fileHandle, entry->groupID, entry->nameHash);
- *       fn_80180584(sub->buffer, (void*)cached, offset, fn_8017A814, slot);
+ *       cached = fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
+ *       offset = fsysCacheFindEntryOffset(slot->fileHandle, entry->groupID, entry->nameHash);
+ *       fsysARAMToMainAsync(sub->buffer, (void*)cached, offset, fsysARQDoneCompressed, slot);
  *   }
  *   void fsysLoadEntryCompressed(FSYSSlot* slot, FSYSFileEntry* entry, u32 index)
  *   { if (entry->flags & 0x80000000) fsysReadCompressed(slot, entry);
@@ -1113,9 +1113,9 @@ u32 fsysEntryGetType(u32 val) {
  * size at 0x60(r1), a lead for the shared helper's real shape.
  */
 extern void fsysLoadEntryUncompressed();
-extern u32 fn_8017F728();
-extern void fn_8017A814(void);
-extern void* fn_80180584();
+extern u32 fsysCacheFindEntryOffset();
+extern void fsysARQDoneCompressed(void);
+extern void* fsysARAMToMainAsync();
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
@@ -1147,9 +1147,9 @@ void fsysLoadEntryCompressed(FSYSSlot* slot, FSYSFileEntry* entry, u32 index) {
         }
         sub->buffer = ptr;
 
-        cached = fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
-        offset = fn_8017F728(slot->fileHandle, entry->groupID, entry->nameHash);
-        fn_80180584(sub->buffer, (void*)cached, offset, fn_8017A814, slot);
+        cached = fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
+        offset = fsysCacheFindEntryOffset(slot->fileHandle, entry->groupID, entry->nameHash);
+        fsysARAMToMainAsync(sub->buffer, (void*)cached, offset, fsysARQDoneCompressed, slot);
     } else {
         fsysLoadEntryUncompressed(slot, entry, index);
     }
@@ -1186,7 +1186,7 @@ void fsysLoadEntry(FSYSSlot* slot, FSYSFileEntry* entry, u32 index) {
         archive = (u8*)slot->archiveData;
         if ((*(u32*)(archive + 0x10) & 1) != 0) {
             FSYS_SLOT_FILE1(slot) = 0;
-            if (fn_80167EF8(archive + entry->dataOffset) != 0) {
+            if (GSdvdConvertPathToEntrynum(archive + entry->dataOffset) != 0) {
                 FSYS_SLOT_FILE1(slot) = GSdvdOpen((char*)archive + entry->dataOffset);
             }
 
@@ -1239,13 +1239,13 @@ void fsysLoadEntry(FSYSSlot* slot, FSYSFileEntry* entry, u32 index) {
     }
 
     if (currentEntry != NULL &&
-        fn_8017F794(archiveKey, currentEntry->groupID, currentEntry->nameHash) != 0) {
+        fsysCacheLookup(archiveKey, currentEntry->groupID, currentEntry->nameHash) != 0) {
         currentEntry = FSYSGetEntryByIndex(slot, slot->entryIndex);
         if (currentEntry != NULL) {
-            cached = (void*)fn_8017F794(slot->fileHandle, currentEntry->groupID,
+            cached = (void*)fsysCacheLookup(slot->fileHandle, currentEntry->groupID,
                                         currentEntry->nameHash);
             slot->status = 0xA1;
-            fn_80180584(sub->buffer, cached, currentEntry->decompressedSize,
+            fsysARAMToMainAsync(sub->buffer, cached, currentEntry->decompressedSize,
                         fsysARQCallback, slot);
         }
         return;
@@ -1300,7 +1300,7 @@ void* fsysLZSSDecodeJob(void* unused0, u32 unused1, const void* compressed,
     void* output;
     void* workCopy;
     s32 i;
-    extern void fn_8017F2C4(void*, const void*, u32);
+    extern void fsysLZSSDecode(void*, const void*, u32);
 
     workCopy = work;
     workCopy = workCopy;
@@ -1310,7 +1310,7 @@ void* fsysLZSSDecodeJob(void* unused0, u32 unused1, const void* compressed,
         for (i = 0; i < 0xFEE; i++) {
             gLZSSWindow[i] = 0;
         }
-        fn_8017F2C4(output, compressed, gLZSSContext.decompSize);
+        fsysLZSSDecode(output, compressed, gLZSSContext.decompSize);
         DCFlushRange(output, gLZSSContext.decompSize);
     }
     return output;
@@ -1318,7 +1318,7 @@ void* fsysLZSSDecodeJob(void* unused0, u32 unused1, const void* compressed,
 #pragma pop
 
 /* 0x8017BD34 | 0x2B4 */
-extern void fn_8017A95C(void);
+extern void fsysARQDoneUncompressed(void);
 extern u32 lbl_80478C48;
 void fsysLoadEntryUncompressed(FSYSSlot* slot, FSYSFileEntry* entry) {
     FSYSSubEntry* sub;
@@ -1342,13 +1342,13 @@ void fsysLoadEntryUncompressed(FSYSSlot* slot, FSYSFileEntry* entry) {
             FSYSAlign32(size), 0x20, slot->fileHandle, entry->nameHash, 0);
     }
 
-    cached = (void*)fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
-    offset = fn_8017F728(slot->fileHandle, entry->groupID, entry->nameHash);
-    fn_80180584(sub->buffer, cached, offset, fn_8017A95C, slot);
+    cached = (void*)fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
+    offset = fsysCacheFindEntryOffset(slot->fileHandle, entry->groupID, entry->nameHash);
+    fsysARAMToMainAsync(sub->buffer, cached, offset, fsysARQDoneUncompressed, slot);
 }
 
 /* 0x8017C008 | 0x6C */
-extern void fn_80180C78();
+extern void fsysQueueJob();
 #pragma push
 #pragma optimization_level 0
 #pragma optimizewithasm off
@@ -1360,7 +1360,7 @@ u32 fsysAllocLZSSJob(FSYSSlot* slot) {
     sub = FSYS_SLOT_CURRENT_SUB(slot);
     buf = (u32*)sub->buffer;
     if (*buf == FSYS_LZSS_MAGIC) {
-        fn_80180C78(slot, sub, 0);
+        fsysQueueJob(slot, sub, 0);
     }
 
     slot->status = FSYS_STATUS_ERROR;
@@ -1466,18 +1466,18 @@ u32 fsysStatus304(FSYSSlot *slot)
 /* 0x8017C414 | 0x154
  *
  * R38 lane (2026-09-28): the interrupt-guarded status step after
- * fn_8017A624 (OSDisableInterrupts, advance lbl_80453FEC.activeSlot's
+ * fsysSlotReadTOC (OSDisableInterrupts, advance lbl_80453FEC.activeSlot's
  * status, close its tocBuffer, OSRestoreInterrupts) is the same code as the
- * whole of fn_8017A814 and fn_8017A95C (gs_range_8017A5FC.c): three
+ * whole of fsysARQDoneCompressed and fsysARQDoneUncompressed (gs_range_8017A5FC.c): three
  * expansions of one helper. All three retail copies build the
  * lbl_80453FEC address in r5 (lis r5 / addi r5 / lwz r31,0x1c(r5)); every
  * form tried on the level-0 flags (GC/1.3 and GC/2.0; helper taking the
  * callback argument, the slot, or nothing; a slot-returning helper; a
  * manager pointer; nopeephole) builds it in r4, so something the source
  * keeps live in r4 across that point is still unknown. Here retail also
- * keeps `arg` in r29 (mr r29,r3 before fn_8017A624) with no later use.
+ * keeps `arg` in r29 (mr r29,r3 before fsysSlotReadTOC) with no later use.
  */
-extern s32 fn_8017A624(void*);
+extern s32 fsysSlotReadTOC(void*);
 extern u32 OSDisableInterrupts(void);
 extern void OSRestoreInterrupts(u32);
 #pragma optimization_level 4
@@ -1486,7 +1486,7 @@ u32 fsysSlotStatusFinishRead(void* arg) {
     FSYSManager* mgr;
     FSYSSlot* slot;
 
-    if (fn_8017A624(arg) != 0) {
+    if (fsysSlotReadTOC(arg) != 0) {
         enabled = OSDisableInterrupts();
         mgr = &lbl_80453FEC;
         slot = mgr->activeSlot;
@@ -1547,8 +1547,8 @@ u32 fsysStatus152(FSYSSlot* slot) {
 
 /* 0x8017C5B8 | 0x128 */
 extern FSYSFileHandle* fsysSlotRefreshHandle(FSYSSlot*);
-extern u32 fn_8017F928();
-extern void fn_80180694();
+extern u32 fsysCacheReserve();
+extern void fsysMainToARAMAsync();
 extern u32 lbl_8047B1B8;
 extern u32 lbl_8047B1BC;
 #pragma optimization_level 4
@@ -1576,10 +1576,10 @@ u32 fsysSlotStatusStartEntries(FSYSSlot* slot) {
     }
 
     subEntry = (u8*)slot->currentSub;
-    result = (u32)fn_8017F794(slot->fileHandle, *(u32*)(entry + 0x20), *(u32*)entry);
+    result = (u32)fsysCacheLookup(slot->fileHandle, *(u32*)(entry + 0x20), *(u32*)entry);
     if (result == 0) {
         size = *(u32*)(entry + 0x14);
-        result = (u32)fn_8017F928(size, slot->fileHandle, *(u32*)(entry + 0x20), *(u32*)entry);
+        result = (u32)fsysCacheReserve(size, slot->fileHandle, *(u32*)(entry + 0x20), *(u32*)entry);
         if (result == 0) {
             slot->status = 0x98;
         } else {
@@ -1596,7 +1596,7 @@ u32 fsysSlotStatusStartEntries(FSYSSlot* slot) {
                 }
             }
             slot->status = 0x97;
-            fn_80180694(*(void**)(subEntry + 4), result, size, fsysARQCallback, slot);
+            fsysMainToARAMAsync(*(void**)(subEntry + 4), result, size, fsysARQCallback, slot);
         }
     } else {
         slot->status = 0x98;
@@ -1674,7 +1674,7 @@ u32 fsysStatus100(FSYSSlot* slot) {
 
             slot->entryIndex = i;
             sub = FSYSFileEntry_GetSubEntry(entry);
-            cached = fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
+            cached = fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
 
             if (sub->state == 0) {
                 FSYS_SLOT_CURRENT_SUB(slot) = sub;
@@ -1711,7 +1711,7 @@ u32 fsysStatus100(FSYSSlot* slot) {
             }
 
             sub = FSYSFileEntry_GetSubEntry(entry);
-            cached = fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
+            cached = fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
 
             if (sub->state == 0) {
                 /* Retail's second lookup uses the slot's cached table offset,
@@ -1782,12 +1782,12 @@ u32 fsysStatus100(FSYSSlot* slot) {
 }
 
 /* 0x8017CE7C | 0x4C */
-extern void fn_8017D960();
+extern void fsysSlotFinish();
 extern void fsysSlotCheckEntries();
 #pragma optimization_level 0
 u32 fsysSlotStatus2000(FSYSSlot* slot) {
     if ((s32)slot->loadMode == 3) {
-        fn_8017D960(slot);
+        fsysSlotFinish(slot);
     } else {
         fsysSlotCheckEntries(slot);
     }
@@ -1795,8 +1795,8 @@ u32 fsysSlotStatus2000(FSYSSlot* slot) {
 }
 
 /* 0x8017CED8 | 0x4C8 */
-extern void fn_8017F800(u32);
-extern void* fn_80180450();
+extern void fsysCacheFreeHandle(u32);
+extern void* fsysMainToARAMSync();
 extern u32 lbl_8047B1B8;
 extern u32 lbl_8047B1BC;
 u32 fsysStatus4(FSYSSlot* slot) {
@@ -1808,14 +1808,14 @@ u32 fsysStatus4(FSYSSlot* slot) {
     FSYSSubEntry* sub;
 
     archiveSize = slot->field_1C;
-    cached = fn_8017F794(slot->fileHandle, 0, 1);
+    cached = fsysCacheLookup(slot->fileHandle, 0, 1);
     if (cached == 0) {
         alignedArchiveSize = FSYSAlign32(archiveSize);
         DCFlushRange(slot->archiveData, alignedArchiveSize);
         FSYSEvictUntilSpace(slot, alignedArchiveSize);
-        cached = fn_8017F928(alignedArchiveSize, slot->fileHandle, 0, 1);
+        cached = fsysCacheReserve(alignedArchiveSize, slot->fileHandle, 0, 1);
         if (cached != 0) {
-            fn_80180450(slot->archiveData, (void*)cached, alignedArchiveSize);
+            fsysMainToARAMSync(slot->archiveData, (void*)cached, alignedArchiveSize);
         }
     }
 
@@ -1888,14 +1888,14 @@ s32 fsysPreloadArchive(u32 fileHandle) {
 /* 0x8017D624 | 0x68 */
 extern u32 lbl_8047B1B8;
 extern u32 lbl_8047B1BC;
-extern void fn_8017F800();
+extern void fsysCacheFreeHandle();
 #pragma optimization_level 0
 void fsysFlushCachedHandles(void) {
     FSYSFileHandle* table = (FSYSFileHandle*)lbl_8047B1B8;
     s32 i;
 
     for (i = 0; i < (s32)lbl_8047B1BC; i++) {
-        fn_8017F800(table[i].handleID);
+        fsysCacheFreeHandle(table[i].handleID);
         table[i].handleID = -1;
     }
     lbl_8047B1BC = 0;
@@ -2000,20 +2000,20 @@ void fsysStartPendingLoad(void) {
 #pragma optimization_level 4
 #pragma dont_inline on
 void fsysSlotFinishA(FSYSSlot* slot) {
-    fn_8017D960(slot);
+    fsysSlotFinish(slot);
     slot->status = FSYS_STATUS_FREE;
 }
 
 /* 0x8017D92C | 0x34 */
 #pragma optimization_level 4
 void fsysSlotFinishB(FSYSSlot* slot) {
-    fn_8017D960(slot);
+    fsysSlotFinish(slot);
     slot->status = FSYS_STATUS_FREE;
 }
 #pragma dont_inline reset
 
 /* 0x8017D960 | 0x158 */
-void fn_8017D960(FSYSSlot* slot) {
+void fsysSlotFinish(FSYSSlot* slot) {
     FSYSFileEntry* entry;
     u32 i;
     FSYSUserCallback callback;
@@ -2091,7 +2091,7 @@ void fsysSlotCheckEntries(FSYSSlot* slot) {
         }
     }
     if (flag == 0) {
-        fn_8017D960(slot);
+        fsysSlotFinish(slot);
     }
 }
 #pragma pop
@@ -2113,7 +2113,7 @@ void fsysSlotReadNextEntry(FSYSSlot* slot) {
         slot->field_10 |= 0x40000000u;
     }
 
-    cached = fn_8017F794(slot->fileHandle, 0, 0);
+    cached = fsysCacheLookup(slot->fileHandle, 0, 0);
     if (cached == 0) {
         FSYSFileHandle* table;
         s32 handleID;
@@ -2129,13 +2129,13 @@ void fsysSlotReadNextEntry(FSYSSlot* slot) {
             }
         }
         if (found < 0) {
-            while (FSYSAlign32(headerSize) > fn_8017FA5C()) {
+            while (FSYSAlign32(headerSize) > fsysCacheGetFreeSize()) {
                 table = (FSYSFileHandle*)lbl_8047B1B8;
                 handleID = table[0].handleID;
                 if (handleID < 0) {
                     break;
                 }
-                fn_8017F800((u32)handleID);
+                fsysCacheFreeHandle((u32)handleID);
                 found = -1;
                 table = (FSYSFileHandle*)lbl_8047B1B8;
                 for (j = 0; j < (s32)lbl_8047B1BC; j++) {
@@ -2157,9 +2157,9 @@ void fsysSlotReadNextEntry(FSYSSlot* slot) {
                 table[lbl_8047B1BC].handleID = -1;
             }
         }
-        cached = fn_8017F928(FSYSAlign32(headerSize), slot->fileHandle, 0, 0);
+        cached = fsysCacheReserve(FSYSAlign32(headerSize), slot->fileHandle, 0, 0);
         if (cached != 0) {
-            fn_80180450(slot, (void*)cached, FSYSAlign32(headerSize));
+            fsysMainToARAMSync(slot, (void*)cached, FSYSAlign32(headerSize));
         }
     }
 
@@ -2168,9 +2168,9 @@ void fsysSlotReadNextEntry(FSYSSlot* slot) {
     slot->archiveData = archive;
 
     loaded = 0;
-    cached = fn_8017F794(slot->fileHandle, 0, 1);
+    cached = fsysCacheLookup(slot->fileHandle, 0, 1);
     if (cached != 0) {
-        fn_80180320(archive, (void*)cached, FSYSAlign32(archiveSize));
+        fsysARAMToMainSync(archive, (void*)cached, FSYSAlign32(archiveSize));
         DCFlushRange(archive, FSYSAlign32(archiveSize));
         slot->status = 4;
         loaded = 1;
@@ -2268,9 +2268,9 @@ void fsysStartLoadMode0(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
             FSYS_SLOT_FILE0(slot) = GSdvdOpen(slot->filename);
         }
 
-        cached = fn_8017F794(slot->fileHandle, 0, 0);
+        cached = fsysCacheLookup(slot->fileHandle, 0, 0);
         if (cached != 0) {
-            fn_80180320(slot, (void*)cached, FSYSAlign32(0x40));
+            fsysARAMToMainSync(slot, (void*)cached, FSYSAlign32(0x40));
             DCFlushRange(slot, FSYSAlign32(0x40));
             slot->status = 2;
             readFromCache = 1;
@@ -2306,9 +2306,9 @@ void fsysStartLoadMode3(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
     }
 
     size = 0x40;
-    cached = fn_8017F794(slot->fileHandle, 0, 0);
+    cached = fsysCacheLookup(slot->fileHandle, 0, 0);
     if (cached != 0) {
-        fn_80180320(slot, (void*)cached, FSYSAlign32(size));
+        fsysARAMToMainSync(slot, (void*)cached, FSYSAlign32(size));
         DCFlushRange(slot, FSYSAlign32(size));
         slot->status = 2;
         readFromCache = 1;

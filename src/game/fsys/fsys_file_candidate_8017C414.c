@@ -2,8 +2,8 @@
  * @file fsys_file_candidate_8017C414.c
  * @brief FSYS chunked-read step (0x8017C414 - 0x8017C568).
  *
- * Steps the chunked DVD read (fn_8017A624); when the read is complete,
- * advances the active slot's status exactly as the fn_8017A814/fn_8017A95C
+ * Steps the chunked DVD read (fsysSlotReadTOC); when the read is complete,
+ * advances the active slot's status exactly as the fsysARQDoneCompressed/fsysARQDoneUncompressed
  * completion callbacks do and closes its external file.
  *
  * Standalone level-0 code like the rest of fsys (see configure.py; it used
@@ -17,7 +17,7 @@
 #include "game/fsys/fsys.h"
 
 extern FSYSManager lbl_80453FEC;
-extern s32 fn_8017A624(FSYSSlot* slot);
+extern s32 fsysSlotReadTOC(FSYSSlot* slot);
 /*
  * RULE-EXCEPTION(title-path): mismatched SDK prototype, register allocation only
  * -- see docs/RULE_EXCEPTIONS.md. Retail treats OSDisableInterrupts' result as
@@ -38,7 +38,7 @@ s32 fsysSlotStatusFinishRead(FSYSSlot* request)
      * docs/RULE_EXCEPTIONS.md (second reference: retail keeps the argument
      * in r29). */
     (void)request;
-    if (fn_8017A624(request)) {
+    if (fsysSlotReadTOC(request)) {
         enabled = (u32)(OSDisableInterrupts() >> 32);
         slot = lbl_80453FEC.activeSlot;
         switch (slot->status) {

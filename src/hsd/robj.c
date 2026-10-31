@@ -46,7 +46,7 @@ void* HSD_IDGetDataFromTable(void* table, u32 id, s32* success);
 /* HSD_MemAlloc */
 void* HSD_MemAlloc(u32 size);
 /* HSD_IsMemoryReleased: nonzero when the pointer lies in freed memory. */
-int fn_801A6990(void* ptr);
+int HSD_IsMemoryReleased_801A6990(void* ptr);
 u32 HSD_GetNbBits(u32 value);
 f32 HSD_ByteCodeEval(u8* bytecode, f32* args, u32 nb_args);
 
@@ -153,7 +153,7 @@ void HSD_RObjAnim(HSD_RObj* robj)
 }
 
 /* HSD_RObjAnimAll */
-void fn_801B0040(HSD_RObj* robj)
+void HSD_RObjAnimAll_801B0040(HSD_RObj* robj)
 {
     HSD_RObj* curr;
 
@@ -190,7 +190,7 @@ void HSD_RObjRemoveAnimAllByFlags(HSD_RObj* robj, u32 flags)
 }
 
 /* HSD_RObjRemoveAnimAll */
-void fn_801AFFE0(HSD_RObj* robj)
+void HSD_RObjRemoveAnimAll_801AFFE0(HSD_RObj* robj)
 {
     HSD_RObjRemoveAnimAllByFlags(robj, 0x7FF);
 }
@@ -219,7 +219,7 @@ void HSD_RObjReqAnimAllByFlags(HSD_RObj* robj, f32 startframe, u32 flags)
 }
 
 /* HSD_RObjReqAnimAll */
-void fn_801AFEFC(HSD_RObj* robj, f32 startframe)
+void HSD_RObjReqAnimAll_801AFEFC(HSD_RObj* robj, f32 startframe)
 {
     HSD_RObjReqAnimAllByFlags(robj, startframe, 0x7FF);
 }
@@ -538,7 +538,7 @@ void HSD_RObjResolveRefs(HSD_RObj* robj, HSD_RObjDesc* desc)
 }
 
 /* HSD_RObjResolveRefsAll */
-void fn_801AEBE4(HSD_RObj* robj, HSD_RObjDesc* desc)
+void HSD_RObjResolveRefsAll_801AEBE4(HSD_RObj* robj, HSD_RObjDesc* desc)
 {
     for (; robj != NULL && desc != NULL; robj = robj->next, desc = desc->next)
     {
@@ -616,7 +616,7 @@ void HSD_RObjRemove(HSD_RObj* robj)
 }
 
 /* HSD_RObjRemoveAll */
-void fn_801AE50C(HSD_RObj* robj)
+void HSD_RObjRemoveAll_801AE50C(HSD_RObj* robj)
 {
     HSD_RObj* next;
 
@@ -631,10 +631,10 @@ void fn_801AE50C(HSD_RObj* robj)
  * expands it everywhere HSD_RObjAlloc is inlined except the one site past
  * its inline depth (the second-level copy in HSD_RObjLoadDesc), which calls
  * the out-of-line copy at 0x801AEBE0 with (&robj_alloc_data, "robj: alloc").
- * fobj.c shows the same pattern (fn_80199A84 with "fobj: alloc"), so HAL
+ * fobj.c shows the same pattern (fobjNullCB with "fobj: alloc"), so HAL
  * keeps it in a shared header; its name is not recoverable from the binary.
  */
-static inline void fn_801AEBE0(HSD_ObjAllocData* data, char* name)
+static inline void HSD_RObjLoadNop(HSD_ObjAllocData* data, char* name)
 {
 }
 
@@ -642,7 +642,7 @@ static inline void fn_801AEBE0(HSD_ObjAllocData* data, char* name)
 HSD_RObj* HSD_RObjAlloc(void)
 {
     HSD_RObj* new = HSD_ObjAlloc(&lbl_804656B4);
-    fn_801AEBE0(&lbl_804656B4, "robj: alloc");
+    HSD_RObjLoadNop(&lbl_804656B4, "robj: alloc");
     HSD_ASSERT(965, new);
     memset(new, 0, sizeof(*new));
     return new;
@@ -912,7 +912,7 @@ void HSD_RObjSetConstraintObj(HSD_RObj* robj, void* obj)
 
 void _HSD_RObjForgetMemory(void)
 {
-    if (fn_801A6990(lbl_8047B308)) {
+    if (HSD_IsMemoryReleased_801A6990(lbl_8047B308)) {
         lbl_8047B308 = NULL;
         lbl_8047B30C = 0;
     }

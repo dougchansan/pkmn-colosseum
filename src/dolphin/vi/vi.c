@@ -141,7 +141,7 @@ static volatile u16 shdwRegs[59];
 #define __VIRetraceHandler __VIRetraceHandler
 #define VISetPreRetraceCallback VISetPreRetraceCallback
 #define VISetPostRetraceCallback VISetPostRetraceCallback
-#define OSPanic fn_800060F0
+#define OSPanic errorPanic
 #define SIRefreshSamplingRate SIRefreshSamplingRate
 
 volatile u16 __VIRegs[59] : 0xCC002000;

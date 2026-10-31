@@ -45,7 +45,7 @@ extern void* OSSetIdleFunction(void (*idleFunction)(void*), void* param,
                                void* stack, u32 stackSize);
 extern u32 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw; u16 handle in r3 */
 extern void* GSmemLock(u16 handle);      /* GSmemGetPtr */
-extern void fn_800D30A0(void (*callback)(void)); /* GSgfx VSync callback */
+extern void GSgfxSetRetraceCallback(void (*callback)(void)); /* GSgfx VSync callback */
 
 /* ===== sbss state ===== */
 extern u16 lbl_8047AC78;         /* task array memory handle */
@@ -225,7 +225,7 @@ void GSgappInit(u32 numTasks, u32 numQueues) {
     lbl_8047AC90 = GSmemLock(handle);
     OSSetIdleFunction((void (*)(void*))gappBackgroundCallback, NULL,
                       lbl_8047AC90 + 0x1FFC, 0x1FFC);
-    fn_800D30A0(gappVSyncCallback);
+    GSgfxSetRetraceCallback(gappVSyncCallback);
 }
 
 /* 0x800FEA74 | 0x12C */

@@ -126,7 +126,7 @@ void HSD_PObjClearMtxMark(void* obj, u32 mark);
 f32* HSD_MtxAlloc(void);
 void HSD_MtxFree(f32* mtx);
 /* HSD_MtxInverseConcat */
-void fn_801A9DF0(Mtx inv, Mtx src, Mtx dest);
+void HSD_JObjAnimApplyValue(Mtx inv, Mtx src, Mtx dest);
 void HSD_ObjAllocInit(HSD_ObjAllocData* data, u32 size, u32 align);
 void* HSD_ObjAlloc(HSD_ObjAllocData* data);
 void HSD_ObjFree(HSD_ObjAllocData* data, void* obj);
@@ -328,7 +328,7 @@ static void mkBillBoardMtx(HSD_JObj* jobj, MtxPtr src, MtxPtr dst)
 }
 
 /* mkRBillBoardMtx */
-void fn_80197C70(HSD_JObj* jobj, MtxPtr src, MtxPtr dst)
+void HSD_JObjMakeBillboardMtx(HSD_JObj* jobj, MtxPtr src, MtxPtr dst)
 {
     Mtx rot, scl;
     f32 sx, sy, sz;
@@ -361,7 +361,7 @@ void HSD_JObjMakePositionMtx(HSD_JObj* jobj, MtxPtr vmtx, MtxPtr pmtx)
             mkHBillBoardMtx(jobj, mtx, pmtx);
             break;
         case JOBJ_RBILLBOARD:
-            fn_80197C70(jobj, mtx, pmtx);
+            HSD_JObjMakeBillboardMtx(jobj, mtx, pmtx);
             break;
         default:
             HSD_Panic(__FILE__, 368, "unkown type of billboard.\n");
@@ -393,11 +393,11 @@ MtxPtr _HSD_mkEnvelopeModelNodeMtx(HSD_JObj* m, MtxPtr mtx)
         if (x == m) {
             PSMTXInverse(x->envelopemtx, mtx);
         } else if (x->flags & JOBJ_SKELETON_ROOT) {
-            fn_801A9DF0(x->mtx, m->mtx, mtx);
+            HSD_JObjAnimApplyValue(x->mtx, m->mtx, mtx);
         } else {
             Mtx n;
             PSMTXConcat(x->mtx, x->envelopemtx, n);
-            fn_801A9DF0(n, m->mtx, mtx);
+            HSD_JObjAnimApplyValue(n, m->mtx, mtx);
         }
 
         return mtx;
@@ -437,7 +437,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxPtr vmtx, MtxPtr pmtx,
 }
 
 /* HSD_JObjDispDObj */
-void fn_80197784(HSD_JObj* jobj, MtxPtr vmtx, HSD_TrspMask trsp_mask,
+void HSD_JObjDispDObj_80197784(HSD_JObj* jobj, MtxPtr vmtx, HSD_TrspMask trsp_mask,
                  u32 rendermode)
 {
     HSD_CObj* cobj;
@@ -616,7 +616,7 @@ void HSD_JObjDisp(HSD_JObj* jobj, MtxPtr vmtx, HSD_TrspMask trsp_mask,
 {
     if (jobj != NULL) {
         if (union_type_dobj(jobj)) {
-            fn_80197784(jobj, vmtx, trsp_mask, rendermode);
+            HSD_JObjDispDObj_80197784(jobj, vmtx, trsp_mask, rendermode);
         } else if (union_type_ptcl(jobj) && sptcl_callback != NULL) {
             HSD_SList* sp;
             for (sp = jobj->u.ptcl; sp != NULL; sp = sp->next) {

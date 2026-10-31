@@ -1,7 +1,7 @@
 /**
  * @file pda_exact_800411FC.c
  * @brief PDA people-screen species panel, 0x800411FC - 0x80041B5C:
- *        fn_800411FC draws the highlighted entry's name, abilities, height,
+ *        pdaMemoDrawPokemonDetail draws the highlighted entry's name, abilities, height,
  *        weight and type. Copied from pda_range_80037158.c.
  */
 #include "dolphin/types.h"
@@ -82,7 +82,7 @@ static inline void pda_800411FC_Seeds(u32 work, u32 trainerRnd, u32 rnd)
     pokemonBiosSetCatchTrainerRnd(work, trainerRnd);
 }
 
-/* fn_800411FC's pdaLoadPokemon: rebuild the work Pokemon for memo entry `index`. */
+/* pdaMemoDrawPokemonDetail's pdaLoadPokemon: rebuild the work Pokemon for memo entry `index`. */
 static inline u32 pda_800411FC_Load(s32 index)
 {
     u32 work = lbl_8047A4E0;
@@ -183,7 +183,7 @@ static inline u16 pdaCurrentWeight(void)
 }
 
 /* Species panel: name, abilities, height, weight and type for the entry. */
-void fn_800411FC(PdaSprite* alphaSprite, PdaEvent* event)
+void pdaMemoDrawPokemonDetail(PdaSprite* alphaSprite, PdaEvent* event)
 {
     extern void GSmsgPrintRight(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);
     extern void GSmsgPrintRect(s32 x, s32 y, s16 w, s16 h, void* color, s32 msg);

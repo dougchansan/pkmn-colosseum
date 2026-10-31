@@ -4,16 +4,16 @@
  *        .sdata2 literal pool 0x8047C9F0 - 0x8047CA10.
  *
  * One object for the fog setter fn_800D2B90, the camera screen projections
- * gfxProjectPoint/fn_800D2F34, the render-state accessors fn_800D305C/
- * fn_800D3068, the GSgfx frame functions fn_800D3074-GSgfxWaitRetrace and the
- * fog-colour setter fn_800D36B4. The pool entries 255.0f, the unsigned
+ * gfxProjectPoint/fn_800D2F34, the render-state accessors GSgfxSetFrameClamp/
+ * GSgfxGetFrameInterval, the GSgfx frame functions GSgfxSetFrameInterval-GSgfxWaitRetrace and the
+ * fog-colour setter GSgfxSetFogColor. The pool entries 255.0f, the unsigned
  * int-to-float bias, 0.0f, 640.0f, 480.0f and 1.0f are used only by these
  * functions, so they are written as literals and the object owns them.
  * This replaces the former per-function carves and their extern stand-ins
  * (lbl_8047C9F0, lbl_8047CA00-lbl_8047CA0C).
  *
  * Compiler: GC/2.5 with the project defaults (-O4,p), no pragmas.
- * fn_800D36B4 schedules its by-value colour loads ahead of its stack frame
+ * GSgfxSetFogColor schedules its by-value colour loads ahead of its stack frame
  * and the enable-byte store. GC/2.5-2.7 emit that; GC/1.0-2.0 keep the
  * loads behind the frame and the store. Every other function here is
  * identical under GC/1.3 and GC/2.5.
@@ -44,7 +44,7 @@ extern u32 lbl_8047AA8C; /* current fog */
 extern GSRenderColor lbl_80270350;
 extern void* HSD_FogLoadDesc(void* desc);
 extern void HSD_FogSet(u32 fog);
-extern void fn_8016EA88(void);
+extern void HSD_FogReleaseCurrent(void);
 extern void psSetFog(void);
 extern void* gfxGetCameraMatrix(u32 index);
 extern void GSvecTransform(f32* out, GSMtx34 m, const f32* in);
@@ -53,8 +53,8 @@ extern void GXProject(f32 x, f32 y, f32 z, GSMtx34 mtx, const f32* pm,
 extern void gfxRecordCommand(s32 arg0, ...);
 extern void GXFlush(void);
 extern void GSgfxBackFBDoFrame(void);
-extern void fn_801BF8A0(s32 value);
-extern void fn_801E16F0(void);
+extern void HSD_VICopyEFB2XFBWait(s32 value);
+extern void GSmovieUpdate(void);
 extern void HSD_VIFinishDrawXFB(void);
 extern void GStextureConvertFromHW(void* texture, s32 mode);
 extern void GXPixModeSync(void);
@@ -65,13 +65,13 @@ extern u8 lbl_8047AA91;    /* GX draw done */
 extern void GXSetDrawDone(void);
 extern void OSYieldThread(void);
 extern u32 OSGetTick(void);
-extern void fn_8019C6FC(void);
-extern void fn_800D1070(u32 frames);
+extern void HSD_ShadowNop(void);
+extern void cameraObjectAnimUpdate(u32 frames);
 extern void GSlightUpdate(u32 frames);
 extern void GSmodelAdvanceAll(u32 frames, s32 mode);
 extern void gsParticleUpdateAll(s32 frames);
-extern void fn_800D13C4(void* a);
-extern void fn_800DC874(void* a);
+extern void GSgfxRenderLayerNop(void* a);
+extern void GSgfxRenderLayerNop2(void* a);
 extern void gsParticleUpdate(void* a);
 extern void modelShadowRender__FP10GSgfxLayer(void);
 extern void HSD_StartRender(s32 a);
@@ -81,10 +81,10 @@ extern void VIWaitForRetrace(void);
 
 #define RS ((GSRenderState*)lbl_8047AA80)
 
-/* fn_800D36B4's body, expanded into fn_800D2B90 with the colour passed by
+/* GSgfxSetFogColor's body, expanded into fn_800D2B90 with the colour passed by
  * value (retail copies it to a stack temporary first).
  * RULE-EXCEPTION(title-path): single-use inline helper duplicating
- * fn_800D36B4's body - see docs/RULE_EXCEPTIONS.md. fn_800D36B4 lies after
+ * GSgfxSetFogColor's body - see docs/RULE_EXCEPTIONS.md. GSgfxSetFogColor lies after
  * fn_800D2B90, so this non-deferred TU cannot inline the real function. */
 static inline void gsSetFogColor(GSRenderColor color) {
     RS->fogEnabled = 1;
@@ -111,7 +111,7 @@ void gfxSetFog(void* arg1) {
     }
     if (arg1 == 0) {
         HSD_FogSet(0);
-        fn_8016EA88();
+        HSD_FogReleaseCurrent();
         return;
     }
     lbl_8047AA8C = (u32)HSD_FogLoadDesc(arg1);
@@ -211,17 +211,17 @@ s32 gfxWorldToScreen(f32* point, f32* screen)
     return 2;
 }
 
-void fn_800D305C(u8 level)
+void GSgfxSetFrameClamp(u8 level)
 {
     RS->frameLevel = level;
 }
 
-u32 fn_800D3068(void)
+u32 GSgfxGetFrameInterval(void)
 {
     return RS->renderWidth;
 }
 
-void fn_800D3074(u32 flag)
+void GSgfxSetFrameInterval(u32 flag)
 {
     if (flag == 0) {
         return;
@@ -235,17 +235,17 @@ u32 GSgetFrameStep(void)
     return lbl_8047AA80->frameDelta;
 }
 
-u32 fn_800D3094(void)
+u32 GSgfxGetRetraceCount(void)
 {
     return lbl_8047AA80->xfbCount;
 }
 
-void fn_800D30A0(u32 value)
+void GSgfxSetRetraceCallback(u32 value)
 {
     lbl_8047AA80->xfbIndex = value;
 }
 
-void fn_800D30AC(void)
+void gfxFlush(void)
 {
     if (lbl_8047AA80->mode == 1) {
         gfxRecordCommand(4, 0);
@@ -264,8 +264,8 @@ void GSgfxSwapBuffers(u32 flag)
 
     if (lbl_8047AA80->progressiveFlag == 0) {
         GSgfxBackFBDoFrame();
-        fn_801BF8A0(0);
-        fn_801E16F0();
+        HSD_VICopyEFB2XFBWait(0);
+        GSmovieUpdate();
         HSD_VIFinishDrawXFB();
     } else if (renderTarget != NULL) {
         GStextureConvertFromHW(renderTarget, 1);
@@ -309,7 +309,7 @@ void GSgfxRenderEnd(void)
         }
     }
 
-    fn_8019C6FC();
+    HSD_ShadowNop();
 
     renderTarget = lbl_8047AA80->renderTarget;
     if (renderTarget != NULL) {
@@ -317,8 +317,8 @@ void GSgfxRenderEnd(void)
         if (renderTarget != (void*)0xFEFEFEFEU) {
             if (lbl_8047AA80->progressiveFlag == 0) {
                 GSgfxBackFBDoFrame();
-                fn_801BF8A0(0);
-                fn_801E16F0();
+                HSD_VICopyEFB2XFBWait(0);
+                GSmovieUpdate();
                 HSD_VIFinishDrawXFB();
             } else if (renderTarget != NULL) {
                 GStextureConvertFromHW(renderTarget, 1);
@@ -347,7 +347,7 @@ void GSgfxRenderEnd(void)
     }
 
     start = OSGetTick();
-    fn_800D1070(lbl_8047AA80->frameDelta);
+    cameraObjectAnimUpdate(lbl_8047AA80->frameDelta);
     end = OSGetTick();
     lbl_804001F0[11] += end - start;
 
@@ -396,8 +396,8 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
             if ((u32)(sc + 0x01020000U) != 0xFEFEU) {
                 if (((u8*)s4)[0x49D] == 0) {
                     GSgfxBackFBDoFrame();
-                    fn_801BF8A0(0);
-                    fn_801E16F0();
+                    HSD_VICopyEFB2XFBWait(0);
+                    GSmovieUpdate();
                     HSD_VIFinishDrawXFB();
                 } else {
                     if (sc != 0) {
@@ -419,12 +419,12 @@ void GSgfxRenderLayer(void* arg0, u8 arg1) {
 
         if (arg1 != 0) {
             startTick = OSGetTick();
-            fn_800D13C4((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
+            GSgfxRenderLayerNop((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
             tick = OSGetTick();
             ((u32*)&lbl_804001F0)[0x2C / 4] = tick - startTick;
 
             startTick = OSGetTick();
-            fn_800DC874((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
+            GSgfxRenderLayerNop2((void*)*(u32*)((u8*)lbl_8047AA80 + 0x54));
             tick = OSGetTick();
             ((u32*)&lbl_804001F0)[0x30 / 4] = tick - startTick;
 
@@ -487,7 +487,7 @@ void GSgfxWaitRetrace(u8 mode) {
     lbl_8047AA80->xfbAddr0 = lbl_8047AA80->xfbCount;
 }
 
-void fn_800D36B4(GSRenderColor color)
+void GSgfxSetFogColor(GSRenderColor color)
 {
     RS->fogEnabled = 1;
     RS->fogColorR = 255.0f * color.r;

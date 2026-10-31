@@ -117,7 +117,7 @@ typedef struct GSEffectGlobals {
 /* -----------------------------------------------------------------------
  * TraceFX work structure -- 0xAC bytes per trail effect instance.
  *
- * Deduced from fn_8013735C (tracefxInit) which zeroes 0xAC bytes and
+ * Deduced from _wazaEffectParseSea (tracefxInit) which zeroes 0xAC bytes and
  * populates fields at various offsets.
  * ----------------------------------------------------------------------- */
 typedef struct TraceFXWork {
@@ -175,7 +175,7 @@ BOOL tracefxStartEffect(u8* work);
 
 /* -----------------------------------------------------------------------
  * tracefxInit, tracefxAddSegment, and tracefxUpdate (invented wrapper
- * names for fn_8013735C, _tracefxUpdate, and _tracefxRender) were another
+ * names for _wazaEffectParseSea, _tracefxUpdate, and _tracefxRender) were another
  * unreferenced duplicate left by the same transplant and have been
  * removed from tracefx.c; their prototypes are gone from here too.
  * ----------------------------------------------------------------------- */
