@@ -4,7 +4,7 @@
     {
       "path": "src/musyx/runtime/reverb_candidate_80164520.c",
       "function": "DoCrossTalk",
-      "address": "ReverbHIFilterBlock",
+      "address": "fn_80164C40",
       "mnemonics": [
         "addi",
         "bdnz",
