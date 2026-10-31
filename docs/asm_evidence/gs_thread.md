@@ -65,12 +65,12 @@ Retail address 0x800F028C.
 - Compiler probe: docs/asm_evidence/probes/threadExecute.txt (candidate docs/asm_evidence/probes/threadExecute.c) ends "verdict: no-match (20 compilers compared)".
 - Origin: Genius Sonority GS engine, GSthread.cpp (cooperative thread scheduler); hand-written assembly in the game's own code.
 
-## fn_800F02F4
+## GSthreadGetArg
 
 Retail address 0x800F02F4.
 
 - Why it cannot be C: it is the landing pad that threadExecute's frame returns through. It reloads LR and the original r3 from the 12-byte frame that threadExecute built, pops that frame (`addi r1, r1, 0xc`) and returns. It has no frame of its own and pops one it did not allocate, which no C function body compiles to.
-- Compiler probe: docs/asm_evidence/probes/fn_800F02F4.txt (candidate docs/asm_evidence/probes/fn_800F02F4.c) ends "verdict: no-match (20 compilers compared)".
+- Compiler probe: docs/asm_evidence/probes/GSthreadGetArg.txt (candidate docs/asm_evidence/probes/GSthreadGetArg.c) ends "verdict: no-match (20 compilers compared)".
 - Origin: Genius Sonority GS engine, GSthread.cpp (cooperative thread scheduler); hand-written assembly in the game's own code.
 
 ## _threadSwitch

@@ -122,7 +122,7 @@ typedef struct GSFieldCamera {
  * =================================================================== */
 
 /**
- * fn_8010E138 -- Cast a ray against the collision mesh and store results.
+ * GScolsys2CollectWalkHeight -- Cast a ray against the collision mesh and store results.
  *
  * Iterates over collision triangles in the active WZX data, transforms
  * vertices through the model-view matrix, and tests ray intersection.

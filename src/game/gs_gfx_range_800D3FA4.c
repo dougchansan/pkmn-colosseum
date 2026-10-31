@@ -28,7 +28,7 @@ extern void gfxRecordCommand(u32, u32, ...);
 extern void gfxBegin(u16);
 extern void gfxSetupChannelsTev(u32);
 extern u32 OSGetTick(void);
-extern void fn_801E17A8(void);
+extern void GSmovieDraw(void);
 extern void HSD_StateInvalidate(u32);
 extern s32 HSD_CObjSetCurrent(void*);
 extern void GSlightSetupLights(void*);
@@ -129,29 +129,29 @@ extern void _gfxEmitPos3s16(void);
 extern void _gfxEmitPos3u16(void);
 extern void gfxVtxDescClear(u8*);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
-extern void fn_800D7940(u32, u16);
+extern void gfxDrawIndexedVertices(u32, u16);
 extern void gfxLoadVtxDesc(u32);
-extern void fn_800DB098(void);
-extern void fn_800DB758(u16);
+extern void gfxDLCaptureVertex(void);
+extern void gfxBeginPrimitive(u16);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
 extern void GSlogVPrintf(void);
 extern void GSlogFormat(void);
-extern void fn_800E09E8(void*, void*, u32);
+extern void GSsplineEvalStrip(void*, void*, u32);
 extern u8 GSmemDumpMap(u32, u32);
 extern u32 _matGSmatObjMakeTExp(void*, void*, void*, void*, void*);
 extern void _matGSmatEnableEnvMapExt(u8*);
 extern s32 _matGSmatObjLoad(u8*);
 extern void GSmtxConcat(void*, void*, void*);
-extern void fn_800E02C4(void*);
+extern void GSmtxScaleApply(void*);
 extern void GSmtxRotateZ(void*, f32);
 extern void GSmtxRotateY(void*, f32);
 extern void GSmtxRotateX(void*, f32);
-extern void fn_800E03E8(void*, f32, f32, f32);
-extern void fn_800E0628(void*, void*);
-extern void fn_800E064C(void*);
+extern void GSmtxTranslate(void*, f32, f32, f32);
+extern void GSmtxCopy(void*, void*);
+extern void GSmtxIdentity(void*);
 extern void GSmtx44Perspective(u8*);
 extern void GSmtx44Ortho(void*, f32, f32, f32, f32, f32, f32);
-extern void fn_800E0C78(void);
+extern void GSsrandTime(void);
 extern void GSmathInitCosTable(void);
 
 
@@ -171,7 +171,7 @@ extern void _gfxEmitPos3f32(void);
 extern void GXBegin(u32, u32, u16);
 extern u8 lbl_80314350[];
 extern u8 lbl_804001F0[];
-extern void fn_800D6A80(u16, s32, u32*, u32*);
+extern void gfxCountPrims(u16, s32, u32*, u32*);
 extern u8 sTex0[];
 extern void GXSetVtxAttrFmt(u32, u32, u32, u32, u8);
 extern void GXClearVtxDesc(void);
@@ -232,11 +232,11 @@ extern void GXSetTevAlphaIn();
 extern void GXSetTevKColorSel();
 extern void GXSetTevKAlphaSel();
 extern void GXSetTevIndirect();
-extern void fn_800BBC7C();
-extern void fn_800BBCE0();
-extern void fn_800BBE8C();
-extern void fn_800BBF98();
-extern void fn_800BBFDC();
+extern void GXSetTevIndWarp();
+extern void GXSetTevIndTile();
+extern void GXSetTevIndBumpST();
+extern void GXSetTevIndBumpXYZ();
+extern void GXSetTevIndRepeat();
 extern void GXSetTevKColor();
 extern void GXSetTevSwapModeTable();
 extern void GXSetProjection(void*, u32);
@@ -268,10 +268,10 @@ extern u32 lbl_803145A8[];
 extern void jumptable_803152B8();
 extern void jumptable_80315340();
 extern void jumptable_80315320();
-extern void fn_800E24B0(u16);
+extern void GSmemUnlock(u16);
 extern void GSmemFree(u16);
 extern void GXCallDisplayList(u32, u32);
-extern void fn_800E2AF8(u16);
+extern void GSmemReturnTrue(u16);
 extern u16 GSmemAlloc(u32, u32);
 extern u32 lbl_8047AAD8;
 extern u32 lbl_8047AAD4;
@@ -297,7 +297,7 @@ extern void HSD_LObjSetInterest();
 extern void HSD_LObjRemoveAnimAll(void*);
 extern void HSD_LObjAddAnimAll(void*, void*);
 extern void HSD_ForeachAnim(void*, u32, u32, void*, u32, ...);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern void HSD_AObjSetRate(void);
 extern f32 lbl_8047AAF4;
 extern f32 lbl_8047CA88;
@@ -364,7 +364,7 @@ extern u8 lbl_80315490[];
 extern void hsdInitClassInfo(void*, void*, void*, void*, u32, u32);
 extern u8 lbl_8036CB30[];
 extern void HSD_TExpGetType();
-extern void fn_801B6DC0();
+extern void HSD_TExpSetSwapTable();
 extern void HSD_TExpCnst();
 extern void HSD_TExpTev();
 extern void HSD_TExpColorOp();
@@ -375,7 +375,7 @@ extern void HSD_ImageDescRemove(void);
 extern void HSD_TObjLoadDesc(void);
 extern void HSD_MObjGetTObj(void);
 extern void HSD_MObjAddTObjNext(void);
-extern void fn_801A6DA0(void);
+extern void HSD_TObjInsertNext(void);
 extern u8 lbl_803154E4[];
 extern void PSMTXMultVec(void*, void*, void*);
 extern void PSVECCrossProduct(void*, void*, void*);
@@ -503,7 +503,7 @@ static inline void gfxRenderPass(u32 flags, u8 setupCamera, u8 pass) {
     *(u32*)(lbl_804001F0 + 0x48 + pass * 12) = 0;
 
     if (flags & 1) {
-        fn_801E17A8();
+        GSmovieDraw();
     }
 
     if (flags & 0x10) {
@@ -600,7 +600,7 @@ void GSgfxDrawScene(u32 flags, u8 setupCamera, u8 resetQueue) {
 
 
 /* Render-command stream callees. */
-extern void fn_800D30AC(void);
+extern void gfxFlush(void);
 extern void gfxSetPointSize(f32);
 extern void gfxSetLineWidth(f32);
 extern void gfxVtxMtxIdx(u8);
@@ -649,32 +649,32 @@ extern void GSgfxDLDraw(u32);
 extern void gfxSetPerspective(f32, f32, f32, f32);
 extern void gfxSetViewport(u16, u16, u16, u16);
 extern void gfxSetScissor(u16, u16, u16, u16);
-extern void fn_800D9E4C(u32);
-extern void fn_800D9ED8(u32);
+extern void gfxSetFog_800D9E4C(u32);
+extern void gfxSetFlag1A(u32);
 extern void gfxSetCoPlanar(u32);
 extern void gfxSetDither(u32);
 extern void gfxSetDstAlpha(u32, u8);
 extern void gfxSetBlendModeRaw(u32);
 extern void gfxSetBlendMode(u32, u32, u32);
-extern void fn_800DB900(u32, void*, s8);
-extern void fn_800DB988(u32, u32, u32);
-extern void fn_800DB9F0(u32, u32, u32);
-extern void fn_800DBA54(u8);
-extern void fn_800DBAA4(u32);
-extern void fn_800DBB0C(u32, u32, u32);
-extern void fn_800DBB84(u32, u32, u32);
-extern void fn_800DBBFC(u32, u32, u16, u16, u16, u16, u32, u32, u32, u32);
-extern void fn_800DBCE4(u32, u32, u8, u8, u32);
-extern void fn_800DBD70(u32, u32, u32, u32, u32, u32, u32, u8, u8, u32);
-extern void fn_800DBE5C(u32);
-extern void fn_800DBEB4(u32, GXColor);
-extern void fn_800DBF1C(u32, u32);
-extern void fn_800DBF78(u32, u32);
-extern void fn_800DBFD4(u32, u32, u32, u32, u32);
-extern void fn_800DC04C(u32, u32, u32, u32, u8, u32);
-extern void fn_800DC0D4(u32, u32, u32, u32, u32);
-extern void fn_800DC14C(u32, u32, u32, u32, u8, u32);
-extern void fn_800DC1D4(u8);
+extern void gfxSetIndTexMtx(u32, void*, s8);
+extern void gfxSetIndTexCoordScale(u32, u32, u32);
+extern void gfxSetIndTexOrder(u32, u32, u32);
+extern void gfxSetNumIndStages(u8);
+extern void gfxSetTevIndRepeat(u32);
+extern void gfxSetTevIndBumpXYZ(u32, u32, u32);
+extern void gfxSetTevIndBumpST(u32, u32, u32);
+extern void gfxSetTevIndTile(u32, u32, u16, u16, u16, u16, u32, u32, u32, u32);
+extern void gfxSetTevIndWarp(u32, u32, u8, u8, u32);
+extern void gfxSetTevIndirect(u32, u32, u32, u32, u32, u32, u32, u8, u8, u32);
+extern void gfxSetTevDirect(u32);
+extern void gfxSetTevKColor(u32, GXColor);
+extern void gfxSetTevKAlphaSel(u32, u32);
+extern void gfxSetTevKColorSel(u32, u32);
+extern void gfxSetTevColorIn(u32, u32, u32, u32, u32);
+extern void gfxSetTevColorOp(u32, u32, u32, u32, u8, u32);
+extern void gfxSetTevAlphaIn(u32, u32, u32, u32, u32);
+extern void gfxSetTevAlphaOp(u32, u32, u32, u32, u8, u32);
+extern void gfxSetNumTevStages(u8);
 extern void gfxSetTevStage(u32, u32, u32, u32, u32);
 
 #if !defined(GS_GFX_RANGE_SPLIT) || \
@@ -705,7 +705,7 @@ u32* gfxPlayCommands(u32* command)
     case 3:
         gfxEnd(); break;
     case 4:
-        fn_800D30AC(); break;
+        gfxFlush(); break;
     case 5:
         p += 3;
         gfxVtxPos(((f32*)p)[-3], ((f32*)p)[-2], ((f32*)p)[-1]); break;
@@ -859,10 +859,10 @@ u32* gfxPlayCommands(u32* command)
         gfxSetCoPlanar(p[-1]); break;
     case 53:
         p += 1;
-        fn_800D9ED8(p[-1]); break;
+        gfxSetFlag1A(p[-1]); break;
     case 54:
         p += 1;
-        fn_800D9E4C(p[-1]); break;
+        gfxSetFog_800D9E4C(p[-1]); break;
     case 55:
         p += 4;
         gfxSetScissor((u16)p[-4], (u16)p[-3], (u16)p[-2], (u16)p[-1]); break;
@@ -912,61 +912,61 @@ u32* gfxPlayCommands(u32* command)
         gfxSetTevStage(p[-5], p[-4], p[-3], p[-2], p[-1]); break;
     case 73:
         p += 1;
-        fn_800DC1D4((u8)p[-1]); break;
+        gfxSetNumTevStages((u8)p[-1]); break;
     case 74:
         p += 6;
-        fn_800DC14C(p[-6], p[-5], p[-4], p[-3], (u8)p[-2], p[-1]); break;
+        gfxSetTevAlphaOp(p[-6], p[-5], p[-4], p[-3], (u8)p[-2], p[-1]); break;
     case 75:
         p += 5;
-        fn_800DC0D4(p[-5], p[-4], p[-3], p[-2], p[-1]); break;
+        gfxSetTevAlphaIn(p[-5], p[-4], p[-3], p[-2], p[-1]); break;
     case 76:
         p += 6;
-        fn_800DC04C(p[-6], p[-5], p[-4], p[-3], (u8)p[-2], p[-1]); break;
+        gfxSetTevColorOp(p[-6], p[-5], p[-4], p[-3], (u8)p[-2], p[-1]); break;
     case 77:
         p += 5;
-        fn_800DBFD4(p[-5], p[-4], p[-3], p[-2], p[-1]); break;
+        gfxSetTevColorIn(p[-5], p[-4], p[-3], p[-2], p[-1]); break;
     case 78:
         p += 2;
-        fn_800DBF78(p[-2], p[-1]); break;
+        gfxSetTevKColorSel(p[-2], p[-1]); break;
     case 79:
         p += 2;
-        fn_800DBF1C(p[-2], p[-1]); break;
+        gfxSetTevKAlphaSel(p[-2], p[-1]); break;
     case 80:
         argument = *p++;
         memcpy(&copied, p, sizeof(copied));
         p++;
-        fn_800DBEB4(argument, copied);
+        gfxSetTevKColor(argument, copied);
         break;
     case 81:
         p += 1;
-        fn_800DBE5C(p[-1]); break;
+        gfxSetTevDirect(p[-1]); break;
     case 82:
         p += 10;
-        fn_800DBD70(p[-8], p[-7], p[-6], p[-5], p[-4], p[-3], p[-2], (u8)p[-1], (u8)p[-10], p[-9]); break;
+        gfxSetTevIndirect(p[-8], p[-7], p[-6], p[-5], p[-4], p[-3], p[-2], (u8)p[-1], (u8)p[-10], p[-9]); break;
     case 83:
         p += 5;
-        fn_800DBCE4(p[-5], p[-4], (u8)p[-3], (u8)p[-2], p[-1]); break;
+        gfxSetTevIndWarp(p[-5], p[-4], (u8)p[-3], (u8)p[-2], p[-1]); break;
     case 84:
         p += 10;
-        fn_800DBBFC(p[-8], p[-7], (u16)p[-6], (u16)p[-5], (u16)p[-4], (u16)p[-3], p[-2], p[-1], p[-10], p[-9]); break;
+        gfxSetTevIndTile(p[-8], p[-7], (u16)p[-6], (u16)p[-5], (u16)p[-4], (u16)p[-3], p[-2], p[-1], p[-10], p[-9]); break;
     case 85:
         p += 3;
-        fn_800DBB84(p[-3], p[-2], p[-1]); break;
+        gfxSetTevIndBumpST(p[-3], p[-2], p[-1]); break;
     case 86:
         p += 3;
-        fn_800DBB0C(p[-3], p[-2], p[-1]); break;
+        gfxSetTevIndBumpXYZ(p[-3], p[-2], p[-1]); break;
     case 87:
         p += 1;
-        fn_800DBAA4(p[-1]); break;
+        gfxSetTevIndRepeat(p[-1]); break;
     case 88:
         p += 1;
-        fn_800DBA54((u8)p[-1]); break;
+        gfxSetNumIndStages((u8)p[-1]); break;
     case 89:
         p += 3;
-        fn_800DB9F0(p[-3], p[-2], p[-1]); break;
+        gfxSetIndTexOrder(p[-3], p[-2], p[-1]); break;
     case 90:
         p += 3;
-        fn_800DB988(p[-3], p[-2], p[-1]); break;
+        gfxSetIndTexCoordScale(p[-3], p[-2], p[-1]); break;
     case 91:
         {
             u32* data;
@@ -977,7 +977,7 @@ u32* gfxPlayCommands(u32* command)
              * call. */
             data = p;
             p += 25;
-            fn_800DB900(argument, data, (s8)data[24]);
+            gfxSetIndTexMtx(argument, data, (s8)data[24]);
         }
         break;
     }
@@ -997,7 +997,7 @@ asm void fn_800D45F8(void) {
 #include "src/game/gs_render_fn_800D45F8.inc"
 }
 #else
-u32 fn_800D45F8(void) { return *(u32*)lbl_8047AA80; }
+u32 gfxGetRecordMode(void) { return *(u32*)lbl_8047AA80; }
 #endif
 
 extern u32 lbl_8047AA80;
@@ -1006,10 +1006,10 @@ asm void fn_800D4604(void) {
 #include "src/game/gs_render_fn_800D4604.inc"
 }
 #else
-void fn_800D4604(u32 val) { *(u32*)lbl_8047AA80 = val; }
+void gfxSetRecordMode(u32 val) { *(u32*)lbl_8047AA80 = val; }
 #endif
 
-void fn_800D4610(u8 val) {
+void GSgfxSetFlag49C(u8 val) {
     GSgfxState* state = (GSgfxState*)lbl_8047AA80;
 
     state->requestBufferFlag = val;
@@ -1647,7 +1647,7 @@ asm void fn_800D67BC(void) {
 /* Linked owner: gs_gfx_candidate_800D67BC.c (standalone carve). */
 void gfxBegin(u16 vertCount) {
     if (*(u8*)(lbl_8047AA80 + 0x47e) == 1) {
-        fn_800DB758(vertCount);
+        gfxBeginPrimitive(vertCount);
         return;
     }
     if (*(s32*)lbl_8047AA80 == 1) {
@@ -1684,7 +1684,7 @@ void gfxBegin(u16 vertCount) {
     gfxSetupChannelsTev(*(u32*)(lbl_8047AA80 + 0x24));
     GXBegin(lbl_80314350[*(u32*)(lbl_8047AA80 + 0x14)],
                 *(u32*)(*(u32*)(lbl_8047AA80 + 0x24) + 0x4), vertCount);
-    fn_800D6A80(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
+    gfxCountPrims(vertCount, *(s32*)(lbl_8047AA80 + 0x14),
                 (u32*)(lbl_804001F0 + 0xc), (u32*)(lbl_804001F0 + 0x4));
 }
 #endif
@@ -1717,7 +1717,7 @@ asm void fn_800D6A80(void) {
 #include "src/game/gs_render_fn_800D6A80.inc"
 }
 #else
-void fn_800D6A80(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims) {
+void gfxCountPrims(u16 vertCount, s32 type, u32* totalVerts, u32* totalPrims) {
     *totalVerts += vertCount;
     switch (type) {
         case 3: *totalPrims += vertCount / 3; break;

@@ -37,5 +37,5 @@ RODATA const u32 lbl_80266C10[4] = {
     0x280, 0x27E, 0x27C, 0x27A,
 };
 
-/* 0x80266C20-0x80266C30 is fn_8001E644's colour initializer, owned by the
+/* 0x80266C20-0x80266C30 is windowDrawFrame's colour initializer, owned by the
  * menuSub TU (src/game/menuSub.c). */

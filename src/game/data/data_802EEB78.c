@@ -54,8 +54,8 @@ extern u8 demoScene01[];
 extern u8 demoScene00[];
 extern u8 _gbaCommThread[];
 extern u8 menuStatusDrawPokemonInfo[];
-extern u8 fn_80096D54[];
-extern u8 fn_80096FA0[];
+extern u8 menuPokemonStatusMoveConfirm[];
+extern u8 menuPokemonStatusMoveKey[];
 
 /* Auto-carved .data unit 0x802EEB78..0x802EF0A4 (18 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
 

@@ -7,10 +7,10 @@
  *
  * At level 0 the frontend gives locals the callee-saved registers ranked by
  * reference weight, then declaration order. memAbsorbNext's adjacency test
- * uses its own NULL-initialised end/data locals, like fn_8017FB08's: their
+ * uses its own NULL-initialised end/data locals, like gsSmallHeapFree's: their
  * two initial zero stores (retail +0xF4..+0x108) and the stack homes
  * 0x18/0x1C are those locals. Retail also ranks both inline list heads above
- * fn_8017FB08's end/data pair; one extra reference to each head (see the
+ * gsSmallHeapFree's end/data pair; one extra reference to each head (see the
  * title-path exception tags) gives that ranking, and the function is exact.
  */
 #include "game/gs_range_8017FA5C_shared.h"
@@ -85,7 +85,7 @@ static inline GsRangeMemNode* memAbsorbNext(GsRangeMemNode* block)
 }
 
 
-void fn_8017FB08(void* allocation)
+void gsSmallHeapFree(void* allocation)
 {
     u8* end = NULL;
     u8* data = NULL;

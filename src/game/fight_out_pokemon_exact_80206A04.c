@@ -50,7 +50,7 @@ extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
 extern void  pokemonIsJoutaiDataId(void);
-extern void  fn_8011B67C(void);
+extern void  statusIsJoutaiDataId(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);
@@ -93,7 +93,7 @@ u32 fightPokemonCheckValid(void* ctx) {
 
 /* Address: 0x80206AEC | Size: 0x150 | Ghidra import */
 void fightPokemonCreate(void* p1, void* p2, s16 p3) {
-    extern void fn_8011B950();
+    extern void joutaiSlotsClear();
     extern void pokemonBiosCopy();
     extern void pokemonInit();
     u32 uVar1;
@@ -104,7 +104,7 @@ void fightPokemonCreate(void* p1, void* p2, s16 p3) {
             pokemonGetStatus(p1, 0, 0xcc, 0);
             pokemonInit();
             uVar1 = (u32)pokemonGetStatus(p1, 0, 0xcd, 0);
-            fn_8011B950(uVar1, 1);
+            joutaiSlotsClear(uVar1, 1);
             pokemonSetStatus(p1, 0, 0xce, 0, (void*)0xffffffff);
             pokemonSetStatus(p1, 0, 0xcf, 0, 0);
             pokemonSetStatus(p1, 0, 0xd0, 0, 0);
@@ -138,10 +138,10 @@ void fightOutPokemonInit(int r3)
 
 {
     extern StatusIdTable7 lbl_80279C60;
-    extern void fn_8011B950();
+    extern void joutaiSlotsClear();
     extern void pokemonInit();
     extern void fightActionInit();
-    extern void fn_801FD830();
+    extern void fightOutPokemonBiosSet60C();
     extern void fightWazaInit();
     extern void fightItemInit();
     extern void fightOutPokemonEnemyInitAry();
@@ -160,7 +160,7 @@ void fightOutPokemonInit(int r3)
       pokemonSetStatus(iVar1,0,0xcb,0,0);
       pokemonInit(pokemonGetStatus(iVar1,0,0xcc,0));
       uVar2 = (u32)pokemonGetStatus(iVar1,0,0xcd,0);
-      fn_8011B950(uVar2,1);
+      joutaiSlotsClear(uVar2,1);
       pokemonSetStatus(iVar1,0,0xce,0, (void*)0xffffffff);
       pokemonSetStatus(iVar1,0,0xcf,0,0);
       pokemonSetStatus(iVar1,0,0xd0,0,0);
@@ -168,12 +168,12 @@ void fightOutPokemonInit(int r3)
       pokemonSetStatus(iVar1,0,0xd2,0,0);
     }
     uVar2 = (int)pokemonGetStatus(r3,0,0xd8,0);
-    fn_8011B950(uVar2,0x34);
+    joutaiSlotsClear(uVar2,0x34);
     local_28 = lbl_80279C60;
     for (i = 0; i < 7; i++) {
       pokemonSetStatus(r3,0,local_28.id[i],0,6);
     }
-    fn_801FD830(r3,0);
+    fightOutPokemonBiosSet60C(r3,0);
     pokemonSetStatus(r3,0,0xed,0,2);
     pokemonSetStatus(r3,0,0xee,0,0);
     for (j = 0; j < 0xc; j++) {
@@ -314,7 +314,7 @@ void fightOutPokemonInitFightActionBuff(void* param_1) {
 
 /* 0x802077D4 | size: 0x11C */
 void fightPokemonInitAry(void* basePtr, u16 count) {
-    extern void fn_8011B950();
+    extern void joutaiSlotsClear();
     extern void pokemonInit();
     void* entry;
     u16 i;
@@ -325,7 +325,7 @@ void fightPokemonInitAry(void* basePtr, u16 count) {
         if (entry == NULL) { continue; }
         pokemonSetStatus(entry, 0, 0xCB, 0, 0);
         pokemonInit(pokemonGetStatus(entry, 0, 0xCC, 0));
-        fn_8011B950(pokemonGetStatus(entry, 0, 0xCD, 0), 1);
+        joutaiSlotsClear(pokemonGetStatus(entry, 0, 0xCD, 0), 1);
         pokemonSetStatus(entry, 0, 0xCE, 0, (u32)-1);
         pokemonSetStatus(entry, 0, 0xCF, 0, 0);
         pokemonSetStatus(entry, 0, 0xD0, 0, 0);
@@ -337,7 +337,7 @@ void fightPokemonInitAry(void* basePtr, u16 count) {
 /* Address: 0x802078F0 | Size: 0xec | Ghidra import */
 void fightPokemonInit(void* r3)
 {
-    extern void fn_8011B950();
+    extern void joutaiSlotsClear();
     extern void pokemonInit();
     void* ctx;
     u32 uVar1;
@@ -347,7 +347,7 @@ void fightPokemonInit(void* r3)
         pokemonGetStatus(ctx, 0, 0xcc, 0);
         pokemonInit();
         uVar1 = (u32)pokemonGetStatus(ctx, 0, 0xcd, 0);
-        fn_8011B950(uVar1, 1);
+        joutaiSlotsClear(uVar1, 1);
         pokemonSetStatus(ctx, 0, 0xce, 0, (void*)0xffffffff);
         pokemonSetStatus(ctx, 0, 0xcf, 0, 0);
         pokemonSetStatus(ctx, 0, 0xd0, 0, 0);

@@ -348,7 +348,7 @@ void wsCmd0B(void)
     extern u32 fightWazaIsHit();
     extern void fightMenuCloseMsg();
     extern void fightMenuOpenMsg();
-    extern void fn_80265598();
+    extern void fightMenuStatusMenuOpen();
     extern u32 fightMenuGetFightOutPokemonPtrToStatusMenuId();
     extern u32 lbl_8047B618;
     u32 initialEffectDamage;
@@ -494,7 +494,7 @@ void wsCmd0B(void)
             maxHp = fightMenuGetFightOutPokemonPtrToStatusMenuId(target, floorId, 1);
             displayHp = finalHp;
             if ((u8)menuIsCheck(maxHp) == 0) {
-                fn_80265598(target, floorId, 1);
+                fightMenuStatusMenuOpen(target, floorId, 1);
             }
             menuFightStatusStartAnimHP(maxHp, displayHp);
         }
@@ -551,7 +551,7 @@ void wsCmd09(void)
 
 {
     extern void wazaSequenceSysStartWaza();
-    extern u8 fn_801DDD28();
+    extern u8 wazaSequenceOwnerLoadWaza();
     extern u32 fightTargetGetPtrAsNowFightType();
     extern u32 fightFloorGetStatus();
     extern void fightWazaDoEffectFunc();
@@ -560,7 +560,7 @@ void wsCmd09(void)
     extern u32 pokemonGetStatus();
     extern void wsRunScript();
     extern void fightMenuAllFightOutPokemonCloseStatusMenu();
-    extern void fn_80265598();
+    extern void fightMenuStatusMenuOpen();
     extern u32 lbl_8047B618;
     extern void* lbl_8047B62C;
     extern u8 lbl_80378964[];
@@ -592,9 +592,9 @@ void wsCmd09(void)
         fightMenuAllFightOutPokemonCloseStatusMenu(0);
         floorMove = (u16)fightFloorGetStatus(0, 0, 0x14, 0);
         effectAttacker = pokemonGetStatus(target, 0, 0xee, 0);
-        if (effectAttacker != 0 && fn_801DDD28(effectAttacker, 0x57, 4, 0) != 0) {
+        if (effectAttacker != 0 && wazaSequenceOwnerLoadWaza(effectAttacker, 0x57, 4, 0) != 0) {
             wazaSequenceSysStartWaza(effectAttacker, 0x57, 4);
-            fn_80265598(target, floorMove, 1);
+            fightMenuStatusMenuOpen(target, floorMove, 1);
         }
         lbl_8047B610++;
     }

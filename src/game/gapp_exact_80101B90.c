@@ -1,9 +1,9 @@
 /**
  * @file gapp_exact_80101B90.c
- * @brief gapp load meter: fn_80101B90 (frame-time bar), fn_80101D5C and
- *        fn_80101D8C (meter frame and scale lines), 0x80101B90 - 0x80101FB8.
+ * @brief gapp load meter: gappLoadMeterDraw (frame-time bar), gappIssueDrawSync and
+ *        gappLoadMeterDrawFrame (meter frame and scale lines), 0x80101B90 - 0x80101FB8.
  *
- * One object because fn_80101B90 and fn_80101D8C share this translation
+ * One object because gappLoadMeterDraw and gappLoadMeterDrawFrame share this translation
  * unit's literal pool (.sdata2 0x8047CD80 - 0x8047CDC0: 0.0f, 640.0f,
  * 480.0f, 685000.0f, 450.0f, 452.0f, the unsigned int-to-float bias,
  * 2740000.0f, 454.0f, 456.0f, 448.0f, 458.0f and the signed bias), which
@@ -24,8 +24,8 @@ extern u8 lbl_80478B28;
 
 extern u32 OSGetTick(void);
 extern void GXSetDrawSync(s32);
-extern void fn_800BE30C(void);
-extern void fn_800D9ED8(s32);
+extern void GXClearGPMetric(void);
+extern void gfxSetFlag1A(s32);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetOrtho(f32, f32, f32, f32);
@@ -40,7 +40,7 @@ extern void gfxVtxPos(f32, f32, f32);
 extern void gfxVtxColor4u8(u32, u8, u8, u8, u8);
 extern void gfxEnd(void);
 
-void fn_80101B90(u32 color) {
+void gappLoadMeterDraw(u32 color) {
     u32 tick;
     u8 red;
     u8 green;
@@ -48,7 +48,7 @@ void fn_80101B90(u32 color) {
 
     if ((s32)lbl_8047ACF0 != 0) {
         tick = OSGetTick();
-        fn_800D9ED8(1);
+        gfxSetFlag1A(1);
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetOrtho(0.0f, 0.0f, 640.0f, 480.0f);
@@ -76,13 +76,13 @@ void fn_80101B90(u32 color) {
     }
 }
 
-void fn_80101D5C(void) {
+void gappIssueDrawSync(void) {
     if ((s32)lbl_8047ACF0 != 0) {
         GXSetDrawSync(3);
     }
 }
 
-void fn_80101D8C(void)
+void gappLoadMeterDrawFrame(void)
 {
     f32 x;
     s32 offset;
@@ -129,5 +129,5 @@ void fn_80101D8C(void)
     tick = OSGetTick();
     lbl_8047ACE8 = tick;
     lbl_8047ACEC = tick;
-    fn_800BE30C();
+    GXClearGPMetric();
 }

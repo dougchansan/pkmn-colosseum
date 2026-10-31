@@ -47,7 +47,7 @@ extern u8 _fightOutPokemonSoubiItemEffectSub[];
 extern u8 fightOutPokemonDoSoubiItemCheck[];
 extern u8 _wsTokuseiAfterDamage[];
 extern u8 _wsHitCheckJoutaiSub[];
-extern u8 fn_8023B498[];
+extern u8 fightTrainerAiScoreWazaToSide[];
 extern u8 fightTrainerAiGetWazaDamageValue[];
 extern u8 fightTrainerAiGetWazaHitValue[];
 extern u8 lbl_80379452[];

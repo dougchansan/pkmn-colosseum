@@ -304,14 +304,14 @@ _flush_loop:
 
 #if defined(START_MEM_PART)
 #if !defined(START_MEM_SUFFIX)
-/* fn_80003458 - 0x80003458 | size: 0x30 */
-__declspec(section ".init") void* fn_80003458(void* dest, int val, u32 count) {
+/* TRK_memset - 0x80003458 | size: 0x30 */
+__declspec(section ".init") void* TRK_memset(void* dest, int val, u32 count) {
     TRK_fill_mem_800D6430(dest, val, count);
     return dest;
 }
 
-/* fn_80003488 - 0x80003488 | size: 0x24 */
-__declspec(section ".init") void* fn_80003488(void* dst, const void* src, int len) {
+/* TRK_memcpy - 0x80003488 | size: 0x24 */
+__declspec(section ".init") void* TRK_memcpy(void* dst, const void* src, int len) {
     const u8* s;
     u8* d;
     int n;
@@ -328,8 +328,8 @@ __declspec(section ".init") void* fn_80003488(void* dst, const void* src, int le
 #endif /* !START_MEM_SUFFIX */
 
 #if !defined(START_MEM_PREFIX)
-/* fn_800053E0 - 0x800053E0 | size: 0x2C */
-__declspec(section ".init") void fn_800053E0(void) {
+/* __TRK_reset - 0x800053E0 | size: 0x2C */
+__declspec(section ".init") void __TRK_reset(void) {
     OSResetSystem(0, 0, 0);
 }
 

@@ -59,14 +59,14 @@ typedef u8 M2C_UNK;
 extern void  GSlogWrite(const void* fmt, ...);          /* OSReport */
 extern u16   GSmemAllocRaw(u32 size);                    /* _toolentryAlloc__FUl */
 extern void* GSmemGetPtr(u16 handle);                    /* GSmemLock */
-extern void* GSmemLock(u16 handle);                      /* fn_800E24B0 */
+extern void* GSmemLock(u16 handle);                      /* GSmemUnlock */
 extern void  GSmemFree(u16 handle);                      /* GSmemFree */
 extern u16   GSmemAlloc(u32 alignment, u32 size);        /* GSmemAlloc */
 extern void  OSSetIdleFunction(void* func, void* arg,
                           void* stackTop, u32 stackSize); /* OSCreateFiber-like */
 extern void  OSDisableInterrupts(void);
 extern void  OSRestoreInterrupts(void);
-extern void  fn_800D30A0(void* callback);                 /* GSgfx register swap callback */
+extern void  GSgfxSetRetraceCallback(void* callback);                 /* GSgfx register swap callback */
 extern void  threadSaveGPRRegisters(void);                /* GSthread context init */
 extern void  threadSaveFPRRegisters(void);                           /* GSthread FPU context init */
 /* renamed symbols referenced by asm incs (symbolmap port) */
@@ -79,17 +79,17 @@ extern const char lbl_80271038[]; /* "GSthread: Init OK, maximum of %d threads\n
 
 /* ===== Forward declarations for internal functions ===== */
 extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
-extern void fn_800F0F4C(u32 arg);          /* GSthread trampoline / entry wrapper */
+extern void _GSthreadExitTrampoline(u32 arg);          /* GSthread trampoline / entry wrapper */
 extern void PADRead(void* buf);
 extern u32 SIProbe(u32 buttonIdx);
-extern void fn_800AB4FC(void*);
+extern void PADControlAllMotors(void*);
 extern void GSmemFree(u16 handle);
-extern void* fn_800E24B0(u16 handle);
+extern void* GSmemUnlock(u16 handle);
 extern void* GSmemLock(u16 handle);
 extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void SJIStoGSchar(void);
-extern void fn_800DBEB4(u32 a, void* b);
+extern void gfxSetTevKColor(u32 a, void* b);
 extern void gfxVtxColor4u8(s32 a, s32 b, s32 c, s32 d, s32 e);
 extern void gfxVtxPos2s16(s16 x, s16 y);
 extern void gfxEnd(void);
@@ -99,8 +99,8 @@ extern void gfxSetVtxDesc(void* ptr);
 extern void gfxLoadTexture(void);
 extern void gfxClearFlags(u32 mask, ...);
 extern void gfxSetFlags(u32 mask);
-extern void fn_800D9ED8(void);
-extern void fn_800DC1D4(s32 a);
+extern void gfxSetFlag1A(void);
+extern void gfxSetNumTevStages(s32 a);
 extern void logVsnprintf_float(void);
 extern void GStextureUnlockImage(void* ctx);
 extern void GStextureLockImage(void);
@@ -108,11 +108,11 @@ extern void soundStopSE(u32 type);
 extern void* GStextureCreate(u16 width, u16 height, u32 format, u32 tlutFormat, u8 mipLevels);
 extern void fn_800CDBE0(void);
 extern u32 GSgetFrameStep(void);
-extern void fn_800DBF78(void);
-extern void fn_800DBFD4(void);
-extern void fn_800DC04C(void);
-extern void fn_800DC0D4(void);
-extern void fn_800DC14C(void);
+extern void gfxSetTevKColorSel(void);
+extern void gfxSetTevColorIn(void);
+extern void gfxSetTevColorOp(void);
+extern void gfxSetTevAlphaIn(void);
+extern void gfxSetTevAlphaOp(void);
 extern void gfxSetTevStage(void);
 extern void windowDrawSprite(void);
 extern void soundStartSE(void);
@@ -280,9 +280,9 @@ extern u32 lbl_8047AC9C;
  * ======================================================================= */
 
 /* =======================================================================
- *  0x800F0424 - 0x800F106C: GSthreadUnblock .. fn_800F0F4C (GSthread public
- *  API, GSthreadCreate, GSthread, the fn_800F0A74 dispatcher and the
- *  fn_800F0F4C exit trampoline) live in their own linked unit, in address
+ *  0x800F0424 - 0x800F106C: GSthreadUnblock .. _GSthreadExitTrampoline (GSthread public
+ *  API, GSthreadCreate, GSthread, the _GSthreadDispatch dispatcher and the
+ *  _GSthreadExitTrampoline exit trampoline) live in their own linked unit, in address
  *  order. Included here so every candidate unit built from this file keeps
  *  the same definitions.
  * ======================================================================= */
@@ -325,16 +325,16 @@ extern u32 lbl_8047AC10;
 
 /* 0x800F036C | 0x8 */
 /* lbz r3, 0xb(r3) -- load byte at offset 0xb from arg */
-u8 fn_800F036C(GSThread* thr) {
+u8 GSvmGetGroup(GSThread* thr) {
     return thr->affinity;
 }
 
 /* 0x800F0374 | 0x8 */
 /* lwz r3, 0xc(r3) -- load word at offset 0xc from arg
- * (parameter kept as u32 to match this file's other fn_800F0374
+ * (parameter kept as u32 to match this file's other GSvmGetOwner
  * extern declarations/call sites, which pass a raw GSThread* value
  * stored in a u32 slot rather than a typed pointer) */
-u32 fn_800F0374(u32 ctx) {
+u32 GSvmGetOwner(u32 ctx) {
     GSThread* thr = (GSThread*)ctx;
     return thr->priority;
 }
@@ -448,12 +448,12 @@ extern void _msgMakeTexture();
 extern u16 * _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO();
 extern s32 _msgGetLength__FPCUs(const void* str);
 extern s32 _msgGetSize__FPCUs();
-extern void fn_800FE35C(void);
-extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
+extern void spriteClearScissor(void);
+extern void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2);
 extern void spriteSetEnv(void);
-extern void fn_800FE6A0(f32 a, f32 b);
-extern void fn_800FE6AC(s16* outA, s16* outB);
-extern void fn_800FE6D0(s32 a, s32 b);
+extern void spriteSetScale(f32 a, f32 b);
+extern void spriteGetOrigin(s16* outA, s16* outB);
+extern void spriteSetOrigin(s32 a, s32 b);
 extern void GSgappUnblock(u32 taskId);
 extern void GSgappBlock(u32 taskId);
 extern void GSgappTerminate(u32 taskId);
@@ -635,7 +635,7 @@ void inputUpdateMotors(void) {
         var_ctr -= 1;
     } while (var_ctr != 0);
     if (var_r0 != 0) {
-        fn_800AB4FC((u8 *)&lbl_80401C10 + 0x1C0);
+        PADControlAllMotors((u8 *)&lbl_80401C10 + 0x1C0);
     }
 }
 #pragma pop
@@ -899,7 +899,7 @@ void inputClampSticks(arg0)
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-void fn_800F915C(u32 key) {
+void GSresReleaseOwner(u32 key) {
     u8* entry;
     u32 i;
     u8 skip;
@@ -930,7 +930,7 @@ void fn_800F915C(u32 key) {
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-void fn_800F9210(u32 key1, u32 key2) {
+void GSresReleaseOwnerItem(u32 key1, u32 key2) {
     u8* entry;
     u32 i;
 
@@ -1675,7 +1675,7 @@ void GSmsgSetColor(void* obj) {
     clr[6] = (u8)((color >> 8) & 0xFF);
     clr[7] = (u8)(color & 0xFF);
     *(u32*)(&clr[0]) = *(u32*)(&clr[4]);
-    fn_800DBEB4(0, &clr[0]);
+    gfxSetTevKColor(0, &clr[0]);
 }
 #pragma peephole on
 #pragma pop
@@ -3293,7 +3293,7 @@ void msgDrawRuby(arg0, farg1)
                 gfxEnd();
                 gfxSetFlags(0x80000002);
                 gfxSetVtxDesc(lbl_80314F98);
-                fn_800DC1D4(1);
+                gfxSetNumTevStages(1);
 
                 spaceBias = lbl_8047CD28;
                 *(f32 *)(arg0 + 0x14) = lbl_8047CD30 + (arg0[0x22] * *(f32 *)(arg0 + 0x60));
@@ -3578,7 +3578,7 @@ s32 _msgGetSize__FPCUs(arg0)
 #pragma optimizewithasm off
 #pragma optimization_level 2
 #pragma scheduling off
-void fn_800FE35C(void) {
+void spriteClearScissor(void) {
     gfxSetScissor(0, 0, 0x27F, 0x1DF);
 }
 #pragma scheduling on
@@ -3593,7 +3593,7 @@ void fn_800FE35C(void) {
 #pragma peephole off
 #pragma push
 #pragma optimization_level 3
-void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2) {
+void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2) {
     s32 ax, ay, bx, by;
     f32 scale_x, scale_y;
     s32 cy2, cx2, cy1, cx1;
@@ -3673,7 +3673,7 @@ void spriteSetEnv(void) {
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-void fn_800FE6A0(f32 a, f32 b) {
+void spriteSetScale(f32 a, f32 b) {
     *(f32*)&lbl_80478B10 = a;
     *(f32*)&lbl_80478B14 = b;
 }
@@ -3684,7 +3684,7 @@ void fn_800FE6A0(f32 a, f32 b) {
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-void fn_800FE6AC(s16* outA, s16* outB) {
+void spriteGetOrigin(s16* outA, s16* outB) {
     if (outA != (void*)0) {
         *outA = *(s16*)&lbl_8047AC70;
     }
@@ -3699,7 +3699,7 @@ void fn_800FE6AC(s16* outA, s16* outB) {
 #pragma optimization_level 2
 #pragma optimizewithasm off
 #pragma optimization_level 2
-void fn_800FE6D0(s32 a, s32 b) {
+void spriteSetOrigin(s32 a, s32 b) {
     *(u16*)&lbl_8047AC70 = (u16)a;
     *(u16*)&lbl_8047AC72 = (u16)b;
 }
@@ -3887,7 +3887,7 @@ void GSgappInit(numTasks, numQueues)
     lbl_8047AC90 = (u32)GSmemGetPtr(handle);
     OSSetIdleFunction((void*)gappBackgroundCallback, NULL,
                 (void*)(lbl_8047AC90 + 0x1FFC), 0x1FFC);
-    fn_800D30A0((void*)gappVSyncCallback);
+    GSgfxSetRetraceCallback((void*)gappVSyncCallback);
 }
 #pragma pop
 

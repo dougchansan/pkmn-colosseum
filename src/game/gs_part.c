@@ -43,7 +43,7 @@ extern void GSmodelForceAnimTransformUpdate(void*);
 extern u8 GSmodelIsBlending(void*);
 extern void set__5GSvecFfff(GSpartVec*, f32, f32, f32);
 extern void GSvecAdd(GSpartVec*, const GSpartVec*, const GSpartVec*);
-extern void fn_800E0108(GSpartVec*, const GSpartVec*, const GSpartVec*);
+extern void GSvecMulComponents(GSpartVec*, const GSpartVec*, const GSpartVec*);
 extern void GSvecCopy(GSpartVec*, const GSpartVec*);
 extern void __assert(const char* file, u32 line, const char* condition);
 extern const char lbl_8047CCA0[] __attribute__((section(".sdata2"))); /* HSD jobj.h assert file */
@@ -183,7 +183,7 @@ void GSpartGetTransform(GSpart* part, GSpartVec* positionOut,
                 scaling.x = partJObjGetScaleX(scaleNode);
                 scaling.y = partJObjGetScaleY(scaleNode);
                 scaling.z = partJObjGetScaleZ(scaleNode);
-                fn_800E0108(&scale, &scale, &scaling);
+                GSvecMulComponents(&scale, &scale, &scaling);
             }
         }
     }

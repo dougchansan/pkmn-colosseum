@@ -23,8 +23,8 @@ extern u8 lbl_80378968[];
 extern u8 lbl_80378A4D[];
 extern u8 lbl_80378A7C[];
 extern u8 lbl_80378A8E[];
-extern u32 fn_80232024();
-extern void fn_80234A0C();
+extern u32 _fightJoutai35TurnEndSub();
+extern void fightTrainerAiDecide();
 extern u32 fightOutPokemonGetPokemonPtr();
 extern u16 GSrand(void);
 extern u8* fn_801440A0(u16 idx);
@@ -76,7 +76,7 @@ extern void fn_801F37B0();
 extern u32 _fightDoTraceSub();
 extern s32 _fightSeqWsKuroikiriSub__FPvUsPv(void*, u16, void*);
 extern u8  fn_80136468();
-extern u8  fn_802025B8();
+extern u8  fightOutPokemonCheckWritePokemonJoutaiDataId();
 extern u32 _wsAnnounceEnemyTokuseiSub();
 extern int  fn_801F000C();
 extern int  fightMainWaitFrame();
@@ -87,7 +87,7 @@ extern u8 lbl_80379F58[];
 extern void fn_80201600();
 extern void* lbl_8047B64C;
 extern u8    lbl_80478278[0x10];
-extern void  fn_801DA36C(void* obj, u32 val);
+extern void  wazaSequenceOwnerClearFlag(void* obj, u32 val);
 extern void  fn_80209484(void* ctx, u32 param);
 extern u16   fn_8020147C(void* context, u16 moveId, u8 slot, u8 updateFlag);
 extern void  fn_801FE468(void* context, u8* dest);
@@ -103,16 +103,16 @@ extern void  wsRunScript(void* a, void* b, u8 c);
 extern u8    fn_80207AE0(void* obj, u8 v);
 extern void* fightFloorGetFightOutPokemonPtrAryPokemonTokuseiDataIdFirst(u32 a, u8 b, u32 c, u32 d, u32 e);
 extern void  fn_801254B4(void* a, u32 b, u32 c, u32 d, u32 e);
-extern u32  fn_80239984();
+extern u32  fightTrainerAiAddValueClamped();
 extern u32  fn_80205B8C(u32);
-extern u8 fn_80239EE8();
-extern u8 fn_80239CCC();
+extern u8 fightTrainerAiAddValueLog2();
+extern u8 fightTrainerAiLogValue();
 extern u16  fightTrainerAiGetPokemonDataId(void*, u32);
 extern u16  fn_801F1990(u32, void*, u32, u32, u32, u32);
 extern u16  fn_801F1C18(u32, void*, void*, u32, u32);
 extern u8   fn_801F4C14(u32, u16, u32, u16, u32);
 extern u32  fn_802096E8(void*);
-extern u32  fn_80077AF4(void);
+extern u32  menuCBRule_GetRule11(void);
 extern u8    wsStatBuffChange();
 extern u8    lbl_80279F7C[12];
 extern void  fn_802653FC(void* ptr, u16 a, s32 b);
@@ -184,7 +184,7 @@ extern void fn_80203EDC();
 extern void fn_801FAA58();
 extern u16  lbl_80279FD0[8];
 extern u8   lbl_80379B06[];
-extern u32 fn_80232FE4();
+extern u32 _fightCheckJoutai16Sub();
 extern void fn_8020A2B8();
 extern u8   joutaiDataBiosGetMaxStack();
 extern u16  fightFloorGetValidFightOutPokemonCount(u32, u8, u32, u8);
@@ -193,10 +193,10 @@ extern u8   lbl_8037984D[27];
 extern u8   lbl_80375FDF[9];
 extern void heroAddPokedoru(u32, s32);
 extern u8   lbl_8037939C[9];
-extern u8  fn_801DDD28();
+extern u8  wazaSequenceOwnerLoadWaza();
 extern void wazaSequenceSysStartWaza();
 extern u16 lbl_8047B60C;
-extern int fn_80215008();
+extern int fightTrainerCollectTemotiWaza();
 extern u32 fightSeqSelectTarget();
 extern void fn_801F6EEC();
 extern void fightSideInitJoutaiDataId();
@@ -213,10 +213,10 @@ extern u16 fightOutPokemonGetZokuseiDataId(u32 poke, u8 idx);
 extern u16 fightOutPokemonGetTokuseiDataId(u32 poke);
 extern u32 zokuseiGetAisyouDualType(u16 waza, u16* types, u16 typeCount);
 extern int fightOutPokemonIsPokemonJoutaiDataId();
-extern u8 fn_80235714();
+extern u8 fightTrainerAiIsAbiCntAbove();
 extern u32 fightTrainerAiGetFightPokemonWazaAry();
 extern u32 fightFloorGetFightTrainerFightOutPokemonPtrAry();
-extern u32 fn_80239984();
+extern u32 fightTrainerAiAddValueClamped();
 extern s32 fightTrainerAiAddValue();
 extern u32* lbl_80478DF8;
 extern int wazaGetStatus();
@@ -395,7 +395,7 @@ LAB_0023124c: (void)0;
 void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
     extern u8 fightTypeDataBiosGetFightoutPokemonNum();
     extern u8 fightOutPokemonCheckFightActionSelect();
-    extern u8 fn_80008164();
+    extern u8 dbgMenuFightGetFlag8047A286();
     extern u8 fightMenuOpenMsg();
     extern u8 fightFloorCheckFightActionFightOutPokemonIrekaeSelect();
     extern u8 fightFloorGetStatus();
@@ -412,7 +412,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
     extern void* fightTrainerGetNoActionFightOutPokemonPtr(void* context, u32 index);
     extern u32 fightTrainerAiSelectFightActionIrekae(void* ctx, u32 param1, u32 param2);
     extern s32 fightTrainerAiSelectFightActionItem(void* ctx, u32 param1, u32 param2);
-    extern u32 fn_8024E534(void* ctx, u32 slot, u32 param);
+    extern u32 fightTrainerAiSelectItem(void* ctx, u32 slot, u32 param);
     extern void fightFloorSortFightOutPokemonPtrArySub(void* floor, u32* ary_, u16 num, u8 usePri);
     extern int fightTrainerAiSelectWaza(u32 r3, u32 r4, u32 r5);
     u32 noAction[8];
@@ -434,7 +434,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
 
     fightTypeData = (u32)fightTypeDataBiosGetPtr(fightType);
     count = (u8)fightTypeDataBiosGetFightoutPokemonNum(fightTypeData);
-    fn_80234A0C(trainer);
+    fightTrainerAiDecide(trainer);
 
     for (i = 0; (u16)i < count; i++) {
         pokemon = (u32)fightTrainerGetValidFightOutPokemonPtr((void*)trainer, i);
@@ -452,7 +452,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
             msgctrlSetValue(0x13, (u32)fightTrainerGetNamePtr((void*)trainer));
         }
         msgctrlSetValue(0x2f, j);
-        if (fn_80008164() == 1) {
+        if (dbgMenuFightGetFlag8047A286() == 1) {
             menuGetKeyInfo((struct MenuKeyInfo*)keyOk1, 1);
             if ((keyOk1[0] & 0x800) == 0 && fightMenuOpenMsg(0xec67) == 1) {
                 fightMenuCloseMsg();
@@ -465,7 +465,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
             msgctrlSetValue(0x13, (u32)fightTrainerGetNamePtr((void*)trainer));
         }
         msgctrlSetValue(0x2f, j);
-        if (fn_80008164() == 1) {
+        if (dbgMenuFightGetFlag8047A286() == 1) {
             menuGetKeyInfo((struct MenuKeyInfo*)keyFail1, 1);
             if ((keyFail1[0] & 0x800) == 0 && fightMenuOpenMsg(0xec68) == 1) {
                 fightMenuCloseMsg();
@@ -493,7 +493,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
                 msgctrlSetValue(0x13, (u32)fightTrainerGetNamePtr((void*)trainer));
             }
             msgctrlSetValue(0x2f, j);
-            if (fn_80008164() == 1) {
+            if (dbgMenuFightGetFlag8047A286() == 1) {
                 menuGetKeyInfo((struct MenuKeyInfo*)keyOk2, 1);
                 if ((keyOk2[0] & 0x800) == 0 && fightMenuOpenMsg(0xec67) == 1) {
                     fightMenuCloseMsg();
@@ -506,7 +506,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
                 msgctrlSetValue(0x13, (u32)fightTrainerGetNamePtr((void*)trainer));
             }
             msgctrlSetValue(0x2f, j);
-            if (fn_80008164() == 1) {
+            if (dbgMenuFightGetFlag8047A286() == 1) {
                 menuGetKeyInfo((struct MenuKeyInfo*)keyFail2, 1);
                 if ((keyFail2[0] & 0x800) == 0 && fightMenuOpenMsg(0xec68) == 1) {
                     fightMenuCloseMsg();
@@ -534,7 +534,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
             msgctrlSetValue(0x13, (u32)fightTrainerGetNamePtr((void*)trainer));
         }
         msgctrlSetValue(0x2f, j);
-        if (fn_80008164() == 1) {
+        if (dbgMenuFightGetFlag8047A286() == 1) {
             menuGetKeyInfo((struct MenuKeyInfo*)keyOk3, 1);
             if ((keyOk3[0] & 0x800) == 0 && fightMenuOpenMsg(0xec67) == 1) {
                 fightMenuCloseMsg();
@@ -547,7 +547,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
             msgctrlSetValue(0x13, (u32)fightTrainerGetNamePtr((void*)trainer));
         }
         msgctrlSetValue(0x2f, j);
-        if (fn_80008164() == 1) {
+        if (dbgMenuFightGetFlag8047A286() == 1) {
             menuGetKeyInfo((struct MenuKeyInfo*)keyFail3, 1);
             if ((keyFail3[0] & 0x800) == 0 && fightMenuOpenMsg(0xec68) == 1) {
                 fightMenuCloseMsg();
@@ -560,7 +560,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
         for (i = 0; (u16)i < count; i++) {
             pokemon = (u32)fightTrainerGetNoActionFightOutPokemonPtr((void*)trainer, i);
             if (pokemon != 0) {
-                fn_8024E534((void*)trainer, pokemon, fightType);
+                fightTrainerAiSelectItem((void*)trainer, pokemon, fightType);
             }
         }
     }
@@ -570,7 +570,7 @@ void fightTrainerAiSelectFightAction(u32 trainer, u32 fightType) {
         msgctrlSetValue(0x13, (u32)fightTrainerGetNamePtr((void*)trainer));
     }
     msgctrlSetValue(0x2f, 100);
-    if (fn_80008164() == 1) {
+    if (dbgMenuFightGetFlag8047A286() == 1) {
         menuGetKeyInfo((struct MenuKeyInfo*)keyFinal, 1);
         if ((keyFinal[0] & 0x800) == 0 && fightMenuOpenMsg(0xec67) == 1) {
             fightMenuCloseMsg();

@@ -43,7 +43,7 @@ extern void gfxSetVtxDesc(void* data);
 extern void gfxClearFlags(s32 mode);
 extern void gfxSetFlags(s32 mode);
 
-void fn_800473E0(PdaStatLine* p)
+void pdaDrawSpline(PdaStatLine* p)
 {
     GSspline* spline;
     u8* data;

@@ -43,7 +43,7 @@ static inline void* fightPokemonGetSlotRecord(void* pokemon) {
  * Pokemon itself; any other kind is never set. */
 static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
-    extern u8 fn_8011B67C(void* obj, u16 id);
+    extern u8 statusIsJoutaiDataId(void* obj, u16 id);
     extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
     void* slot;
     void* data;
@@ -60,12 +60,12 @@ static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
         } else if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
             return 0;
         } else {
-            return fn_8011B67C(slot, id);
+            return statusIsJoutaiDataId(slot, id);
         }
     } else if (joutaiDataBiosGetStatusKind(id) != 0xD8) {
         return 0;
     } else {
-        return fn_8011B67C(pokemon, id);
+        return statusIsJoutaiDataId(pokemon, id);
     }
 }
 
@@ -110,7 +110,7 @@ static inline u32 fightPokemonGetJoutaiStatus(void* pokemon, u16 id) {
  * 0x7C/0xC8 keep it in the slot's 0xCC record, 0xCD on the slot itself). */
 static inline u8 fightPokemonSlotIsJoutai(void* slot, u16 id) {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
-    extern u8 fn_8011B67C(void* obj, u16 id);
+    extern u8 statusIsJoutaiDataId(void* obj, u16 id);
     extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
     void* data;
 
@@ -124,7 +124,7 @@ static inline u8 fightPokemonSlotIsJoutai(void* slot, u16 id) {
     } else if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
         return 0;
     } else {
-        return fn_8011B67C(slot, id);
+        return statusIsJoutaiDataId(slot, id);
     }
 }
 
@@ -160,7 +160,7 @@ static inline u32 fightPokemonGetJoutaiRnd2(void* pokemon, u16 id) {
 /* Clears the joutai `id`, from the same place fightPokemonIsJoutai reads. */
 static inline void fightPokemonClearJoutai(void* pokemon, u16 id) {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
-    extern void fn_8011B788(void* obj, u16 id);
+    extern void statusInitJoutaiDataId(void* obj, u16 id);
     extern void pokemonInitPersistentJoutai(void* obj, u16 id);
     void* slot;
     void* data;
@@ -175,10 +175,10 @@ static inline void fightPokemonClearJoutai(void* pokemon, u16 id) {
             }
             pokemonInitPersistentJoutai(data, id);
         } else if (joutaiDataBiosGetStatusKind(id) == 0xCD) {
-            fn_8011B788(slot, id);
+            statusInitJoutaiDataId(slot, id);
         }
     } else if (joutaiDataBiosGetStatusKind(id) == 0xD8) {
-        fn_8011B788(pokemon, id);
+        statusInitJoutaiDataId(pokemon, id);
     }
 }
 
@@ -190,7 +190,7 @@ typedef struct {
  * clears the nine "keep" joutai and cancels their 0xEE effects. */
 static inline void fightPokemonInitJoutaiKeep(void* pokemon) {
     extern JoutaiIdTable9 lbl_80279C90;
-    extern void fn_801DA36C(void* effect, s32 trajType);
+    extern void wazaSequenceOwnerClearFlag(void* effect, s32 trajType);
     JoutaiIdTable9 table = lbl_80279C90;
     void* effect;
     u8 i;
@@ -207,15 +207,15 @@ static inline void fightPokemonInitJoutaiKeep(void* pokemon) {
             effect = pokemonGetStatus(pokemon, 0, 0xEE, 0);
             if (id == 0) {
                 if (effect != NULL) {
-                    fn_801DA36C(effect, 1);
-                    fn_801DA36C(effect, 2);
+                    wazaSequenceOwnerClearFlag(effect, 1);
+                    wazaSequenceOwnerClearFlag(effect, 2);
                 }
             } else if (effect != NULL) {
                 if (id == 8) {
-                    fn_801DA36C(effect, 1);
+                    wazaSequenceOwnerClearFlag(effect, 1);
                 }
                 if (id == 7) {
-                    fn_801DA36C(effect, 2);
+                    wazaSequenceOwnerClearFlag(effect, 2);
                 }
             }
             fightPokemonClearJoutai(pokemon, id);
@@ -374,7 +374,7 @@ static inline u8 fightPokemonCheckJoutaiInline(void* fp, u16 id)
 {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
     extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
-    extern u8 fn_8011B67C(void* obj, u16 id);
+    extern u8 statusIsJoutaiDataId(void* obj, u16 id);
 
     if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
         return pokemonIsJoutaiDataId(fightPokemonGetPokemonPtrInline(fp), id);
@@ -382,13 +382,13 @@ static inline u8 fightPokemonCheckJoutaiInline(void* fp, u16 id)
     if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
         return 0;
     }
-    return fn_8011B67C(fp, id);
+    return statusIsJoutaiDataId(fp, id);
 }
 
 static inline u8 fightOutPokemonCheckJoutaiInline(void* fo, u16 id)
 {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
-    extern u8 fn_8011B67C(void* obj, u16 id);
+    extern u8 statusIsJoutaiDataId(void* obj, u16 id);
 
     if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8 || joutaiDataBiosGetStatusKind(id) == 0xCD) {
         return fightPokemonCheckJoutaiInline(pokemonGetStatus(fo, 0, 0xD6, 0), id);
@@ -396,7 +396,7 @@ static inline u8 fightOutPokemonCheckJoutaiInline(void* fo, u16 id)
     if (joutaiDataBiosGetStatusKind(id) != 0xD8) {
         return 0;
     }
-    return fn_8011B67C(fo, id);
+    return statusIsJoutaiDataId(fo, id);
 }
 
 static inline u32 fightPokemonGetJoutaiRnd2Inline(void* fp, u16 id)
@@ -461,44 +461,44 @@ static inline void fightPokemonClearJoutaiInline(void* fp, u16 id)
 {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
     extern void pokemonInitPersistentJoutai(void* obj, u16 id);
-    extern void fn_8011B788(void* obj, u16 id);
+    extern void statusInitJoutaiDataId(void* obj, u16 id);
 
     if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
         pokemonInitPersistentJoutai(fightPokemonGetPokemonPtrInline(fp), id);
     } else if (joutaiDataBiosGetStatusKind(id) == 0xCD) {
-        fn_8011B788(fp, id);
+        statusInitJoutaiDataId(fp, id);
     }
 }
 
 static inline void fightOutPokemonClearJoutaiInline(void* fo, u16 id)
 {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
-    extern void fn_8011B788(void* obj, u16 id);
+    extern void statusInitJoutaiDataId(void* obj, u16 id);
 
     if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8 || joutaiDataBiosGetStatusKind(id) == 0xCD) {
         fightPokemonClearJoutaiInline(pokemonGetStatus(fo, 0, 0xD6, 0), id);
     } else if (joutaiDataBiosGetStatusKind(id) == 0xD8) {
-        fn_8011B788(fo, id);
+        statusInitJoutaiDataId(fo, id);
     }
 }
 
 /* Ends the joutai `id`, cancelling the 0xEE effect trajectories it drives. */
 static inline void fightOutPokemonCureJoutaiInline(void* fo, u16 id)
 {
-    extern void fn_801DA36C(void* effect, s32 trajType);
+    extern void wazaSequenceOwnerClearFlag(void* effect, s32 trajType);
     void* effect = pokemonGetStatus(fo, 0, 0xEE, 0);
 
     if (id == 0) {
         if (effect != NULL) {
-            fn_801DA36C(effect, 1);
-            fn_801DA36C(effect, 2);
+            wazaSequenceOwnerClearFlag(effect, 1);
+            wazaSequenceOwnerClearFlag(effect, 2);
         }
     } else if (effect != NULL) {
         if (id == 8) {
-            fn_801DA36C(effect, 1);
+            wazaSequenceOwnerClearFlag(effect, 1);
         }
         if (id == 7) {
-            fn_801DA36C(effect, 2);
+            wazaSequenceOwnerClearFlag(effect, 2);
         }
     }
     fightOutPokemonClearJoutaiInline(fo, id);
@@ -635,7 +635,7 @@ static inline void fightOutPokemonInitJoutaiKeepInline(void* fo) {
 
 static inline u16 fightOutPokemonGetSoubiItemSoubiDataIdInline(void* ctx) {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
-    extern u8 fn_8011B67C(void* obj, u16 id);
+    extern u8 statusIsJoutaiDataId(void* obj, u16 id);
     extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
     extern u16 pokemonGetSoubiItemSoubiDataId(void* pokemon);
     void* d6Data;
@@ -662,7 +662,7 @@ static inline u16 fightOutPokemonGetSoubiItemSoubiDataIdInline(void* ctx) {
     } else if (joutaiDataBiosGetStatusKind(0x3D) != 0xCD) {
         result = 0;
     } else {
-        result = fn_8011B67C(d6Data, 0x3D);
+        result = statusIsJoutaiDataId(d6Data, 0x3D);
     }
     if (result == 1) { return 0; }
     return pokemonGetSoubiItemSoubiDataId(ccData);

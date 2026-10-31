@@ -29,6 +29,6 @@
  * Public API
  * =================================================================== */
 
-/** fn_80168284 */ void _sndCheckSndWorkALL(void);
+/** GSfilterDraw */ void _sndCheckSndWorkALL(void);
 
 #endif /* GS_DVD_H */

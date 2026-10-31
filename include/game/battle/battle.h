@@ -372,7 +372,7 @@ typedef struct GStexture GStexture;
 /* fadeEffectHookFunction_yoko_Init */ void fadeEffectHookFunction_yoko_Init(s32 slot, f32 scale);
 /* fadeEffectHookFunction_Doku (was fn_801C4A44) */ s32 fadeEffectHookFunction_Doku(s32 slot, f32 x, f32 y, f32 z, f32 rot, f32 scale);
 /* fadeEffectHookFunction_carde (was fn_801C4C98) */ f32  fadeEffectHookFunction_carde(void);
-/* fn_801C4CB8 */ void fn_801C4CB8(void);                        /* grid full render 0x704 (game/effect/fade_range_801C4CB8.c) */
+/* fadeEffectFuncCapture */ void fadeEffectFuncCapture(void);                        /* grid full render 0x704 (game/effect/fade_range_801C4CB8.c) */
 
 /* =========================================================================
  * Battle Scene (0x801C53BC - 0x801D1338) [battle_scene.c]
@@ -380,31 +380,31 @@ typedef struct GStexture GStexture;
  * ========================================================================= */
 
 /* Camera control */
-/* fn_801C53BC */ void fn_801C53BC(void* ctx, s32 arg1, s32 arg2, s32 arg3, f32 arg4);
-/* fn_801C54FC */ f32  fn_801C54FC(void);
-/* fn_801C5530 */ void fn_801C5530(f32 fov, f32 minFov, f32 maxFov);
-/* fn_801C55D8 */ void fn_801C55D8(f32 x, f32 y, f32 z, f32 speed);
-/* fn_801C5748 */ void fn_801C5748(void* target, f32 speed);
-/* fn_801C5898 */ void fn_801C5898(void* camObj, void* target, f32 speed, f32 fov, f32 nearClip, f32 farClip);
-/* fn_801C5B60 */ void fn_801C5B60(f32 zoomTarget, f32 zoomSpeed);
-/* fn_801C5D60 */ void fn_801C5D60(f32 angle, f32 radius, f32 height);
-/* fn_801C5ED0 */ f32  fn_801C5ED0(void);
-/* fn_801C5F6C */ f32  fn_801C5F6C(void);
-/* fn_801C6008 */ void fn_801C6008(u8 transition, void* target, f32 speed, f32 zoom);
+/* fadeEffectCaptureInit */ void fadeEffectCaptureInit(void* ctx, s32 arg1, s32 arg2, s32 arg3, f32 arg4);
+/* fadeEffectFuncBlack */ f32  fadeEffectFuncBlack(void);
+/* fadeEffectFuncBlackCapture */ void fadeEffectFuncBlackCapture(f32 fov, f32 minFov, f32 maxFov);
+/* fadeEffectFuncFluid */ void fadeEffectFuncFluid(f32 x, f32 y, f32 z, f32 speed);
+/* fadeEffectFluidFirstInit */ void fadeEffectFluidFirstInit(void* target, f32 speed);
+/* fadeEffectFuncSpin */ void fadeEffectFuncSpin(void* camObj, void* target, f32 speed, f32 fov, f32 nearClip, f32 farClip);
+/* fadeEffectDrawSpinQuad */ void fadeEffectDrawSpinQuad(f32 zoomTarget, f32 zoomSpeed);
+/* fadeEffectSpinFirstInit */ void fadeEffectSpinFirstInit(f32 angle, f32 radius, f32 height);
+/* fadeEffectFuncUDLR8 */ f32  fadeEffectFuncUDLR8(void);
+/* fadeEffectFuncUDLR2 */ f32  fadeEffectFuncUDLR2(void);
+/* fadeEffectUDLRUpdate */ void fadeEffectUDLRUpdate(u8 transition, void* target, f32 speed, f32 zoom);
 /* fn_801C6274 */ void fn_801C6274(f32 t, f32 ease);
-/* fn_801C63B8 */ u8   fn_801C63B8(void);
-/* fn_801C63C0 */ void fn_801C63C0(void* target, void* params, f32 t, f32 speed, f32 zoom, f32 blend);
-/* fn_801C6688 */ void fn_801C6688(f32 angle);
-/* fn_801C673C */ void fn_801C673C(void);
-/* fn_801C6760 */ void fn_801C6760(f32 intensity, f32 duration);
-/* fn_801C680C */ void fn_801C680C(s32 arg0);
+/* fadeEffectCaptureCallback */ u8   fadeEffectCaptureCallback(void);
+/* fadeEffectDrawCapturedQuad */ void fadeEffectDrawCapturedQuad(void* target, void* params, f32 t, f32 speed, f32 zoom, f32 blend);
+/* fadeEffectDrawAlphaQuad */ void fadeEffectDrawAlphaQuad(f32 angle);
+/* fadeEffectEnd2D */ void fadeEffectEnd2D(void);
+/* fadeEffectBegin2DColor */ void fadeEffectBegin2DColor(f32 intensity, f32 duration);
+/* fadeEffectBegin2DTexture */ void fadeEffectBegin2DTexture(s32 arg0);
 /* _fadeEffect_AdjustParms__Fv */ u8   _fadeEffect_AdjustParms__Fv(void);
-/* fn_801C6908 */ void fn_801C6908(void);
-/* fn_801C6928 */ u8   fn_801C6928(void);
+/* fadeEffectRandomize */ void fadeEffectRandomize(void);
+/* fadeEffectSetFirstFrame */ u8   fadeEffectSetFirstFrame(void);
 
 /* Scene layout */
-/* fn_801C6934 */ void fn_801C6934(void* stageModel, f32 scale);
-/* fn_801C6AE8 */ void fn_801C6AE8(s32 row, s32 col, u8 type);
+/* fadeEffectFluidDraw */ void fadeEffectFluidDraw(void* stageModel, f32 scale);
+/* fadeEffectFluidDrawGrid */ void fadeEffectFluidDrawGrid(s32 row, s32 col, u8 type);
 /* fn_801C6D78 */ void fn_801C6D78(s32 slot, f32 x, f32 y, f32 z);
 /* _fadeFluidSetShockSub__FUlUlf */ void* _fadeFluidSetShockSub__FUlUlf(s32 slot);
 /* fn_801C6EE4 */ void fn_801C6EE4(s32 slot, void* modelData);
@@ -413,8 +413,8 @@ typedef struct GStexture GStexture;
 /* fadeFluidInit */ void fadeFluidInit(u32 columns, u32 rows, f32 cellSize,
                                        f32 calcStep, f32 waveLimit,
                                        f32 timeStep);                 /* updateAnimations 0x43C */
-/* fn_801C75EC */ void fn_801C75EC(s32 slot);
-/* fn_801C7630 */ f32  fn_801C7630(s32 slot);
+/* fadeFluidFreeTexture */ void fadeFluidFreeTexture(s32 slot);
+/* fadeFluidAllocTexture */ f32  fadeFluidAllocTexture(s32 slot);
 /* fn_801C766C */ void std235_menuShowSaveMenu(s32 slot, f32 frame);
 
 /* Pokemon model placement & animation */
@@ -432,17 +432,17 @@ typedef struct GStexture GStexture;
 /* Scene state & effects */
 /* floorElevatorIsHeroInside */ void floorElevatorIsHeroInside(void);
 /* floorEventElevatorMain */ void floorEventElevatorMain(s32 transitionType);
-/* fn_801C9C9C */ s32  fn_801C9C9C(void);
+/* floorElevatorCheck */ s32  floorElevatorCheck(void);
 /* fn_801C9F5C */ void std182_tvNewsEvent(void);
 /* fn_801CA358 */ u8   std211_tvSetChannelByStory(void);
 /* fn_801CA5C4 */ void fieldStartEncount(s32 effectID, f32 x, f32 y, f32 z);
 
 /* Scene transitions & mega-functions */
-/* fn_801CBF64 */ void fn_801CBF64(void);                        /* complex anim controller 0x41C */
+/* sha1Final */ void sha1Final(void);                        /* complex anim controller 0x41C */
 /* sha1Transform */ void sha1Transform(void);                        /* mega-function A 0x1784 */
 /* memcardTaskMain */ void memcardTaskMain(void);                        /* mega-function B 0x181C */
-/* fn_801CF9C8 */ void fn_801CF9C8(void);
-/* fn_801CFD08 */ void fn_801CFD08(void);                        /* transition controller 0x378 */
+/* memcardSelectNewestSlot */ void memcardSelectNewestSlot(void);
+/* memcardFindSaveFile */ void memcardFindSaveFile(void);                        /* transition controller 0x378 */
 /* pokemonCenterBallMachineSequence */ void pokemonCenterBallMachineSequence(void);                        /* rendering main loop 0x588 */
 
 /* =========================================================================
@@ -451,7 +451,7 @@ typedef struct GStexture GStexture;
 
 /* Waza data access */
 /* mailBiosGetCounter */ u16  mailBiosGetCounter(void);
-/* fn_801D1364 */ void* fn_801D1364(u16 handle, s32 idx);
+/* mailBiosSetCounter */ void* mailBiosSetCounter(u16 handle, s32 idx);
 /* mailDataBiosGet08 */ u32  mailDataBiosGet08(s32 idx);
 /* mailDataBiosGet04 */ u32  mailDataBiosGet04(s32 idx);
 /* mailDataBiosGet01 */ u32  mailDataBiosGet01(s32 idx);
@@ -459,7 +459,7 @@ typedef struct GStexture GStexture;
 /* Waza animation controllers */
 /* shadowGroupGetEntryByte */ u8 shadowGroupGetEntryByte(s32 sequence, s32 index);
 /* shadowGroupGetEntryId */ u16 shadowGroupGetEntryId(s32 sequence, s32 index);
-/* fn_801D2D28 */ void fn_801D2D28(void);
+/* battleCameraWazaUpdate */ void battleCameraWazaUpdate(void);
 
 /* Waza animation state machines */
 /* battleCameraStartWaza */ void battleCameraStartWaza(void* owner, void* sequence); /* dispatcher 0x3E0 */
@@ -467,22 +467,22 @@ typedef struct GStexture GStexture;
 /* fn_801D3F7C */ void fn_801D3F7C(void);                        /* state machine B 0x548 */
 /* _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif */ void _wazaSequenceCameraDoFOV__FP13ModelSequenceP24wazaSequenceCameraParamsif(void* modelSequence, void* cameraParams, s32 flags, s32 shift);                        /* state machine C 0x514 */
 /* fn_801D49D8 */ void fn_801D49D8(void);                        /* state machine D 0x3C8 */
-/* fn_801D624C */ void fn_801D624C(void);                        /* mega-function 0x818 */
+/* wazaViewerPlayNext */ void wazaViewerPlayNext(void);                        /* mega-function 0x818 */
 
 /* Core waza sequence API */
-/* fn_801D7464 */ void fn_801D7464(void);                        /* wazaSequenceLoad 0x730 */
-/* fn_801D7B94 */ void fn_801D7B94(void* effect);                 /* wazaSequenceUpdate 0x2C4 */
+/* wazaViewerCameraControl */ void wazaViewerCameraControl(void);                        /* wazaSequenceLoad 0x730 */
+/* wazaViewerDrawGrid */ void wazaViewerDrawGrid(void* effect);                 /* wazaSequenceUpdate 0x2C4 */
 /* fn_801D7E58 */ void fn_801D7E58(void* entry);                 /* wazaSequenceEntryStop */
 /* fn_801D81CC */ void fn_801D81CC(void* entry);                 /* wazaSequenceEntryUpdate */
 /* fn_801D84F4 */ void fn_801D84F4(void);                        /* wazaSequenceEntryStart */
 /* _wazaSequenceEffectEntryStart */ u8 _wazaSequenceEffectEntryStart(void* entry);       /* wazaSequenceStartEntry */
 /* fn_801D8B38 */ void fn_801D8B38(void* entry);                 /* _wazaSequenceParticleEntryStart */
 /* _wazaSequenceModelEntryStart */ u8 _wazaSequenceModelEntryStart(struct WazaSequenceNode* entry);                 /* _wazaSequenceModelEntryStart */
-/* fn_801D9950 */ void fn_801D9950(void* owner, f32* scale, s32 selector);    /* wazaSequencePokemonMotionStart */
+/* wazaSequenceGetScaleVec */ void wazaSequenceGetScaleVec(void* owner, f32* scale, s32 selector);    /* wazaSequencePokemonMotionStart */
 
 /* Waza system lifecycle */
 /* wazaSequenceSysRelease */ void wazaSequenceSysRelease(void);                        /* waza system cleanup */
-/* fn_801DADC0 */ void fn_801DADC0(void* context);                /* waza partial reset */
+/* wazaSequenceSysInitEx */ void wazaSequenceSysInitEx(void* context);                /* waza partial reset */
 /* wazaSequenceSysInit */ void wazaSequenceSysInit(s32 count);                   /* waza system init */
 /* wazaSequenceSysGetResID */ BOOL wazaSequenceSysGetResID(void);                        /* waza get initialized */
 /* wazaSequenceSysUpdate */ void wazaSequenceSysUpdate(void);                        /* waza system reset */
@@ -497,7 +497,7 @@ typedef struct GStexture GStexture;
 /* darkPokemonSetAllFlag14 */ void battle_InitSlots(void);
 /* darkPokemonSetAllFlag12 */ void battle_ResetSlotAnimations(void);
 /* darkPokemonSetAllFlag16 */ void battle_ResetSlotEffects(void);
-/* fn_801EF128 */ void battle_SetupParty(void* partyData);
+/* darkPokemonSaveInit */ void battle_SetupParty(void* partyData);
 /* fightMainThread */ void battle_MainLoop(void);   /* 0x5BC bytes - the main battle loop */
 
 /* =========================================================================

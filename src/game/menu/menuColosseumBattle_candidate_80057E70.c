@@ -17,8 +17,8 @@ extern void _threadSwitch(void);
 extern u8 fsysIsEntryLoaded(u32 fileHandle, u32 nameHash);
 extern u8 fsysRequestEntry(s32, u32);
 extern void GSresReleaseById(s32);
-extern s32 fn_8017B2CC(s32);
-extern void fn_800F915C(s32);
+extern s32 GSresGroupGetState(s32);
+extern void GSresReleaseOwner(s32);
 extern u8 pokemonCheckValid(void*);
 extern u16 pokemonBiosGetPokemonDataId(void*);
 extern u8 pokemonGetAnnonKatati();
@@ -27,7 +27,7 @@ extern void* GSresFindById(u32);
 extern const u32 lbl_802676F0[56];
 
 #ifndef MENU_COLOSSEUM_BATTLE_80057F94_ONLY
-void fn_80057E70(void)
+void pcBoxStreamModels(void)
 {
     u32* entry;
     u8 firstRequest = 1;
@@ -43,7 +43,7 @@ void fn_80057E70(void)
             if ((firstRequest || fsysIsEntryLoaded(0x48A, *entry) == 0) &&
                 fsysRequestEntry(0x48A, *entry) != 0) {
                 firstRequest = 0;
-                while (fn_8017B2CC(0x48A) == 1) {
+                while (GSresGroupGetState(0x48A) == 1) {
                     _threadSwitch();
                 }
                 while (lbl_803A9A08.request != 0) {
@@ -58,7 +58,7 @@ void fn_80057E70(void)
     lbl_803A9A08.running = 0;
     if (lbl_803A9A08.canceled) {
         GSresReleaseById(0x48A);
-        fn_800F915C(0x48A);
+        GSresReleaseOwner(0x48A);
     }
 }
 
@@ -105,7 +105,7 @@ static inline u32 fn_80057F94_speciesMenuId(void* pokemon, u16 id)
     return menuId;
 }
 
-void* fn_80057F94(void* pokemon)
+void* pcBoxGetIconResource(void* pokemon)
 {
     u32 menuId;
     u16 id;

@@ -25,7 +25,7 @@ extern u32   pokemonSetStatus();
 
 /* Battle system functions */
 extern void battleCameraSelect();
-extern u32 fn_801DE190(u16 index, u32 rnd, u32 variant);
+extern u32 wazaSequencePokemonCreate(u16 index, u32 rnd, u32 variant);
 extern void wazaSequenceSysStartWaza(u32 sequence, u16 moveID, s32 variant);
 extern u8 wazaSequenceSysIsPlayingWaza(u32 sequence, u16 moveID, s32 variant);
 extern void wazaSequenceSysStopWaza(u32 sequence, u16 moveID, s32 variant);
@@ -70,7 +70,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern void fadeSet(f32 duration, u32 mode);
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();
@@ -90,7 +90,7 @@ typedef struct EvoWazaSeq {
 } EvoWazaSeq;
 
 extern EvoWazaSeq lbl_8027A488[];
-extern u8 fn_801DDD28();
+extern u8 wazaSequenceOwnerLoadWaza();
 
 /* Species index for the evolution model: 0xFFFF when the Pokemon or its
  * species-0x66 entry is empty. Its early-return value is a merged-away copy
@@ -128,14 +128,14 @@ static inline u32 evolutionCreateModel(u32 pkm, int kind)
   rnd = pokemonBiosGetRnd(pkm);
   shiny = (int)pokemonGetStatus(pkm,0,0xc1,0);
   shiny = (-shiny | shiny) >> 0x1f;
-  model = fn_801DE190(no,rnd,shiny);
+  model = wazaSequencePokemonCreate(no,rnd,shiny);
   if (model == 0) {
     return 0;
   }
   i = 0;
   seq = lbl_8027A488;
   do {
-    if (seq->kind == kind && fn_801DDD28(model,seq->id,4,0) == 0) {
+    if (seq->kind == kind && wazaSequenceOwnerLoadWaza(model,seq->id,4,0) == 0) {
       break;
     }
     i++;
@@ -302,7 +302,7 @@ int cbWazaForget(u32 r3,u32 r4,int r5)
     extern int GSmodelSetAnimType();
     extern int fn_801766A8();
     extern int wazaSequenceSysRelease();
-    extern int fn_801DADC0();
+    extern int wazaSequenceSysInitEx();
     extern const f32 lbl_8047E6C0;
 
   u32 uVar1;
@@ -353,7 +353,7 @@ int cbWazaForget(u32 r3,u32 r4,int r5)
   if (iVar2 >= 4) {
     iVar2 = -1;
   }
-  fn_801DADC0(2);
+  wazaSequenceSysInitEx(2);
   iVar7 = evolutionCreateModel(r3,1);
   if (iVar7 != 0) {
     *(int *)(r5 + 4) = iVar7;
@@ -378,7 +378,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
 {
     extern int GSgetFrameStep();
     extern u32 GSinputButtonsChanged();
-    extern u32 fn_800F7BC4();
+    extern u32 GSinputGetButtons();
     extern const f32 lbl_8047E6C0;
   u32 *savedRotationPtr;
   u32 *savedPositionPtr;
@@ -458,7 +458,7 @@ int doWazaSequence(u32 *r3,int r4,int r5,u32 r6)
       iVar8 = iVar8 + iVar3;
       if (r5 != 0) {
         uVar4 = GSinputButtonsChanged(1);
-        uVar5 = fn_800F7BC4(1);
+        uVar5 = GSinputGetButtons(1);
         if ((uVar5 & uVar4 & 0x200) != 0) {
           bVar2 = 1;
         }
@@ -497,7 +497,7 @@ int doWazaSequence(u32 *r3, int r4, int r5, u32 r6);
 #if !defined(EVOLUTION_802600E4_ONLY)
 extern u32 std228_soundGetCurrentBackgroundMusic(void);
 extern u32 soundGetCurrentSubSound(void);
-extern u32 fn_801656D8(u32 id);
+extern u32 soundGetSlotVoiceState(u32 id);
 extern void pokemonWazaCreate(u8* ptr, u32 slot, u32 waza);
 extern void soundStartSE(u32 id);
 extern s32 GSsndGetStatus(u32 id);
@@ -560,7 +560,7 @@ static inline BOOL evolutionRun(EvoWork *work, u32 r5, u32 before, u32 after,
 
   bgm = std228_soundGetCurrentBackgroundMusic();
   if (bgm != 0) {
-    bgmVolume = fn_801656D8(bgm);
+    bgmVolume = soundGetSlotVoiceState(bgm);
     std104_soundSetBackgroundMusic(1,0x32,0xff);
   }
   else {
@@ -568,7 +568,7 @@ static inline BOOL evolutionRun(EvoWork *work, u32 r5, u32 before, u32 after,
   }
   se = soundGetCurrentSubSound();
   if (se != 0) {
-    seVolume = fn_801656D8(se);
+    seVolume = soundGetSlotVoiceState(se);
     scriptSoundStop(0x32);
   }
   else {
@@ -617,7 +617,7 @@ evolutionStart(u32 r3,u32 r4,u32 r5,u16 *r6,
   BOOL ok;
   EvoWork work;
 
-  fn_801DADC0(2);
+  wazaSequenceSysInitEx(2);
   work.model[0] = 0;
   work.model[1] = 0;
   if (!evolutionSetModels(work.model,r3,r4)) {
@@ -754,7 +754,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
     extern const f32 lbl_8047E6C4;
     extern int GSgetFrameStep();
     extern u32 GSinputButtonsChanged();
-    extern u32 fn_800F7BC4();
+    extern u32 GSinputGetButtons();
   u32 voice;
   u32 nickname;
   u16 dataId;
@@ -782,7 +782,7 @@ u32 evolutionDemo(EvoWork *work,int canSkip,u32 before,u32 after)
   while (time < 0x23a) {
     if (canSkip != 0 && time >= 0x78 && state >= 2) {
       trigger = GSinputButtonsChanged(1);
-      held = fn_800F7BC4(1);
+      held = GSinputGetButtons(1);
       if ((held & trigger & 0x200) != 0) {
         skipped = TRUE;
         break;

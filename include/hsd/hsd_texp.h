@@ -332,13 +332,13 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type,
  *   fn_801B6CD8 HSD_TExpAlphaOp   fn_801B5F08 HSD_TExpAlphaIn
  *   HSD_TExpFreeList HSD_TExpFreeList  fn_801B45A4 HSD_TExpSetupTev
  *   HSD_TExpRef HSD_TExpRef       HSD_TExpUnref HSD_TExpUnref
- *   fn_801B6DC0 (swap-table setter, no Melee counterpart)
+ *   HSD_TExpSetSwapTable (swap-table setter, no Melee counterpart)
  */
 HSD_TExp* HSD_TExpTev(HSD_TExp** list);
 void HSD_TExpOrder(HSD_TExp* texp, HSD_TObj* tex, GXChannelID chan);
 void HSD_TExpColorOp(HSD_TExp* texp, GXTevOp op, GXTevBias bias,
                  GXTevScale scale, u8 clamp);
-void fn_801B6DC0(HSD_TExp* texp, GXTevColorChan red, GXTevColorChan green,
+void HSD_TExpSetSwapTable(HSD_TExp* texp, GXTevColorChan red, GXTevColorChan green,
                  GXTevColorChan blue, GXTevColorChan alpha);
 void HSD_TExpColorIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a,
                  HSD_TEInput sel_b, HSD_TExp* exp_b, HSD_TEInput sel_c,
@@ -363,7 +363,7 @@ void HSD_TExpSchedule(int num, HSD_TExpDag* list, HSD_TExp** result,
                  HSD_TExpRes* resource);
 int HSD_TExpSimplify(HSD_TExp* texp);
 int HSD_TExpSimplify2(HSD_TExp* texp);
-void fn_801B9048(HSD_TETev* tev);
+void HSD_TExpCalcCost(HSD_TETev* tev);
 
 static inline BOOL IsThroughColor(HSD_TExp* texp)
 {

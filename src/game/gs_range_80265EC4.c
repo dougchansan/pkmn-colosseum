@@ -22,8 +22,8 @@ extern void msgctrlSetValue(u32 id, u32 value);
 extern s32 winMsgOpenField(u32 message, u32 wait, u8 pause);
 extern void winMsgCloseField(u32 wait);
 extern void wazaSequenceSysUpdate(void);
-extern void* fn_801DE190(u16 index, void* model, u8 variant);
-extern BOOL fn_801DDD28(void* owner, u16 group, u16 index, u8 variant);
+extern void* wazaSequencePokemonCreate(u16 index, void* model, u8 variant);
+extern BOOL wazaSequenceOwnerLoadWaza(void* owner, u16 group, u16 index, u8 variant);
 extern void wazaSequenceOwnerSetVisibility(void* effect, u32 visible);
 extern void wazaSequenceSysStartWaza(void* sequence, u16 moveID, u16 variant);
 extern u8 wazaSequenceSysIsPlayingWaza(void* obj, u16 search_key1, u16 search_key2);
@@ -89,8 +89,8 @@ extern const u16 lbl_8047E6F8;
 /* RULE-EXCEPTION(user-approved): single-use inline helper; returning the model through it gives retail's register order - see docs/RULE_EXCEPTIONS.md */
 static inline void* fn_80265F94_create(u16 species)
 {
-    void* model = fn_801DE190(species, NULL, 0);
-    fn_801DDD28(model, lbl_8047E6F8, 4, 0);
+    void* model = wazaSequencePokemonCreate(species, NULL, 0);
+    wazaSequenceOwnerLoadWaza(model, lbl_8047E6F8, 4, 0);
     wazaSequenceOwnerSetVisibility(model, 1);
     return model;
 }
@@ -174,11 +174,11 @@ void evolutionSequenceEnd(void)
     extern u32 lbl_8047B680;
     extern int soundGetCurrentSubSound();
     extern int std228_soundGetCurrentBackgroundMusic();
-    extern u32 fn_801656D8(u32 id);
+    extern u32 soundGetSlotVoiceState(u32 id);
     extern u32 std104_soundSetBackgroundMusic(u32 id, u32 volume, u32 priority);
     extern void scriptSoundStop();
     extern u32 std105_soundPlayEffect(u32 id, u32 volume, u32 priority);
-    extern void fn_801DADC0();
+    extern void wazaSequenceSysInitEx();
     extern void wazaSequenceSysRelease();
     extern void d2presentPlayGiftScene();
     u32 uVar5;
@@ -190,19 +190,19 @@ void evolutionSequenceEnd(void)
     uVar5 = lbl_8047B680;
     iVar1 = std228_soundGetCurrentBackgroundMusic();
     if (iVar1 != 0) {
-        uVar3 = fn_801656D8(iVar1) & 0xFFFFFFFFFFFFFFFFu;
+        uVar3 = soundGetSlotVoiceState(iVar1) & 0xFFFFFFFFFFFFFFFFu;
         std104_soundSetBackgroundMusic(1, 0x32, 0xff);
     } else {
         uVar3 = 0;
     }
     iVar2 = soundGetCurrentSubSound();
     if (iVar2 != 0) {
-        uVar4 = fn_801656D8(iVar2) & 0xFFFFFFFFFFFFFFFFu;
+        uVar4 = soundGetSlotVoiceState(iVar2) & 0xFFFFFFFFFFFFFFFFu;
         scriptSoundStop(0x32);
     } else {
         uVar4 = 0;
     }
-    fn_801DADC0(1);
+    wazaSequenceSysInitEx(1);
     d2presentPlayGiftScene(uVar5);
     wazaSequenceSysRelease();
     if (iVar1 != 0) {

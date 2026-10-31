@@ -3,7 +3,7 @@
  * @file pda_exact_80040308.c
  * @brief PDA filter/sort menu confirm and cancel handling, 0x80040308 - 0x80041114.
  *
- * fn_80040308 is copied from pda_range_80037158.c. Its float literals are
+ * pdaMemoMainKey is copied from pda_range_80037158.c. Its float literals are
  * redirected by the temporary constant_import build step to the shared
  * lbl_8047BCxx pool. Built with GC/2.0 -O3 and a unit-level -opt nopeephole.
  * fn_8003D818 is an external call here, as in retail.
@@ -87,12 +87,12 @@ extern void GSlightSetActive(void* light, s32 active);
 extern u8 lbl_802E543C[];
 extern u8 lbl_802E5448[];
 extern u8 lbl_80267180[];
-extern u8 fn_80047CC0(u8* work);
+extern u8 pdaModelFrameSingle(u8* work);
 extern u8 pdaModelFrameCamera(void* work, void* sub);
 
 
 /* Point the PDA's light at the camera position, offset up and to the left. */
-/* RULE-EXCEPTION(user-approved): reconstructed single-use inline helper pda_80040308_SetupLight (stack layout of fn_80040308) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed single-use inline helper pda_80040308_SetupLight (stack layout of pdaMemoMainKey) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_80040308_SetupLight(PdaVec3* pos, PdaVec3* target)
 {
     PdaVec3 color;
@@ -210,7 +210,7 @@ static inline f32 pdaAbsF(f32 x)
     return x > 0.0f ? x : -x;
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, fn_80041E48, fn_80044630) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, pdaMemoUpdateScroll, fn_80044630) - see docs/RULE_EXCEPTIONS.md */
 static inline void pdaApproach(f32* current, f32* target, f32 delta)
 {
     f32 step;
@@ -233,7 +233,7 @@ static inline void pdaApproach(f32* current, f32* target, f32 delta)
 }
 
 
-void fn_80040308(void* menu)
+void pdaMemoMainKey(void* menu)
 {
     u8* S = (u8*)&lbl_803A6818;
     u16 keys;
@@ -353,7 +353,7 @@ void fn_80040308(void* menu)
                         case 0xb:
                         case 0xc:
                             *((u8*)&lbl_803A6818 + 0x214) =
-                                fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
+                                pdaModelFrameSingle((u8*)&lbl_803A6818 + 0x7c);
                             break;
                         case 5:
                             *((u8*)&lbl_803A6818 + 0x214) =
@@ -490,7 +490,7 @@ void fn_80040308(void* menu)
                         case 0xb:
                         case 0xc:
                             *((u8*)&lbl_803A6818 + 0x214) =
-                                fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
+                                pdaModelFrameSingle((u8*)&lbl_803A6818 + 0x7c);
                             break;
                         case 5:
                             *((u8*)&lbl_803A6818 + 0x214) =
@@ -505,7 +505,7 @@ void fn_80040308(void* menu)
                     }
                     }
                     *((u8*)&lbl_803A6818 + 0x214) =
-                        fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
+                        pdaModelFrameSingle((u8*)&lbl_803A6818 + 0x7c);
                     *(s8*)((u8*)menu + 0x98) = 1;
                     *(s8*)((u8*)menu + 0x99) = 1;
                     menuPlaySe(*(s32*)((u8*)menu + 4), 3);

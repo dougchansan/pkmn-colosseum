@@ -30,7 +30,7 @@ void wsCmd7F(void)
     extern u8 fightWazaIsHit();
     extern u8 fightOutPokemonIsZokuseiDataId();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
-    extern u8 fn_802025B8();
+    extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
     u32 fightTarget;
     u32 move;
     u32 relativeTarget;
@@ -42,7 +42,7 @@ void wsCmd7F(void)
     relativeTarget = fightTargetGetTragetPtrToRelativeHostSideFightTargetId(fightTarget, floorId);
     fightTarget = fightTargetGetPtrAsNowFightType(0x12, 0);
 
-    if (fightWazaIsHit(move) == 0 || fn_802025B8(fightTarget, 0x1c) != 2) {
+    if (fightWazaIsHit(move) == 0 || fightOutPokemonCheckWritePokemonJoutaiDataId(fightTarget, 0x1c) != 2) {
         fightFloorSetStatus(0, 0, 0x3b, 0, 0x40);
         lbl_80478D78[5] = 1;
         lbl_8047B610++;

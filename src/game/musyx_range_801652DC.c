@@ -14,7 +14,7 @@ void ReverbHICallback(s32* left, s32* right, s32* surround, u8* reverb)
     extern f32 lbl_8047D4F0;
     extern f32 lbl_8047D4F4;
     extern f32 lbl_8047D538;
-    extern void fn_80164C40(s32* left, s32* right, f32 cross, f32 invCross);
+    extern void ReverbHIFilterBlock(s32* left, s32* right, f32 cross, f32 invCross);
     extern void HandleReverb(s32* samples, u8* reverb, s32 channel);
     u8 channel;
 
@@ -22,7 +22,7 @@ void ReverbHICallback(s32* left, s32* right, s32* surround, u8* reverb)
         switch (channel) {
         case 0:
             if (lbl_8047D4F0 != *(f32*)(reverb + 0x1A8)) {
-                fn_80164C40(left, right,
+                ReverbHIFilterBlock(left, right,
                             lbl_8047D538 * *(f32*)(reverb + 0x1A8),
                             lbl_8047D4F4 -
                                 (lbl_8047D538 * *(f32*)(reverb + 0x1A8)));

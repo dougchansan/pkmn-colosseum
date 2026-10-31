@@ -28,7 +28,7 @@ s32 pdaMailDrawPicture(PdaMailWindow* window, PdaMailOutput* output)
     return 0;
 }
 
-s32 fn_8004D5EC(PdaMailWindow* window, void* field)
+s32 pdaMailDrawAttachIconA(PdaMailWindow* window, void* field)
 {
     u8 visible;
 
@@ -41,7 +41,7 @@ s32 fn_8004D5EC(PdaMailWindow* window, void* field)
     return 0;
 }
 
-s32 fn_8004D64C(PdaMailWindow* window, void* field)
+s32 pdaMailDrawAttachIconB(PdaMailWindow* window, void* field)
 {
     u8 visible;
 

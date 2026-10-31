@@ -5,12 +5,12 @@ extern GSThread* lbl_8047AC28;
 extern u32 lbl_8047AC30;
 extern u8 lbl_8047AC0C;
 
-u8 fn_800F036C(GSThread* thread)
+u8 GSvmGetGroup(GSThread* thread)
 {
     return thread->affinity;
 }
 
-u32 fn_800F0374(u32 context)
+u32 GSvmGetOwner(u32 context)
 {
     GSThread* thread;
 

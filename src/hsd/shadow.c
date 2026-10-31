@@ -79,13 +79,13 @@ void GXSetScissor(u32 left, u32 top, u32 wd, u32 ht);
 /* GSmemFindHandle */
 u16 GSmemGetHandleByPtr(void* ptr);
 /* GSmemLock */
-void fn_800E24B0(u16 handle);
+void GSmemUnlock(u16 handle);
 /* GSmemFree */
 void GSmemFree(u16 handle);
 /* GSmemGetPtr */
 void* GSmemLock(u16 handle);
 /* GSmemAllocTail */
-u16 fn_800E2B00(u32 size, u32 alignment);
+u16 GSmemAllocTail(u32 size, u32 alignment);
 
 /* HSD_JObjUnref */
 void HSD_JObjUnref(HSD_JObj* jobj);
@@ -233,7 +233,7 @@ HSD_ObjAllocData lbl_804656E0;
 static u8 lbl_8047B310;
 
 static void makeMatrix(HSD_Shadow* shadow);
-void fn_801B06DC(HSD_Shadow* shadow);
+void modelShadowFreeTexture(HSD_Shadow* shadow);
 
 void HSD_ObjAllocInit(HSD_ObjAllocData* data, u32 size, u32 align);
 
@@ -311,12 +311,12 @@ void HSD_ShadowSetSize(HSD_Shadow* shadow, u16 width, u16 height)
     if (!idesc->image_ptr || idesc->width != width || idesc->height != height)
     {
         if (idesc->image_ptr) {
-            fn_801B06DC(shadow);
+            modelShadowFreeTexture(shadow);
         }
 
         size = GXGetTexBufferSize(width, height, 0, 0, 0);
         HSD_ASSERT(319, size > 0);
-        idesc->image_ptr = GSmemLock(fn_800E2B00(size, 0x20));
+        idesc->image_ptr = GSmemLock(GSmemAllocTail(size, 0x20));
         idesc->width = width;
         idesc->height = height;
 
@@ -560,21 +560,21 @@ void HSD_ShadowDeleteObject(HSD_Shadow* shadow, HSD_JObj* jobj)
 }
 
 /* HSD_ShadowFreeImage */
-void fn_801B06DC(HSD_Shadow* shadow)
+void modelShadowFreeTexture(HSD_Shadow* shadow)
 {
     u16 handle;
     HSD_ImageDesc* idesc = shadow->texture->imagedesc;
 
     if (idesc->image_ptr) {
         handle = GSmemGetHandleByPtr(idesc->image_ptr);
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
         idesc->image_ptr = NULL;
     }
 }
 
 /* HSD_ShadowSetMultiPass */
-void fn_801B06D4(u8 multipass)
+void modelShadowSetDebug(u8 multipass)
 {
     lbl_8047B310 = multipass;
 }

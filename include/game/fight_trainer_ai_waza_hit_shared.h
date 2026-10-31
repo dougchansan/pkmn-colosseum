@@ -56,7 +56,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern int  fadeSet();
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();
@@ -75,7 +75,7 @@ u32 fightMenuFightTrainerGcHeroOpenMenu(void* ctx, u32 param1, u32 param2);
  * sibling wrappers (209/207/204/202/200/198/197/190/...). Not emitted. */
 static inline s32 wazaHitGateCheck(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u32 fightTrainerAiGetWazaTenkouValue(void* ctx, u32 param2, u32 param1);
-    extern u32 fn_80239500(void* ctx, u32 param2);
+    extern u32 fightTrainerAiGetWazaIryoku(void* ctx, u32 param2);
     extern u16 fightTrainerAiGetAisyou(void* ctx, u32 param3, u32 v1, u32 v3);
     extern s32 _fightTrainerAiWazaHitCheck(void* ctx, u32 param1, u32 param2, u32 param3, u32 zero);
     s32 gate;
@@ -83,7 +83,7 @@ static inline s32 wazaHitGateCheck(void* ctx, u32 param1, u32 param2, u32 param3
 
     gate = _fightTrainerAiWazaHitCheck(ctx, param1, param2, param3, 0);
 
-    if (fightTrainerAiGetAisyou(ctx, param3, v1, fn_80239500(ctx, param2)) == 0x43) {
+    if (fightTrainerAiGetAisyou(ctx, param3, v1, fightTrainerAiGetWazaIryoku(ctx, param2)) == 0x43) {
         gate = 0;
     }
     return gate;

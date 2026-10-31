@@ -8,7 +8,7 @@ extern u32 GSmsgGetRect(s32 msgId);
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8004C2D8(u8* ctx, u8* p)
+s32 pdaMailDrawCount(u8* ctx, u8* p)
 {
     s32 count;
     s32 pages;
@@ -26,7 +26,7 @@ s32 fn_8004C2D8(u8* ctx, u8* p)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_8004C36C(u8* ctx, u8* p)
+s32 pdaMailListDrawText(u8* ctx, u8* p)
 {
     u32 color = (u32) ctx[0x8b] | 0xe66e0000u;
     msgctrlSetValue(0x34, (void*) ((s8) ctx[0x94] + 1));

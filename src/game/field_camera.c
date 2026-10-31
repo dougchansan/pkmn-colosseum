@@ -1,7 +1,7 @@
 /**
  * @file field_camera.c
- * @brief Field camera update: fn_801171C8 (per-frame blend of the floor's
- * field-camera weights into the camera) and fn_80117330 (move the camera to
+ * @brief Field camera update: fieldCameraUpdate (per-frame blend of the floor's
+ * field-camera weights into the camera) and fieldCameraMoveTo (move the camera to
  * the weighted field-camera position). .text 0x801171C8 - 0x801174C4.
  *
  * XD source unit: floorFieldCamera / fieldCamera module. The neighbouring
@@ -44,7 +44,7 @@ extern void GSvecAdd(void*, void*, void*);
 extern f64 atan2(f64, f64);
 
 /* 0x801171C8 | 0x168 */
-void fn_801171C8(void) {
+void fieldCameraUpdate(void) {
     u8 pos[0xC];
     f32 y;
     f32 x;
@@ -95,7 +95,7 @@ void fn_801171C8(void) {
 }
 
 /* 0x80117330 | 0x194 */
-void fn_80117330(f32 arg) {
+void fieldCameraMoveTo(f32 arg) {
     u8 tmp[0x30];
     u8 pos[0xC];
     u8 view[0xC];

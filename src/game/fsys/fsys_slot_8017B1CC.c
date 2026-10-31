@@ -4,7 +4,7 @@
  *
  * Every function here resolves an archive by its file handle, either by
  * scanning the slot array itself (fsysFindSlot, expanded in both
- * GSresReleaseById and fn_8017B2CC) or through fsysFindSlotByHandle.
+ * GSresReleaseById and GSresGroupGetState) or through fsysFindSlotByHandle.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
  * rest of the fsys code (see configure.py).
@@ -16,7 +16,7 @@ extern FSYSManager lbl_80453FEC;
 extern FSYSSlot* lbl_8047B1B4; /* slot array */
 
 extern u16 GSmemGetHandleByPtr(void* ptr);      /* handle owning a heap pointer */
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern FSYSSlot* fsysFindSlotByHandle(u32 fileHandle, s32 mode);
 extern void fsysStartLoadMode0(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
@@ -48,7 +48,7 @@ static inline void fsysFree(void* ptr)
 
     handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }
@@ -85,7 +85,7 @@ void GSresReleaseById(u32 fileHandle)
 /* Address: 0x8017B2CC | size: 0xA4
  * 0 when the archive is loaded, 1 while it is still in flight, -1 when no
  * slot holds it. */
-s32 fn_8017B2CC(u32 fileHandle)
+s32 GSresGroupGetState(u32 fileHandle)
 {
     FSYSSlot* slot;
 
@@ -100,7 +100,7 @@ s32 fn_8017B2CC(u32 fileHandle)
 }
 
 /* Address: 0x8017B370 | size: 0x74 */
-s32 fn_8017B370(u32 fileHandle)
+s32 fsysStartLoadExclusive(u32 fileHandle)
 {
     FSYSSlot* slot;
 
@@ -114,7 +114,7 @@ s32 fn_8017B370(u32 fileHandle)
 }
 
 /* Address: 0x8017B3E4 | size: 0x64 */
-s32 fn_8017B3E4(u32 fileHandle)
+s32 fsysStartLoad(u32 fileHandle)
 {
     FSYSSlot* slot;
 
@@ -145,7 +145,7 @@ static inline s32 fsysGetEntryCount(u32 fileHandle)
 
 /* Address: 0x8017B448 | size: 0x74
  * Entry count of the archive loaded for fileHandle, or -1. */
-s32 fn_8017B448(u32 fileHandle)
+s32 fsysGetEntryCount_8017B448(u32 fileHandle)
 {
     s32 count;
 

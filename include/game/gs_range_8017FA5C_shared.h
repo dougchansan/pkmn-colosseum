@@ -92,7 +92,7 @@ typedef struct GsRangePoolElem {
     s32 field_04;
     void (*callback)(void*, void*);
     s32 state;
-    void (*task)(void); /* GSgapp task the job runs (fn_8018114C, ...) */
+    void (*task)(void); /* GSgapp task the job runs (_fsysJobDecodeTask, ...) */
     s32 type;
     void* app;
     struct GsRangePoolElem* nextJob;
@@ -125,12 +125,12 @@ extern u16 GSmemAlloc(u32 size, u32 align);
 extern void* GSmemLock(u16 handle);
 extern void fsysFlushCachedHandles(void);
 
-u32 fn_8017FA5C(void);
-void fn_8017FB08(void* allocation);
-void* fn_8017FDB0(u32 size);
-void fn_801808E4(GsRangeARQEntry* entry);
+u32 fsysCacheGetFreeSize(void);
+void gsSmallHeapFree(void* allocation);
+void* gsSmallHeapAlloc(u32 size);
+void fsysARQCallback2(GsRangeARQEntry* entry);
 
-/* Expanded three times: twice in fsysCacheInit, once in fn_80180B94. */
+/* Expanded three times: twice in fsysCacheInit, once in fsysJobPoolInit. */
 static inline void* memAlloc(u32 size)
 {
     u16 h = GSmemAlloc(size, 0x20);

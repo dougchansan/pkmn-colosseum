@@ -3,7 +3,7 @@
  * @brief Exact island 0x80076334 - 0x80076A8C (menuCBRule_CheckPokemonErrorAll,
  *        menuRuleCheckPokemon, menuRuleCheckPartyByRule): standalone copies, in address order, of
  *        the bodies in menu_range_8007109C.c (candidate
- *        menu_candidate_80076054 keeps fn_80076054 and fn_80076A8C).
+ *        menu_candidate_80076054 keeps menuRuleGetPartyError and menuRuleCheckSelected).
  */
 #include "dolphin/types.h"
 #include "game/hero.h"
@@ -175,13 +175,13 @@ extern void _threadSwitch(void);
 static inline void MenuWaitMotionInterval(void)
 {
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     f32 elapsed;
 
     elapsed = lbl_8047C0E0;
     while (elapsed < lbl_8047C0E4) {
         _threadSwitch();
-        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 extern void winMsgOpenField(s32, s32, s32);
@@ -193,7 +193,7 @@ extern u32 OSDisableInterrupts(void);
 extern void OSSetAlarm(void*, s64, void*);
 extern s32 OSSuspendThread(void*);
 extern void OSRestoreInterrupts(u32);
-extern void fn_8007C23C(u8*);
+extern void _gbaBootAlarm(u8*);
 extern u32 lbl_803FAEF8[256];
 extern void* heroBiosGetNamePtr(void*);
 extern void* heroBiosGetPokemonPtr(void*, u16);
@@ -206,10 +206,10 @@ extern void fadeSet(s32, f32);
 extern s32 fadeCheck(s32);
 extern void std113_mapObjectUnk_8018db68(u32);
 extern void GSscene_SetMode(s32);
-extern u8 fn_80079EF4(s32, u32);
+extern u8 exDiscCouponSelect(s32, u32);
 extern void gbaCommandSetKeyState(s32 mode, s32 flag);
-extern s32 fn_80073C38(s32 chan);
-extern void fn_80072684(void);
+extern s32 gbaCmdResetLink(s32 chan);
+extern void _gbaCmdAlarm(void);
 extern s32 GBAWrite();
 extern s32 GBARead();
 extern s32 GBAGetStatus();
@@ -224,7 +224,7 @@ extern volatile s32 lbl_803B6E08[4];
 extern u8 lbl_803B6D88[0x58];
 extern void floorLink(s32, s32);
 
-/* Same test as fn_80077A5C. */
+/* Same test as menuRuleIsEmptyPokemon. */
 static inline s32 menuRuleSlotIsEmpty(void* pokemon)
 {
     extern s32 pokemonGetStatus(void*, s32, s32, s32);
@@ -283,7 +283,7 @@ u8 menuRuleCheckPokemon(void* pokemon, s32 check)
     extern u8 pokemonIsDarkPokemon(void*);
     extern u8 pokemonBiosGetTamagoFlag(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
-    extern u8 fn_80142984(void);
+    extern u8 itemIdIsValid(void);
     extern void* wazaDataBiosGetPtr(u16);
     extern u8 pokemonCheckValid(void*);
     extern void __assert(const char*, s32, const char*);
@@ -349,7 +349,7 @@ u8 menuRuleCheckPokemon(void* pokemon, s32 check)
         case 0xAF:
             return 0;
         default:
-            return fn_80142984();
+            return itemIdIsValid();
         }
 
     case 4:
@@ -377,11 +377,11 @@ u8 menuRuleCheckPokemon(void* pokemon, s32 check)
 /* Check every whole-party rule. */
 static inline u8 menuRuleCheckPartyAllModes(void* hero, const u8* rule)
 {
-    extern u8 fn_80076F2C(void* hero, const u8* rule, s32 mode);
+    extern u8 menuRuleCheckParty_80076F2C(void* hero, const u8* rule, s32 mode);
     s32 mode;
 
     for (mode = 0; mode < 4; mode++) {
-        if (fn_80076F2C(hero, rule, mode) == 0) {
+        if (menuRuleCheckParty_80076F2C(hero, rule, mode) == 0) {
             return 0;
         }
     }
@@ -396,7 +396,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
     extern void __assert(const char* file, u32 line, const char* expr);
     extern u8 pokemonBiosGetLevel(void*);
     extern u16 pokemonBiosGetItemDataId(void*);
-    extern u8 fn_80142984(u16);
+    extern u8 itemIdIsValid(u16);
     extern u8* savedataBattleGetRulePtr(void);
     MenuRuleItemRestrictions* restrictions;
     u16 item;
@@ -419,7 +419,7 @@ static inline u8 menuRuleCheckPresentPokemonMode(void* pokemon,
             valid = 0;
             break;
         default:
-            valid = fn_80142984(item);
+            valid = itemIdIsValid(item);
             break;
         }
         if (valid == 0) {

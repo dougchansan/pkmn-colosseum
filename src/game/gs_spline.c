@@ -51,10 +51,10 @@ void GSsplineFree(u8* ptr) {
     u16 handle;
     if (ptr != NULL) {
         handle = *(u16*)(ptr + 0x22);
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
         handle = *(u16*)(ptr + 0x20);
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }
@@ -108,7 +108,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
 {
     extern u16 _toolentryAlloc__FUl(u32 size);
     extern void* GSmemLock(u16 handle);
-    extern void* fn_800E24B0(u16 handle);
+    extern void* GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
     const char* messages = lbl_80273A10;
     GSspline* spline = NULL;
@@ -159,7 +159,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     spline->state = 1;
                 } else {
                     handle = spline->selfHandle;
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                     spline = NULL;
                 }
@@ -176,7 +176,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     spline->state = 0;
                 } else {
                     handle = spline->selfHandle;
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                     spline = NULL;
                 }
@@ -197,7 +197,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     spline->state = 1;
                 } else {
                     handle = spline->selfHandle;
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                     spline = NULL;
                 }
@@ -214,7 +214,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     spline->state = 0;
                 } else {
                     handle = spline->selfHandle;
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                     spline = NULL;
                 }
@@ -235,7 +235,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     spline->state = 1;
                 } else {
                     handle = spline->selfHandle;
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                     spline = NULL;
                 }
@@ -253,7 +253,7 @@ GSspline* GSsplineCreate(s32 kind, s32 state, u8 capacity)
                     spline->state = 0;
                 } else {
                     handle = spline->selfHandle;
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                     spline = NULL;
                 }

@@ -3,7 +3,7 @@
  * @file pda_exact_80041E48.c
  * @brief PDA summary-page per-frame update, 0x80041E48 - 0x80042658.
  *
- * fn_80041E48 is copied from pda_range_80037158.c. Its float literals are
+ * pdaMemoUpdateScroll is copied from pda_range_80037158.c. Its float literals are
  * redirected by the temporary constant_import build step to the shared
  * lbl_8047BCxx pool.
  */
@@ -57,7 +57,7 @@ static inline void pdaEase(f32* cur, f32* dstp)
     }
     moved = delta * rate;
     next = c + moved;
-    /* RULE-EXCEPTION(user-approved): scalar reuse - the dead rate holds the remaining distance (fn_80041E48) - see docs/RULE_EXCEPTIONS.md */
+    /* RULE-EXCEPTION(user-approved): scalar reuse - the dead rate holds the remaining distance (pdaMemoUpdateScroll) - see docs/RULE_EXCEPTIONS.md */
     rate = dst - next;
     *cur = next;
     if (pdaAbsF(rate) <= pdaAbsF(moved)) {
@@ -67,7 +67,7 @@ static inline void pdaEase(f32* cur, f32* dstp)
 
 /* pdaEase for the filter list's scroll offset: retail allocates its start
  * value after the other locals. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pdaEase2 (fn_80041E48) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pdaEase2 (pdaMemoUpdateScroll) - see docs/RULE_EXCEPTIONS.md */
 static inline void pdaEase2(f32* cur, f32* dstp)
 {
     f32 dst;
@@ -98,7 +98,7 @@ static inline void pdaEase2(f32* cur, f32* dstp)
     }
     moved = delta * rate;
     next = c + moved;
-    /* RULE-EXCEPTION(user-approved): scalar reuse - the dead rate holds the remaining distance (fn_80041E48) - see docs/RULE_EXCEPTIONS.md */
+    /* RULE-EXCEPTION(user-approved): scalar reuse - the dead rate holds the remaining distance (pdaMemoUpdateScroll) - see docs/RULE_EXCEPTIONS.md */
     rate = dst - next;
     *cur = next;
     if (pdaAbsF(rate) <= pdaAbsF(moved)) {
@@ -106,7 +106,7 @@ static inline void pdaEase2(f32* cur, f32* dstp)
     }
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, fn_80041E48, fn_80044630) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, pdaMemoUpdateScroll, fn_80044630) - see docs/RULE_EXCEPTIONS.md */
 static inline void pdaApproach(f32* current, f32* target, f32 delta)
 {
     f32 step;
@@ -129,10 +129,10 @@ static inline void pdaApproach(f32* current, f32* target, f32 delta)
 }
 
 /* Per-frame scene animation and D-pad handling for the PDA summary page. */
-s32 fn_80041E48(void* work, s32 mode)
+s32 pdaMemoUpdateScroll(void* work, s32 mode)
 {
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     u8* S = (u8*)&lbl_803A6818;
     u16 keys;
     f32 dt;
@@ -143,9 +143,9 @@ s32 fn_80041E48(void* work, s32 mode)
 
     (void)work;
     (void)mode;
-    /* RULE-EXCEPTION(user-approved): codegen-only mask - & 0xffff on the u16 key read gives retail's clrlwi before each key test (fn_80041E48) - see docs/RULE_EXCEPTIONS.md */
+    /* RULE-EXCEPTION(user-approved): codegen-only mask - & 0xffff on the u16 key read gives retail's clrlwi before each key test (pdaMemoUpdateScroll) - see docs/RULE_EXCEPTIONS.md */
     keys = *(u16*)(lbl_803A67FC + 6) & 0xffff;
-    dt = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+    dt = (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     G(0x3c) = dt;
     G(0x40) = G(0x40) + dt;
     if (G(0x40) >= 1.0f) {

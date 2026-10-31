@@ -74,7 +74,7 @@ static void* AudioDecoder(void* arg)
     s32 frame = 0;
 
     while (TRUE) {
-        readBuffer = (THPReadBuffer*)fn_801E1BE8();
+        readBuffer = (THPReadBuffer*)PopReadedBuffer();
         AudioDecode(readBuffer);
 
         if (frame < 2 && (lbl_8046AC60.playFlag & 1) == 0) {
@@ -88,7 +88,7 @@ static void* AudioDecoder(void* arg)
             PrepareReady(TRUE);
         }
 
-        fn_801E1B54(readBuffer);
+        PushReadedBuffer2(readBuffer);
         frame++;
     }
 }

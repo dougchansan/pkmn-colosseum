@@ -22,7 +22,7 @@
  */
 #include "dolphin/types.h"
 
-extern void fn_800FE6D0(s16 x, s16 y);
+extern void spriteSetOrigin(s16 x, s16 y);
 extern void spriteSetEnv(void);
 extern void msgWinDrawBackground(s32, s32, s32, s32, u8, s32);
 extern void winMsgDrawMessage(void* message, u32 state, u8 flag);
@@ -53,7 +53,7 @@ s32 winMsgDraw(u8* window, const WinMsgItem* item)
     }
 
     offset = item->height - 4 - height;
-    fn_800FE6D0(*(s16*)(window + 0x84) + item->x,
+    spriteSetOrigin(*(s16*)(window + 0x84) + item->x,
                 *(s16*)(window + 0x86) + item->y + offset);
     spriteSetEnv();
 

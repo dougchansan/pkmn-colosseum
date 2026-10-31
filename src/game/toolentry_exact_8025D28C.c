@@ -16,7 +16,7 @@ u32 toolentryTaisenGetControlerType(s32 index)
 u32 toolentryGetTrainerSamllFaceResID(s32 index, u32 param1, u32 param2)
 {
     extern u32 lbl_80478E04;
-    extern u32 fn_801FCBA4(u8* trainer);
+    extern u32 fightTrainerDataBiosGetStatus09(u8* trainer);
     extern u8* fightTrainerDataBiosGetPtr(u16 id);
     u8* trainer;
     u32 id;
@@ -30,7 +30,7 @@ u32 toolentryGetTrainerSamllFaceResID(s32 index, u32 param1, u32 param2)
         return 0;
     }
     trainer = fightTrainerDataBiosGetPtr(id);
-    offset = fn_801FCBA4(trainer);
+    offset = fightTrainerDataBiosGetStatus09(trainer);
     offset *= 0x14;
     base = lbl_80478E04;
     entry = (u32*)(base + offset);

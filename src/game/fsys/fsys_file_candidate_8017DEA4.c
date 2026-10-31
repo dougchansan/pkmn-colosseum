@@ -10,7 +10,7 @@
  *   fsysStartLoadMode7  mode 7, fsysStartLoadMode2 mode 2: read the 0x40-byte header
  *                into the slot;
  *   fsysStartLoadMode0  mode 0, fsysStartLoadMode3 mode 3: unless a reload was requested,
- *                copy the header from the ARAM cache (fn_8017F794) or read
+ *                copy the header from the ARAM cache (fsysCacheLookup) or read
  *                it from disc.
  * Every read completes through fsysDVDReadCallback.
  *
@@ -30,8 +30,8 @@ extern void GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                         void (*callback)(s32 result));
 extern void fsysSlotFinishB(FSYSSlot* slot);
 extern void fsysDVDReadCallback(s32 result);
-extern u32 fn_8017F794(u32 fileHandle, u32 key1, u32 key2);
-extern void fn_80180320(void* main, void* aram, u32 size);
+extern u32 fsysCacheLookup(u32 fileHandle, u32 key1, u32 key2);
+extern void fsysARAMToMainSync(void* main, void* aram, u32 size);
 
 /* Address: 0x8017DEA4 | size: 0xA8 */
 void fsysStartLoadMode1(FSYSSlot* slot, u32 fileHandle, u32 callbackA, u32 callbackB,
@@ -103,9 +103,9 @@ void fsysStartLoadMode0(FSYSSlot* slot, u32 fileHandle, u32 callbackA, u32 callb
             slot->fileInfo0 = GSdvdOpen(slot->filename);
         }
         size = 0x40;
-        cached = fn_8017F794(slot->fileHandle, 0, 0);
+        cached = fsysCacheLookup(slot->fileHandle, 0, 0);
         if (cached != 0) {
-            fn_80180320(slot, (void*)cached, (size + 0x1F) & ~0x1F);
+            fsysARAMToMainSync(slot, (void*)cached, (size + 0x1F) & ~0x1F);
             DCFlushRange(slot, (size + 0x1F) & ~0x1F);
             slot->status = 2;
             readFromCache = 1;
@@ -146,9 +146,9 @@ void fsysStartLoadMode3(FSYSSlot* slot, u32 fileHandle, u32 callbackA, u32 callb
             slot->fileInfo0 = GSdvdOpen(slot->filename);
         }
         size = 0x40;
-        cached = fn_8017F794(slot->fileHandle, 0, 0);
+        cached = fsysCacheLookup(slot->fileHandle, 0, 0);
         if (cached != 0) {
-            fn_80180320(slot, (void*)cached, (size + 0x1F) & ~0x1F);
+            fsysARAMToMainSync(slot, (void*)cached, (size + 0x1F) & ~0x1F);
             DCFlushRange(slot, (size + 0x1F) & ~0x1F);
             slot->status = 2;
             readFromCache = 1;

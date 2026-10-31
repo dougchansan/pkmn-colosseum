@@ -1,6 +1,6 @@
 /**
  * @file gs_range_801653CC_candidate_80165FDC.c
- * @brief fn_80165FDC, 0x80165FDC - 0x8016604C: poll an fsys file group
+ * @brief soundWaitGroup, 0x80165FDC - 0x8016604C: poll an fsys file group
  *        until it has loaded.
  *
  * Last function of the sound TU that starts at 0x801653CC: its log string
@@ -9,18 +9,18 @@
  * section alignment of the next TU. Built with the TU's flags; no pragmas.
  *
  * The group is a signed id (the log prints it with %d) while fsys takes an
- * unsigned handle (fn_8017B2CC(u32)); retail's register assignment for the
+ * unsigned handle (GSresGroupGetState(u32)); retail's register assignment for the
  * hoisted string address (lis r3 after the id copy) is the one MWCC emits
  * for that signed-to-unsigned argument conversion.
  */
 #include "game/gs_range_801653CC_shared.h"
 
-void fn_80165FDC(s32 group)
+void soundWaitGroup(s32 group)
 {
     s32 status;
 
     while (1) {
-        status = fn_8017B2CC(group);
+        status = GSresGroupGetState(group);
         if (status < 0) {
             GSlogWrite(lbl_802736CC, group);
         }

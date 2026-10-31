@@ -20,7 +20,7 @@ u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     extern void koukaExec(u16 koukaDataId, void* fightTarget, void* target, u32 flags);
     extern void* fightTargetGetPtr(u32 targetDataId, void* target, u16 fightType);
     extern u32 fightFloorGetStatus(u32, u16, u32, u16);
-    extern u8 fn_8020A8E0(u32 joukenDataId, void* target);
+    extern u8 fightJoukenCheck_8020A8E0(u32 joukenDataId, void* target);
 
     u32 koukaDataId;
     u32 targetDataId;
@@ -35,7 +35,7 @@ u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     result = 0;
     fightType = fightFloorGetStatus(0, 0, 0x14, 0);
     fightTarget = fightTargetGetPtr(targetDataId, target, fightType);
-    if (fn_8020A8E0(joukenDataId, target) == 1) {
+    if (fightJoukenCheck_8020A8E0(joukenDataId, target) == 1) {
         koukaExec((u16)koukaDataId, fightTarget, target, 0);
         result = 1;
     }

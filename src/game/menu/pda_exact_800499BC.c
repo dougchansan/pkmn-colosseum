@@ -49,18 +49,18 @@ extern PdaPairS16 lbl_8047BD9C;
 extern s32 lbl_804788F0;
 extern u32 lbl_802E61D8[];
 
-extern s32 fn_800FE6D0(s16 x, s16 y);
+extern s32 spriteSetOrigin(s16 x, s16 y);
 extern void spriteSetEnv(s32 env);
 extern u32 GSmsgGetRect(s32 id);
-extern u32 fn_80005748(void);
+extern u32 gamedataGetPlaytime(void);
 extern void msgctrlSetValue(s32 id, u32 value);
 extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
-extern void fn_8004B598(s32 unused, PdaSprite* sprite, s32 messageId);
+extern void pdaTrainerDataSetCursor(s32 unused, PdaSprite* sprite, s32 messageId);
 extern u8 std081_flagCheckTrue(s32 id);
 extern u32 heroGetStatus(s32 a, s32 b, s32 c);
 extern void menuSpriteBiosGetPtr(s32 id);
 extern u32 menuGetCursorItemID(s32 menu);
-extern void fn_8004A7A8(void* work, PdaSprite* sprite);
+extern void pdaTrainerDataAnimItem(void* work, PdaSprite* sprite);
 
 /* Show a header tab and centre it on its measured width plus the tab's wave offset. */
 static inline void pda_800499BC_PlaceTab(PdaSprite* sprite, s32 width, s16 wave)
@@ -97,7 +97,7 @@ s32 pdaTrainerDataDraw(void* work, PdaSprite* sprite)
     s16 left;
     u32 status;
 
-    fn_8004A7A8(work, sprite);
+    pdaTrainerDataAnimItem(work, sprite);
     switch (sprite->eventId) {
     case 0x6e1:
         icon[0] = lbl_8047BD70;
@@ -221,14 +221,14 @@ s32 pdaTrainerDataDraw(void* work, PdaSprite* sprite)
     case 0x763:
     case 0x764:
     case 0x765:
-        fn_8004B598((s32)work, sprite, sprite->eventId);
+        pdaTrainerDataSetCursor((s32)work, sprite, sprite->eventId);
         break;
     case 0x6dd:
     case 0x6e2:
         break;
     case 0x754:
         /* RULE-EXCEPTION(user-approved): scalar reuse of digit for the play time in fn_800499BC - see docs/RULE_EXCEPTIONS.md */
-        digit = fn_80005748();
+        digit = gamedataGetPlaytime();
         msgctrlSetValue(0x4c, digit);
         break;
     case 0x755:
@@ -240,7 +240,7 @@ s32 pdaTrainerDataDraw(void* work, PdaSprite* sprite)
     case 0x757:
         pos = (s16*)(lbl_802EF0A8 + sprite->eventId * 0x1c);
         sprite->field_50 = pos[1] + (s32)*(f32*)(lbl_803A6A60 + 0x30);
-        spriteSetEnv(fn_800FE6D0(
+        spriteSetEnv(spriteSetOrigin(
             (s16)(*(s16*)((u8*)work + 0x84) + sprite->field_50),
             (s16)(*(s16*)((u8*)work + 0x86) + sprite->field_52)));
         pos = (s16*)(lbl_802EF0A8 + sprite->eventId * 0x1c);

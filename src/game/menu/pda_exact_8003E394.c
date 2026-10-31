@@ -1,14 +1,14 @@
 /**
  * @file pda_exact_8003E394.c
  * @brief PDA memo list reorder for the active sort tab, 0x8003E394 - 0x8003F040.
- *        Standalone copy of fn_8003E394 (and the helpers it inlines) from
+ *        Standalone copy of pdaMemoDrawData (and the helpers it inlines) from
  *        pda_range_80037158.c, linked on its own.
  */
 #include "dolphin/types.h"
 
 extern u32 GSmemGetHandleByPtr(void* p);
 extern void GSmemFree(u32 handle);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void* GSmemLock(u32 handle);
 extern u32 GSmemAlloc(s32 size, s32 align);
 extern u32 lbl_8047A4E0;
@@ -28,8 +28,8 @@ extern s32 GSmsgGetText(u8* dst, s32 size, u8* src);
 
 extern u16 pokemonDataBiosGetWeight(void* data);
 extern u16 pokemonDataBiosGetHeight(void* data);
-extern void fn_8003F2DC(u8* arr, s32 count, s32 dir);
-void fn_8003F040(void);
+extern void pdaMemoSortPairs(u8* arr, s32 count, s32 dir);
+void pdaMemoSortByName(void);
 
 typedef struct PdaSceneWork {
     u8 pad00[0x15c];
@@ -72,7 +72,7 @@ static inline u32 pdaLoadPokemonWork(u32 id)
     return 0;
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_Rnd (fn_8003E394) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_Rnd (pdaMemoDrawData) - see docs/RULE_EXCEPTIONS.md */
 static inline u32 pda_8003E394_Rnd(u32 species)
 {
     u32 rnd = memoDataGetPokemonRndFromID(0, species);
@@ -81,7 +81,7 @@ static inline u32 pda_8003E394_Rnd(u32 species)
 }
 
 /* pdaLoadPokemonId for the lookup helpers, which go on to read the work slot. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_LoadPokemonWork (fn_8003E394) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_LoadPokemonWork (pdaMemoDrawData) - see docs/RULE_EXCEPTIONS.md */
 static inline u32 pda_8003E394_LoadPokemonWork(u32 id)
 {
     u32 trainerRnd;
@@ -120,7 +120,7 @@ static inline void pdaFree(void* p)
     if (p != NULL) {
         h = GSmemGetHandleByPtr(p);
         if ((u16)h != 0) {
-            fn_800E24B0(h);
+            GSmemUnlock(h);
             GSmemFree(h);
         }
     }
@@ -152,7 +152,7 @@ static inline u16 pdaGetWeight(u32 id)
     return 0;
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_GetWeight (fn_8003E394) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_GetWeight (pdaMemoDrawData) - see docs/RULE_EXCEPTIONS.md */
 static inline u16 pda_8003E394_GetWeight(u32 id)
 {
     u32 work = lbl_8047A4E0;
@@ -237,7 +237,7 @@ static inline u16 pdaCollectHeights(PdaSortPair* pairs, u16* ids)
 
 /* Sort tab 1: collect the seen entries by weight, sort them and copy the order back
  * (the sort runs even for an empty list; i counts both loops). Returns the entry count. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_SortPairs (fn_8003E394) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_SortPairs (pdaMemoDrawData) - see docs/RULE_EXCEPTIONS.md */
 static inline u16 pda_8003E394_SortPairs(PdaSortPair* pairs, u16* ids)
 {
     u16 i;
@@ -256,7 +256,7 @@ static inline u16 pda_8003E394_SortPairs(PdaSortPair* pairs, u16* ids)
             count++;
         }
     }
-    fn_8003F2DC((u8*)pairs, count, 1);
+    pdaMemoSortPairs((u8*)pairs, count, 1);
     for (i = 0; i < count; i++) {
         lbl_8047A4E4[i] = ids[pairs[i].index];
     }
@@ -264,7 +264,7 @@ static inline u16 pda_8003E394_SortPairs(PdaSortPair* pairs, u16* ids)
 }
 
 /* Sort tab 1: order the seen entries by weight. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_SortWeight (fn_8003E394) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003E394_SortWeight (pdaMemoDrawData) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_8003E394_SortWeight(void)
 {
     u16 count;
@@ -280,17 +280,17 @@ static inline void pda_8003E394_SortWeight(void)
 }
 
 /* Reorder the memo index table for the active sort tab. */
-void fn_8003E394(void)
+void pdaMemoDrawData(void)
 {
     u16 j;
     u16 count;
-    /* RULE-EXCEPTION(user-approved): no-op store, NULL initialisers that every case overwrites (fn_8003E394) - see docs/RULE_EXCEPTIONS.md */
+    /* RULE-EXCEPTION(user-approved): no-op store, NULL initialisers that every case overwrites (pdaMemoDrawData) - see docs/RULE_EXCEPTIONS.md */
     u16* ids = NULL;
     PdaSortPair* pairs = NULL;
 
     switch (lbl_803A6818.sortTab) {
     case 0:
-        fn_8003F040();
+        pdaMemoSortByName();
         break;
     case 1:
         pda_8003E394_SortWeight();
@@ -300,7 +300,7 @@ void fn_8003E394(void)
         ids = (u16*)pdaAlloc(0x320, 0x20);
         count = pdaCollectWeights(pairs, ids);
         if (count != 0) {
-            fn_8003F2DC((u8*)pairs, count, 0);
+            pdaMemoSortPairs((u8*)pairs, count, 0);
             for (j = 0; j < count; j++) {
                 lbl_8047A4E4[j] = ids[pairs[j].index];
             }
@@ -314,7 +314,7 @@ void fn_8003E394(void)
         ids = (u16*)pdaAlloc(0x320, 0x20);
         count = pdaCollectHeights(pairs, ids);
         if (count != 0) {
-            fn_8003F2DC((u8*)pairs, count, 1);
+            pdaMemoSortPairs((u8*)pairs, count, 1);
             for (j = 0; j < count; j++) {
                 lbl_8047A4E4[j] = ids[pairs[j].index];
             }
@@ -328,7 +328,7 @@ void fn_8003E394(void)
         ids = (u16*)pdaAlloc(0x320, 0x20);
         count = pdaCollectHeights(pairs, ids);
         if (count != 0) {
-            fn_8003F2DC((u8*)pairs, count, 0);
+            pdaMemoSortPairs((u8*)pairs, count, 0);
             for (j = 0; j < count; j++) {
                 lbl_8047A4E4[j] = ids[pairs[j].index];
             }

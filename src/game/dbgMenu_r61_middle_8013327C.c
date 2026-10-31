@@ -11,7 +11,7 @@
 
 extern u32 GSmemDumpMap(u32, u32);
 extern void GSlogWrite(const char* format, ...);
-extern void fn_800D3074(u32 rate);
+extern void GSgfxSetFrameInterval(u32 rate);
 extern void mailMainSendAllMail(void);
 extern void mailMainReceiveStart(void);
 
@@ -27,13 +27,13 @@ u32 dbgMenuGSmemCheck(void)
 
 u32 dbgMenuFrameRate20(void)
 {
-    fn_800D3074(2);
+    GSgfxSetFrameInterval(2);
     return 0;
 }
 
 u32 dbgMenuFrameRate30(void)
 {
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     return 0;
 }
 

@@ -11,7 +11,7 @@ extern u32 lbl_8047AB84;
 extern u32 lbl_8047AB80;
 extern f32 lbl_8047AB88;
 
-extern void fn_801B06D4(void);
+extern void modelShadowSetDebug(void);
 
 typedef struct {
     u8 _pad[0x8];
@@ -154,12 +154,12 @@ static inline s32 modelShadowFindCastModel(GSshadowSlot* slot, GSmodel* model)
 
 void GSmodelFreeAllShadowTextures(void)
 {
-    extern void fn_801B06DC(void* obj);
+    extern void modelShadowFreeTexture(void* obj);
     extern void HSD_ShadowSetActive(void* obj, u32 flag);
     u32 i;
 
     for (i = 0; i < 6; i++) {
-        fn_801B06DC(lbl_80401490[i].obj);
+        modelShadowFreeTexture(lbl_80401490[i].obj);
         HSD_ShadowSetActive(lbl_80401490[i].obj, 0);
         lbl_80401490[i].flag = 0;
     }
@@ -183,7 +183,7 @@ void GSmaterialSetDistanceThreshold(f32 dist)
 void GSmodelSetShadowDebug(u32 val)
 {
     (void)val;
-    fn_801B06D4();
+    modelShadowSetDebug();
 }
 
 void GSmodelSetShadowTextureSize(s32 width, s32 height)
@@ -224,7 +224,7 @@ void GSmodelSetShadowLight(GSmodel* model, GSlight* light)
 
 void GSmodelSetShadowSurface(GSmodel* model, s32 count, void* data)
 {
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
     extern u16 _toolentryAlloc__FUl(u32 size);
     extern void* GSmemLock(u16 handle);
@@ -232,7 +232,7 @@ void GSmodelSetShadowSurface(GSmodel* model, s32 count, void* data)
 
     if (count != model->shadowVtxCount) {
         if (model->shadowVtxHandle != 0) {
-            fn_800E24B0(model->shadowVtxHandle);
+            GSmemUnlock(model->shadowVtxHandle);
             GSmemFree(model->shadowVtxHandle);
             model->shadowVtxHandle = 0;
             model->shadowVtxCount = 0;
@@ -284,11 +284,11 @@ void GSmodelSetShadowFlags(GSmodel* model, u32 flags)
 
 void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model)
 {
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
 
     if (model->shadowVtxHandle != 0) {
-        fn_800E24B0(model->shadowVtxHandle);
+        GSmemUnlock(model->shadowVtxHandle);
         GSmemFree(model->shadowVtxHandle);
         model->shadowVtxHandle = 0;
         model->shadowVtxCount = 0;
@@ -455,7 +455,7 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
 {
     extern f64 ceil(f64);
     extern void ObjInfoInit(void*, GSshadowVec*);
-    extern void fn_800E3D14(GSmodel*, GSshadowVec*);
+    extern void GSmodelCopyPosition(GSmodel*, GSshadowVec*);
     extern f32 GSvecSquareDistance(GSshadowVec*, GSshadowVec*);
     extern f32 lbl_8047CBC0;
     extern const f32 lbl_8047CBC8; /* 0.0f */
@@ -502,10 +502,10 @@ _modelShadowFindValidReceiveModel__FP8_GSmodelP8_GSmodelP7GSlightP7GSbound(
 
         if (lbl_8047AB88 > lbl_8047CBC8) {
             valid = 1;
-            fn_800E3D14(receiveModel, &position);
+            GSmodelCopyPosition(receiveModel, &position);
             for (j = 0; j < 16; j++) {
                 if (slot->receivers[j] != NULL) {
-                    fn_800E3D14(slot->receivers[j], &otherPosition);
+                    GSmodelCopyPosition(slot->receivers[j], &otherPosition);
                     if (GSvecSquareDistance(&position, &otherPosition) >
                         lbl_8047AB88) {
                         valid = 0;

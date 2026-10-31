@@ -95,7 +95,7 @@ void darkPokemonSetFlag0C(u16 id, u8 value)
     }
 }
 
-u8 fn_801EEE44(u16 id)
+u8 darkPokemonGetByte0(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 

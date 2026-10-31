@@ -25,12 +25,12 @@ extern u32 lbl_8047B0DC;
 extern u32 lbl_8047B0E0;
 extern void* _soundMemAlloc(u32 size);
 extern void _soundMemFree(void* ptr);
-extern void fn_80167A6C(void);
-extern void fn_80167A14(void);
-extern void fn_801679E4(void);
+extern void _soundPool2Init(void);
+extern void _soundPool1Init(void);
+extern void _soundPool0Init(void);
 extern void _sndInitStack(void);
 extern void sndSetHooks(GSsndHooks* hooks);
-extern s32 fn_8015FE88(u32, u32, u32, u32, u32, u32);
+extern s32 sndInit(u32, u32, u32, u32, u32, u32);
 extern void sndAuxCallbackPrepareReverbHI(void* work);
 extern void sndAuxCallbackReverbHI(void);
 extern void sndSetAuxProcessingCallbacks(u32, void*, void*, u32, u32, u32,
@@ -53,7 +53,7 @@ u32 soundInit(u32 stackCount, u32 workSize, u32 extraStackCount,
     if (lbl_8047B0DC == 0) {
         return 0;
     }
-    fn_80167A6C();
+    _soundPool2Init();
 
     lbl_8047B0D8 = workSize;
     lbl_8047B0D4 = (u32)_soundMemAlloc(workSize);
@@ -67,17 +67,17 @@ u32 soundInit(u32 stackCount, u32 workSize, u32 extraStackCount,
     if (lbl_8047B0CC == 0) {
         return 0;
     }
-    fn_80167A14();
+    _soundPool1Init();
 
     lbl_8047B0C8 = emitter3dCount;
     lbl_8047B0C4 = (u32)_soundMemAlloc(emitter3dCount * 0x78);
     if (lbl_8047B0C4 == 0) {
         return 0;
     }
-    fn_801679E4();
+    _soundPool0Init();
 
     sndSetHooks(&hooks);
-    if (fn_8015FE88(0x40, 0x30, 0x10, 1, 0, 0x9FC000) != 0) {
+    if (sndInit(0x40, 0x30, 0x10, 1, 0, 0x9FC000) != 0) {
         return 0;
     }
 

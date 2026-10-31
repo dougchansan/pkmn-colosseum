@@ -89,7 +89,7 @@ BOOL OSIsThreadTerminated(OSThread* thread);
 BOOL OSCreateThread(OSThread* thread, void* (*func)(void*), void* param,
                     void* stack, u32 stackSize, s32 priority, u16 attr);
 void OSExitThread(void* val);
-BOOL OSJoinThread(OSThread* thread, void* val);
+BOOL OSJoinThread(OSThread* thread, u32* val);
 void OSDetachThread(OSThread* thread);
 s32  OSResumeThread(OSThread* thread);
 s32  OSSuspendThread(OSThread* thread);

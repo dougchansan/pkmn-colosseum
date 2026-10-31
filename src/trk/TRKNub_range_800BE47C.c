@@ -2,7 +2,7 @@
 
 extern void MWTRACE(s32 level, const char* fmt, ...);
 
-extern void fn_80003488(void* dst, const void* src, u32 size);
+extern void TRK_memcpy(void* dst, const void* src, u32 size);
 extern void TRKTerminateSerialHandler(void);        /* TRKTerminateSerialHandler */
 extern s32  TRKWriteUARTN(void* dst, u32 val);
 
@@ -60,12 +60,12 @@ typedef struct TRKEventQueue {
 /* TRKPostEvent - 0x800BE47C | size 0xE0 | scope global */
 s32 TRKPostEvent(TRKEvent* event) {
     extern TRKEventQueue lbl_803FCDD8;
-    extern void fn_800C0CC0(void* mutex);
-    extern void fn_800C0CC8(void* mutex);
+    extern void TRKReleaseMutex_800C0CC0(void* mutex);
+    extern void TRKAcquireMutex_800C0CC8(void* mutex);
     s32 result = 0;
     TRKEventQueue* queue;
 
-    fn_800C0CC8(&lbl_803FCDD8.mutex);
+    TRKAcquireMutex_800C0CC8(&lbl_803FCDD8.mutex);
     queue = &lbl_803FCDD8;
     if (queue->count == 2) {
         result = 0x100;
@@ -73,7 +73,7 @@ s32 TRKPostEvent(TRKEvent* event) {
         s32 index = (queue->next + queue->count) % 2;
         u8* slot = (u8*)queue + index * (s32)sizeof(TRKEvent);
         slot += 12;
-        fn_80003488(slot, event, sizeof(TRKEvent));
+        TRK_memcpy(slot, event, sizeof(TRKEvent));
         lbl_803FCDD8.events[index].id = lbl_803FCDD8.eventID;
         lbl_803FCDD8.eventID++;
         if (lbl_803FCDD8.eventID < 0x100) {
@@ -81,20 +81,20 @@ s32 TRKPostEvent(TRKEvent* event) {
         }
         queue->count++;
     }
-    fn_800C0CC0(&lbl_803FCDD8.mutex);
+    TRKReleaseMutex_800C0CC0(&lbl_803FCDD8.mutex);
     return result;
 }
 
 /* TRKGetNextEvent - 0x800BE55C | size 0xB4 | scope global */
 s32 TRKGetNextEvent(TRKEvent* event) {
     extern TRKEventQueue lbl_803FCDD8;
-    extern void fn_800C0CC0(void* mutex);
-    extern void fn_800C0CC8(void* mutex);
+    extern void TRKReleaseMutex_800C0CC0(void* mutex);
+    extern void TRKAcquireMutex_800C0CC8(void* mutex);
     s32 result = 0;
 
-    fn_800C0CC8(&lbl_803FCDD8.mutex);
+    TRKAcquireMutex_800C0CC8(&lbl_803FCDD8.mutex);
     if (lbl_803FCDD8.count > 0) {
-        fn_80003488(event,
+        TRK_memcpy(event,
                     lbl_803FCDD8.events + lbl_803FCDD8.next,
                     sizeof(TRKEvent));
         lbl_803FCDD8.count = lbl_803FCDD8.count - 1;
@@ -104,23 +104,23 @@ s32 TRKGetNextEvent(TRKEvent* event) {
         }
         result = 1;
     }
-    fn_800C0CC0(&lbl_803FCDD8.mutex);
+    TRKReleaseMutex_800C0CC0(&lbl_803FCDD8.mutex);
     return result;
 }
 
 /* TRKInitializeEventQueue - 0x800BE610 | size 0x58 | scope global */
 s32 TRKInitializeEventQueue(void) {
     extern TRKEventQueue lbl_803FCDD8;
-    extern void fn_800C0CC0(void* mutex);
-    extern void fn_800C0CC8(void* mutex);
-    extern void fn_800C0CD0(void* mutex);
+    extern void TRKReleaseMutex_800C0CC0(void* mutex);
+    extern void TRKAcquireMutex_800C0CC8(void* mutex);
+    extern void TRKInitializeMutex_800C0CD0(void* mutex);
 
-    fn_800C0CD0(&lbl_803FCDD8.mutex);
-    fn_800C0CC8(&lbl_803FCDD8.mutex);
+    TRKInitializeMutex_800C0CD0(&lbl_803FCDD8.mutex);
+    TRKAcquireMutex_800C0CC8(&lbl_803FCDD8.mutex);
     lbl_803FCDD8.count = 0;
     lbl_803FCDD8.next = 0;
     lbl_803FCDD8.eventID = 0x100;
-    fn_800C0CC0(&lbl_803FCDD8.mutex);
+    TRKReleaseMutex_800C0CC0(&lbl_803FCDD8.mutex);
     return 0;
 }
 
@@ -223,7 +223,7 @@ static inline s32 TRKReadBufferInline(TRKMessageBuffer* buf, void* dst, unsigned
         err = 0x302;
         n = space;
     }
-    fn_80003488(dst, buf->data + buf->position, n);
+    TRK_memcpy(dst, buf->data + buf->position, n);
     buf->position += n;
     return err;
 }
@@ -319,7 +319,7 @@ static inline s32 TRKAppendBufferInline(TRKMessageBuffer* buf, const void* src, 
     if (n == 1) {
         buf->data[buf->position] = ((u8*)src)[0];
     } else {
-        fn_80003488(buf->data + buf->position, src, n);
+        TRK_memcpy(buf->data + buf->position, src, n);
     }
     buf->position += n;
     buf->length = buf->position;
@@ -420,7 +420,7 @@ s32 TRKAppendBuffer1_ui64(u8* buf, u32 unused, u32 w0, u32 w1) {
     if (n == 1) {
         buf[writepos + 0x10] = *src;
     } else {
-        fn_80003488(buf + writepos + 0x10, src, n);
+        TRK_memcpy(buf + writepos + 0x10, src, n);
     }
     *(u32*)(buf + 0xC) = *(u32*)(buf + 0xC) + n;
     *(u32*)(buf + 0x8) = *(u32*)(buf + 0xC);
@@ -441,7 +441,7 @@ s32 TRKReadBuffer(TRKMessageBuffer* buf, u8* dst, u32 n) {
             err = 0x302;
             n = space;
         }
-        fn_80003488(dst, &buf->data[position], n);
+        TRK_memcpy(dst, &buf->data[position], n);
         buf->position += n;
     }
     return err;
@@ -463,7 +463,7 @@ s32 TRKAppendBuffer(TRKMessageBuffer* buf, u8* src, u32 n) {
         if (n == 1) {
             buf->data[position] = src[0];
         } else {
-            fn_80003488(&buf->data[position], src, n);
+            TRK_memcpy(&buf->data[position], src, n);
         }
         buf->position += n;
         buf->length = buf->position;

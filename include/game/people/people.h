@@ -240,7 +240,7 @@ typedef struct PeopleInfoBiosEntry {
  * Offsets referenced from the open callback:
  *   0x00: u32 state         -- open state machine phase
  *   0x0C: u32 subState      -- sub-state
- *   0x10: void* callback    -- function pointer (set to fn_80181094)
+ *   0x10: void* callback    -- function pointer (set to _fsysJobGroupCallbackTask)
  *   0x14: u32 param1
  *   0x18: void* threadObj   -- created thread/task handle
  *   0x1C: void* nextLink
@@ -288,13 +288,13 @@ s32 peopleFree(PeopleEntry* entry);
 /** Main per-frame update for all active people. fn_80181850 */
 void peopleUpdate(void);
 
-/** Initialize people for a floor (draw 30 blank frames). fn_80181224 */
+/** Initialize people for a floor (draw 30 blank frames). _fsysJobReadS1Task */
 void peopleFloorInit(void);
 
-/** Open/spawn callback -- called from the floor loader. fn_80180C78 (includes fn_80181094) */
+/** Open/spawn callback -- called from the floor loader. fsysQueueJob (includes _fsysJobGroupCallbackTask) */
 s32 peopleOpenCallback(PeopleOpenWork* work);
 
-/** Close/cleanup callback for all people in a group. fn_8018114C */
+/** Close/cleanup callback for all people in a group. _fsysJobDecodeTask */
 void peopleCloseCallback(void);
 
 /** Get the model handle from a PeopleEntry. fn_8018FBD4 */
@@ -318,19 +318,19 @@ void peopleSetTransform(PeopleEntry* entry, void* mtx);
 /** Get the world transform pointer for a people entry. fn_8018FC00 */
 void* peopleGetTransform(PeopleEntry* entry);
 
-u32 fn_8018F470(u32 index);
-u32 fn_8018F490(const PeopleInfoBiosEntry* info);
+u32 floorGetShadowLight(u32 index);
+u32 peopleInfoGetFlag4(const PeopleInfoBiosEntry* info);
 u32 characterModelGetTalkSE(const PeopleInfoBiosEntry* info);
-f32 fn_8018F5B4(const PeopleInfoBiosEntry* info);
-f32 fn_8018F5CC(const PeopleInfoBiosEntry* info);
-f32 fn_8018F5E4(const PeopleInfoBiosEntry* info);
-u8 fn_8018F5FC(const PeopleInfoBiosEntry* info);
+f32 peopleInfoGetHeight(const PeopleInfoBiosEntry* info);
+f32 peopleInfoGetRadius(const PeopleInfoBiosEntry* info);
+f32 charModelGetRadius(const PeopleInfoBiosEntry* info);
+u8 peopleInfoGetCollisionType(const PeopleInfoBiosEntry* info);
 f32 charModelGetHeadPitchMax(const PeopleInfoBiosEntry* info);
 f32 charModelGetHeadPitchMin(const PeopleInfoBiosEntry* info);
 f32 charModelGetHeadYawMax(const PeopleInfoBiosEntry* info);
 f32 charModelGetHeadYawMin(const PeopleInfoBiosEntry* info);
 s8 charModelGetHeadPart(const PeopleInfoBiosEntry* info);
-void* fn_8018F6B4(const PeopleInfoBiosEntry* info);
+void* peopleInfoGetModelId(const PeopleInfoBiosEntry* info);
 PeopleInfoBiosEntry* peopleInfoBiosGetPtrFromIndex(u32 index);
 
 /* =========================================================================
@@ -338,7 +338,7 @@ PeopleInfoBiosEntry* peopleInfoBiosGetPtrFromIndex(u32 index);
  * ========================================================================= */
 
 /** Tick-update one NPC's movement (called 60 times per update cycle).
- *  fn_801812C4 -> fn_8018ECEC */
+ *  peopleMoveStep -> fn_8018ECEC */
 void peopleMoveUpdate(PeopleEntry* entry);
 
 /** Main movement dispatch by moveType. fn_8018ECEC */
@@ -355,11 +355,11 @@ void peopleMoveWalkPosition(u32 groupId, u32 index, u32 targetX, u32 targetY, u3
  * wrong, same class as the peopleMoveCheck fix). */
 
 /** Check movement completion (self-tag string lbl_8036C52C; scrCmd table
- * index 62). 0x8018A280 -- the old fn_8018F4C8 attribution here was wrong.
+ * index 62). 0x8018A280 -- the old peopleInfoGetMotion attribution here was wrong.
  * Real ABI per disasm: r3-r5 = groupId, index, waitFlag (was void(void)). */
 BOOL peopleMoveCheck(u32 groupId, u32 index, u8 waitFlag);
 
-/** Proximity check -- is the player within talk range? fn_8018D680 */
+/** Proximity check -- is the player within talk range? peopleIsPointNearSegment */
 BOOL peopleIsWithinRange(u32 posA, u32 posB, u32 posC, f32 range);
 
 /* =========================================================================
@@ -383,7 +383,7 @@ void peopleOpenSetup(PeopleEntry* entry, void* spawnData, u32 motionId, u32 para
  *  peopleBiosPopData -- iterates spawn data records and calls peopleOpenSetup. */
 void peopleOpenFromSpawnData(void* spawnDataArray, u32 count, u32 groupId);
 
-/** Set the NPC's animation bank. fn_8018FB60 */
+/** Set the NPC's animation bank. peopleSetModelVisible */
 void peopleSetAnim(PeopleEntry* entry, u8 animId);
 
 /** Set the NPC's shadow animation. fn_8018FB2C */
@@ -396,11 +396,10 @@ struct GSvec* peopleGetPosition(PeopleEntry* entry);
 /** Get scale data from model. peopleApplyPosition */
 void peopleGetScale(PeopleEntry* entry);
 
-/** Set position on model. fn_8018FC98 */
+/** Set position on model. peopleGetModelPosition */
 void peopleSetPosition(PeopleEntry* entry, void* pos);
 
-/** Get model position (world coords). fn_8018FCBC */
-void* peopleGetModelPosition(PeopleEntry* entry);
+/** Model position pointer (world coords): peopleGetPositionPtr, fn_8018FCBC. */
 
 /** Get model rotation. peopleApplyRotation */
 void peopleGetModelRotation(PeopleEntry* entry);

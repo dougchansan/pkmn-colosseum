@@ -3,7 +3,7 @@
 extern f32 lbl_8047D8A8;
 extern f32 lbl_8047D8AC;
 
-f32 fn_8018F5B4(const PeopleInfoBiosEntry* info)
+f32 peopleInfoGetHeight(const PeopleInfoBiosEntry* info)
 {
     if (info != NULL) {
         return info->field_14;
@@ -11,7 +11,7 @@ f32 fn_8018F5B4(const PeopleInfoBiosEntry* info)
     return lbl_8047D8A8;
 }
 
-f32 fn_8018F5CC(const PeopleInfoBiosEntry* info)
+f32 peopleInfoGetRadius(const PeopleInfoBiosEntry* info)
 {
     if (info != NULL) {
         return info->field_10;
@@ -19,7 +19,7 @@ f32 fn_8018F5CC(const PeopleInfoBiosEntry* info)
     return lbl_8047D8A8;
 }
 
-f32 fn_8018F5E4(const PeopleInfoBiosEntry* info)
+f32 charModelGetRadius(const PeopleInfoBiosEntry* info)
 {
     if (info != NULL) {
         return info->field_18;
@@ -27,7 +27,7 @@ f32 fn_8018F5E4(const PeopleInfoBiosEntry* info)
     return lbl_8047D8A8;
 }
 
-u8 fn_8018F5FC(const PeopleInfoBiosEntry* info)
+u8 peopleInfoGetCollisionType(const PeopleInfoBiosEntry* info)
 {
     if (info != NULL) {
         return (info->flags >> 2) & 3;
@@ -75,7 +75,7 @@ s8 charModelGetHeadPart(const PeopleInfoBiosEntry* info)
     return -1;
 }
 
-void* fn_8018F6B4(const PeopleInfoBiosEntry* info)
+void* peopleInfoGetModelId(const PeopleInfoBiosEntry* info)
 {
     if (info != NULL) {
         return info->scriptRef;

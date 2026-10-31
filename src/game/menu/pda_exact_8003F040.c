@@ -1,14 +1,14 @@
 /**
  * @file pda_exact_8003F040.c
  * @brief PDA memo list sort by species name, 0x8003F040 - 0x8003F2DC.
- *        Standalone copy of fn_8003F040 (and the helpers it inlines) from
+ *        Standalone copy of pdaMemoSortByName (and the helpers it inlines) from
  *        pda_range_80037158.c, linked on its own.
  */
 #include "dolphin/types.h"
 
 extern u32 GSmemGetHandleByPtr(void* p);
 extern void GSmemFree(u32 handle);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void* GSmemLock(u32 handle);
 extern u32 GSmemAlloc(s32 size, s32 align);
 extern u32 lbl_8047A4E0;
@@ -78,7 +78,7 @@ static inline void pdaFree(void* p)
     if (p != NULL) {
         h = GSmemGetHandleByPtr(p);
         if ((u16)h != 0) {
-            fn_800E24B0(h);
+            GSmemUnlock(h);
             GSmemFree(h);
         }
     }
@@ -90,7 +90,7 @@ typedef struct PdaNamePair {
 } PdaNamePair;
 
 /* Shell sort of the name pairs by name (array indexing; the compiler derives the row pointers). */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003F040_Sort (fn_8003F040) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003F040_Sort (pdaMemoSortByName) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_8003F040_Sort(PdaNamePair* pairs, s32 count)
 {
     extern s32 GScharCmp(u16* a, u16* b);
@@ -112,7 +112,7 @@ static inline void pda_8003F040_Sort(PdaNamePair* pairs, s32 count)
 }
 
 /* Sort the memo index table by species name. */
-void fn_8003F040(void)
+void pdaMemoSortByName(void)
 {
     u16 i;
     PdaNamePair* pairs;

@@ -33,12 +33,12 @@ static inline void menuPokemonChangeWait(f32 seconds) {
     extern const f32 lbl_8047B9D4;
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     f32 elapsed = lbl_8047B9D4;
 
     while (elapsed < seconds) {
         _threadSwitch();
-        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 
@@ -96,14 +96,14 @@ static inline void menuPokemonChangeAlert(u32 msgId) {
 #if !defined(MENU_POKEMON_CHANGE_EXACT_ISLAND) || defined(MENU_POKEMON_CHANGE_EXACT_8002DD24_ONLY)
 
 /* stateFunctionSaveReport - 0x8002DD24 | size: 0x1ec */
-extern void fn_80089E20(void);
-extern void fn_801D055C(void);
+extern void gbaCommSendPokemon(void);
+extern void memcardWaitTask(void);
 extern u8 memcardIsRetrying(void);
-extern void fn_80089D98(void);
-extern void fn_801D046C(void);
+extern void gbaCommWaitReadyB(void);
+extern void memcardRetryWait(void);
 extern s32 memcardGetTaskResult(void);
 extern void gbaCommandSetKeyState(void);
-extern void fn_801D039C(void);
+extern void memcardTaskTerminate(void);
 extern void menuSubKeyWait(void);
 extern void _fadeEffectGetRandom__FUl(void);
 extern u32 lbl_8047A424;
@@ -128,13 +128,13 @@ void stateFunctionSaveReport(void* src) {
     extern u32 lbl_8047A42C;
     extern void* heroGetStatus(void* hero, u32 selector, u16 index);
     extern void winMsgOpen(s32 slot, s32 msgId, s32 p3, s32 p4);
-    extern s32 fn_80089E20(s32 mode, void* pkm, u32 slotB, u32 flags);
-    extern s32 fn_80089D98(s32 slot);
-    extern void fn_801D055C(s32 a, s32 b, s32 c);
+    extern s32 gbaCommSendPokemon(s32 mode, void* pkm, u32 slotB, u32 flags);
+    extern s32 gbaCommWaitReadyB(s32 slot);
+    extern void memcardWaitTask(s32 a, s32 b, s32 c);
     extern u8 memcardIsRetrying(void);
-    extern void fn_801D046C(s32 flag);
+    extern void memcardRetryWait(s32 flag);
     extern s32 memcardGetTaskResult(void);
-    extern void fn_801D039C(void);
+    extern void memcardTaskTerminate(void);
     extern void _threadSwitch(void);
     extern void gbaCommandSetKeyState(s32 mode, s32 flag);
     extern void* savedataGetStatus(s32 side, s32 slotType);
@@ -156,16 +156,16 @@ void stateFunctionSaveReport(void* src) {
     confirmed = 0;
     sent = 0;
     winMsgOpen(2, 0x44D7, 1, 1);
-    if (fn_80089E20(2, pokemon, lbl_8047A420, lbl_8047A40C) == 0) {
-        fn_801D055C(8, 2, 0);
+    if (gbaCommSendPokemon(2, pokemon, lbl_8047A420, lbl_8047A40C) == 0) {
+        memcardWaitTask(8, 2, 0);
         do {
             if (sent == 0 && memcardIsRetrying() != 0) {
-                state = fn_80089D98(2);
+                state = gbaCommWaitReadyB(2);
                 if (state >= 0) {
                     if (state != 0) {
-                        fn_801D046C(0);
+                        memcardRetryWait(0);
                     } else {
-                        fn_801D046C(1);
+                        memcardRetryWait(1);
                     }
                     sent = 1;
                 }
@@ -174,7 +174,7 @@ void stateFunctionSaveReport(void* src) {
             result = memcardGetTaskResult();
         } while (result == 0);
         gbaCommandSetKeyState(2, 1);
-        fn_801D039C();
+        memcardTaskTerminate();
         if (result == 4) {
             confirmed = 1;
         }
@@ -330,7 +330,7 @@ void stateFunctionEvolution(void) {
 #if !defined(MENU_POKEMON_CHANGE_EXACT_ISLAND) || defined(MENU_POKEMON_CHANGE_EXACT_8002E26C_ONLY)
 #if defined(MENU_POKEMON_CHANGE_EXACT_8002E26C_ONLY)
 /* The translation unit's .bss (0x803A2518-0x803A3278), in definition order:
- * the scratch Pokemon bios, the NPC-event queue popped by fn_80030170, the
+ * the scratch Pokemon bios, the NPC-event queue popped by gbaTradeNextPartyEntry, the
  * partner's hero (party) record and the two menu models of the traded
  * Pokemon. MWCC addresses them off one pooled base register. The other
  * units of this file reach them through extern declarations. */
@@ -369,7 +369,7 @@ void stateFunctionExChangeMain(void) {
     extern void GSmodelSetVisibility(void* obj, s32 flag);
     extern void fadeSet(f32 vol, s32 mode);
     extern void fadeCheck(s32 flag);
-    extern void fn_801024E8(s32 flag);
+    extern void windowCloseAll4(s32 flag);
     extern u32 std093_getCurrentGroupID(void);
     extern void cameraPlayAnime(s32 id, u32 color, s32 a, s32 b);
     extern void _threadSwitch(void);
@@ -396,7 +396,7 @@ void stateFunctionExChangeMain(void) {
     GSmodelSetVisibility((void*)lbl_8047A414, 0);
     fadeSet(lbl_8047B9D0, 3);
     fadeCheck(1);
-    fn_801024E8(1);
+    windowCloseAll4(1);
     cameraPlayAnime(std093_getCurrentGroupID(), 0x10B61800, 0, 0);
     _threadSwitch();
     soundStartRaw(0x4C8, 0, 0);
@@ -436,7 +436,7 @@ typedef struct PokemonChangeMenuEntry {
     u16 itemId;
 } PokemonChangeMenuEntry;
 
-/* The NPC-event queue popped by fn_80030170 (gs_npc_event.c). */
+/* The NPC-event queue popped by gbaTradeNextPartyEntry (gs_npc_event.c). */
 typedef struct PokemonChangeQueue {
     void* items[13];
     u32 index;
@@ -449,17 +449,17 @@ typedef struct PokemonChangeQueue {
 #pragma push
 #pragma peephole off
 #endif
-void fn_8002FC58(void) {
+void gbaTradeSelectParty(void) {
     extern void* savedataGetStatus(s32 side, s32 slotType);
     extern void* heroBiosGetPokemonPtr(void* hero, u16 index);
     extern u8 pokemonCheckValid(void* pokemon);
     extern u8 menuCBRule_CheckPokemonEventFlag(void* pokemon);
     extern void menuItemBiosSetSelectFlag(s32 itemId, s32 flag);
-    extern void* fn_80030170(PokemonChangeQueue* queue);
+    extern void* gbaTradeNextPartyEntry(PokemonChangeQueue* queue);
     extern u16 menuFaceRequestPokemonFace(void* pokemon, void* (*callback)(u32), u32 arg);
     extern s32 menuGetCursor(s32 id);
     extern s32 menuGetCursorFromItemID(s32 id, s32 itemId);
-    extern void fn_801021F8(s32 id, s32 flag);
+    extern void windowSetAllSpritesDisp(s32 id, s32 flag);
     extern s32 windowGetActiveID(void);
     extern void menuOpenCustom(s32 id, s32 parent, ...);
     extern void windowCheckCursor(s32 id, s32 flag);
@@ -502,7 +502,7 @@ void fn_8002FC58(void) {
     }
     lbl_803A2650.items[count] = NULL;
     lbl_803A2650.index = 0;
-    menuFaceRequestPokemonFace(NULL, (void* (*)(u32))fn_80030170, (u32)&lbl_803A2650);
+    menuFaceRequestPokemonFace(NULL, (void* (*)(u32))gbaTradeNextPartyEntry, (u32)&lbl_803A2650);
     save = savedataGetStatus(0, 2);
     member = heroBiosGetPokemonPtr(save, 0);
     selectable = 0;
@@ -550,7 +550,7 @@ void fn_8002FC58(void) {
         cursor = menuGetCursorFromItemID(0xD9, 0x1005);
         lbl_8047A410 = 0;
     }
-    fn_801021F8(0xD9, 1);
+    windowSetAllSpritesDisp(0xD9, 1);
     if (cursor != 0) {
         menuOpenCustom(0xD9, windowGetActiveID(), &cursor, 0, 0, 0);
     } else {
@@ -608,7 +608,7 @@ void fn_8002FC58(void) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8002E460(void* dst) {
+void gbaTradeScreenRun(void* dst) {
     extern u8 lbl_803A2518[];
     extern u32 lbl_8047A424;
     extern u32 lbl_8047A420;
@@ -628,8 +628,8 @@ void fn_8002E460(void* dst) {
     extern void fadeSet(f32 vol, s32 mode);
     extern void fadeCheck(s32 flag);
     extern u8* windowGetKeyInfo(void);
-    extern s32 fn_80073A44(s32 mode, u16* flags);
-    extern s32 fn_8017B1AC(void);
+    extern s32 gbaCmdReadKeys(s32 mode, u16* flags);
+    extern s32 fsysCheckDrive(void);
     extern void soundStartRaw(s32 se, s32 a, s32 b);
     extern void winMsgOpen(s32 slot, s32 msgId, s32 p3, s32 p4);
     extern void _threadSwitch(void);
@@ -668,7 +668,7 @@ void fn_8002E460(void* dst) {
     readyB = 0;
     while (!readyA || !readyB) {
         held = *(u16*)(windowGetKeyInfo() + 4);
-        if (fn_80073A44(1, &flags) != 0) {
+        if (gbaCmdReadKeys(1, &flags) != 0) {
             winMsgOpen(2, 0x4448, 1, 0);
             menuClose(0xDB);
             menuModelTerm(work->modelA);
@@ -676,7 +676,7 @@ void fn_8002E460(void* dst) {
             lbl_8047A42C = 0;
             return;
         }
-        if (fn_8017B1AC() != 5) {
+        if (fsysCheckDrive() != 5) {
             pressed = flags & ~prev;
             prev = flags;
             if (held & 0x10) {
@@ -808,7 +808,7 @@ void gbaTradeCheckImportItems(void) {
     extern void fadeSet(f32 vol, s32 mode);
     extern void fadeCheck(s32 flag);
     extern void menuClose(s32 id);
-    extern void fn_801021F8(s32 id, s32 flag);
+    extern void windowSetAllSpritesDisp(s32 id, s32 flag);
     extern void* pokemonBiosGetNicknamePtr(void* pokemon);
     extern void msgctrlSetValue(s32 id, void* value);
     void* pokemon;
@@ -826,19 +826,19 @@ void gbaTradeCheckImportItems(void) {
         importable = 1;
     }
     if (importable == 0) {
-        fn_801021F8(0xD9, 0);
+        windowSetAllSpritesDisp(0xD9, 0);
         name = pokemonBiosGetNicknamePtr(pokemon);
         msgctrlSetValue(0x32, name);
         menuPokemonChangeAlert(0x43DD);
-        fn_801021F8(0xD9, 1);
+        windowSetAllSpritesDisp(0xD9, 1);
         lbl_8047A42C = 7;
         return;
     }
     if (menuPokemonChangeHasOther(hero, lbl_8047A428) == 0) {
-        fn_801021F8(0xD9, 0);
+        windowSetAllSpritesDisp(0xD9, 0);
         msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
         menuPokemonChangeAlert(0x44E8);
-        fn_801021F8(0xD9, 1);
+        windowSetAllSpritesDisp(0xD9, 1);
         lbl_8047A42C = 7;
         return;
     }
@@ -857,7 +857,7 @@ void gbaTradeCheckImportItems(void) {
 #if !defined(MENU_POKEMON_CHANGE_EXACT_ISLAND) || defined(MENU_POKEMON_CHANGE_EXACT_8002EE74_ONLY)
 /* Waits for a choice in menu `id`, closes it, and returns the cursor
  * (-1 when the menu was cancelled). */
-/* RULE-EXCEPTION(user-approved): single-function inline helper (fn_8002EE74) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-function inline helper (gbaTradeConfirm) — see docs/RULE_EXCEPTIONS.md */
 static inline s32 menuPokemonChangeGetChoice(s32 id) {
     extern void windowCheckCursor(s32 id, s32 flag);
     extern s32 windowGetValue(s32 id);
@@ -882,12 +882,12 @@ static inline s32 menuPokemonChangeGetChoice(s32 id) {
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8002EE74(void) {
+void gbaTradeConfirm(void) {
     extern u8 lbl_803A2688[];
     extern u32 lbl_8047A428;
     extern u32 lbl_8047A42C;
     extern void* heroGetStatus(void* hero, u32 selector, u16 index);
-    extern void fn_801021F8(s32 id, s32 flag);
+    extern void windowSetAllSpritesDisp(s32 id, s32 flag);
     extern u8 pokemonCheckValid(void* pokemon);
     extern u8 menuCBRule_CheckPokemonEventFlag(void* pokemon);
     extern u8 pokemonBiosGetTamagoFlag(void* pokemon);
@@ -903,7 +903,7 @@ void fn_8002EE74(void) {
     s32 initial;
 
     pokemon = heroGetStatus(lbl_803A2688, 3, lbl_8047A428);
-    fn_801021F8(0xD9, 0);
+    windowSetAllSpritesDisp(0xD9, 0);
     if (pokemonCheckValid(pokemon) != 0 && menuCBRule_CheckPokemonEventFlag(pokemon) == 1 &&
         pokemonBiosGetTamagoFlag(pokemon) != 0) {
         menuPokemonChangeAlert(0x43E1);
@@ -945,7 +945,7 @@ void fn_8002EE74(void) {
 #endif /* !MENU_POKEMON_CHANGE_EXACT_ISLAND */
 
 #if !defined(MENU_POKEMON_CHANGE_EXACT_ISLAND) || defined(MENU_POKEMON_CHANGE_EXACT_8002F284_ONLY)
-/* fn_8002F284 - 0x8002F284 | size: 0x518 */
+/* gbaTradeSelectSend - 0x8002F284 | size: 0x518 */
 extern void menuItemBiosSetSelectFlag(void);
 extern void menuGetCursorFromItemID(void);
 extern void menuGetCursorItemID(void);
@@ -956,7 +956,7 @@ extern u32 lbl_8047A428;
 #if 1
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_8002F284(void)
+void gbaTradeSelectSend(void)
 {
     /* --- UI item-enable dispatcher: menuItemBiosSetSelectFlag(u32 elementId, u32 val) --- */
     extern void menuItemBiosSetSelectFlag(u32 id, u32 val);
@@ -968,7 +968,7 @@ void fn_8002F284(void)
     /* --- scene/object (id 0xD9) management (gs_model.c family) --- */
     extern s32   menuGetCursor(void* p);             /* present? (>=0) / -1 absent */
     extern s32   menuGetCursorFromItemID(void* p, u32 param);  /* lazy load -> handle/result */
-    extern void  fn_801021F8(void* p, u32 val);    /* set visibility on subtree */
+    extern void  windowSetAllSpritesDisp(void* p, u32 val);    /* set visibility on subtree */
     extern u8    menuSetEnablePort(u8 mode);             /* push render mode, ret old */
     extern u32   windowGetActiveID(void);                /* current context handle */
     extern void  menuOpenCustom(void* p, u32 a, ...); /* submit/build */
@@ -1113,7 +1113,7 @@ void fn_8002F284(void)
         (*(u8*)&lbl_8047A410) = 0;
     }
 
-    fn_801021F8((void*)0xD9, 1);
+    windowSetAllSpritesDisp((void*)0xD9, 1);
     menuSetEnablePort(2);
 
     /* Build/submit the object; the nonzero-local path passes &local8. */
@@ -1196,7 +1196,7 @@ valid_destination:
     (*(s32*)&lbl_8047A42C) = 8;
 }
 #else
-/* fn_8002F284 - GSmap_LoadDestination (0x8002F284, 0x518 bytes)
+/* gbaTradeSelectSend - GSmap_LoadDestination (0x8002F284, 0x518 bytes)
  *
  * World-map "load destination" handler. Re-enables the six map menu item
  * slots, then re-evaluates each of the six party-member portrait slots
@@ -1217,7 +1217,7 @@ valid_destination:
  *
  * Wrapper reads no incoming registers before first write -> takes no params.
  */
-void fn_8002F284(void)
+void gbaTradeSelectSend(void)
 {
     /* --- UI item-enable dispatcher: menuItemBiosSetSelectFlag(u32 elementId, u32 val) --- */
     extern void menuItemBiosSetSelectFlag(u32 id, u32 val);
@@ -1229,7 +1229,7 @@ void fn_8002F284(void)
     /* --- scene/object (id 0xD9) management (gs_model.c family) --- */
     extern s32   menuGetCursor(void* p);             /* present? (>=0) / -1 absent */
     extern s32   menuGetCursorFromItemID(void* p, u32 param);  /* lazy load -> handle/result */
-    extern void  fn_801021F8(void* p, u32 val);    /* set visibility on subtree */
+    extern void  windowSetAllSpritesDisp(void* p, u32 val);    /* set visibility on subtree */
     extern u8    menuSetEnablePort(u8 mode);             /* push render mode, ret old */
     extern u32   windowGetActiveID(void);                /* current context handle */
     extern void  menuOpenCustom(void* p, u32 a, void* b, s32 c, void* d, s32 e); /* submit/build */
@@ -1348,7 +1348,7 @@ void fn_8002F284(void)
         (*(u8*)&lbl_8047A410) = 0;
     }
 
-    fn_801021F8((void*)0xD9, 1);
+    windowSetAllSpritesDisp((void*)0xD9, 1);
     menuSetEnablePort(2);
 
     /* Build/submit the object; the nonzero-local path passes &local8. */
@@ -1446,7 +1446,7 @@ void gbaTradeCheckExportItems(void) {
     extern u8 itemDataBiosCheckExportable(void* item);
     extern void* pokemonBiosGetNicknamePtr(void* pokemon);
     extern void msgctrlSetValue(s32 id, void* value);
-    extern void fn_801021F8(s32 id, s32 flag);
+    extern void windowSetAllSpritesDisp(s32 id, s32 flag);
     extern u8 pokemonBiosGetDarkFlag(void* pokemon);
     void* pokemon;
     void* party;
@@ -1470,18 +1470,18 @@ void gbaTradeCheckExportItems(void) {
         return;
     }
     if (pokemonBiosGetDarkFlag(pokemon) == 1) {
-        fn_801021F8(0xD9, 0);
+        windowSetAllSpritesDisp(0xD9, 0);
         msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
         menuPokemonChangeAlert(0x43DF);
-        fn_801021F8(0xD9, 1);
+        windowSetAllSpritesDisp(0xD9, 1);
         lbl_8047A42C = 2;
         return;
     }
     if (menuPokemonChangeHasOther(party, lbl_8047A428) == 0) {
-        fn_801021F8(0xD9, 0);
+        windowSetAllSpritesDisp(0xD9, 0);
         msgctrlSetValue(0x32, pokemonBiosGetNicknamePtr(pokemon));
         menuPokemonChangeAlert(0x44E8);
-        fn_801021F8(0xD9, 1);
+        windowSetAllSpritesDisp(0xD9, 1);
         lbl_8047A42C = 2;
         return;
     }

@@ -1,7 +1,7 @@
 /**
  * @file pda_exact_8003D8CC.c
  * @brief PDA memo list filter by the active kana-row tab, 0x8003D8CC - 0x8003DC54.
- *        Standalone copy of fn_8003D8CC (and the helpers it inlines) from
+ *        Standalone copy of pdaMemoBuildNameIndex (and the helpers it inlines) from
  *        pda_range_80037158.c, linked on its own.
  */
 #include "dolphin/types.h"
@@ -105,7 +105,7 @@ static inline void* pdaGetPokemonName(u16 id)
 }
 
 /* Mark the row's entries used and convert their first characters. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003D8CC_Fill (fn_8003D8CC) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003D8CC_Fill (pdaMemoBuildNameIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_8003D8CC_Fill(PdaNameEntry* tbl, PdaKanaGroup* group)
 {
     s32 n;
@@ -117,7 +117,7 @@ static inline void pda_8003D8CC_Fill(PdaNameEntry* tbl, PdaKanaGroup* group)
 }
 
 /* Clear the kana-row table and fill it from tab's row. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003D8CC_KanaSetup (fn_8003D8CC) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8003D8CC_KanaSetup (pdaMemoBuildNameIndex) - see docs/RULE_EXCEPTIONS.md */
 static inline PdaKanaGroup* pda_8003D8CC_KanaSetup(PdaNameEntry* tbl, s32 tab)
 {
     PdaKanaGroup* group;
@@ -134,7 +134,7 @@ static inline PdaKanaGroup* pda_8003D8CC_KanaSetup(PdaNameEntry* tbl, s32 tab)
 }
 
 /* Filter the memo index table down to the active kana-row tab. */
-void fn_8003D8CC(void)
+void pdaMemoBuildNameIndex(void)
 {
     u16 nameBuf[0x80];
     PdaNameEntry tbl[15];

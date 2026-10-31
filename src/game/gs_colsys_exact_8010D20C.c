@@ -8,7 +8,7 @@
  * GScolsys2Draw; drawSunMdl / drawCheckMdl / drawThruMdl UNUSED 0xCC each;
  * StarsMmd/Colo-XD-PBR-symbol-maps). colsysDrawWalkMdl is drawWalkMdl.
  * GScolsys2Draw here records the fixed objects' display list (XD
- * makeDisplayListFixedObj), and fn_8010D8D4 draws the rest and replays it
+ * makeDisplayListFixedObj), and colsysDebugDraw draws the rest and replays it
  * (XD GScolsys2Draw). The edge and face helpers take XD's names; each has
  * its own colour. GC6E01.map lists the four colours as the TU's first pool
  * entries (@1966, @1988, @2002, @2016); declared before colsysDrawWalkMdl, they
@@ -80,14 +80,14 @@ typedef struct ColDrawScene {
 } ColDrawScene;
 
 
-extern ColDrawScene* fn_8010CBC0(void);
+extern ColDrawScene* GScolsys2GetCurFloor_8010CBC0(void);
 extern void gfxSetCullMode(s32);
 extern void gfxSetVtxDesc(void*);
 extern void gfxSetFlags(s32);
 extern void gfxClearFlags(s32);
 extern void gfxSetBlendMode(s32, s32, s32);
 extern void gfxSetZMode(s32, s32, s32);
-extern void fn_800D9ED8(s32);
+extern void gfxSetFlag1A(s32);
 extern void colsysMakeSRTMatrix(ColMtx out, u32 index);
 extern void colsysMakeRotMatrix(ColMtx out, u32 index);
 extern void PSMTXMultVec(ColMtx, const f32*, f32*);
@@ -98,7 +98,7 @@ extern void gfxVtxColor4u8(s32, s32, s32, s32, s32);
 extern void gfxEnd(void);
 extern void* GScolsys2Draw(void);
 extern void GSgfxDLDraw(void*);
-extern void fn_800D30AC(void);
+extern void gfxFlush(void);
 
 
 /* The TU pool at 0x8047CEB8 starts with these four colours. */
@@ -265,7 +265,7 @@ void* GScolsys2Draw(void)
     ColDrawObject* object;
     ColMtx normalMatrix;
 
-    scene = fn_8010CBC0();
+    scene = GScolsys2GetCurFloor_8010CBC0();
     if (scene == NULL) {
         return NULL;
     }
@@ -276,7 +276,7 @@ void* GScolsys2Draw(void)
     gfxClearFlags(6);
     gfxSetBlendMode(1, 6, 7);
     gfxSetZMode(1, 2, 1);
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 
     if (GSgfxDLBegin(*(void**)((u8*)&lbl_80404C68 + 0x3708), 0x80000) == 0) {
         printf(lbl_80272050);
@@ -315,7 +315,7 @@ void* GScolsys2Draw(void)
     return GSgfxDLEnd();
 }
 
-void fn_8010D8D4(void)
+void colsysDebugDraw(void)
 {
     ColDrawScene* scene;
     u32 i;
@@ -324,7 +324,7 @@ void fn_8010D8D4(void)
     ColMtx normalMatrix;
     GSColFloorObj* floorObj;
 
-    scene = fn_8010CBC0();
+    scene = GScolsys2GetCurFloor_8010CBC0();
     if (scene == NULL) {
         return;
     }
@@ -335,7 +335,7 @@ void fn_8010D8D4(void)
     gfxClearFlags(6);
     gfxSetBlendMode(1, 6, 7);
     gfxSetZMode(1, 2, 1);
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 
     object = scene->objects;
     floorObj = lbl_80404C68.floors[lbl_80404C68.activeLayer].objs;
@@ -371,7 +371,7 @@ void fn_8010D8D4(void)
     }
     if (lbl_80404C68.displayList != NULL) {
         GSgfxDLDraw(lbl_80404C68.displayList);
-        fn_800D30AC();
+        gfxFlush();
     }
 }
 

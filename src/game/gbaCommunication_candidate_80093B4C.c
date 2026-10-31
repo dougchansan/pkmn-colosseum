@@ -1,4 +1,4 @@
-/* fn_80093B4C carve: only the ribbon-page renderer from gbaCommunication.c. */
+/* menuRibbonDrawDebug carve: only the ribbon-page renderer from gbaCommunication.c. */
 #define GBA_COMMUNICATION_REMAINDER_80092FC8
 #define GBA_COMMUNICATION_STATUS_ONLY
 #define GBA_COMMUNICATION_80093B4C_ONLY

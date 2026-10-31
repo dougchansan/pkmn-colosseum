@@ -23,7 +23,7 @@ u32 soundPlayFanfare(u32 id, void* buffer, u32 size)
         if (resource != 0) {
             wave = lbl_80478E34[waveIndex].data;
             if (wave != 0) {
-                fn_80165EE0(wave, resource, 0x10000);
+                soundLoadGroupBuffer(wave, resource, 0x10000);
                 soundAttachWork(id, 0, 0x408);
                 soundStart(id, (u32)buffer, size, 0);
                 /* Retail emits fn_801666BC before _threadSwitch, i.e. the
@@ -36,7 +36,7 @@ u32 soundPlayFanfare(u32 id, void* buffer, u32 size)
                 }
                 soundKill(id);
             }
-            fn_800F9210(0, 0x408);
+            GSresReleaseOwnerItem(0, 0x408);
         }
     }
 

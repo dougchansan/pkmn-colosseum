@@ -20,7 +20,7 @@
  *
  * Key functions:
  *
- *   fn_80140588 (peopleFieldOpen)      -- 0x514 bytes
+ *   peopleFieldGetPlacementOffset (peopleFieldOpen)      -- 0x514 bytes
  *     Open/spawn an NPC from field data. Takes a PeopleEntry pointer,
  *     group/index pair, spawn data, and a "force" flag. Calls into
  *     itemGetStatus (peopleFieldAlloc) to find or create a slot, loads
@@ -29,41 +29,41 @@
  *                 lbl_803681E8 (gPeopleFieldLookup),
  *                 lbl_80363CE8 (gPeopleFieldArray)
  *
- *   fn_80140A9C (peopleFieldGetSlot)   -- 0x30 bytes
+ *   itemSwapSlots (peopleFieldGetSlot)   -- 0x30 bytes
  *     Simple slot lookup by index. Returns pointer into gPeopleFieldArray.
  *     Called from 3 external sites (effect/shadow modules).
  *
- *   fn_80140ACC (peopleFieldLoadModel) -- 0x83C bytes
+ *   heroItemChangeCount (peopleFieldLoadModel) -- 0x83C bytes
  *     Load NPC model and configure animation data. This is a large
  *     function that processes the model resource, sets up joint matrices,
  *     configures walk/run motion data, and initializes the animation
  *     state machine. References gPeopleFieldArray globals.
  *
- *   fn_80141308 (peopleFieldUpdate)    -- 0x1060 bytes (largest in range!)
+ *   itemSlotsAdd (peopleFieldUpdate)    -- 0x1060 bytes (largest in range!)
  *     Per-frame update for a single NPC in the field. Handles state
  *     transitions, animation blending, position interpolation, collision
  *     checks, and rendering submission. This is the core NPC tick function.
  *     References gPeopleFieldArray and lbl_80434E64 (gPeopleFieldWork).
  *
- *   fn_80142368 (peopleFieldCleanup)   -- 0x280 bytes
+ *   itemSlotsFind (peopleFieldCleanup)   -- 0x280 bytes
  *     Cleanup/release an NPC slot. Frees model resources and resets state.
  *
- *   fn_801425E8 (peopleFieldSetup)     -- 0x39C bytes
+ *   itemSlotsCompact (peopleFieldSetup)     -- 0x39C bytes
  *     Configure an NPC's properties after model loading. Sets position,
  *     rotation, scale, motion parameters from spawn data.
  *
- *   fn_80142984 (peopleFieldGetByID)   -- 0x64 bytes
+ *   itemIdIsValid (peopleFieldGetByID)   -- 0x64 bytes
  *     Look up an NPC by its group+index ID pair. Called by 18 external
  *     functions (heavily used by the script system).
  *
- *   fn_801429E8 (peopleFieldGetEntry)  -- 0xA0 bytes
+ *   itemSlotIsValid (peopleFieldGetEntry)  -- 0xA0 bytes
  *     Extended NPC lookup that validates the entry and returns a
  *     PeopleFieldEntry pointer. Called by 28 external functions.
  *
- *   fn_80142A88 (peopleFieldSetState)  -- 0x9C bytes
+ *   itemSlotsClear (peopleFieldSetState)  -- 0x9C bytes
  *     Set the state of an NPC. Used by battle and cutscene systems.
  *
- *   fn_80142B24 (peopleFieldApplyMotion) -- 0x1D0 bytes
+ *   fightItemCreate_80142B24 (peopleFieldApplyMotion) -- 0x1D0 bytes
  *     Apply a motion/animation to an NPC. Blends between current and
  *     target animation states.
  *
@@ -141,7 +141,7 @@ extern void* GSmemLock(u16 handle);
 /* Model system */
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
-extern void  fn_800E24B0(u16 handle);
+extern void  GSmemUnlock(u16 handle);
 extern void  GSmemFree(u16 handle);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
@@ -151,7 +151,7 @@ extern void  __cvt_fp2unsigned(void* param1, void* param2);
 /* Floor resource system */
 extern void* GSresGetResource(u16 group, u16 model, u16 param);
 extern void* fightFloorGetNowPtr(void);
-extern s32   fn_80144574(void* arg0, void* arg1, void* arg2, void* arg3, void* arg4);
+extern s32   itemUseApply(void* arg0, void* arg1, void* arg2, void* arg3, void* arg4);
 
 /* Thread/task system */
 extern void* GSgappCreate(u32 pri, u32 type, void* buf, void* callback);
@@ -271,7 +271,7 @@ extern PeopleFieldEntry lbl_80363CE8[]; /* gPeopleFieldArray */
 
 /* Returns u8* (not PeopleFieldEntry*) to match the extern declaration
  * used at this function's call sites elsewhere in this file (e.g. the
- * fn_80142B24 dispatcher below). */
+ * fightItemCreate_80142B24 dispatcher below). */
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
 u8* itemDataBiosGetPtr(u16 index) {
     u16 slot;
@@ -296,16 +296,16 @@ u8* itemDataBiosGetPtr(u16 index) {
  * Function addresses and proposed names documented for cross-reference.
  * =================================================================== */
 
-/* fn_80140588: peopleFieldOpen (0x514 bytes) */
-/* fn_80140A9C: peopleFieldGetSlot (0x30 bytes) */
-/* fn_80140ACC: peopleFieldLoadModel (0x83C bytes) */
-/* fn_80141308: peopleFieldUpdate (0x1060 bytes -- largest single function) */
-/* fn_80142368: peopleFieldCleanup (0x280 bytes) */
-/* fn_801425E8: peopleFieldSetup (0x39C bytes) */
-/* fn_80142984: peopleFieldGetByID (0x64 bytes) */
-/* fn_801429E8: peopleFieldGetEntry (0xA0 bytes) */
-/* fn_80142A88: peopleFieldSetState (0x9C bytes) */
-/* fn_80142B24: peopleFieldApplyMotion (0x1D0 bytes) */
+/* peopleFieldGetPlacementOffset: peopleFieldOpen (0x514 bytes) */
+/* itemSwapSlots: peopleFieldGetSlot (0x30 bytes) */
+/* heroItemChangeCount: peopleFieldLoadModel (0x83C bytes) */
+/* itemSlotsAdd: peopleFieldUpdate (0x1060 bytes -- largest single function) */
+/* itemSlotsFind: peopleFieldCleanup (0x280 bytes) */
+/* itemSlotsCompact: peopleFieldSetup (0x39C bytes) */
+/* itemIdIsValid: peopleFieldGetByID (0x64 bytes) */
+/* itemSlotIsValid: peopleFieldGetEntry (0xA0 bytes) */
+/* itemSlotsClear: peopleFieldSetState (0x9C bytes) */
+/* fightItemCreate_80142B24: peopleFieldApplyMotion (0x1D0 bytes) */
 /* itemGetStatus: peopleFieldAlloc (0x204 bytes) */
 /* fn_80142EF8: peopleFieldRelease (0x2B4 bytes) */
 /* fn_801431AC: peopleFieldInit (0x4F0 bytes) */
@@ -388,9 +388,9 @@ u8* itemDataBiosGetPtr(u16 index) {
 /* itemDataBiosGetFightUseKoukaDataId: getField_ext12 */
 /* itemDataBiosGetItemSoubiDataId: getField_ext13 */
 /* itemDataBiosGetDoc: getField_ext14 */
-/* fn_80143F9C: getField_ext15 */
-/* fn_80143FB4: getField_ext16 */
-/* fn_80143FCC: getField_ext17 */
+/* itemDataGetField3: getField_ext15 */
+/* itemDataGetField2: getField_ext16 */
+/* itemDataGetField1: getField_ext17 */
 /* itemDataBiosGetCoupon: getField_ext18 */
 /* itemDataBiosGetPrice: getField_ext19 */
 /* itemDataBiosGetKind: getField_ext20 */
@@ -403,8 +403,8 @@ u8* itemDataBiosGetPtr(u16 index) {
 /* fn_801443CC: peopleFieldFinalizeModel (0x1A8 bytes) */
 /* renamed symbols referenced by asm incs (symbolmap port) */
 /* Forward declarations for self-referencing asm blocks */
-extern void fn_801425E8(u32* base, u16 count, u8 mode);
-extern void fn_80142B24(void*, u32, u16, u32, u32);
+extern void itemSlotsCompact(u32* base, u16 count, u8 mode);
+extern void fightItemCreate_80142B24(void*, u32, u16, u32, u32);
 extern s32 itemGetStatus(u32, u16, u16, u32);
 extern u16  itemSoubiDataBiosGetFightKoukaDataId(u8* p);
 extern u8*  itemSoubiDataBiosGetPtr(u16 idx);
@@ -428,7 +428,7 @@ asm void fn_80140A9C(void) {
 }
 #else
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-void fn_80140A9C(u32* a, u32* b) {
+void itemSwapSlots(u32* a, u32* b) {
     volatile u32 new_var;
     u32 tmp;
     if (a == NULL) return;
@@ -534,7 +534,7 @@ static inline u32* peopleFindFreeEntry(u32* entries, u16 count, u16 id)
 
 /* Resolve the placement offset for a field-person record group. */
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-s32 fn_80140588(u32* entries, u16 count, u16 dataIndex, u16 extent,
+s32 peopleFieldGetPlacementOffset(u32* entries, u16 count, u16 dataIndex, u16 extent,
                 u8 accumulate)
 {
     u32* entry;
@@ -574,7 +574,7 @@ s32 fn_80140588(u32* entries, u16 count, u16 dataIndex, u16 extent,
 #endif
 
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedLimit, u8 sortMode) {
+s32 heroItemChangeCount(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedLimit, u8 sortMode) {
     u32* entry;
     u16 remaining;
     u16 current;
@@ -624,10 +624,10 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
                 remaining = (u16)(remaining - current);
             }
 
-            fn_80142B24(entry, 0, 0x1c, 0, next);
+            fightItemCreate_80142B24(entry, 0, 0x1c, 0, next);
             if (next == 0) {
-                fn_80142B24(entry, 0, 0x1b, 0, 0);
-                fn_80142B24(entry, 0, 0x1c, 0, 0);
+                fightItemCreate_80142B24(entry, 0, 0x1b, 0, 0);
+                fightItemCreate_80142B24(entry, 0, 0x1c, 0, 0);
                 if (!PEOPLE_ENTRY_VALID(entry)) {
                     needsSort = 1;
                 }
@@ -655,10 +655,10 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
             remaining = (u16)(remaining - current);
         }
 
-        fn_80142B24(entry, 0, 0x1c, 0, next);
+        fightItemCreate_80142B24(entry, 0, 0x1c, 0, next);
         if (next == 0) {
-            fn_80142B24(entry, 0, 0x1b, 0, 0);
-            fn_80142B24(entry, 0, 0x1c, 0, 0);
+            fightItemCreate_80142B24(entry, 0, 0x1b, 0, 0);
+            fightItemCreate_80142B24(entry, 0, 0x1c, 0, 0);
             if (!PEOPLE_ENTRY_VALID(entry)) {
                 needsSort = 1;
             }
@@ -666,7 +666,7 @@ s32 fn_80140ACC(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 unusedL
     }
 
     if (needsSort == 1) {
-        fn_801425E8(base, count, sortMode);
+        itemSlotsCompact(base, count, sortMode);
     }
     return remaining;
 }
@@ -679,7 +679,7 @@ asm void fn_80141308(void) {
 }
 #else
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCount, u8 sortMode, u8 forceIndex) {
+s32 itemSlotsAdd(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCount, u8 sortMode, u8 forceIndex) {
     u32 entryBase;
     u32 entryPtr;
     u32 freePtr;
@@ -835,7 +835,7 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                             } else {
                                 nextValue = 0;
                             }
-                            fn_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)cappedValue);
+                            fightItemCreate_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)cappedValue);
                         }
                     }
                 }
@@ -898,9 +898,9 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                 } else if (id >= lbl_80478BD8) {
                     nextValue = -1;
                 } else {
-                    fn_80142B24((void*)freePtr, 0, 0x1B, 0, 0);
-                    fn_80142B24((void*)freePtr, 0, 0x1C, 0, 0);
-                    fn_80142B24((void*)freePtr, 0, 0x1B, 0, id);
+                    fightItemCreate_80142B24((void*)freePtr, 0, 0x1B, 0, 0);
+                    fightItemCreate_80142B24((void*)freePtr, 0, 0x1C, 0, 0);
+                    fightItemCreate_80142B24((void*)freePtr, 0, 0x1B, 0, id);
 
                     entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
                     if (entryId == 0) {
@@ -923,7 +923,7 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                         } else {
                             nextValue = 0;
                         }
-                        fn_80142B24((void*)freePtr, 0, 0x1C, 0, (u16)cappedValue);
+                        fightItemCreate_80142B24((void*)freePtr, 0, 0x1C, 0, (u16)cappedValue);
                     }
                 }
 
@@ -1036,7 +1036,7 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                             } else {
                                 nextValue = 0;
                             }
-                            fn_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)fieldValue);
+                            fightItemCreate_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)fieldValue);
                         }
                     }
                 }
@@ -1096,9 +1096,9 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                     if (itemGetStatus(0, id, 1, 0) == 0 || id >= lbl_80478BD8) {
                         nextValue = -1;
                     } else {
-                        fn_80142B24((void*)freePtr, 0, 0x1B, 0, 0);
-                        fn_80142B24((void*)freePtr, 0, 0x1C, 0, 0);
-                        fn_80142B24((void*)freePtr, 0, 0x1B, 0, id);
+                        fightItemCreate_80142B24((void*)freePtr, 0, 0x1B, 0, 0);
+                        fightItemCreate_80142B24((void*)freePtr, 0, 0x1C, 0, 0);
+                        fightItemCreate_80142B24((void*)freePtr, 0, 0x1B, 0, id);
 
                         entryId = (u16)itemGetStatus(freePtr, 0, 0x1B, 0);
                         if (entryId == 0) {
@@ -1141,7 +1141,7 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                                 } else {
                                     nextValue = 0;
                                 }
-                                fn_80142B24((void*)freePtr, 0, 0x1C, 0, (u16)fieldValue);
+                                fightItemCreate_80142B24((void*)freePtr, 0, 0x1C, 0, (u16)fieldValue);
                             }
                         }
                     }
@@ -1211,14 +1211,14 @@ s32 fn_80141308(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCoun
                     } else {
                         nextValue = 0;
                     }
-                    fn_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)fieldValue);
+                    fightItemCreate_80142B24((void*)entryPtr, 0, 0x1C, 0, (u16)fieldValue);
                 }
             }
         }
     }
 
     if (needsReorder == 1) {
-        fn_801425E8((u32*)entryBase, count, sortMode);
+        itemSlotsCompact((u32*)entryBase, count, sortMode);
     }
     return nextValue;
 }
@@ -1231,7 +1231,7 @@ asm void fn_80142368(void) {
 }
 #else
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-u32* fn_80142368(u32* base, u16 count, u16 id, u8 mode, u16 limit) {
+u32* itemSlotsFind(u32* base, u16 count, u16 id, u8 mode, u16 limit) {
     u32* entry;
     u16 i;
 
@@ -1270,7 +1270,7 @@ asm void fn_801425E8(void) {
 }
 #else
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-void fn_801425E8(u32* base, u16 count, u8 mode) {
+void itemSlotsCompact(u32* base, u16 count, u8 mode) {
     u32* entry;
     u32* other;
     u32 temp;
@@ -1324,7 +1324,7 @@ asm void fn_80142984(void) {
 }
 #else
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-s32 fn_80142984(u16 id) {
+s32 itemIdIsValid(u16 id) {
     s32 r;
 
     r = itemGetStatus(0, id, 1, 0);
@@ -1340,7 +1340,7 @@ asm void fn_801429E8(void) {
 }
 #else
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-s32 fn_801429E8(u32 arg) {
+s32 itemSlotIsValid(u32 arg) {
     u16 r31;
     u8 valid;
 
@@ -1367,7 +1367,7 @@ asm void fn_80142A88(void) {
 }
 #else
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-void fn_80142A88(u32* base, u16 count) {
+void itemSlotsClear(u32* base, u16 count) {
     u32* ptr;
     u16 i;
 
@@ -1375,8 +1375,8 @@ void fn_80142A88(u32* base, u16 count) {
 
     for (i = 0; (u16)i < (u16)count; i++) {
         if ((ptr = base + i) != NULL) {
-            fn_80142B24((void*)ptr, 0, 0x1b, 0, 0);
-            fn_80142B24((void*)ptr, 0, 0x1c, 0, 0);
+            fightItemCreate_80142B24((void*)ptr, 0, 0x1b, 0, 0);
+            fightItemCreate_80142B24((void*)ptr, 0, 0x1c, 0, 0);
         }
     }
 }
@@ -1395,7 +1395,7 @@ asm void fn_80142B24(void* p, u32 a, u16 b, u32 c, u32 d) {
 }
 #else
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-void fn_80142B24(void* p, u32 a, u16 b, u32 c, u32 d) {
+void fightItemCreate_80142B24(void* p, u32 a, u16 b, u32 c, u32 d) {
     u8* target;
 
     if (b == 0 || b >= 0x23) {
@@ -1483,8 +1483,8 @@ void fn_80142B24(void* p, u32 a, u16 b, u32 c, u32 d) {
 extern u32 itemDataBiosGetName(u8* p);
 extern u8 itemDataBiosGetKind(u8* p);
 extern u32 itemDataBiosGetPrice(u8* p);
-extern u8 fn_80143FCC(u8* p);
-extern u8 fn_80143FB4(u8* p);
+extern u8 itemDataGetField1(u8* p);
+extern u8 itemDataGetField2(u8* p);
 extern u32 itemDataBiosGetDoc(u8* p);
 extern u32 itemDataBiosGetItemSoubiDataId(u8* p);
 extern u32 itemDataBiosGetFightUseKoukaDataId(u8* p);
@@ -1553,9 +1553,9 @@ s32 itemGetStatus(u32 a, u16 b, u16 c, u32 d) {
     case 3:
         return (u16)itemDataBiosGetPrice(target);
     case 4:
-        return fn_80143FCC(target);
+        return itemDataGetField1(target);
     case 5:
-        return fn_80143FB4(target);
+        return itemDataGetField2(target);
     case 6:
         return itemDataBiosGetDoc(target);
     case 7:
@@ -3051,7 +3051,7 @@ u32 itemDataBiosGetDoc(u8* p) {
 #endif
 
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-u8 fn_80143F9C(u8* p) {
+u8 itemDataGetField3(u8* p) {
     ItemDataBios* itemData;
 
     itemData = (ItemDataBios*)p;
@@ -3061,7 +3061,7 @@ u8 fn_80143F9C(u8* p) {
 #endif
 
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-u8 fn_80143FB4(u8* p) {
+u8 itemDataGetField2(u8* p) {
     ItemDataBios* itemData;
 
     itemData = (ItemDataBios*)p;
@@ -3071,7 +3071,7 @@ u8 fn_80143FB4(u8* p) {
 #endif
 
 #if !defined(PEOPLE_DATA_80142EF8_ONLY)
-u8 fn_80143FCC(u8* p) {
+u8 itemDataGetField1(u8* p) {
     ItemDataBios* itemData;
 
     itemData = (ItemDataBios*)p;
@@ -3162,9 +3162,9 @@ s32 itemUse2PokemonSimulation(void* arg0, void* arg1, void* arg2, void* arg3, vo
     memHandle = _toolentryAlloc__FUl(0xA4E8);
     savedFightFloor = GSmemLock(memHandle);
     memcpy(savedFightFloor, fightFloor, 0xA4E8);
-    result = fn_80144574(arg0, arg1, arg2, arg3, arg4);
+    result = itemUseApply(arg0, arg1, arg2, arg3, arg4);
     memcpy(fightFloor, savedFightFloor, 0xA4E8);
-    fn_800E24B0(memHandle);
+    GSmemUnlock(memHandle);
     GSmemFree(memHandle);
 
     return result;

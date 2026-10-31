@@ -20,21 +20,21 @@ extern void menuClose(s32 menu);
 extern void menuCloseSync(s32 menu, s32 flag);
 extern u32 heroGetStatus(u8* ptr, u32 selector, u32 index);
 /* RULE-EXCEPTION(user-approved): caller-side prototype with s32 parameters (the definition in menuPokemon.c takes u32); the u32 conversion of the s32 location adds a register copy - see docs/RULE_EXCEPTIONS.md */
-extern void fn_80018F54(s32 a, s32 b, s32 c);
-extern u32 fn_8002A0B8(u8* buffer, s32 location, s32 field, s32 value, ...);
-extern u32 fn_80029FAC(u8* buffer, s32 location, s32 field, s32 value, ...);
-extern void fn_8002A1C4(u8* location, s32 message, s32 terminator, ...);
-extern void fn_8002A2CC(u8* location, s32 message, s32 terminator, ...);
-extern void fn_8002CE6C(u8* location, u8 type);
-extern void fn_8002D154(s32 location, u8 type);
-extern void fn_8002C408(s32 location, u8 type);
-extern void fn_8002C284(u32 location, u32 type);
+extern void bagMenuOpen(s32 a, s32 b, s32 c);
+extern u32 shopFormatTextB(u8* buffer, s32 location, s32 field, s32 value, ...);
+extern u32 shopFormatTextA(u8* buffer, s32 location, s32 field, s32 value, ...);
+extern void shopMsgOpenA(u8* location, s32 message, s32 terminator, ...);
+extern void shopMsgOpenB(u8* location, s32 message, s32 terminator, ...);
+extern void shopPurchaseRun(u8* location, u8 type);
+extern void shopBuyRun(s32 location, u8 type);
+extern void shopCouponRun(s32 location, u8 type);
+extern void shopBuyMenu(u32 location, u32 type);
 extern void winMsgOpenWithSE(s32 kind, u32 message, s32 arg2, s32 arg3,
                              u8 format);
 extern void winMsgClose(s32 mode);
 extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void GSmemFree(u32 handle);
 extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript(s32 mode, u32 value);
@@ -100,28 +100,28 @@ void std026_unkMenuSequence26(void)
     switch (type) {
     case 0: {
         u32 value = heroGetStatus(NULL, 0xC, 0);
-        u32 message = fn_8002A0B8(&text1, location, 0, 0x4B, value, -1);
+        u32 message = shopFormatTextB(&text1, location, 0, 0x4B, value, -1);
         winMsgOpenWithSE(2, message, 1, 0, text1);
         while ((menu_result = shopQueryMenu(0x62),
                 shopNormalizeMenu62(menu_result, &selection), selection != 2)) {
             winMsgClose(1);
             switch (selection) {
             case 0:
-                fn_8002D154(location, type);
+                shopBuyRun(location, type);
                 break;
             case 1:
-                fn_80018F54(3, location, 0);
+                bagMenuOpen(3, location, 0);
                 break;
             }
-            message = fn_8002A0B8(&text1, location, 1, -1);
+            message = shopFormatTextB(&text1, location, 1, -1);
             winMsgOpenWithSE(2, message, 1, 0, text1);
         }
 
-        fn_8002A2CC((ShopLocationArgument*)location, 2, -1);
+        shopMsgOpenB((ShopLocationArgument*)location, 2, -1);
         break;
     }
     case 1:
-        fn_8002CE6C((ShopLocationArgument*)location, type);
+        shopPurchaseRun((ShopLocationArgument*)location, type);
         break;
     default: {
         u32 message;
@@ -129,19 +129,19 @@ void std026_unkMenuSequence26(void)
         done = 0;
         memory = shopMemoryAlloc();
         lbl_8047A3DC = (u32)GSmemLock(memory);
-        message = fn_80029FAC(&text0, location, 0, -1);
+        message = shopFormatTextA(&text0, location, 0, -1);
         winMsgOpenWithSE(2, message, 1, 0, text0);
         while ((menu_result = shopNormalizeMenu83(shopQueryMenu(0x83))) != 3) {
             winMsgClose(1);
             switch (menu_result) {
             case 0:
-                fn_8002C408(location, type);
+                shopCouponRun(location, type);
                 break;
             case 1:
-                fn_8002C284(location, type);
+                shopBuyMenu(location, type);
                 break;
             case 2:
-                fn_8002A1C4((ShopLocationArgument*)location, 0xB, -1);
+                shopMsgOpenA((ShopLocationArgument*)location, 0xB, -1);
                 break;
             case 3:
                 done = 1;
@@ -150,16 +150,16 @@ void std026_unkMenuSequence26(void)
             if (done != 0) {
                 break;
             }
-            message = fn_80029FAC(&text0, location, 1, -1);
+            message = shopFormatTextA(&text0, location, 1, -1);
             winMsgOpenWithSE(2, message, 1, 0, text0);
         }
 
         if (type != 3 && type != 2) {
-            fn_8002A1C4((ShopLocationArgument*)location, 2, -1);
+            shopMsgOpenA((ShopLocationArgument*)location, 2, -1);
         } else {
             winMsgClose(1);
         }
-        fn_800E24B0(memory);
+        GSmemUnlock(memory);
         GSmemFree(memory);
         break;
     }

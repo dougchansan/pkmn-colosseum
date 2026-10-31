@@ -5,7 +5,7 @@ extern s32 lbl_8047A4AC;
 extern s32 lbl_8047A4B0;
 extern s32 lbl_8047A4B4;
 extern void* pcboxGetItem(void*, s16);
-extern u8 fn_801429E8(void* item);
+extern u8 itemSlotIsValid(void* item);
 
 /* RULE-EXCEPTION(user-approved): callsite-specific inline lookup layouts,
    local reuse and compiler controls; see docs/RULE_EXCEPTIONS.md, fn_8003A10C. */
@@ -23,7 +23,7 @@ static inline s32 pdaBoxItemIdFirst(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetItemDataId(item);
@@ -47,7 +47,7 @@ static inline s32 pdaBoxItemNum(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetNum(item);
@@ -76,7 +76,7 @@ static inline s32 pdaBoxWithdrawItemId(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 i = itemBiosGetItemDataId(item);
@@ -100,7 +100,7 @@ static inline s32 pdaBoxDiscardItemId(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 found = itemBiosGetItemDataId(item);
@@ -124,7 +124,7 @@ static inline s32 pdaBoxItemNumFirst(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetNum(item);
@@ -150,8 +150,8 @@ void itemStorageTransfer(s32 mode)
     extern void msgctrlSetValue(s32 id, s32 value);
     extern void winMsgOpen(s32 a, s32 message, s32 b, s32 c);
     extern void winMsgClose(s32 a);
-    extern s32 fn_8003AE84(void);
-    extern s32 fn_8003ACE8(s32 a, s32 b, s32 c);
+    extern s32 itemStorageConfirm(void);
+    extern s32 itemStorageSelectAmount(s32 a, s32 b, s32 c);
     s32 target;
     s32 itemId;
     s32 num;
@@ -174,7 +174,7 @@ void itemStorageTransfer(s32 mode)
             lbl_8047A4B4 = 0x1b6a;
             if (itemDataBiosGetKind(itemDataBiosGetPtr(itemId)) != 5) {
                 num = pdaBoxItemNumFirst(target);
-                count = fn_8003ACE8(1, 1, (u16)num);
+                count = itemStorageSelectAmount(1, 1, (u16)num);
             } else {
                 count = 1;
             }
@@ -202,7 +202,7 @@ void itemStorageTransfer(s32 mode)
             }
             lbl_8047A4B4 = 0x1b6b;
             num = pdaBoxItemNum(target);
-            count = fn_8003ACE8(1, 1, (u16)num);
+            count = itemStorageSelectAmount(1, 1, (u16)num);
             if (count <= 0) {
                 break;
             }
@@ -210,7 +210,7 @@ void itemStorageTransfer(s32 mode)
             msgctrlSetValue(0x2d, shortId);
             msgctrlSetValue(0x2f, count);
             lbl_8047A4B4 = 0x1b6c;
-            if (fn_8003AE84() == 0) {
+            if (itemStorageConfirm() == 0) {
                 break;
             }
             pcboxAddItem(0, itemId, (u16)count);

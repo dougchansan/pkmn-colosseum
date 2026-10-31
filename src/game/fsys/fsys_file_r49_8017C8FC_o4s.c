@@ -18,7 +18,7 @@
 #include "dolphin/types.h"
 #include "game/fsys/fsys_entry.h"
 
-extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
+extern u32 fsysCacheLookup(u32 fileHandle, u32 groupID, u32 nameHash);
 extern void fsysLoadEntry(FSYSSlot* slot, FSYSFileEntry* entry, u32 index);
 extern void fsysLoadEntryCompressed(FSYSSlot* slot, FSYSFileEntry* entry, u32 index);
 extern void fsysInitTOC(FSYSSlot* slot, u32 offset, u32 length, void* callbackA,
@@ -45,7 +45,7 @@ static inline void fsysStartSceneRead(FSYSSlot* slot, FSYSFileEntry* entry, u32 
     sub = slot->currentSub;
     offsets = (u32*)((u8*)slot->archiveData + tables[0]);
     current = (FSYSFileEntry*)((u8*)slot->archiveData + offsets[index]);
-    cached = fn_8017F794(slot->fileHandle, current->groupID, current->nameHash);
+    cached = fsysCacheLookup(slot->fileHandle, current->groupID, current->nameHash);
     if (cached) {
         sub->state = 4;
         slot->status = 100;
@@ -76,7 +76,7 @@ s32 fsysStatus100(FSYSSlot* slot)
             if (entry->nameHash == slot->requestID) {
                 slot->entryIndex = i;
                 sub = (FSYSSubEntry*)entry->subEntry;
-                requestCached = fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
+                requestCached = fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
                 if ((s32)sub->state == 0) {
                     if (!requestCached) {
                         slot->currentSub = sub;
@@ -110,7 +110,7 @@ s32 fsysStatus100(FSYSSlot* slot)
             entry = fsysGetEntry(slot, i);
             slot->entryIndex = i;
             sub = (FSYSSubEntry*)entry->subEntry;
-            cached = fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
+            cached = fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
             if ((s32)sub->state == 0) {
                 tables = (u32*)((u8*)slot->archiveData + slot->field_18);
                 offsets = (u32*)((u8*)slot->archiveData + tables[0]);

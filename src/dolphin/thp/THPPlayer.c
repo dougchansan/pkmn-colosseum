@@ -34,7 +34,7 @@
  * GSmovie.a movieStream.o holds _StreamQuit, _StreamPlay,
  * _StreamInitFillStreamBuffer, _StreamInit, StreamUpdateCallback,
  * FillStreamBuffer (UNUSED, 0x130: only ever inlined), GetAudioSample (0x140,
- * this file's fn_801E2B74), and the UNUSED inline-only helpers
+ * this file's movieMixAudio), and the UNUSED inline-only helpers
  * CheckBoundary(u64) (0x78) and EntryBoundary(u64) (0x40). XD has no resync
  * routine. Nesting an EntryBoundary(u64) helper in FillStreamBuffer leaves
  * every function's code unchanged, so it is not used; the names are not
@@ -106,8 +106,8 @@ static inline BOOL ProperTimingForGettingNextFrame(void);
 static inline void FillStreamBuffer(s16* left, s16* right, u32 sample);
 BOOL movieStreamCreate(void);
 void movieStreamFill(void);
-u32 fn_801E2B74(s16* left, s16* right, u32 sample, s32* status);
-u32 fn_801E260C(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user);
+u32 movieMixAudio(s16* left, s16* right, u32 sample, s32* status);
+u32 movieStreamCallback(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user);
 
 BOOL THPPlayerInit(void)
 {
@@ -717,7 +717,7 @@ void movieGetStreamIds(u32* left, u32* right)
  * Pulls `sample` stereo samples out of the decoded audio buffers into the
  * stream ring, recording the end of each consumed THP audio frame in the
  * marker ring. Reconstructed helper: the same call/marker/memset sequence is
- * expanded twelve times in retail (four times in fn_801E260C, six in
+ * expanded twelve times in retail (four times in movieStreamCallback, six in
  * movieStreamFill, twice in movieStreamCreate) and has no copy of its own.
  *
  * It replaces the SDK sample's MixAudio and keeps that routine's shape:
@@ -746,7 +746,7 @@ static inline void FillStreamBuffer(s16* left, s16* right, u32 sample)
     position = lbl_8046A440.decodedPosition;
 
     while (TRUE) {
-        sampleNum = fn_801E2B74(dstL, dstR, requestSample, &status);
+        sampleNum = movieMixAudio(dstL, dstR, requestSample, &status);
         position += sampleNum;
         if (status == 0) {
             break;
@@ -785,7 +785,7 @@ BOOL movieStreamCreate(void)
     lbl_80478D00 = sndStreamAllocEx(0xFF, lbl_8047B470, sample, lbl_8046AC60.audioInfo.sndFrequency,
                                0x7F,
                                lbl_8046AC60.audioInfo.sndChannels == 2 ? (u8)0 : (u8)0x40, 0,
-                               0, 0, 0, 0x30000, fn_801E260C, 1, NULL);
+                               0, 0, 0, 0x30000, movieStreamCallback, 1, NULL);
     if (lbl_80478D00 == 0xFFFFFFFF) {
         return FALSE;
     }
@@ -793,7 +793,7 @@ BOOL movieStreamCreate(void)
     if (lbl_8046AC60.audioInfo.sndChannels == 2) {
         lbl_80478D04 = sndStreamAllocEx(0xFF, lbl_8047B474, sample,
                                    lbl_8046AC60.audioInfo.sndFrequency, 0x7F, 0x7F, 0, 0, 0, 0,
-                                   0x30000, fn_801E260C, 0, NULL);
+                                   0x30000, movieStreamCallback, 0, NULL);
         if (lbl_80478D04 == 0xFFFFFFFF) {
             sndStreamFree(lbl_80478D00);
             return FALSE;
@@ -946,7 +946,7 @@ void movieStreamFill(void)
  * return value comes from a saved register never written on that path); this
  * is kept as is.
  */
-u32 fn_801E2B74(s16* left, s16* right, u32 sample, s32* status)
+u32 movieMixAudio(s16* left, s16* right, u32 sample, s32* status)
 {
     u32 num;
     s16* src;
@@ -994,7 +994,7 @@ u32 fn_801E2B74(s16* left, s16* right, u32 sample, s32* status)
 }
 
 /* MusyX stream update callback; only the left stream (user != 0) refills. */
-u32 fn_801E260C(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user)
+u32 movieStreamCallback(void* buffer1, u32 len1, void* buffer2, u32 len2, u32 user)
 {
     u32 size = lbl_8046AC60.audioInfo.sndFrequency * 40 / 1000;
     u64 requested;

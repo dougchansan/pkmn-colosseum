@@ -5,13 +5,13 @@
  * This unit spans 0x800FF0A0-0x800FF788 (15 functions, 0x6E8 bytes total)
  * and sits between the GStexture/resource layer (floorTerminateScriptThreads etc.) and
  * gs_floor.c's GSfloorOpen (0x800FF788+). It contains only:
- *   - 4 floor-resource table walkers (floorTerminateTasks, fn_800FF178,
- *     fn_800FF2A0, fn_800FF3C0). floorTerminateTasks is exact pure C; the other
+ *   - 4 floor-resource table walkers (floorTerminateTasks, floorTaskRegister2,
+ *     floorTaskRegister1, floorTaskRegister0). floorTerminateTasks is exact pure C; the other
  *     three remain honest TODO stubs. No rodata string references exist
  *     for any of the four, and no evidence supports semantic names.
  *     floorTerminateTasks calls floorTerminateScriptThreads only; the other three call nothing.
- *   - 11 small floor-state accessors/helpers (fn_800FF4D4 through
- *     fn_800FF784), all matched at 100% -- must stay byte-identical.
+ *   - 11 small floor-state accessors/helpers (floorRegisterHandler through
+ *     floorNop_800FF784), all matched at 100% -- must stay byte-identical.
  *
  * A prior campaign-generation transplant had attached a large orphan
  * block to this file: "GSfloorLoadCallback"/"GSfloorRegisterResHandlers"-
@@ -110,10 +110,10 @@ found:
     defined(GS_FLOOR_DATA_RESIDUAL_PREFIX_800FF178_ONLY)
 
 /*
- * Floor task registration helpers. fn_800FF3C0/fn_800FF2A0/fn_800FF178
+ * Floor task registration helpers. floorTaskRegister0/floorTaskRegister1/floorTaskRegister2
  * register a floor's pre (type 1), main (type 3) and post (type 5) callbacks
  * (fn_801129CC passes the floor's Initialize/Update/Finalize functions), and
- * the resource-backed fn_800FEF8C/fn_800FEE68/fn_800FED3C next door do the
+ * the resource-backed threadReqAlloc0/threadReqAlloc1/threadReqAlloc2 next door do the
  * same with status 1. All six carry the same three expansions in the same
  * order: a free-slot scan over one pool (return-from-loop shape: bne over an
  * unconditional b to the scan's exit), a slot initialiser that re-reads the
@@ -198,7 +198,7 @@ static inline void floorTaskInsert(GSFloorResource* task) {
 }
 
 /* 0x800FF178 | 0x128 */
-void fn_800FF178(u8 priority, u32 floorId, void* callback) {
+void floorTaskRegister2(u8 priority, u32 floorId, void* callback) {
     GSFloorResource* task;
 
     task = floorTaskFindFree(5);
@@ -210,7 +210,7 @@ void fn_800FF178(u8 priority, u32 floorId, void* callback) {
 }
 
 /* 0x800FF2A0 | 0x120 */
-void fn_800FF2A0(u8 priority, u32 floorId, void* callback) {
+void floorTaskRegister1(u8 priority, u32 floorId, void* callback) {
     GSFloorResource* task;
 
     task = floorTaskFindFree(3);
@@ -222,7 +222,7 @@ void fn_800FF2A0(u8 priority, u32 floorId, void* callback) {
 }
 
 /* 0x800FF3C0 | 0x114 */
-void fn_800FF3C0(u8 priority, u32 floorId, void* callback) {
+void floorTaskRegister0(u8 priority, u32 floorId, void* callback) {
     GSFloorResource* task;
 
     task = floorTaskFindFree(1);
@@ -238,7 +238,7 @@ void fn_800FF3C0(u8 priority, u32 floorId, void* callback) {
 #if defined(GS_FLOOR_DATA_ALL)
 
 /* 0x800FF4D4 | 0x58 */
-void fn_800FF4D4(void* data, u8 typeId) {
+void floorRegisterHandler(void* data, u8 typeId) {
     GSFloorResHandler* handler;
 
     if (lbl_8047ACE0 < 0x18) {
@@ -250,20 +250,20 @@ void fn_800FF4D4(void* data, u8 typeId) {
 }
 
 /* 0x800FF52C | 0x14 */
-u32 fn_800FF52C(void) {
+u32 floorIsLinking(void) {
     return lbl_8047ACC4 != 0;
 }
 
 /* 0x800FF540 | 0x8 | sda_getter */
-u32 fn_800FF540(void) { return lbl_8047ACC4; }
+u32 floorGetPendingLink(void) { return lbl_8047ACC4; }
 
 /* 0x800FF548 | 0xC | sda_deref_getter */
-u8 fn_800FF548(void) {
+u8 floorGetFadeOutFlag(void) {
     return *(u8*)((u8*)lbl_8047ACC8 + 0xB);
 }
 
 /* 0x800FF554 | 0xC | sda_deref_getter */
-u8 fn_800FF554(void) {
+u8 floorGetCurrentKind(void) {
     return *(u8*)((u8*)lbl_8047ACC8 + 0xA);
 }
 
@@ -362,7 +362,7 @@ void std098_mapWarpToMenuRoom(u32 floorId) {
 }
 
 /* 0x800FF784 | 0x4 | void_stub */
-void fn_800FF784(void) {
+void floorNop_800FF784(void) {
 }
 
 #endif

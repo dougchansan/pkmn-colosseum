@@ -38,7 +38,7 @@ static inline u16 pda_8003D818_LoadIds(void)
 u16 pdaMemoBuildList(void)
 {
     extern u16 lbl_8047A4E8;
-    extern void fn_8003E394(void);
+    extern void pdaMemoDrawData(void);
     u8* work;
 
     work = (u8*)&lbl_803A6818;
@@ -48,7 +48,7 @@ u16 pdaMemoBuildList(void)
     work[0x15b] = 0;
     work[0x15a] = 0;
     work[0x15c] = 0;
-    fn_8003E394();
+    pdaMemoDrawData();
     lbl_803A6818.field_10 = lbl_8047A4E8;
     return lbl_8047A4E8;
 }

@@ -38,7 +38,7 @@ void _HSD_MemSetCallbacks(__mem_cb* cb, u32 size)
 }
 
 /* HAL: HSD_MemCheckOwn */
-BOOL fn_801A6990(void* ptr)
+BOOL HSD_IsMemoryReleased_801A6990(void* ptr)
 {
     return lbl_80465608.check_own(ptr);
 }

@@ -56,10 +56,10 @@ extern GStexture* menuOffScreenGetPtr(void);
 extern GStexture* GStextureCreate(u32 arg0, u32 arg1, u32 format, u32 arg3, u32 arg4);
 extern void GStextureFree(GStexture* texture);
 extern void GSgfxBeginBackFBCapture(GStexture* texture, void* callback, void* userData);
-extern void fn_801C6928(void);
-extern s32 fn_800D37CC(void);
+extern void fadeEffectSetFirstFrame(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
-extern void fn_800D9ED8(u32 arg0);
+extern void gfxSetFlag1A(u32 arg0);
 extern void gfxSetFlags(u32 arg0);
 extern void gfxClearFlags(u32 arg0);
 extern void gfxSetOrtho(f32 left, f32 top, f32 right, f32 bottom);
@@ -169,7 +169,7 @@ FadeHook fadeSetFunction__FPFv_vbUsf(void (*init)(void), u8 snapshot, u16 type, 
         lbl_80466E30.texture = NULL;
     }
 
-    fn_801C6928();
+    fadeEffectSetFirstFrame();
     init();
     return previous;
 }
@@ -224,7 +224,7 @@ void fadeDaemon(void) {
         case 1:
         case 2:
         case 3:
-            fps = fn_800D37CC();
+            fps = GSgfxGetVsyncRate();
             lbl_80466E30.elapsed += (f32)GSgetFrameStep() / fps;
             if (lbl_80466E30.elapsed >= lbl_80466E30.duration) {
                 lbl_80466E30.elapsed = lbl_80466E30.duration;
@@ -240,7 +240,7 @@ void fadeDaemon(void) {
     }
 
     if (lbl_80466E30.hook != NULL) {
-        fps = fn_800D37CC();
+        fps = GSgfxGetVsyncRate();
         lbl_80466E30.hookElapsed += (f32)GSgetFrameStep() / fps;
         if (lbl_80466E30.hookElapsed >= lbl_80466E30.hookDuration) {
             lbl_80466E30.hookElapsed = lbl_80466E30.hookDuration;
@@ -279,7 +279,7 @@ void fadeDaemon(void) {
             color = white;
         }
 
-        fn_800D9ED8(1);
+        gfxSetFlag1A(1);
         gfxSetFlags(1);
         gfxClearFlags(6);
         gfxSetOrtho(0.0f, 0.0f, 640.0f, 480.0f);
@@ -295,7 +295,7 @@ void fadeDaemon(void) {
         gfxVtxPos(640.0f, 480.0f, 0.0f);
         gfxVtxColor4u8(0, color.r, color.g, color.b, alpha);
         gfxEnd();
-        fn_800D9ED8(0);
+        gfxSetFlag1A(0);
         break;
     case 3:
     case 4:

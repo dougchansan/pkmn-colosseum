@@ -66,7 +66,7 @@ u32 darkPokemonSaveGetC(u16 id)
     return 0;
 }
 
-u16 fn_801EEFAC(u16 id, s32 side)
+u16 darkPokemonGetSpecies(u16 id, s32 side)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 

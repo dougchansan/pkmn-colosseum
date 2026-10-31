@@ -1,6 +1,6 @@
 /**
  * @file people_data_r49_80140A9C_suffix.c
- * @brief fn_80140A9C (0x80140A9C - 0x80140ACC): swaps two item records.
+ * @brief itemSwapSlots (0x80140A9C - 0x80140ACC): swaps two item records.
  *
  * Function-boundary carve of the item/people data TU (people_data.c), GC/1.3
  * -O4,p, text only. The record is the 4-byte {itemDataId, num} pair the
@@ -14,7 +14,7 @@ typedef struct ItemBiosData {
     u16 num;
 } ItemBiosData;
 
-void fn_80140A9C(ItemBiosData* a, ItemBiosData* b)
+void itemSwapSlots(ItemBiosData* a, ItemBiosData* b)
 {
     ItemBiosData tmp;
 

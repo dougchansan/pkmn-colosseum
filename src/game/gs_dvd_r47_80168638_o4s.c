@@ -2,7 +2,7 @@
  * @file gs_dvd_r47_80168638_o4s.c
  * @brief Screen-filter manager initialisation, 0x80168638 - 0x80168934.
  *
- * Function-boundary carve of fn_80168638, the last function of the
+ * Function-boundary carve of GSgappInitPools, the last function of the
  * screen-filter block that gs_dvd_r47_prefix.c owns up to 0x80168638.
  * The range has no jump tables or pooled constants: every immediate is
  * an `li`, and all data (lbl_804526E0, lbl_8047B100) stays extern.
@@ -39,14 +39,14 @@ typedef struct GSFilterState {
 extern void* memset(void* dst, int value, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void GSmemFree(u32 handle);
 extern void* gfxVtxDescAlloc(void);
 extern void gfxVtxDescSetAttr(void*, u32, u32, u32, u32, u8, void*, u8);
 extern void gfxVtxDescFree(void*);
 extern u32 GSgappCreate(s32 state, u8 priority, u32 parameter,
                        void (*callback)(void));
-extern void fn_80168284(void);
+extern void GSfilterDraw(void);
 
 extern GSFilterState lbl_804526E0;
 extern GSFilter* lbl_8047B100;
@@ -89,12 +89,12 @@ static inline void GSfilterRelease(void)
 
     handle = lbl_804526E0.filterHandle;
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     handle = lbl_804526E0.colorHandle;
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     if (lbl_804526E0.renderState != 0) {
@@ -124,7 +124,7 @@ static inline void* GSfilterRenderStateCreate(void)
     return NULL;
 }
 
-void fn_80168638(u8 capacity)
+void GSgappInitPools(u8 capacity)
 {
     u32 size;
     u16 handle;
@@ -181,5 +181,5 @@ void fn_80168638(u8 capacity)
     clearColor[2] = 0;
     clearColor[3] = 0;
     lbl_8047B100 = GSfilterCreate(clearColor);
-    GSgappCreate(1, 0xFC, 0, fn_80168284);
+    GSgappCreate(1, 0xFC, 0, GSfilterDraw);
 }

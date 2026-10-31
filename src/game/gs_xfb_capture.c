@@ -15,14 +15,14 @@
  * generator.cpp end equals GSspline.cpp start with zero gap, so these
  * XFB-dump debug functions were deleted in the XD-era codebase.
  * Classification rests on the "gs%04d.xfb" rodata block position and
- * the call into gs_render_util's fn_800D305C; a separate TU is the
+ * the call into gs_render_util's GSgfxSetFrameClamp; a separate TU is the
  * honest reading since these functions share no globals/calls with the
  * spline code in gs_spline.c. Shared externs/typedefs for the whole
  * former gs_scene.c range live in include/game/gs_scene_types.h.
  *
  * Functions (4, per config/GC6E01/symbols.txt):
  *   fn_80175F6C          (0x80175F6C, not yet decompiled -- "GSgfxCaptureUpdate")
- *   fn_80175FFC          (0x80175FFC, sda21 getter, matched)
+ *   movieCaptureIsActive          (0x80175FFC, sda21 getter, matched)
  *   GSgfxCaptureMovieStop  (0x80176004, was fn_80176004)
  *   GSgfxCaptureMovieStart (0x80176030, was fn_80176030)
  */
@@ -49,7 +49,7 @@ void GSgfxCaptureUpdate(void) {
             sprintf(filename, lbl_80273A00, lbl_8047B1A4++);
             if (lbl_8047B1A4 >= 0x4650) {
                 lbl_8047B1A0 = 0;
-                fn_800D305C(1);
+                GSgfxSetFrameClamp(1);
             }
         }
     } else {
@@ -57,7 +57,7 @@ void GSgfxCaptureUpdate(void) {
     }
 }
 
-u8 fn_80175FFC(void) {
+u8 movieCaptureIsActive(void) {
     return lbl_8047B1A0;
 }
 #if 0
@@ -67,7 +67,7 @@ asm void GSgfxCaptureMovieStop(void) {
 #else
 void GSgfxCaptureMovieStop(void) {
     lbl_8047B1A0 = 0;
-    fn_800D305C(1);
+    GSgfxSetFrameClamp(1);
 }
 #endif
 #if 0
@@ -79,6 +79,6 @@ void GSgfxCaptureMovieStart(u32 param) {
     lbl_8047B1A2 = param;
     lbl_8047B1A0 = 1;
     lbl_8047B1A4 = 0;
-    fn_800D305C(0);
+    GSgfxSetFrameClamp(0);
 }
 #endif

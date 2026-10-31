@@ -6,7 +6,7 @@
 
 extern s32 toolentryTaisenGetBattleType(void);
 extern s32 toolentryTaisenGetEntryPlayerNum(void);
-extern s32 fn_8006B1D4(void);
+extern s32 menuTaisenGetEntryCount(void);
 extern u16 toolentryTaisenGetPokemonNum(s32);
 extern s32 battleResultGet10(void);
 
@@ -18,10 +18,10 @@ typedef struct MenuCBEntryPort {
 extern void std104_soundSetBackgroundMusic(s32, s32, s32);
 extern void* memcpy(void*, const void*, u32);
 extern MenuCBEntryPort* savedataBattleGetEntryPtr(s32);
-extern u32 fn_8006A814(MenuCBEntryPort*);
+extern u32 savedataBattleGetTrainerData(MenuCBEntryPort*);
 extern s32 savedataBattleGetTeamPtr(s32);
 extern void gbaCommandSendWazaText(s32, s32);
-extern void fn_8008AB20(s32, u32, u32);
+extern void gbaCommSendCmd77(s32, u32, u32);
 extern void toolentryTaisenInitPokemonOrder(s32);
 extern void* savedataBattleFindEntryByPlayer(s32);
 extern s32 menuOpen(s32, s32);
@@ -139,7 +139,7 @@ static inline void menuCBEntryPorts(s32 battleType, s32 playerCount)
         s32 wazaText;
 
         port = savedataBattleGetEntryPtr(player);
-        command = fn_8006A814(port);
+        command = savedataBattleGetTrainerData(port);
         wazaText = savedataBattleGetTeamPtr(player);
         MENUCB_WORK->ready[player] = 0;
         if (port->enabled != 0) {
@@ -151,9 +151,9 @@ static inline void menuCBEntryPorts(s32 battleType, s32 playerCount)
             } else {
                 mode = 1;
             }
-            maxCount = fn_8006B1D4();
+            maxCount = menuTaisenGetEntryCount();
             pokemonCount = toolentryTaisenGetPokemonNum(player) & 0xFFFF;
-            fn_8008AB20(command, menuCBMin(pokemonCount, maxCount), mode);
+            gbaCommSendCmd77(command, menuCBMin(pokemonCount, maxCount), mode);
         }
     }
 }

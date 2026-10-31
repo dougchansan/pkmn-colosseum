@@ -1,5 +1,5 @@
 /**
- * PDA functions 0x8003A6C0 - 0x8003AFDC (fn_8003A6C0 .. pdaSnagListDrawCount): the
+ * PDA functions 0x8003A6C0 - 0x8003AFDC (menuAmountDraw .. pdaSnagListDrawCount): the
  * digit display, the numeric spinner, menu setup and the event-group
  * visibility check. Carved from
  * pda_range_80037158.c, which keeps the same bodies for its other
@@ -30,7 +30,7 @@ extern f32 lbl_8047A4C0;
 extern u8 lbl_803A6498[];
 extern u8 lbl_80314F98[];
 extern void* pcboxGetItem(void*, s16);
-extern s32 fn_801429E8(u32 entry);
+extern s32 itemSlotIsValid(u32 entry);
 extern void winSeqSetMenu(s32 id, u32 seqId);
 
 extern f32 lbl_8047BA58;
@@ -146,7 +146,7 @@ extern PdaSceneWork lbl_803A6818;
 
 extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
 extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
-extern s32 fn_80041E48(void* work, s32 mode);
+extern s32 pdaMemoUpdateScroll(void* work, s32 mode);
 extern s32 pdaModelViewerControl(void* work, s32 mode);
 extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
@@ -158,7 +158,7 @@ extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #endif
 
-/* Retail places this callback immediately after fn_80037174. */
+/* Retail places this callback immediately after pdaUnlock. */
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 #endif
@@ -290,13 +290,13 @@ static inline void pdaResetPeopleTables(u8* base, u8* tbl)
    hero-name message slots. */
 static inline void pdaFillSavePrompt(void)
 {
-    extern u32 fn_80005748(void);
+    extern u32 gamedataGetPlaytime(void);
     extern u32 darkPokemonCountFlag14(void);
     extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
-    playTime = fn_80005748();
+    playTime = gamedataGetPlaytime();
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
@@ -328,7 +328,7 @@ static inline s32 pdaBoxItemId(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8((u32)item) != 0) {
+        if ((u8)itemSlotIsValid((u32)item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetItemDataId(item);
@@ -352,7 +352,7 @@ static inline s32 pdaBoxItemNum(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8((u32)item) != 0) {
+        if ((u8)itemSlotIsValid((u32)item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetNum(item);
@@ -369,7 +369,7 @@ static inline s32 pdaBoxItemNum(s32 target)
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8003A6C0(PdaDrawWork* work, PdaSprite* sprite)
+s32 menuAmountDraw(PdaDrawWork* work, PdaSprite* sprite)
 {
     extern const s32 lbl_80267130[3];
     extern s32 lbl_8047A4C8;
@@ -422,7 +422,7 @@ typedef struct PdaNumberWork {
    between digits. */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8003A7F0(PdaNumberWork* work)
+s32 menuAmountKey(PdaNumberWork* work)
 {
     extern PdaKeyInfo* windowGetKeyInfo(void);
     extern s32 lbl_8047A4C8;
@@ -516,7 +516,7 @@ s32 fn_8003A7F0(PdaNumberWork* work)
     return 0;
 }
 
-s32 fn_8003AC50(PdaMenuState* state)
+s32 menuAmountCtrl(PdaMenuState* state)
 {
 
     switch (state->mode) {
@@ -536,7 +536,7 @@ s32 fn_8003AC50(PdaMenuState* state)
     return 0;
 }
 
-s32 fn_8003ACE8(s32 arg0, s32 arg1, s32 arg2)
+s32 itemStorageSelectAmount(s32 arg0, s32 arg1, s32 arg2)
 {
     extern s32 lbl_8047A4C8;
     extern s32 windowGetActiveID(void);
@@ -561,7 +561,7 @@ s32 fn_8003ACE8(s32 arg0, s32 arg1, s32 arg2)
     return value;
 }
 
-s32 fn_8003AD6C(PdaSelectionWork* work, PdaSprite* sprite)
+s32 itemStorageConfirmDrawSprite(PdaSelectionWork* work, PdaSprite* sprite)
 {
     extern const s32 lbl_80267140[4];
     s32 groups[4];
@@ -603,7 +603,7 @@ s32 fn_8003AD6C(PdaSelectionWork* work, PdaSprite* sprite)
     return 0;
 }
 
-s32 fn_8003AE84(void)
+s32 itemStorageConfirm(void)
 {
     extern s32 menuOpen(s32 menu, s32 mode);
     extern void menuClose(s32 menu);

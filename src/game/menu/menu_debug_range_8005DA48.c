@@ -183,8 +183,8 @@ s32 dbgMenuFieldCameraChangeDisp(void)
     extern s32 menuOpenCustom(s32 menuId, ...);
     extern void menuSetPosition(s32 menuId, s32 x, s32 y);
     extern u32 std092_getCurrentRoomID(void);
-    extern void fn_801176C8(u32 floorId);
-    extern u32 fn_80117AD4(void);
+    extern void fieldCameraDebugReload(u32 floorId);
+    extern u32 fieldCameraDebugGetRoom(void);
     extern u32 lbl_8047A5B0;
     extern u32 lbl_8047A5B4;
     extern u32 lbl_8047A5B8;
@@ -193,8 +193,8 @@ s32 dbgMenuFieldCameraChangeDisp(void)
 
     if (!menuIsCheck(0xCA)) {
         floorId = std092_getCurrentRoomID();
-        if (floorId != fn_80117AD4()) {
-            fn_801176C8(floorId);
+        if (floorId != fieldCameraDebugGetRoom()) {
+            fieldCameraDebugReload(floorId);
             lbl_8047A5B0 = 0;
             lbl_8047A5B4 = 0;
             lbl_8047A5B8 = 0;
@@ -216,7 +216,7 @@ s32 dbgMenuFieldCameraChangeDisp(void)
 void menuDbgItemCreate(void)
 {
     extern s32 menuOpen(s32 menuId, s32 mode);
-    extern u8 fn_80142984(u16 itemId);
+    extern u8 itemIdIsValid(u16 itemId);
     extern void menuCloseCustom(s32 menuId, s32 mode, s32 wait);
     extern s32 heroItemAddItemDataId(void* hero, u16 itemId, u16 count,
                                      s32 slot);
@@ -238,7 +238,7 @@ void menuDbgItemCreate(void)
         if (result == -1) {
             break;
         }
-        if (fn_80142984((u16)lbl_8047A5C8) == 0) {
+        if (itemIdIsValid((u16)lbl_8047A5C8) == 0) {
             continue;
         }
         if (lbl_8047A5C4 < 1 || lbl_8047A5C4 > 999) {

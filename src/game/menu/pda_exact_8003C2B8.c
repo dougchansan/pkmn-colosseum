@@ -28,8 +28,8 @@ extern PdaListEntry* lbl_8047A4D4;
 extern u32 lbl_8047A4D0;
 extern s32 lbl_8047A4DC;
 
-extern void fn_800FE35C(void);
-extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
+extern void spriteClearScissor(void);
+extern void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2);
 extern s32 GSmsgPrintColor(s32 x, s32 y, s32 color, void* data);
 extern u32 GSmsgGetGSchar(u32 msg);
 extern void msgctrlSetValue(s32 id, u32 value);
@@ -40,17 +40,17 @@ extern void* pokemonDataBiosGetName(void* data);
 extern void* fightTrainerPokemonDataBiosGetNickname(void* entry);
 extern u8 fightTrainerPokemonDataBiosGetDarkPokemonFlag(void* entry);
 extern u8 darkPokemonCheckFlag0C(u16 id);
-extern u16 fn_801EEFAC(u16 id, s32 side);
+extern u16 darkPokemonGetSpecies(u16 id, s32 side);
 extern u16 darkPokemonSaveGet4A0(u16 id);
 extern u8* darkPokemonSaveGetName(u16 id);
 extern s32 darkPokemonGetFlag1C(u16 id);
 extern u8 darkPokemonCheckFlag16(u16 id);
 extern u8 darkPokemonCheckFlag12(u16 id);
 extern u8 darkPokemonCheckFlag14(u16 id);
-extern u32 fn_801FCC7C(u8* ptr);
+extern u32 fightTrainerDataBiosGetStatus03(u8* ptr);
 extern void* fightTrainerDataBiosGetPtr();
 extern u32 darkPokemonGetFlagListValue(u16 id, u8* variant);
-extern u16 fn_801FCC3C(u8* ptr);
+extern u16 fightTrainerDataBiosGetStatus05(u8* ptr);
 extern void* fightTrainerPokemonDataBiosGetPtr(u16 slot);
 
 /* The owner caption of a party entry's battle: the trainer-kind or species
@@ -76,11 +76,11 @@ static inline u32 pda_8003C2B8_OwnerText(s32 off, u8* slot)
         case 2:
             if (kind == 0x43) {
                 caption = 0x12b0;
-            } else if ((trainerId = fn_801EEFAC(kind, 0)) == 9) {
+            } else if ((trainerId = darkPokemonGetSpecies(kind, 0)) == 9) {
                 text = (u32)darkPokemonSaveGetName(kind);
                 special = 1;
             } else {
-                caption = fn_801FCC7C((void*)fightTrainerDataBiosGetPtr(trainerId));
+                caption = fightTrainerDataBiosGetStatus03((void*)fightTrainerDataBiosGetPtr(trainerId));
             }
             break;
         }
@@ -104,7 +104,7 @@ static inline u32 pdaBattleCaption(u16 id)
     void* nick;
     u32 name;
 
-    trainerId = fn_801EEFAC(id, 0);
+    trainerId = darkPokemonGetSpecies(id, 0);
     if (trainerId == 9) {
         data = pokemonDataBiosGetPtr(darkPokemonSaveGet4A0(id));
         if (data != NULL) {
@@ -112,7 +112,7 @@ static inline u32 pdaBattleCaption(u16 id)
         }
     } else {
         entry = fightTrainerPokemonDataBiosGetPtr(
-            fn_801FCC3C((u8*)fightTrainerDataBiosGetPtr(trainerId)));
+            fightTrainerDataBiosGetStatus05((u8*)fightTrainerDataBiosGetPtr(trainerId)));
         name = GSmsgGetGSchar(
             (u32)fightTrainerPokemonDataBiosGetNickname(entry));
         for (;;) {
@@ -152,7 +152,7 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
 
     alphaSprite->alphaByte =
         255.0f * *(f32*)(lbl_803A6748 + 0x44);
-    fn_800FE38C(*(s16*)(lbl_802EF0A8 + 0x4fa2) -
+    spriteSetScissor(*(s16*)(lbl_802EF0A8 + 0x4fa2) -
                     *(s16*)(lbl_802EF0A8 + event->messageId * 0x1c + 2),
                 *(s16*)(lbl_802EF0A8 + 0x4fa4) -
                     *(s16*)(lbl_802EF0A8 + event->messageId * 0x1c + 4),
@@ -220,5 +220,5 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
         rowY = rowY + stride;
         off += 4;
     }
-    fn_800FE35C();
+    spriteClearScissor();
 }

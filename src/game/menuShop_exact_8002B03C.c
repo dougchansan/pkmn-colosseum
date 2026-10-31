@@ -12,7 +12,7 @@ extern f32 lbl_8047B978;
 #pragma push
 #pragma peephole off
 #pragma optimization_level 4
-s32 fn_8002B03C(void* r3)
+s32 shopMenuDrawText3(void* r3)
 {
     void* ctx;
     u8 v;
@@ -27,7 +27,7 @@ s32 fn_8002B03C(void* r3)
 #pragma pop
 
 #pragma peephole off
-s32 fn_8002B088(void)
+s32 shopMenuDrawText4(void)
 {
     GSmsgPrintColor(0, 0, -1, lbl_8047A3E4);
     return 0;
@@ -35,7 +35,7 @@ s32 fn_8002B088(void)
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole on
 
-s32 fn_8002B0BC(void* r3, u8* r4)
+s32 shopMenuDrawItem6(void* r3, u8* r4)
 {
     u16 hv;
     u8* ctx;
@@ -56,7 +56,7 @@ end:
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8002B134(void* r3, u8* r4)
+s32 shopMenuDrawItem7(void* r3, u8* r4)
 {
     u16 hv;
     void* ctx;

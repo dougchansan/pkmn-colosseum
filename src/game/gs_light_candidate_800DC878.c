@@ -22,7 +22,7 @@ extern void HSD_LObjRemoveAnimAll(void*);
 extern void HSD_LObjAddAnimAll(void*, void*);
 extern void HSD_LObjReqAnimAll(void*, f32);
 extern void HSD_ForeachAnim(void*, u32, u32, void*, u32, ...);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern void HSD_AObjSetRate(void);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8*);
 
@@ -71,7 +71,7 @@ void GSlightPopState(u8* obj, u8* snapshot) {
     }
     speed = *(f32*)(snapshot + 0x24);
     if (obj[2]) {
-        if (fn_800D37CC() == 0x32) {
+        if (GSgfxGetVsyncRate() == 0x32) {
             speed *= lbl_8047CA88;
         }
         *(f32*)(obj + 0x64) = speed;

@@ -1,5 +1,5 @@
 /**
- * PDA fn_8003AFDC (.text 0x8003AFDC - 0x8003B2D8): per-event sprite drawing
+ * PDA pdaSnagListDrawModel (.text 0x8003AFDC - 0x8003B2D8): per-event sprite drawing
  * (model texture, status icon, caption). Carved from pda_range_80037158.c, which keeps the
  * same body for its other candidate partitions.
  */
@@ -28,7 +28,7 @@ extern f32 lbl_8047A4C0;
 extern u8 lbl_803A6498[];
 extern u8 lbl_80314F98[];
 extern void* pcboxGetItem(void*, s16);
-extern s32 fn_801429E8(u32 entry);
+extern s32 itemSlotIsValid(u32 entry);
 
 extern f32 lbl_8047BA58;
 extern f32 lbl_8047BA5C;
@@ -143,7 +143,7 @@ extern PdaSceneWork lbl_803A6818;
 
 extern s32 pdaSnagListDetailKey(void* window, s32 enabled);
 extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
-extern s32 fn_80041E48(void* work, s32 mode);
+extern s32 pdaMemoUpdateScroll(void* work, s32 mode);
 extern s32 pdaModelViewerControl(void* work, s32 mode);
 extern void pdaReadPadInput(void* scene);
 extern void GSscene_SetMode(s32 mode);
@@ -155,7 +155,7 @@ extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 
 #endif
 
-/* Retail places this callback immediately after fn_80037174. */
+/* Retail places this callback immediately after pdaUnlock. */
 
 #if !defined(PDA_RANGE_EXACT_80037174_ONLY)
 #endif
@@ -287,13 +287,13 @@ static inline void pdaResetPeopleTables(u8* base, u8* tbl)
    hero-name message slots. */
 static inline void pdaFillSavePrompt(void)
 {
-    extern u32 fn_80005748(void);
+    extern u32 gamedataGetPlaytime(void);
     extern u32 darkPokemonCountFlag14(void);
     extern u32 darkPokemonCountFlag12(void);
     extern void msgctrlSetValue(s32 id, u32 value);
     u32 playTime;
 
-    playTime = fn_80005748();
+    playTime = gamedataGetPlaytime();
     if (lbl_8047A498 != 0) {
         playTime = lbl_8047A498;
     }
@@ -325,7 +325,7 @@ static inline s32 pdaBoxItemId(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8((u32)item) != 0) {
+        if ((u8)itemSlotIsValid((u32)item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetItemDataId(item);
@@ -349,7 +349,7 @@ static inline s32 pdaBoxItemNum(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8((u32)item) != 0) {
+        if ((u8)itemSlotIsValid((u32)item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetNum(item);
@@ -424,7 +424,7 @@ extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
 extern u32 GSmemGetHandleByPtr();
 extern u32 GSmemFree();
-extern u32 fn_800E24B0();
+extern u32 GSmemUnlock();
 extern u32 GSmemLock();
 extern u32 GSmemAlloc();
 extern u32 fn_800FA280();
@@ -443,9 +443,9 @@ extern u32 fn_801240C4();
 extern u32 fn_80132A38();
 extern u32 soundStartRaw(u32, u32, u32);
 extern u32 GSresReleaseById();
-extern s32 fn_8017B2CC();
-extern u32 fn_8017B3E4();
-extern u32 fn_801EE0BC();
+extern s32 GSresGroupGetState();
+extern u32 fsysStartLoad();
+extern u32 darkPokemonSaveGet4A4();
 extern u16 darkPokemonSaveGet4A0();
 extern u32 darkPokemonSaveGetName();
 extern u16 darkPokemonGetFlag1C();
@@ -454,13 +454,13 @@ extern u8 darkPokemonCheckFlag16();
 extern u8 darkPokemonCheckFlag12();
 extern u8 darkPokemonCheckFlag14();
 extern u8 darkPokemonCheckFlag0C(u16);
-extern u16 fn_801EEFAC();
-extern u32 fn_801FCC7C();
+extern u16 darkPokemonGetSpecies();
+extern u32 fightTrainerDataBiosGetStatus03();
 extern u32 fightTrainerDataBiosGetPtr();
 extern u32 gamedataGetStatus();
 extern void menuCloseSync(s32, s32);
-extern u32 fn_80018F54();
-extern u32 fn_800F915C();
+extern u32 bagMenuOpen();
+extern u32 GSresReleaseOwner();
 
 extern void windowDrawSprite(s16 x, s16 y, PdaSprite* sprite, u16 id, s32 arg4);
 extern u8 menuModelCheck(void* work, s32 index);
@@ -487,7 +487,7 @@ static inline void pdaDrawModelTexture(PdaSprite* sprite, u8* model)
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_8003AFDC(u8* context, PdaSprite* sprite)
+void pdaSnagListDrawModel(u8* context, PdaSprite* sprite)
 {
     u8* model;
     u16 battleId;

@@ -1,6 +1,6 @@
 /**
  * @file field_exact_801ED3B8.c
- * @brief fn_801ED3B8 (0x801ED3B8 - 0x801ED640): the field step callback
+ * @brief darkPokemonStepCallback (0x801ED3B8 - 0x801ED640): the field step callback
  *        registered through heroMoveAddStepCallback. Each step it
  *        advances the purification counter of every party Shadow Pokemon
  *        (resetting it and applying the DP form at 0x100), bumps the step
@@ -20,7 +20,7 @@ extern u8 pokemonCheckValid(u8* pokemon);
 extern u16 pokemonBiosGetDarkpokemonDataId(u8* pokemon);
 extern u8 darkPokemonCheckFlag14(u16 darkPokemonId);
 extern u32 pokemonBiosGetDp(u8* pokemon);
-extern u16 fn_801EE470(u16 darkPokemonId);
+extern u16 darkPokemonSaveGetDp(u16 darkPokemonId);
 extern void darkPokemonSaveSetDp(u16 darkPokemonId, u16 value);
 extern u32 std082_flagGetValue(u16 flag);
 extern void _flagSet(u32 flag, u32 value);
@@ -31,7 +31,7 @@ extern void pokemonGrowBasisStatus(u8* pokemon, u32 experience);
 extern void pokemonOboeWaza(u8* pokemon, u8 level, u32 flag, u8* learned);
 
 /* 0x801ED3B8 | 0x288 */
-void fn_801ED3B8(void)
+void darkPokemonStepCallback(void)
 {
     u16 i;
     u8* hero;
@@ -53,11 +53,11 @@ void fn_801ED3B8(void)
                 dark = 0;
             }
             if (dark != 0 && pokemonBiosGetDp(pokemon) != 0) {
-                if (fn_801EE470(dark) >= 0x100) {
+                if (darkPokemonSaveGetDp(dark) >= 0x100) {
                     pokemonAddDpFormPokemonDpFilterId(pokemon, 0, 1);
                     darkPokemonSaveSetDp(dark, 0);
                 } else {
-                    value = fn_801EE470(dark);
+                    value = darkPokemonSaveGetDp(dark);
                     darkPokemonSaveSetDp(dark, value + 1);
                 }
             }
@@ -92,11 +92,11 @@ void fn_801ED3B8(void)
         }
         if (dark != 0) {
             if (pokemonBiosGetDp(pokemon) != 0) {
-                if (fn_801EE470(dark) >= 0x100) {
+                if (darkPokemonSaveGetDp(dark) >= 0x100) {
                     pokemonAddDpFormPokemonDpFilterId(pokemon, 0, 3);
                     darkPokemonSaveSetDp(dark, 0);
                 } else {
-                    value = fn_801EE470(dark);
+                    value = darkPokemonSaveGetDp(dark);
                     darkPokemonSaveSetDp(dark, value + 1);
                 }
             }

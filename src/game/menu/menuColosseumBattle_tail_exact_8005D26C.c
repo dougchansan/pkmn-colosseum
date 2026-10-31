@@ -15,7 +15,7 @@ extern const u32 lbl_8047BF34;
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8005D26C(void) {
+s32 pcBoxSelectFromTable(void) {
     s32 menuResult;
     s32 results[2];
 

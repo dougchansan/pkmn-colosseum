@@ -8,7 +8,7 @@ typedef struct PdaMailSpinWork {
     f32 angle;
 } PdaMailSpinWork;
 
-s32 fn_8004E144(void* window, PdaMailSpinWork* sprite)
+s32 pdaMailAttachDrawItem(void* window, PdaMailSpinWork* sprite)
 {
     f64 new_var2;
     f64 wrap = lbl_8047BE30;

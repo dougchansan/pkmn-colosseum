@@ -36,7 +36,7 @@ extern void* memset(void* dst, int val, u32 size);
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
 extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
-extern void* fn_800E24B0(u16 handle);                   /* GSmemLock */
+extern void* GSmemUnlock(u16 handle);                   /* GSmemLock */
 extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 /* Matrix / vector */
 extern void  PSMTXMultVec(void* mtx, void* vec, void* out); /* MTXMultVec3 */
@@ -118,7 +118,7 @@ extern void heroItemGetItemKindToItemAryPtr(void);
 extern void heroSetStatus();
 extern u32 heroGetStatus(void*, u32, u32);
 extern void* GSresAllocResourceAlign(); /* K&R: called with 5 args, returns void* */
-extern u8 fn_800FF548(void);
+extern u8 floorGetFadeOutFlag(void);
 extern u32 _unloadScript__FPvUlUl(); /* K&R: asm void wrapper, used as function pointer */
 extern u32 _unloadFont__FPvUlUl(); /* K&R: asm void wrapper, used as function pointer */
 extern u32 _unloadMsg__FPvUlUl(); /* K&R: asm void wrapper, used as function pointer */
@@ -140,17 +140,17 @@ extern u8 lbl_8035B8A0[];
 extern void* floorDataBiosGetFieldCameraListPtr();
 extern u32 floorDataBiosGetGroupID();
 extern void* floorDataBiosGetPtr(u32 key);
-extern void fn_8011791C(void);
+extern void fieldCameraDebugUpdate(void);
 extern void gsParticleKillOldest(void);
 extern void gsParticlePtclHook();
 extern u8 joutaiDataBiosGetKaisuuId(u16 idx);
 extern u8 joutaiDataBiosGetMaxStack(u16 idx);
-extern u16 fn_80119E10(u16 idx);
+extern u16 joutaiDataBiosGetLinkId(u16 idx);
 extern u8 joutaiDataBiosGetWriteMode(u16 idx);
 extern u8 joutaiDataBiosGetSlot(u16 idx);
 extern u16 joutaiDataBiosGetStatusKind(u16 idx);
 extern u8 joutaiDataBiosGetObjectKind(u16 idx);
-extern u32 fn_80119F50(u16 idx);
+extern u32 itemDataGetHoldEffect(u16 idx);
 extern void wazaDataBiosSetFightWazaWzxVariationFuncPtr(u8* ptr, u32 val);
 extern void wazaDataBiosSetFightWazaWzxTypeFuncPtr(u8* ptr, u32 val);
 extern u32 wazaDataBiosGetFightWazaWzxVariationFuncPtr(u8* ptr);
@@ -245,7 +245,7 @@ extern void GSmodelCanAnimate(void);
 extern void std070_characterAttachToCharacter(void);
 extern void std059_characterSetPosition(void);
 extern void GSmodelGetFrameCount(void);
-extern void fn_800D37CC(void);
+extern void GSgfxGetVsyncRate(void);
 extern f32 lbl_8047CFA0;
 extern u32 lbl_80478EC8;
 extern u32 lbl_80478ECC;
@@ -258,8 +258,8 @@ extern f32 lbl_8047CFB0;
 void floorEventCtrlElevator(void);
 extern void scriptSetCol(void);
 extern void std079_flagSetTrue(void);
-extern void fn_8018C558(void);
-extern void fn_8018C8F4(void);
+extern void peopleGetFlags(void);
+extern void peopleWriteFlagsByID_8018C8F4(void);
 void floorEventCtrlDoor(void);
 extern void EvlogSet__FScUl();
 extern void scriptSetEventColID();
@@ -296,11 +296,11 @@ extern void cameraMovePosition(u32, void*, f32);
 extern void cameraMoveRotation(u32, void*, f32);
 extern void GSgappTerminate(void);
 extern void GSgappCreate(void);
-void fn_801176C8(void);
+void fieldCameraDebugReload(void);
 extern void* GScameraGetActiveCamera();
 extern void GSvecCopy();
 extern u8 lbl_802727B8[];
-extern void fn_80177A38(void); /* referenced by asm .inc wrappers (fn_801171C8/80117330/8011791C/8012E388/8012EBD4); was undefined -> broke the TU parse */
+extern void fn_80177A38(void); /* referenced by asm .inc wrappers (fieldCameraUpdate/80117330/8011791C/8012E388/8012EBD4); was undefined -> broke the TU parse */
 extern void GSmodelResetTextureChange(void);
 extern void GSmodelFree(void);
 extern void GStextureCreate(void);
@@ -315,19 +315,19 @@ extern u32 lbl_8047AD90;
 extern u32 lbl_8047AD94;
 extern u32 lbl_8047AD80;
 extern u32 lbl_8047AD84;
-extern void fn_800EC134(u32);
-extern void fn_800D4604();
-extern void fn_800D377C();
+extern void GSmodelApplyAnimation(u32);
+extern void gfxSetRecordMode();
+extern void GSgfxSetPixelFormatMode();
 extern void GSgfxRenderLayer();
-extern void fn_800D9B24();
-extern void fn_800D9AF0();
-extern void fn_800D258C();
+extern void gfxGetScissorBox();
+extern void gfxGetViewportBox();
+extern void GScameraSetCurrent();
 extern void gfxSetScissor();
 extern void gfxSetViewport();
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
 extern void GSmodelDrawModel();
 extern void GSgfxRenderEnd(void);
-extern void fn_800FF4D4(void);
+extern void floorRegisterHandler(void);
 extern u32 lbl_802727C8[];
 extern void psSetBillboardCamera();
 extern void psDispMain();
@@ -341,7 +341,7 @@ extern u32 lbl_8047ADA0;
 void gsParticleUpdateAll(void);
 extern void GSquatFromEuler(void);
 extern void GSvecTransformQuat(void);
-extern void fn_800E0108(void);
+extern void GSvecMulComponents(void);
 extern void psInterpretParticles(void);
 extern void psExecGenerator(void);
 extern void GSgetVersionMajor(void);
@@ -355,7 +355,7 @@ extern void psLinkChildGensToJObj(void);
 extern f32 lbl_8047CFE8;
 extern f32 lbl_8047CFEC;
 extern void psCreateGeneratorID(void);
-extern void fn_800D3094(void);
+extern void GSgfxGetRetraceCount(void);
 extern u32 lbl_8047ADAC;
 extern u32 lbl_8047ADA8;
 void gsParticleCreate(void);
@@ -376,11 +376,11 @@ extern void GSmodelSearchModelList(void);
 extern void GSmodelGetLinkedGSparticleBank(void);
 extern void GSmodelIsRootNullAdded(void);
 extern void GSpartGetJObjIndex(void);
-extern void fn_800E3CBC(void);
+extern void GSmodelGetFlag200(void);
 extern void GSmodelGetGSparticleLinkAttachMode(void);
 extern void GSmodelGetVisibility(void);
 extern void fn_80135E44(void);
-void fn_8011A0A8(void);
+void statusCopyJoutai(void);
 extern s32 kaisuuGetKaisuu(u32);
 extern void jumptable_8035C260();
 extern void fightWazaBiosSetWazaBanme(void);
@@ -453,25 +453,25 @@ extern void pokemonGetFaceSpriteId(void);
 extern void fn_8001D994(void);
 void pokemonToMenuPokemonStatus(void);
 extern void GSmsgGetGSchar(void);
-extern void fn_8010C4D4(void);
-extern void fn_8010C46C(void);
+extern void wazaDataGetDesc(void);
+extern void wazaDataGetName(void);
 extern void GSrand(void);
 extern u8 lbl_8027296C[];
 void pokemonCheckSetMonohiroi(void);
 void pokemonAllKaihuku(void);
-extern u32 fn_801DE190(u32 idx, u32 base, u32 flag);
-extern void fn_801DA3CC(void);
-extern void fn_801DA36C(void);
+extern u32 wazaSequencePokemonCreate(u32 idx, u32 base, u32 flag);
+extern void wazaSequenceOwnerSetFlag(void);
+extern void wazaSequenceOwnerClearFlag(void);
 extern u32 lbl_80478F90; /* obj header ptr (SDA) */
 extern void fn_80135530(void);
 void pokemonGetFriendFormPokemonFriendFilterId(void);
 extern u8 lbl_80272948[];
 void pokemonGetEffortFromPokemon(void);
-extern void fn_80008154(void);
+extern void getGlobal8047A280(void);
 extern void fn_80142CF4(void);
 extern u32 sexGetPokemonSexRaitoKotei(u32);
-extern void fn_801EE958(void);
-extern void fn_801EEB34(void);
+extern void darkPokemonSetFlag16(void);
+extern void darkPokemonSetFlag12(void);
 extern void memoDataSet(void);
 void pokemonCheckFightOut(void);
 extern void gamedataAttestBiosCopy(void);
@@ -502,17 +502,17 @@ extern void mailInitMailbox(void);
 extern void sodateyaInit(void);
 extern void savedataBattleInit(void);
 extern void memoInit(void);
-extern void fn_80083CBC(void);
-extern void fn_801EF128(void);
+extern void cardeArenaClear(void);
+extern void darkPokemonSaveInit(void);
 extern void exribbonInit(void);
 extern void jumptable_803634A8();
-extern void fn_80140A9C(void);
-extern void fn_80140ACC(void);
-extern void fn_80141308(void);
-extern void fn_80142368(void);
-extern void fn_80140588(void);
+extern void itemSwapSlots(void);
+extern void heroItemChangeCount(void);
+extern void itemSlotsAdd(void);
+extern void itemSlotsFind(void);
+extern void peopleFieldGetPlacementOffset(void);
 extern void pcboxAddPokemon(void);
-extern void fn_80142A88(void);
+extern void itemSlotsClear(void);
 extern void jumptable_803634F0();
 extern void jumptable_80363558();
 extern void fadeEffectDokuStart(void);
@@ -520,19 +520,19 @@ extern void peopleClearFlagsByIndex(void);
 extern void std151_characterFaceDirection(void);
 extern void winMsgOpenField(void);
 extern void winMsgCloseField(void);
-extern void fn_801D0AFC(void);
+extern void heroPartyHealAll(void);
 extern void floorReturnToSavedRoom(void);
 void cbPoison__Fl15FootStepCounterl(s32 arg);
 extern u32 peopleIsInGroup();
 extern u32 peopleSearchID();
 extern void peopleInfoBiosGetPtr(void);
-extern void fn_8018F5E4(void);
+extern void charModelGetRadius(void);
 extern void colsysWallSweep(void);
 extern void PSVECScale(void);
 extern void PSVECAdd(void);
 extern void GScolsys2HumanCollision(void);
 extern u8 lbl_80478AC0[];
-u32 fn_8012B19C(s32 member, HeroMoveVec* start, HeroMoveVec* target, f32 extraRadius);
+u32 partnerCheckBlocked(s32 member, HeroMoveVec* start, HeroMoveVec* target, f32 extraRadius);
 u32 heroMoveChkHinderClear(s32 member);
 extern u32 GSgetFrameStep(void);
 void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(f32*, void*, s32*, f32*);
@@ -548,25 +548,25 @@ extern void GSinputResetRightSmoothing(void);
 extern void peopleGetHeadGroundPos(void);
 extern void peopleTurnToPoint(void);
 extern u8 peopleIsTreasure();
-extern void fn_80183730(void);
+extern void peopleHideAndSuspendBySelf(void);
 extern u32 peopleGetTalkScript();
 extern void peopleTalkPause(void);
 extern void std055_characterEndSpeech(void);
-extern void fn_80183688(void);
+extern void peopleShowAndResumeBySelf(void);
 u8 updateChat__F15HEROMOVE_MEMBER(s32 player);
 s32 heroMoveCheckEvent(void* event);
-extern void fn_8018F4C8(void);
+extern void peopleInfoGetMotion(void);
 extern void GSmodelGetAnimIndex(void);
 extern void GSmodelGetAnimFrame(void);
 extern void GSmodelSetAnimBlend(void);
 extern void GSmodelSetBlendFactor(void);
 s32 circleLineIntersect(HeroMoveVec*, HeroMoveVec*, HeroMoveVec*, HeroMoveVec*, HeroMoveVec*, f32);
 void partnerGetTarget(s32, HeroMoveVec*, HeroMoveVec*);
-extern void fn_800E3C64(void);
+extern void GSmodelHasAnimation(void);
 void partnerMove(s32 member);
 extern void GSinputGetLeftStickXData(void);
 extern void GSinputGetLeftStickYData(void);
-extern void fn_800F7BC4(void);
+extern void GSinputGetButtons(void);
 extern void peopleSetSpeedFromAmount(void);
 extern void soundUpdateListener(void);
 void heroReadStick(s32, f32*);
@@ -582,10 +582,10 @@ extern u8 lbl_80272A38[];
 u32 heroMoveMain(void);
 extern void std067_characterStopLookAt(u32, u32);
 extern void std065_characterLookAtPlayer(u32, u32);
-s32 fn_8012F1FC(s32);
-s32 fn_8012F40C(s32);
+s32 partnerSetFollowing(s32);
+s32 partnerSetFollowState(s32);
 extern void GSmodelGetRotation(void);
-extern void fn_8010E138(void);
+extern void GScolsys2CollectWalkHeight(void);
 extern void GSmodelSetRotation(void);
 void initFloor__Fv(void);
 extern u32 floorGetNextFloorID(void);
@@ -596,18 +596,18 @@ u32 heroMoveGetKenObjID(void);
 extern void peopleOpen(u32, u32, u32);
 extern void GSmodelEnableAnimBlend(void*);
 extern void peopleRegisterHumanCollision(u32, u32);
-extern void fn_80189328(u32, u32, u32);
+extern void peopleSetTalkable_80189328(u32, u32, u32);
 extern void peopleSetRotation(u32, u32, void*);
 s32 heroMoveInit(void*, void*);
 void heroMoveSyncWithHero(void);
-void fn_8013024C(void);
+void partnerSystemInit(void);
 extern void gamedataGetStatus(void);
 extern void gamedataAttestCreate(void);
 extern void cms_RegisterScript();
 extern void floorStartSoundScript(void);
 extern void GSmsgFontOpen();
 extern void GSmsgOpen();
-extern u8 fn_800FF554(void);
+extern u8 floorGetCurrentKind(void);
 extern void cms_UnregisterScript();
 extern void fn_800FC2A8();
 extern void GSmsgClose();
@@ -799,27 +799,27 @@ extern void peopleMoveByVector(void);
 extern void PSVECDotProduct(void);
 extern void charModelGetHeadYawMin(void);
 extern void charModelGetHeadYawMax(void);
-extern u8 fn_801174EC(void);
-extern void fn_80119F90(u8* ptr, u16 val);
-extern void fn_80119FA0(u8* ptr, u32 val);
-extern void fn_80119FB0(u8* ptr, u8 val);
-extern void fn_80119FC0(u8* ptr, u8 val);
-extern void fn_80119FD0(u8* ptr, u8 val);
-extern void fn_80119FE0(u8* ptr, u16 val);
-extern void fn_80119FF0(u8* ptr, u16 val);
+extern u8 cameraGetReturnDone(void);
+extern void joutaiSlotSet0C(u8* ptr, u16 val);
+extern void joutaiSlotSet08(u8* ptr, u32 val);
+extern void joutaiSlotSetStack(u8* ptr, u8 val);
+extern void joutaiSlotSet05(u8* ptr, u8 val);
+extern void joutaiSlotSetKaisuu(u8* ptr, u8 val);
+extern void joutaiSlotSetParam(u8* ptr, u16 val);
+extern void joutaiSlotSetDataId(u8* ptr, u16 val);
 extern u16 joutaiSlotGet0C(u8* ptr);
 extern u32 joutaiSlotGet08(u8* ptr);
-extern u8 fn_8011A030(u8* ptr);
+extern u8 joutaiSlotGetStack(u8* ptr);
 extern u8 joutaiSlotGet05(u8* ptr);
-extern u8 fn_8011A060(u8* ptr);
-extern u16 fn_8011A078(u8* ptr);
-extern u16 fn_8011A090(u8* ptr);
+extern u8 joutaiSlotGetKaisuu(u8* ptr);
+extern u16 joutaiSlotGetParam(u8* ptr);
+extern u16 joutaiSlotGetDataId(u8* ptr);
 extern void wazaDataBiosSetRiskFlag(u8* ptr, u8 val);
 extern u8 wazaDataBiosGetRiskFlag(u8* ptr);
 extern void wazaDataBiosSetHidenFlag(u8* ptr, u8 val);
 extern u8 wazaDataBiosGetHidenFlag(u8* ptr);
-extern void fn_8011C5E0(u8* ptr, u8 val);
-extern void fn_8011C5F0(u8* ptr, u8 val);
+extern void wazaSetField15(u8* ptr, u8 val);
+extern void wazaSetField14(u8* ptr, u8 val);
 extern void wazaDataBiosSetDoc(u8* ptr, u32 val);
 extern void wazaDataBiosSetWazawzxdataId(u8* ptr, u32 val);
 extern void wazaDataBiosSetPressure(u8* ptr, u8 val);
@@ -845,8 +845,8 @@ extern void wazaDataBiosSetPri(u8* ptr, u8 val);
 extern void wazaDataBiosSetZokuseiDataId(u8* ptr, u8 val);
 extern void wazaDataBiosSetPp(u8* ptr, u8 val);
 extern void wazaDataBiosSetName(u8* ptr, u32 val);
-extern u8 fn_8011C790(u8* ptr);
-extern u8 fn_8011C7A8(u8* ptr);
+extern u8 wazaGetField15(u8* ptr);
+extern u8 wazaGetField14(u8* ptr);
 extern u32 wazaDataBiosGetDoc(u8* ptr);
 extern u32 wazaDataBiosGetWazawzxdataId(u8* ptr);
 extern u8 wazaDataBiosGetPressure(u8* ptr);
@@ -878,13 +878,13 @@ extern u32 pokemonTokuseiDataBiosGetDoc(u8* ptr);
 extern u32 pokemonTokuseiDataBiosGetName(u8* ptr);
 extern u8 pokemonSeikakuRateDataBiosGetWaru(u8* ptr);
 extern u8 pokemonSeikakuRateDataBiosGetKake(u8* ptr);
-extern u8 fn_8011CC54(u8* ptr);
-extern u8 fn_8011CC6C(u8* ptr);
-extern u8 fn_8011CC84(u8* ptr);
-extern u8 fn_8011CC9C(u8* ptr);
-extern u8 fn_8011CCB4(u8* ptr);
-extern u8 fn_8011CCCC(u8* ptr);
-extern u8 fn_8011CCE4(u8* ptr);
+extern u8 wazaGetField11(u8* ptr);
+extern u8 wazaGetField10(u8* ptr);
+extern u8 wazaGetField0F(u8* ptr);
+extern u8 wazaGetField0E(u8* ptr);
+extern u8 wazaGetField0D(u8* ptr);
+extern u8 wazaGetField0C(u8* ptr);
+extern u8 wazaGetField0B(u8* ptr);
 extern s32 pokemonSeikakuDataBiosGetReliveNadenade(u8* ptr);
 extern s32 pokemonSeikakuDataBiosGetReliveSodateya(u8* ptr);
 extern s32 pokemonSeikakuDataBiosGetReliveCall(u8* ptr);
@@ -896,9 +896,9 @@ extern u8 pokemonSeikakuDataBiosGetSpeAtkRateDataId(u8* ptr);
 extern u8 pokemonSeikakuDataBiosGetPhyDefRateDataId(u8* ptr);
 extern u8 pokemonSeikakuDataBiosGetPhyAtkRateDataId(u8* ptr);
 extern u32 pokemonSeikakuDataBiosGetName(u8* ptr);
-extern void fn_8011CEA0(u8* ptr, u8 val);
-extern void fn_8011CEB0(u8* ptr, u8 val);
-extern void fn_8011CEC0(u8* ptr, u16 val);
+extern void pokemonSetField04(u8* ptr, u8 val);
+extern void pokemonSetField03(u8* ptr, u8 val);
+extern void pokemonSetField16(u8* ptr, u16 val);
 extern void pokemonDataBiosSetPkxDataId(u8* ptr, u32 val);
 extern void pokemonDataBiosSetNumPokemon(u8* ptr, u16 val);
 extern void pokemonDataBiosSetNumZukan(u8* ptr, u16 val);
@@ -935,9 +935,9 @@ extern void pokemonBiosSetCatchLevel(u8* ptr, u8 val);
 extern void pokemonBiosSetCatchFloorId(u8* ptr, u16 val);
 extern void pokemonBiosSetRnd(u8* ptr, u32 val);
 extern void pokemonBiosSetPokemonDataId(u8* ptr, u16 val);
-extern u8 fn_8011E000(u8* ptr);
-extern u8 fn_8011E018(u8* ptr);
-extern u16 fn_8011E030(u8* ptr);
+extern u8 pokemonGetField04(u8* ptr);
+extern u8 pokemonGetField03(u8* ptr);
+extern u16 pokemonGetField16(u8* ptr);
 extern u32 pokemonDataBiosGetPkxDataId(u8* ptr);
 extern u16 pokemonDataBiosGetNumPokemon(u8* ptr);
 extern u16 pokemonDataBiosGetNumZukan(u8* ptr);
@@ -1046,37 +1046,37 @@ extern u32 floorCharacterBiosGetLoadInit(u8* ptr);
 extern u32 floorCharacterBiosGetVisibility(u8* ptr);
 extern void* floorCharacterBiosGetPeopleInfoPtr(u8* ptr);
 extern void floorCharacterBiosGetByIndex(u32 arg);
-extern void fn_80117154(void);
+extern void cameraClearReturn(void);
 extern void fieldCameraLoadList(void);
-extern void fn_801171C8(void);
-extern void fn_80117330(f32 arg);
-extern u32 fn_801174C4(void);
+extern void fieldCameraUpdate(void);
+extern void fieldCameraMoveTo(f32 arg);
+extern u32 cameraReturnPending(void);
 extern void std136_fieldClearFlag_8047ad71(void);
-extern void fn_80117500(void);
-extern u32 fn_80117AD4(void);
+extern void cameraSetReturnDone(void);
+extern u32 fieldCameraDebugGetRoom(void);
 extern u8 std171_mapSetTextureChange(u32 arg1);
 extern void tvRelease(void);
 extern void tvRender(void);
 extern void tvInitFloor(void* arg);
-extern void fn_80118020(void);
+extern void tvRegisterFloorHandler(void);
 extern void tvRelease2(void);
-extern void fn_80118100(void);
+extern void tvFloorHandlerNop(void);
 extern void gsParticleDraw(u32 a, u8 b);
 extern void gsParticleKillOwned(u8* obj, u32 notify);
 extern void GSmodelSetParticleVisibility(u8* arg1, void* arg2, u32 arg3, u32 arg4, u32 arg5);
-extern void fn_80118C88(void* obj);
-extern void fn_80118CAC(void* obj);
-extern void fn_80118CD0(void* obj);
-extern void fn_80118CF4(void* obj);
-extern void fn_80118D18(void* obj);
-extern void fn_80118D3C(void* obj);
-extern void fn_80118D60(void* obj);
-extern void fn_80118D84(void* obj);
-extern s32 fn_80118DA8(u8* ptr);
-extern void fn_80118DE0(u8* arg1, f32* arg2, u32 arg3, u32 arg4);
-extern void fn_80118E8C(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
+extern void gsParticleSetVisibility(void* obj);
+extern void gsParticleSetRandomVelocityScale(void* obj);
+extern void gsParticleSetNodeScale(void* obj);
+extern void gsParticleSetTornadoScale(void* obj);
+extern void gsParticleSetTexScale(void* obj);
+extern void gsParticleSetOffsetRotationLocal(void* obj);
+extern void gsParticleSetVelocityRotationLocal(void* obj);
+extern void gsParticleGetChildCount(void* obj);
+extern s32 gsParticleGetMaxLife(u8* ptr);
+extern void gsParticleSetAngleRadiusScale(u8* arg1, f32* arg2, u32 arg3, u32 arg4);
+extern void gsParticleSetVecA(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
 extern void gsParticleSetVecB(u8* arg1, f32* arg2, u32 arg3, u32 arg4, u32 arg5);
-extern void fn_80118F7C(u8* obj, void* arg);
+extern void GSmodelGetPositionVec(u8* obj, void* arg);
 extern void gsParticleLinkToJObj(u8* obj, u8* desc, u32 state, u32 byte5, u32 init_from_zero, u32 attach_model);
 extern void gsParticleInit(u32 count1, u32 count2);
 extern void statusSetJoutai08(u8* arg1, u16 arg2, u32 arg3);
@@ -1085,16 +1085,16 @@ extern void statusSetJoutai0C(u8* arg1, u16 arg2, u32 arg3);
 extern s32 statusGetJoutai0C(void* obj, u16 val);
 extern s32 statusGetJoutaiParam(void* obj, u16 val);
 extern void statusSetJoutaiKaisuu(u8* arg1, u16 arg2, u32 arg3);
-extern void fn_8011AB50(u8* arg1, u16 arg2, u32 arg3);
+extern void statusSetJoutai05(u8* arg1, u16 arg2, u32 arg3);
 extern s32 statusGetJoutai05(void* obj, u16 val);
-extern s32 fn_8011AE40(void* obj, u16 val);
+extern s32 statusGetJoutaiKaisuu(void* obj, u16 val);
 extern void statusSetJoutaiStack(u8* arg1, u16 arg2, u32 arg3);
-extern s32 fn_8011B130(void* obj, u16 val);
+extern s32 statusGetJoutaiStack(void* obj, u16 val);
 extern void statusWriteJoutaiDataId(void* obj, u16 id, u16 arg3);
 extern s32 statusCheckWriteJoutaiDataId(void* obj, u16 val);
-extern s32 fn_8011B67C(void* obj, u16 val);
-extern void fn_8011B788(void* obj, u16 id);
-extern void fn_8011B950(u8* base, u16 count);
+extern s32 statusIsJoutaiDataId(void* obj, u16 val);
+extern void statusInitJoutaiDataId(void* obj, u16 id);
+extern void joutaiSlotsClear(u8* base, u16 count);
 extern u32 fn_8011BA0C(u8 type);
 extern u32 wazaIsWazaTypeId(u32 key, u8 target);
 extern u8 wazaGetMaxPP(u32 arg1, u8 arg2);
@@ -1109,7 +1109,7 @@ extern u8 pokemonSeikakuDataBiosGetHyperRate(u8* ptr, u8 idx);
 extern void* pokemonSeikakuDataBiosGetPtr(u8 idx);
 extern u32 pokemonGrowDataBiosGetExp(u8* ptr, u8 idx);
 extern void* pokemonGrowDataBiosGetPtr(u8 idx);
-extern void fn_8011CED0(u8* ptr, u16 idx, u8 val);
+extern void pokemonSetField6E(u8* ptr, u16 idx, u8 val);
 extern void pokemonDataBiosSetKowaza(u8* ptr, u16 idx, u16 val);
 extern void pokemonDataBiosSetTukamaetaFlag(u8* ptr);
 extern void pokemonDataBiosSetMitaFlag(u8* ptr);
@@ -1191,7 +1191,7 @@ extern void pokemonBiosSetPoolFriend(u8* ptr, u16 val);
 extern void pokemonBiosSetNicknameOrgPtr(u8* ptr, void* src);
 extern void pokemonBiosSetNicknamePtr(u8* ptr, void* src);
 extern void pokemonBiosSetCatchTrainerNamePtr(u8* ptr, void* src);
-extern u8 fn_8011E048(u8* ptr, u16 idx);
+extern u8 pokemonGetField6E(u8* ptr, u16 idx);
 extern u16 pokemonDataBiosGetKowaza(u8* ptr, u16 idx);
 extern void* pokemonDataBiosGetTukamaetaFlag(u8* ptr);
 extern void* pokemonDataBiosGetMitaFlag(u8* ptr);
@@ -1275,12 +1275,12 @@ extern u32 pokemonGetNowLevelToExp(u8* ptr);
 extern u32 pokemonGetJoutaiMsgId(u8* ptr);
 extern u32 pokemonGetJoutaiMenuSpriteId(u8* ptr);
 extern u32 pokemonGetJoutaiDataId(u8* ptr);
-extern void fn_80121484(void* obj, u32 arg2, u32 arg3);
+extern void pokemonCopyJoutai(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutai08(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutai0C(void* obj, u32 arg2, u32 arg3);
 extern void pokemonSetJoutaiKaisuu(void* obj, u32 arg2, u32 arg3);
-extern void fn_801217B4(void* obj, u32 arg2, u32 arg3);
-extern void fn_8012190C(void* obj, u32 arg2, u32 arg3);
+extern void pokemonSetJoutai05(void* obj, u32 arg2, u32 arg3);
+extern void pokemonSetJoutaiStack(void* obj, u32 arg2, u32 arg3);
 extern void pokemonWriteJoutaiDataId(void* obj, u32 arg2, u32 arg3);
 extern void pokemonInitPersistentJoutai(void* obj, u32 arg2);
 extern void pokemonReplace(u32* arg1, u32* arg2);
@@ -1310,33 +1310,33 @@ extern void pokemonInitJoutai(u8* ptr);
 extern void pokemonWazaInit(u8* ptr, u32 arg2);
 extern u32 pokemonCheckRare(void* ctx);
 extern void pokemonGrowBasisStatus(void* ptr, u32 arg2);
-extern void* fn_80128CC0(void* ptr);
-extern void* fn_80128CDC(void* ptr);
+extern void* savedataGetSection1C45C(void* ptr);
+extern void* savedataGetSection1B014(void* ptr);
 extern void* savedataBiosGetE3E8Ptr(void* ptr);
-extern void* fn_80128D14(void* ptr);
-extern void* fn_80128D30(void* ptr);
-extern void* fn_80128D4C(void* ptr);
-extern void* fn_80128D68(void* ptr);
-extern void* fn_80128D80(void* ptr);
-extern void* fn_80128D9C(void* ptr);
-extern void* fn_80128DB8(void* ptr);
-extern void* fn_80128DD4(void* ptr);
-extern void* fn_80128DEC(void* ptr);
-extern u32 fn_80128E04(void* ptr);
-extern void fn_80128E14(void* ptr);
-extern void* fn_80128E2C(void);
+extern void* savedataGetSection9A1C(void* ptr);
+extern void* savedataGetSection82A8(void* ptr);
+extern void* savedataGetSection8168(void* ptr);
+extern void* savedataGetSection7D20(void* ptr);
+extern void* savedataGetSection1BE5C(void* ptr);
+extern void* savedataGetSection1BDDC(void* ptr);
+extern void* savedataGetSection1BDBC(void* ptr);
+extern void* savedataGetSectionB88(void* ptr);
+extern void* savedataGetSection70(void* ptr);
+extern u32 savedataGetSection0(void* ptr);
+extern void randSetSeed(void* ptr);
+extern void* savedataGetBuffer(void);
 extern u32 savedataGetStatus(u8* arg1, u16 arg2);
 extern void heroDecPokecoupon(u8* ptr, s32 offset);
 extern void heroAddPokecoupon(u8* ptr, s32 offset);
 extern void heroDecPokedoru(u8* ptr, u32 offset);
-extern void fn_80129514(u8* ptr, s32 arg2, s32 arg3);
-extern s32 fn_8012959C(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
-extern s32 fn_80129650(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
-extern u32 fn_80129718(u8* ptr, u32 arg2);
+extern void heroBoxSwapItems(u8* ptr, s32 arg2, s32 arg3);
+extern s32 heroBoxChangeItemCount(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
+extern s32 heroBoxAddItem(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
+extern u32 heroBoxHasRoom(u8* ptr, u32 arg2);
 extern u32 heroHizukiItemGetItemAryPtr(u8* ptr, u16* out_a, u16* out_b, u8* out_c, u8* out_d);
 extern void heroCheckSetMonohiroiAllTemotiPokemon(u8* arg1);
 extern s32 heroItemCheckAddItemDataId(u8* ptr, u32 arg2);
-extern void fn_80129948(u8* arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7);
+extern void heroItemSwapItems(u8* arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7);
 extern s32 heroItemDecItemDataId(u8* ptr, u32 arg2, u32 arg3, u32 arg4);
 extern u32 heroItemCheckHaveItemDataId(u8* ptr, u32 arg2);
 extern u32 fn_80129D64(u8* ptr, u8* arg2);
@@ -1393,7 +1393,7 @@ extern s32 pokemonIsHpMantan(u8* ptr);
 extern s32 pokemonGetJoutai08(void* a, u16 b);
 extern s32 pokemonGetJoutai0C(void* a, u16 b);
 extern s32 pokemonGetJoutaiParam(void* a, u16 b);
-extern s32 fn_8012182C(void* a, u16 b);
+extern s32 pokemonGetJoutai05(void* a, u16 b);
 extern s32 pokemonGetJoutaiKaisuu(void* a, u16 b);
 extern s32 pokemonGetJoutaiStack(void* a, u16 b);
 extern s32 pokemonCheckWriteJoutaiDataId(void* a, u16 b);
@@ -1413,7 +1413,7 @@ extern u8 heroMoveGetResID(u32* out_zero, u32* out_val, s32 index);
  * Resource IDs of the two members' field models, copied to the stack as one
  * block from the TU's .sdata2 pool (the 8-byte {100, 101} at lbl_8047D030).
  * Retail keeps that block copy even where the member index is a constant
- * (fn_8013024C, heroMoveSyncWithHero): the stores stay and only the loaded
+ * (partnerSystemInit, heroMoveSyncWithHero): the stores stay and only the loaded
  * ID is forwarded. A plain u32[2] initializer or element-wise copy is split
  * into scalars by MWCC and loses those stores; an aggregate-typed table is
  * copied as a block, like the floor and theme tables below.
@@ -1423,7 +1423,7 @@ extern u8 heroMoveGetResID(u32* out_zero, u32* out_val, s32 index);
  * *id's: with identical types, `*id = ids.id[0]` is a plain copy of the
  * table's first word, and MWCC's frontend copy propagation (IRO log: "Found
  * propagatable assignment" for the id store) replaces the ID with a stack
- * read at each use, so fn_8013024C reloads it after fn_80188AF4 (lwz
+ * read at each use, so partnerSystemInit reloads it after fn_80188AF4 (lwz
  * r4,0x18(r1)). Retail keeps it in r30 (mr r4,r30 at both calls), which is
  * what the converting assignment gives.
  */
@@ -1601,7 +1601,7 @@ static inline void heroMoveAnimate(s32 member, f32 amount)
  * MSL's inline sqrtf: its 0.0f/0.5/3.0/0.0 are literals, pooled by the TU
  * (0x8047D038-0x8047D058). Reading them through the lbl_ symbols changes
  * the float register colouring around the expansion (heroMoveChkHinderClear
- * and fn_8012B19C put the argument in f2 instead of retail's f4).
+ * and partnerCheckBlocked put the argument in f2 instead of retail's f4).
  */
 extern u8 lbl_80478AC0[];
 
@@ -1662,7 +1662,7 @@ static inline f32 heroMoveSqrt(f32 value)
  * Horizontal (XZ) distance between two positions (XD GSvecDistanceXZ__FP5GSvecP5GSvec,
  * 0x8014E70C, a static function of XD's heroMove.cpp; TeamOrre/xd-decomp
  * config/GXXE01/symbols.txt). Colosseum expands it inline with the same
- * instruction sequence in fn_8012B19C and heroMoveChkHinderClear.
+ * instruction sequence in partnerCheckBlocked and heroMoveChkHinderClear.
  */
 static inline f32 GSvecDistanceXZ(HeroMoveVec* a, HeroMoveVec* b)
 {
@@ -1935,7 +1935,7 @@ static inline f32 heroMoveVecSquareMag(HeroMoveVec* v)
  */
 static inline u8 heroMoveCheckHit(s32 member, HeroMoveVec* pos)
 {
-    extern u8 fn_800E3C64(void* model);
+    extern u8 GSmodelHasAnimation(void* model);
     HeroMoveVec old;
     void* model;
     u8 hit;
@@ -1948,7 +1948,7 @@ static inline u8 heroMoveCheckHit(s32 member, HeroMoveVec* pos)
         getPos(&old, member);
         setPos(member, pos);
     }
-    hit = fn_800E3C64(model);
+    hit = GSmodelHasAnimation(model);
     if (pos != NULL) {
         setPos(member, &old);
     }
@@ -1969,8 +1969,8 @@ static inline u8 heroMoveCheckHit(s32 member, HeroMoveVec* pos)
 
 /*
  * The leader walks at distance 0 and each other member 12 units further
- * back. Expanded identically in heroMoveDismissMember, fn_8012F1FC,
- * fn_8012F40C, heroMoveSyncWithHero and fn_8013024C. The step is the TU's
+ * back. Expanded identically in heroMoveDismissMember, partnerSetFollowing,
+ * partnerSetFollowState, heroMoveSyncWithHero and partnerSystemInit. The step is the TU's
  * pooled 12.0f literal (0x8047D0D4).
  */
 static inline void heroMoveUpdateSpacing(void)
@@ -2015,7 +2015,7 @@ typedef struct HeroMoveFloorTable {
 
 /* 0x8012FAD8 | 0x1FC: field model of the partner for the next floor. */
 
-/* One floor height hit from fn_8010E138. */
+/* One floor height hit from GScolsys2CollectWalkHeight. */
 typedef struct HeroMoveFloorHit {
     f32 height;
     f32 unk04;
@@ -2065,13 +2065,13 @@ static inline void initFootWork(FOOTWORK* footwork)
  * 95.8% (93.9% before round 3). The block-copied heroMoveGetResID table
  * restores retail's stack stores (frame 0x30), and its s32 entries keep the
  * first inlined ID in r30 across the fn_80188AF4 call (see the table). One
- * difference remains, shared with fn_8012F1FC and heroMoveSyncWithHero (the
+ * difference remains, shared with partnerSetFollowing and heroMoveSyncWithHero (the
  * same add-member expansion): retail keeps heroMoveSetNeckMode's mode (1)
  * in r29 and still emits its range check and switch compare (cmpwi r29,0 /
  * cmpwi r29,2 / cmpwi r29,1) while storing the mode with li r0,1. MWCC
  * folds all of these for a literal argument (round 3 below explains the
  * mechanism and the exact form); the literal 0
- * in fn_8012F40C is folded in retail too. Tested without success on a
+ * in partnerSetFollowState is folded in retail too. Tested without success on a
  * reduced party TU: GC/1.0-3.0a5; C and C++; -inline auto/all/deferred
  * with the party functions in either order; -opt no{deadstore,cse,
  * lifetimes,loop,strength,prop}; the mode as TRUE/true/enum/cast/const
@@ -2085,7 +2085,7 @@ static inline void initFootWork(FOOTWORK* footwork)
  * optimizer learned only after branch and switch folding: a `li` into a
  * register that the compares then test. It occurs nowhere else in the
  * retail DOL (scan of every li rN / cmpwi rN pair with no label between:
- * only fn_8012F1FC, heroMoveSyncWithHero and this function). The same
+ * only partnerSetFollowing, heroMoveSyncWithHero and this function). The same
  * shape appears for later-known values elsewhere in this TU: the unrolled
  * spacing loop's index (li r5,1; cmpw r0,r5), and the flags value
  * forwarded from initHeroMove's stores above (li r4,0; clrlwi. r0,r4,31).
@@ -2094,7 +2094,7 @@ static inline void initFootWork(FOOTWORK* footwork)
  * out-parameter, modified parameter) leaves only the range compares and
  * still folds the switch. A load (non-const global, const reference,
  * struct or array initializer, const defined after use) leaves every
- * compare but also the stw of the register. fn_8012F40C's literal 0 is
+ * compare but also the stw of the register. partnerSetFollowState's literal 0 is
  * substituted in retail: a temp 0 leaves its range compares too. Also
  * tested without success: C++ with HEROMOVE_MEMBER/neck-mode enums, bool,
  * casts to enum, class/namespace constants, default argument, template
@@ -2106,8 +2106,8 @@ static inline void initFootWork(FOOTWORK* footwork)
  * @6b51d3af, NXXJ01.map, heroMove.o) and TeamOrre/xd-decomp symbols.txt
  * (GXXE01) name this function heroMoveAllInit (0x80151F8C: initHeroMove,
  * heroMoveJoinMember(0), heroMoveAppointLeader(0), then the step
- * callbacks), fn_8012F1FC heroMoveJoinMember (0x80151420, passes li r4,1
- * to heroMoveSetNeckMode) and fn_8012F40C heroMoveAppointLeader
+ * callbacks), partnerSetFollowing heroMoveJoinMember (0x80151420, passes li r4,1
+ * to heroMoveSetNeckMode) and partnerSetFollowState heroMoveAppointLeader
  * (0x80151548). The map also lists the TU's local helpers getResID,
  * remakeFormation, setDisp, getModel, initLeaderLog, initHeroMove and the
  * exported heroMoveGetNeckMode (stripped from Colosseum). Because XD
@@ -2115,7 +2115,7 @@ static inline void initFootWork(FOOTWORK* footwork)
  * that the source used a literal.
  *
  * Round 3 (lane B7b, 2026-09-28): traced MWCC's passes. GC/2.6 replays this
- * TU's fn_8012F1FC and fn_8013024C byte-for-byte, so its dumps are exact.
+ * TU's partnerSetFollowing and partnerSystemInit byte-for-byte, so its dumps are exact.
  * GC/2.6 is a release build whose frontend-optimizer (IRO) log is compiled
  * in but disabled: IRO_Optimizer clears IRO_Log (byte 0x5eb3b9) at 0x42ddb9
  * and opens <source>.log at 0x42ddc0 when it is set; the per-phase
@@ -2136,16 +2136,16 @@ static inline void initFootWork(FOOTWORK* footwork)
  *   reads it as the enum (propagated, so li r0,1). Verified on a reduced TU
  *   and in this TU: neckMode and heroMoveSetNeckMode's mode typed as a
  *   3-value enum (off/on/none = 0/1/2; the TU's other enum, HEROMOVE_MEMBER,
- *   is in its mangled names), GetNeckMode returning it, and fn_8012F1FC
+ *   is in its mangled names), GetNeckMode returning it, and partnerSetFollowing
  *   calling `mode = <on>; heroMoveSetNeckMode(member, mode);` with an
- *   enum-typed local assigned right after `flags |= 1` makes fn_8012F1FC,
- *   heroMoveSyncWithHero and fn_8013024C exact (only the pooled @1126/@1197
+ *   enum-typed local assigned right after `flags |= 1` makes partnerSetFollowing,
+ *   heroMoveSyncWithHero and partnerSystemInit exact (only the pooled @1126/@1197
  *   names differ); initializing the local at its declaration instead
  *   schedules li r29,1 one slot later. Nothing else in the TU changes.
  * - A literal argument is substituted at inline time for every type and
  *   language (C and C++, enum constant, cast, TRUE, default argument): all
  *   folds. An enum-typed inline return value also leaves the compares but
- *   is scheduled differently (fn_8012F1FC 99.1%).
+ *   is scheduled differently (partnerSetFollowing 99.1%).
  * The exact form is now applied as a tagged title-path rule exception: the
  * local names a constant and is not a strict campaign win. The enum typing
  * alone changes nothing while the argument is a literal. */
@@ -2163,7 +2163,7 @@ typedef struct HeroChatTarget {
 /* ===== Functions, in reverse retail address order: with "-inline auto,deferred"
  * MWCC emits them last-to-first, i.e. in address order (0x8012AC9C - 0x80130660). ===== */
 
-void fn_8013024C(void)
+void partnerSystemInit(void)
 {
     s32 i;
 
@@ -2171,8 +2171,8 @@ void fn_8013024C(void)
     lbl_80426BD0.member[1].flags = 0;
     lbl_80426BD0.leader = 0;
     lbl_80426BD0.lockFrame = 0;
-    fn_8012F1FC(0);
-    fn_8012F40C(0);
+    partnerSetFollowing(0);
+    partnerSetFollowState(0);
     lbl_80426BD0.autoEvent[0] = 0;
     lbl_80426BD0.stepAccum = 0.0f;
     for (i = 0; i < 8; i++) {
@@ -2193,7 +2193,7 @@ void heroMoveSyncWithHero(void)
         follow = TRUE;
     }
     if (follow) {
-        fn_8012F1FC(1);
+        partnerSetFollowing(1);
     } else {
         heroMoveDismissMember(1);
     }
@@ -2202,7 +2202,7 @@ void heroMoveSyncWithHero(void)
 s32 heroMoveInit(void* position, void* rotation)
 {
     extern void peopleIsInGroup(u32 group, u32 object);
-    extern void fn_8018C8F4(u32 group, u32 object, u32 flags);
+    extern void peopleWriteFlagsByID_8018C8F4(u32 group, u32 object, u32 flags);
     extern void peopleSetPositionByIndex(u32 group, u32 object, void* position);
     extern void* GSresGetResource(u32 group, u32 handle);
     extern void updateAnimation__Ff15HEROMOVE_MEMBER(void* model, s32 member, f32 amount);
@@ -2217,7 +2217,7 @@ s32 heroMoveInit(void* position, void* rotation)
     s32 area;
     u8 unavailable;
 
-    if (fn_800FF548() == 0) {
+    if (floorGetFadeOutFlag() == 0) {
         floors = *(HeroMoveFloorTable*)lbl_802729C0;
         themes = *(HeroMoveThemeTable*)lbl_80272A10;
 
@@ -2264,14 +2264,14 @@ s32 heroMoveInit(void* position, void* rotation)
     peopleRegisterHumanCollision(0, 100);
     peopleRegisterHumanCollision(0, 101);
 
-    if (fn_800FF548() == 0) {
-        fn_8018C8F4(0, 100, 0x40000F00);
-        fn_8018C8F4(0, 101, 0x701);
+    if (floorGetFadeOutFlag() == 0) {
+        peopleWriteFlagsByID_8018C8F4(0, 100, 0x40000F00);
+        peopleWriteFlagsByID_8018C8F4(0, 101, 0x701);
     }
 
-    fn_80189328(0, 101, 1);
+    peopleSetTalkable_80189328(0, 101, 1);
 
-    if (fn_800FF548() == 0) {
+    if (floorGetFadeOutFlag() == 0) {
         peopleSetPositionByIndex(0, 100, position);
         peopleSetRotation(0, 100, rotation);
     }
@@ -2324,7 +2324,7 @@ void initFloor__Fv(void)
 {
     extern f64 sin(f64 x);
     extern f64 cos(f64 x);
-    extern s32 fn_8010E138(void* position, HeroMoveFloorHit* hits);
+    extern s32 GScolsys2CollectWalkHeight(void* position, HeroMoveFloorHit* hits);
 
     HeroMoveVec rotation;
     HeroMoveVec leaderPos;
@@ -2342,7 +2342,7 @@ void initFloor__Fv(void)
     s32 j;
     s32 i;
 
-    if (!fn_800FF548()) {
+    if (!floorGetFadeOutFlag()) {
         getPos(&leaderPos, lbl_80426BD0.leader);
         getRot(&rotation, lbl_80426BD0.leader);
         sinY = sin(rotation.y);
@@ -2356,7 +2356,7 @@ void initFloor__Fv(void)
                 position.x = leaderPos.x + dirX * distance;
                 position.y = leaderPos.y;
                 position.z = leaderPos.z + dirZ * distance;
-                count = fn_8010E138(&position, hits);
+                count = GScolsys2CollectWalkHeight(&position, hits);
                 if (count > 0) {
                     if (count >= 2) {
                         bestStep = -1000000.0f;
@@ -2406,7 +2406,7 @@ void initFloor__Fv(void)
     lbl_80426BD0.stepAccum = 0.0f;
 }
 
-s32 fn_8012F40C(s32 member)
+s32 partnerSetFollowState(s32 member)
 {
     if (!heroMoveCheckMember(member)) {
         return FALSE;
@@ -2421,7 +2421,7 @@ s32 fn_8012F40C(s32 member)
     return TRUE;
 }
 
-s32 fn_8012F1FC(s32 member)
+s32 partnerSetFollowing(s32 member)
 {
     u32 group;
     u32 id;
@@ -2499,7 +2499,7 @@ static void proc1Step(f32 distance);
 u32 heroMoveMain(void)
 {
     extern u32 GSinputButtonsChanged(s32);
-    extern u32 fn_800F7BC4(s32);
+    extern u32 GSinputGetButtons(s32);
     extern u32 std082_flagGetValue(u32);
     extern void cmsRunSync(void*, u32, ...);
     u32 group;
@@ -2552,7 +2552,7 @@ u32 heroMoveMain(void)
         return 0;
     }
 
-    if (fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x1C00) {
+    if (GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x1C00) {
         heroMoveRunEvent(0);
         return 0;
     }
@@ -2575,7 +2575,7 @@ u32 heroMoveMain(void)
 f32 moveLeader__F15HEROMOVE_MEMBER(s32 member)
 {
     extern u32 GSinputButtonsChanged(s32);
-    extern u32 fn_800F7BC4(s32);
+    extern u32 GSinputGetButtons(s32);
     extern void PSVECSubtract(HeroMoveVec*, HeroMoveVec*, HeroMoveVec*);
     extern void PSVECScale(HeroMoveVec*, HeroMoveVec*, f32);
     extern f32 PSVECDistance(HeroMoveVec*, HeroMoveVec*);
@@ -2592,7 +2592,7 @@ f32 moveLeader__F15HEROMOVE_MEMBER(s32 member)
     u32 id;
     f32 turn;
 
-    if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x100) != 0 &&
+    if ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x100) != 0 &&
         updateChat__F15HEROMOVE_MEMBER(member) != 0) {
         return 0.0f;
     }
@@ -2642,7 +2642,7 @@ void heroReadStick(s32 member, f32* speed)
     extern void* GSresGetResource(u32, u32);
     extern s8 GSinputGetLeftStickXData(u32, u32);
     extern s8 GSinputGetLeftStickYData(u32, u32);
-    extern u32 fn_800F7BC4(u32);
+    extern u32 GSinputGetButtons(u32);
     extern u32 GSscene_GetMode(void);
     extern f64 sin(f64);
     extern f32 cameraGetRotY(void);
@@ -2672,16 +2672,16 @@ void heroReadStick(s32 member, f32* speed)
     subX = GSinputGetLeftStickXData(1, 0);
     subY = GSinputGetLeftStickYData(1, 0);
     if (x == 0 && y == 0) {
-        if (fn_800F7BC4(1) & 8) {
+        if (GSinputGetButtons(1) & 8) {
             y = -56;
         }
-        if (fn_800F7BC4(1) & 4) {
+        if (GSinputGetButtons(1) & 4) {
             y = 56;
         }
-        if (fn_800F7BC4(1) & 1) {
+        if (GSinputGetButtons(1) & 1) {
             x = -56;
         }
-        if (fn_800F7BC4(1) & 2) {
+        if (GSinputGetButtons(1) & 2) {
             x = 56;
         }
         subX = x;
@@ -3146,7 +3146,7 @@ void partnerApplyMove(s32 member, HeroMoveVec* dir, HeroMoveVec* fwd)
 void updateAnimation__Ff15HEROMOVE_MEMBER(void* model, s32 member, f32 amount)
 {
     extern void* peopleInfoBiosGetPtr(s32);
-    extern void fn_8018F4C8(void*, u8, s32*, u8*);
+    extern void peopleInfoGetMotion(void*, u8, s32*, u8*);
     extern void GSmodelGetAnimIndex(void*, s32*, s32*);
     extern f32 GSmodelGetAnimFrame(void*);
     extern void GSmodelGetFrameCount(void*, f32*, f32*);
@@ -3168,10 +3168,10 @@ void updateAnimation__Ff15HEROMOVE_MEMBER(void* model, s32 member, f32 amount)
     void* info;
 
     info = peopleInfoBiosGetPtr(getObjID(member));
-    fn_8018F4C8(info, 1, &anim1, &loop);
-    fn_8018F4C8(info, 2, &anim2, &loop);
-    fn_8018F4C8(info, 3, &anim3, &loop);
-    fn_8018F4C8(info, 4, &anim4, &loop);
+    peopleInfoGetMotion(info, 1, &anim1, &loop);
+    peopleInfoGetMotion(info, 2, &anim2, &loop);
+    peopleInfoGetMotion(info, 3, &anim3, &loop);
+    peopleInfoGetMotion(info, 4, &anim4, &loop);
 
     if (amount > 2.0f) {
         amount = 2.0f;
@@ -3302,10 +3302,10 @@ u8 updateChat__F15HEROMOVE_MEMBER(s32 member)
     extern void peopleGetHeadGroundPos(u32, u32, HeroMoveVec*);
     extern void peopleTurnToPoint(u32, u32, f32, f32, f32, f32);
     extern void floorEventCtrlTresure(u32, u32, u32);
-    extern void fn_80183730(u32);
+    extern void peopleHideAndSuspendBySelf(u32);
     extern void peopleTalkPause(u32, u32, u32);
     extern void std055_characterEndSpeech(u32, u32);
-    extern void fn_80183688(u32);
+    extern void peopleShowAndResumeBySelf(u32);
     u8 collision[0xD0];
     HeroMoveVec talkPos;
     HeroChatTarget* target;
@@ -3336,7 +3336,7 @@ u8 updateChat__F15HEROMOVE_MEMBER(s32 member)
     if (peopleIsTreasure(target->group, target->id)) {
         floorEventCtrlTresure(target->group, target->id, 2);
     } else {
-        fn_80183730(peopleIsInGroup(target->group, target->id));
+        peopleHideAndSuspendBySelf(peopleIsInGroup(target->group, target->id));
         person = peopleGetTalkScript(target->group, target->id);
         if (person != 0) {
             peopleTalkPause(target->group, target->id, 1);
@@ -3344,7 +3344,7 @@ u8 updateChat__F15HEROMOVE_MEMBER(s32 member)
             peopleTalkPause(target->group, target->id, 0);
             std055_characterEndSpeech(target->group, target->id);
         }
-        fn_80183688(peopleIsInGroup(target->group, target->id));
+        peopleShowAndResumeBySelf(peopleIsInGroup(target->group, target->id));
     }
 
     heroMoveTermEvent();
@@ -3408,7 +3408,7 @@ void getStep__FP8FOOTSTEPP8_GSmodelPiP8FOOTWORK(
  * XD proc1Step__Ff: run the step callbacks once per 7.0 units walked. In
  * Colosseum it is only ever inlined (into heroMoveMain), but it is defined
  * here, between heroMoveAddStepCallback and getStep as in XD, and its 7.0f
- * is pooled at that point (0x8047D064, between fn_8012B19C's constants and
+ * is pooled at that point (0x8047D064, between partnerCheckBlocked's constants and
  * getStep's).
  */
 static void proc1Step(f32 distance)
@@ -3516,7 +3516,7 @@ u32 heroMoveChkHinderClear(s32 member) {
     extern u32 peopleIsInGroup(u32 group, u32 id);
     extern u8* peopleSearchID(u32 id);
     extern void* peopleInfoBiosGetPtr(s32 id);
-    extern f32 fn_8018F5E4(void* info);
+    extern f32 charModelGetRadius(void* info);
     extern s32 colsysWallSweep(void* start, void* end, f32 radius, void* result);
     extern void PSVECSubtract(void* a, void* b, void* out);
     extern void PSVECScale(void* src, void* dst, f32 scale);
@@ -3558,7 +3558,7 @@ u32 heroMoveChkHinderClear(s32 member) {
     if (info == NULL) {
         return 0;
     }
-    memberRadius = fn_8018F5E4(info);
+    memberRadius = charModelGetRadius(info);
     if (colsysWallSweep(&memberPos, &leaderPos, memberRadius, NULL) != 0) {
         return 0;
     }
@@ -3571,7 +3571,7 @@ u32 heroMoveChkHinderClear(s32 member) {
     if (info == NULL) {
         return 0;
     }
-    leaderRadius = fn_8018F5E4(info);
+    leaderRadius = charModelGetRadius(info);
 
     getResID(&group, &id, member);
     people = peopleSearchID(peopleIsInGroup(group, id));
@@ -3597,11 +3597,11 @@ u32 heroMoveChkHinderClear(s32 member) {
     return GScolsys2HumanCollision(col, &memberPos, &leaderPos, 0) != 6;
 }
 
-u32 fn_8012B19C(s32 member, HeroMoveVec* start, HeroMoveVec* target, f32 extraRadius) {
+u32 partnerCheckBlocked(s32 member, HeroMoveVec* start, HeroMoveVec* target, f32 extraRadius) {
     extern u32 peopleIsInGroup(u32 group, u32 id);
     extern u8* peopleSearchID(u32 id);
     extern void* peopleInfoBiosGetPtr(s32 id);
-    extern f32 fn_8018F5E4(void* info);
+    extern f32 charModelGetRadius(void* info);
     extern s32 colsysWallSweep(void* start, void* end, f32 radius, void* result);
     extern void PSVECSubtract(void* a, void* b, void* out);
     extern void PSVECScale(void* src, void* dst, f32 scale);
@@ -3645,7 +3645,7 @@ u32 fn_8012B19C(s32 member, HeroMoveVec* start, HeroMoveVec* target, f32 extraRa
     if (info == NULL) {
         return 0;
     }
-    radius = 0.5f * fn_8018F5E4(info);
+    radius = 0.5f * charModelGetRadius(info);
     if (colsysWallSweep(&pos, &goal, radius, NULL) != 0) {
         return 0;
     }
@@ -3702,7 +3702,7 @@ void cbPoison__Fl15FootStepCounterl(s32 arg) {
     extern u32 itemDataBiosGetItemSoubiDataId(void* item);
     extern void pokemonGetFriendFormPokemonFriendFilterId(u32 mon, u32 itemId, u32 filter);
     extern void heroDecPokedoru(u32 hero, s32 amount);
-    extern void fn_801D0AFC(s32 arg);
+    extern void heroPartyHealAll(s32 arg);
     extern void pokemonInitPersistentJoutai(u32 mon, u32 status);
 
     u32 expiredSlots[6];
@@ -3785,7 +3785,7 @@ void cbPoison__Fl15FootStepCounterl(s32 arg) {
         winMsgCloseField(1);
         money = (s32)heroGetStatus(NULL, 0xc, 0);
         heroDecPokedoru(0, money / 2);
-        fn_801D0AFC(1);
+        heroPartyHealAll(1);
 
         for (slot = 0; slot < 6; slot++) {
             mon = heroGetStatus(NULL, 3, (u16)slot);

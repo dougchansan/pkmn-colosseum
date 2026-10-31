@@ -23,7 +23,7 @@
  * Stops all active waza effects, frees all allocated memory.
  */
 void wazaSequenceSysRelease(void) {
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
     u8* entry = *(u8**)lbl_80467CC0;
     u16 count = *(u16*)(lbl_80467CC0 + 4);
@@ -33,22 +33,22 @@ void wazaSequenceSysRelease(void) {
     for (i = 0; i < count; i++, entry += 0x8C) {
         if (entry != NULL) {
             if (entry[0x74] != 0) {
-                fn_801DD3E4(entry);
+                wazaSequenceOwnerFreeAll(entry);
                 wazaSequenceOwnerRelease(entry);
             }
             memset(entry, 0, 0x8C);
         }
     }
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
     memset(lbl_80467CC0, 0, 0x14);
 }
 
 /**
- * fn_801DADC0 - Waza system partial reset.
+ * wazaSequenceSysInitEx - Waza system partial reset.
  * Address: 0x801DADC0 | Size: 0x138
  */
-void fn_801DADC0(void* context) {
+void wazaSequenceSysInitEx(void* context) {
     typedef struct WazaPoolHeader {
         void* entries;
         u16 count;
@@ -178,7 +178,7 @@ void wazaSequenceSysInit(s32 count) {
             *(void**)lbl_80467CC0 = GSmemLock(handle);
             memset(*(void**)lbl_80467CC0, 0, size);
             battleCameraWazaInit();
-            fn_801DE598(0x6F7, 0);
+            wazaSequenceLoadResourceSync(0x6F7, 0);
             *(void**)(lbl_80467CC0 + 8) =
                 GSresGetResource(0x6F7, 0x11EF2400);
             *(void**)(lbl_80467CC0 + 0xC) =
@@ -221,13 +221,13 @@ void wazaSequenceSysUpdate(void)
     count = *((u16*) (pool + 4));
     for (; i < count; i++, entry++) {
         if (entry->active != 0) {
-            fn_801DD158(entry);
+            wazaSequenceOwnerUpdate(entry);
             wazaSequenceOwnerUpdateBlink(entry);
         }
     }
 
     {
-        fn_801D2D28();
+        battleCameraWazaUpdate();
     }
 }
 
@@ -238,7 +238,7 @@ void wazaSequenceSysUpdate(void)
 void wazaSequenceOwnerFree(void* obj) {
     if (obj != NULL) {
         if (*(u8*)((u8*)obj + 0x74) != 0) {
-            fn_801DD3E4(obj);
+            wazaSequenceOwnerFreeAll(obj);
             wazaSequenceOwnerRelease(obj);
         }
 
@@ -254,10 +254,10 @@ void wazaSequenceOwnerFree(void* obj) {
  * ========================================================================= */
 
 /**
- * fn_801DB154 - Waza sequence data lookup.
+ * wazaSequenceOwnerAlloc - Waza sequence data lookup.
  * Address: 0x801DB154 | Size: 0x78
  */
-void* fn_801DB154(void) {
+void* wazaSequenceOwnerAlloc(void) {
     u8* pool = lbl_80467CC0;
     u8* entry = *(u8**)pool;
     u16 count = *(u16*)(pool + 4);
@@ -295,11 +295,11 @@ void wazaSequenceSysFreeSequenceResource(void* obj) {
         }
 
         if (matches == 1) {
-            while (fn_8017B2CC(id) == 1) {
+            while (GSresGroupGetState(id) == 1) {
                 _threadSwitch();
             }
 
-            fn_800F915C(id);
+            GSresReleaseOwner(id);
             GSresReleaseById(id);
         }
 
@@ -342,10 +342,10 @@ void wazaSequenceSysFreeWazaResource(void* seqData) {
             }
         }
         if (references == 1) {
-            while (fn_8017B2CC(resourceId) == 1) {
+            while (GSresGroupGetState(resourceId) == 1) {
                 _threadSwitch();
             }
-            fn_800F915C(resourceId);
+            GSresReleaseOwner(resourceId);
             GSresReleaseById(resourceId);
         }
         *(u16*)((u8*)seqData + 0x30) = 0;
@@ -644,7 +644,7 @@ void wazaSequenceOwnerDrawAttached(void* entry, u32 drawFlags, u8 modelID) {
             switch (*(s32*)(node + 4)) {
             case 2:
                 if (modelID ==
-                    (u8)fn_800E3CBC(
+                    (u8)GSmodelGetFlag200(
                         *(struct GSmodel**)(node + 0xA4))) {
                     GSmodelDrawModel(
                         *(struct GSmodel**)(node + 0xA4), drawFlags);

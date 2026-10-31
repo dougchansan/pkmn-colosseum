@@ -4,22 +4,22 @@
 extern u16 lbl_8047A684[6] __attribute__((section(".sdata")));
 
 /*
- * Runs fn_80071AE4 for a 1-based port on the caller's upload block
+ * Runs gbaCmdUpload22 for a 1-based port on the caller's upload block
  * (gbaCommunication.c passes p + 0x4344) and clears the port's retry
- * counter; returns fn_80071AE4's result.
+ * counter; returns gbaCmdUpload22's result.
  */
-s32 fn_80089D30(s32 index, const u8* data)
+s32 gbaPortUpload22(s32 index, const u8* data)
 {
-    extern s32 fn_80071AE4(s32 chan, const u8* data);
+    extern s32 gbaCmdUpload22(s32 chan, const u8* data);
     s32 result;
 
-    result = fn_80071AE4(index - 1, data);
+    result = gbaCmdUpload22(index - 1, data);
     lbl_8047A684[index - 1] = 0;
     return result;
 }
 
-void fn_80089D74(s32 index)
+void gbaCommHandshakeB(s32 index)
 {
-    extern void fn_800722A0(s32);
-    fn_800722A0(index - 1);
+    extern void gbaCmdHandshakeB(s32);
+    gbaCmdHandshakeB(index - 1);
 }

@@ -188,7 +188,7 @@ static inline BOOL HSD_JObjMtxIsDirty(HSD_JObj* jobj)
     return !(jobj->flags & JOBJ_USER_DEF_MTX) && (jobj->flags & JOBJ_MTX_DIRTY);
 }
 
-/* HSD_JObjSetMtxDirtySub (fn_8019D620) is declared inside HSD_JObjSetMtxDirty
+/* HSD_JObjSetMtxDirtySub (HSD_JObjSetMtxDirtySub_8019D620) is declared inside HSD_JObjSetMtxDirty
  * only. With a file-scope declaration MWCC will not inline, into jobj.c's
  * callers, any function whose body calls the self-expanding recursive
  * SetMtxDirtySub, and jobj.c's ClearFlags/SetFlags(All), JObjUpdateFunc and
@@ -196,12 +196,12 @@ static inline BOOL HSD_JObjMtxIsDirty(HSD_JObj* jobj)
 static inline void HSD_JObjSetMtxDirty(HSD_JObj* jobj)
 {
     /* RULE-EXCEPTION(title-path): block-scope extern to steer inlining - see docs/RULE_EXCEPTIONS.md */
-    void fn_8019D620(HSD_JObj* jobj);
+    void HSD_JObjSetMtxDirtySub_8019D620(HSD_JObj* jobj);
 
     if (jobj == NULL || HSD_JObjMtxIsDirty(jobj)) {
         return;
     }
-    fn_8019D620(jobj);
+    HSD_JObjSetMtxDirtySub_8019D620(jobj);
 }
 
 static inline void HSD_JObjSetRotationX(HSD_JObj* jobj, f32 x)

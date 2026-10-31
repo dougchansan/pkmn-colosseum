@@ -35,7 +35,7 @@ extern void* menuItemBiosGetPtr(s16 npcId);                  /* Lookup NPC data 
 /* Text/dialog system */
 extern void  windowDrawSprite();
 extern void  winSeqSetMenu(void* ctx, s32 state);       /* Set dialog state */
-extern void  fn_801081F8(void* ctx, u16 msgId, u16 flags); /* Display message */
+extern void  winSeqSetItem(void* ctx, u16 msgId, u16 flags); /* Display message */
 
 /* Rendering */
 extern u32   GSmsgGetRect();                           /* Get model dimensions */
@@ -48,13 +48,13 @@ extern void  winMsgOpen(s32 slot, s32 msgId, s32 p3, s32 p4);
 extern void  winMsgClose(s32 slot);                   /* Close message box */
 
 /* Input/frame */
-extern u8    fn_801F18DC(s32 controller);             /* Check input ready */
+extern u8    fightFloorIsKind10(s32 controller);             /* Check input ready */
 extern u8    fightFloorIsUseFightTimerCommand(s32 controller);             /* Check button pressed */
 extern u8    fightTimerCommandIsOver(void);                       /* Check A button */
 extern u16   std103_battleGetResult(void);                       /* Get input state */
 extern void  _threadSwitch(void);                       /* Frame advance */
 extern u32   GSinputButtonsChanged(s32 slot);                   /* Get render flags */
-extern u32   fn_800F7BC4(s32 slot);                   /* Get VSync flags */
+extern u32   GSinputGetButtons(s32 slot);                   /* Get VSync flags */
 
 /* Battle bridge */
 extern void  msgctrlSetValue();                           /* Set battle parameter */
@@ -164,13 +164,13 @@ void menuFightStatusStartAnimHP(u32 arg1, s16 target) {
 }
 #endif
 
-/* 0x80011D9C | 0xCC - item-kind resolver + dispatch (same switch as fn_800129A8) */
+/* 0x80011D9C | 0xCC - item-kind resolver + dispatch (same switch as menuFightCmdCtrl) */
 #if 0
 asm void menuFightStatusSetActive(void) {
 #include "src/game/gs_npc_interact_fn_80011D9C.inc"
 }
 #else
-extern void fn_80103F74(void* head, u16 key, u32 data);
+extern void windowSetItemDisp(void* head, u16 key, u32 data);
 void menuFightStatusSetActive(s32 id, s32 do_extra) {
     u32 resolved;
     u16 kind;
@@ -186,10 +186,10 @@ void menuFightStatusSetActive(s32 id, s32 do_extra) {
         break;
     }
     if (do_extra != 0) {
-        fn_80103F74((void*)resolved, kind, 1);
-        fn_801081F8((void*)resolved, kind, 0x2d);
+        windowSetItemDisp((void*)resolved, kind, 1);
+        winSeqSetItem((void*)resolved, kind, 0x2d);
     } else {
-        fn_80103F74((void*)resolved, kind, 0);
+        windowSetItemDisp((void*)resolved, kind, 0);
     }
 }
 #endif

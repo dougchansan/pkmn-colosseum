@@ -54,7 +54,7 @@
     "cameraReturn": {"index": 179, "parameters": ["float", "int"]},
     "std182_tvNewsEvent": {"index": 182, "parameters": ["int"]},
     "floorEventElevatorMain": {"index": 197, "parameters": ["int", "int", "int", "int"]},
-    "fn_80088428": {"index": 206, "parameters": []},
+    "cardeGridPromptScene": {"index": 206, "parameters": []},
     "std228_soundGetCurrentBackgroundMusic": {"index": 228, "parameters": []},
     "evolutionSequenceEnd": {"index": 230, "parameters": []},
     "std243_shadowPokemonSetState": {"index": 243, "parameters": ["int", "int"]}
@@ -617,7 +617,7 @@
       "return_type": "int",
       "description": "Invoke the existing address-named GBA communication wrapper; preserve its native identity.",
       "locals": {},
-      "body": [["eval", ["call", "fn_80088428"]], ["return", ["int", 1]]]
+      "body": [["eval", ["call", "cardeGridPromptScene"]], ["return", ["int", 1]]]
     },
     {
       "index": 26,

@@ -5,7 +5,7 @@
  *
  * fsysSlotStatus2000 (status 2000) calls this for every load mode but 3: walk the
  * archive's entries (recording the one being looked at in
- * slot->entryIndex) and hand the slot to fn_8017D960 only when no entry's
+ * slot->entryIndex) and hand the slot to fsysSlotFinish only when no entry's
  * trailer is still in flight, i.e. every state is 4, 6 or 7.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
@@ -16,7 +16,7 @@
 #include "dolphin/types.h"
 #include "game/fsys/fsys_entry.h"
 
-extern void fn_8017D960(FSYSSlot* slot);
+extern void fsysSlotFinish(FSYSSlot* slot);
 
 /* Address: 0x8017DAB8 | size: 0xBC */
 void fsysSlotCheckEntries(FSYSSlot* slot)
@@ -37,6 +37,6 @@ void fsysSlotCheckEntries(FSYSSlot* slot)
         }
     }
     if (busy == 0) {
-        fn_8017D960(slot);
+        fsysSlotFinish(slot);
     }
 }

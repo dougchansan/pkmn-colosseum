@@ -12,7 +12,7 @@ u32 _fightCheckLockOnSub(s32 pokemonArg, u32 hostSide, u32* data)
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern void fightOutPokemonSetOumuWazaDataId();
     extern u32 fightOutPokemonGetJoutaiParam();
-    extern void fn_80201FDC();
+    extern void fightOutPokemonSetPokemonJoutai05();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u8 fightOutPokemonIsAlly();
@@ -47,7 +47,7 @@ u32 _fightCheckLockOnSub(s32 pokemonArg, u32 hostSide, u32* data)
                 matched = 0;
             }
             if (matched == 1) {
-                fn_80201FDC(pokemon, 0x1d, 0);
+                fightOutPokemonSetPokemonJoutai05(pokemon, 0x1d, 0);
             }
         }
     } else {

@@ -64,7 +64,7 @@ static s32 DoInit(u32 mixFrq, u32 aramSize, u32 numVoices, u32 flags)
     return ret;
 }
 
-s32 fn_8015FE88(u8 voices, u8 music, u8 sfx, u8 studios, u32 flags, u32 aramSize) /* sndInit */
+s32 sndInit(u8 voices, u8 music, u8 sfx, u8 studios, u32 flags, u32 aramSize)
 {
     s32 ret;
     u32 frq;
@@ -101,7 +101,7 @@ void sndQuit(void)
     lbl_8047AF18 = 0;
 }
 
-u8 fn_8015FFD4(void) /* sndIsInstalled */
+u8 sndIsInitialized(void) /* sndIsInstalled */
 {
     return lbl_8047AF18;
 }

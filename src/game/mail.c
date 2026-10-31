@@ -44,11 +44,11 @@ typedef struct MailPartyScratchExt {
 #if !defined(PR424_MAIL_SPLIT_1338_1470) || \
     defined(PR424_MAIL_1338_13E4)
 /**
- * fn_801D1364 - Set u16 handle in battle party scratch at offset 0x444.
+ * mailBiosSetCounter - Set u16 handle in battle party scratch at offset 0x444.
  * Address: 0x801D1364 | Size: 0x38
  * Stores handle as u16 at party+0x444 via savedataGetStatus(0, 0xA).
  */
-void* fn_801D1364(u16 handle, s32 idx) {
+void* mailBiosSetCounter(u16 handle, s32 idx) {
     MailPartyScratchExt* party = (MailPartyScratchExt*)savedataGetStatus(0, 0x0A);
     party->sortMode = handle;
     return party;
@@ -266,10 +266,10 @@ u32 mailGetEntryField0(u32 idx) {
 #if !defined(PR424_MAIL_SPLIT_167C_1A44) || \
     defined(PR424_MAIL_167C_16F0)
 /**
- * fn_801D167C - Waza set current handle.
+ * mailSetCurrentIndex - Waza set current handle.
  * Address: 0x801D167C | Size: 0x48
  */
-void fn_801D167C(u8 handle) {
+void mailSetCurrentIndex(u8 handle) {
     s32 slot = handle & 0xFF;
     WazaPartyScratch* party = (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     if (slot < lbl_80478CB8) {
@@ -315,7 +315,7 @@ u32 mailGetAttachFileGroup(s32 idx) {
 extern u32* lbl_80478EA0;
 extern u16* lbl_80478EA4;
 
-/* RULE-EXCEPTION(user-approved): inline copy of fn_801D19A4 (with break instead of an
+/* RULE-EXCEPTION(user-approved): inline copy of shadowGroupGetEntryCount (with break instead of an
  * early return) so shadowGroupGetEntryByte/shadowGroupGetEntryId expand it as retail does — see
  * docs/RULE_EXCEPTIONS.md */
 static inline u32 mailGetSequenceLength(s32 idx) {
@@ -420,10 +420,10 @@ u16 shadowGroupGetEntryId(s32 sequence, s32 index) {
 }
 
 /**
- * fn_801D19A4 - Waza animation speed control.
+ * shadowGroupGetEntryCount - Waza animation speed control.
  * Address: 0x801D19A4 | Size: 0xA0
  */
-u32 fn_801D19A4(s32 idx) {
+u32 shadowGroupGetEntryCount(s32 idx) {
     WazaEntry* entry;
     u16 current;
     u32 count;
@@ -545,7 +545,7 @@ static inline s32 mailGetFlagPos(s32 mailId, u8* mask)
  * Test whether a mailbox ID has already been received.
  * Address: 0x801D1B78 | Size: 0xA8
  */
-BOOL fn_801D1B78(s32 mailId) {
+BOOL saveFlagBitsTest(s32 mailId) {
     WazaPartyScratch* party =
         (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     u8 mask;
@@ -561,7 +561,7 @@ BOOL fn_801D1B78(s32 mailId) {
  * Mark a mailbox ID as received.
  * Address: 0x801D1C20 | Size: 0xA4
  */
-BOOL fn_801D1C20(s32 mailId) {
+BOOL saveFlagBitsSet(s32 mailId) {
     WazaPartyScratch* party =
         (WazaPartyScratch*)savedataGetStatus(0, 0x0A);
     u8 mask;

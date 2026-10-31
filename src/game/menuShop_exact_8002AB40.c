@@ -13,7 +13,7 @@ extern s32 GSmsgPrintColor(s32 x, s32 y, s32 color, u32 key);
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8002AB40(void* r3, u8* r4)
+s32 shopMenuDrawItem2(void* r3, u8* r4)
 {
     u8* ctx;
     u32 table[4];
@@ -76,7 +76,7 @@ s32 fn_8002AB40(void* r3, u8* r4)
     return 0;
 }
 
-s32 fn_8002ACB8(void* r3, u8* r4)
+s32 shopMenuDrawText(void* r3, u8* r4)
 {
     u8* ctx;
     u32 value;
@@ -132,7 +132,7 @@ done:
     return 0;
 }
 
-s32 fn_8002AE44(void* r3, u8* r4)
+s32 shopMenuDrawItem3(void* r3, u8* r4)
 {
     void* ctx;
     ctx = *(void**)((u8*)r3 + 0x60);
@@ -142,7 +142,7 @@ s32 fn_8002AE44(void* r3, u8* r4)
     return 0;
 }
 
-s32 fn_8002AE68(void* r3, u8* r4)
+s32 shopMenuDrawItem4(void* r3, u8* r4)
 {
     void* ctx;
     u8 v;

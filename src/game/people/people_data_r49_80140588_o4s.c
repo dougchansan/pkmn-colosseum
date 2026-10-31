@@ -1,6 +1,6 @@
 /**
  * @file people_data_r49_80140588_o4s.c
- * @brief fn_80140588 (0x80140588 - 0x80140A9C): the room left for item
+ * @brief peopleFieldGetPlacementOffset (0x80140588 - 0x80140A9C): the room left for item
  *        `dataIndex` in an item-record array. Without `accumulate` it is
  *        `extent` minus the matching record's count (or `extent` for a free
  *        record, 0 when neither exists); with it, the sum over all records.
@@ -94,7 +94,7 @@ static inline u32* peopleFindFreeEntry(u32* entries, u16 count, u16 id)
 }
 
 /* Resolve the placement offset for a field-person record group. */
-s32 fn_80140588(u32* entries, u16 count, u16 dataIndex, u16 extent,
+s32 peopleFieldGetPlacementOffset(u32* entries, u16 count, u16 dataIndex, u16 extent,
                 u8 accumulate)
 {
     u32* entry;

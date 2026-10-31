@@ -21,15 +21,15 @@ extern void* fightTrainerPokemonDataBiosGetPtr(u16 slot);
 extern void* fightTrainerAiDataBiosGetPtr(u16 slot);
 extern void* fightTrainerAiValueAddsubDataBiosGetPtr(u16 slot);
 extern void* fightTrainerGetStatus(void* ctx, u16 slot, u32 field, u32 idx);
-extern u8 fn_801FCCAC(u8* ptr);
-extern u16 fn_801FCC94(u8* ptr);
-extern u32 fn_801FCC7C(u8* ptr);
+extern u8 fightTrainerDataBiosGetStatus01(u8* ptr);
+extern u16 fightTrainerDataBiosGetStatus02(u8* ptr);
+extern u32 fightTrainerDataBiosGetStatus03(u8* ptr);
 extern u16 fightTrainerDataBiosGetKindDataId(u8* ptr);
-extern u16 fn_801FCC3C(u8* ptr);
-extern u32 fn_801FCC08(u8* ptr, u8 idx);
-extern u32 fn_801FCBF0(u8* ptr);
-extern u32 fn_801FCBBC(u8* ptr, u8 idx);
-extern u32 fn_801FCBA4(u8* ptr);
+extern u16 fightTrainerDataBiosGetStatus05(u8* ptr);
+extern u32 fightTrainerDataBiosGetStatus06(u8* ptr, u8 idx);
+extern u32 fightTrainerDataBiosGetStatus07(u8* ptr);
+extern u32 fightTrainerDataBiosGetStatus08(u8* ptr, u8 idx);
+extern u32 fightTrainerDataBiosGetStatus09(u8* ptr);
 extern u32 fightTrainerPokemonPartDataBiosGetName(u8* ptr);
 extern u32 fightTrainerPokemonPartDataBiosGetWazaTypeRevise(u8* ptr, u8 idx);
 extern u32 fightTrainerPokemonDataBiosGetNickname(u8* ptr);
@@ -175,7 +175,7 @@ extern void fightTrainer_SetKoban(u8* ptr, u32 val);
 extern void fightTrainer_SetNigeruCount(u8* ptr, u8 val);
 extern void fightTrainer_SetControllerId(u8* ptr, u8 val);
 extern void fightTrainer_SetSequencePtr(u8* ptr, u32 val);
-extern void fn_801FBDF4(u8* ptr, u8 idx, u16 val);
+extern void fightTrainerEnemyBiosSetEntry(u8* ptr, u8 idx, u16 val);
 extern void fightTrainerEnemyPokemonBiosSetTokuseiFlag(u8* ptr, u16 val);
 extern void fightTrainerEnemyPokemonBiosSetStoreTokuseiData(u8* ptr, u16 val);
 extern void fightTrainerEnemyPokemonBiosSetNowhp1banhikuiFlag(u8* ptr, u8 val);
@@ -314,7 +314,7 @@ void fightTrainerSetStatus(void* ctx, u16 slot, u32 field, u32 idx, u32 val) {
         u8* enemy = fightTrainerGetEnemyPokemon(ptr, slot);
 
         if (enemy != NULL) {
-            fn_801FBDF4(enemy, (u8)idx, (u16)val);
+            fightTrainerEnemyBiosSetEntry(enemy, (u8)idx, (u16)val);
         }
         break;
     }
@@ -445,15 +445,15 @@ void* fightTrainerGetStatus(void* ctx, u16 slot, u32 field, u32 idx) {
     }
 
     switch ((u16)field) {
-    case 0x01: return (void*)(u32)fn_801FCCAC(ptr);
-    case 0x02: return (void*)(u32)fn_801FCC94(ptr);
-    case 0x03: return (void*)fn_801FCC7C(ptr);
+    case 0x01: return (void*)(u32)fightTrainerDataBiosGetStatus01(ptr);
+    case 0x02: return (void*)(u32)fightTrainerDataBiosGetStatus02(ptr);
+    case 0x03: return (void*)fightTrainerDataBiosGetStatus03(ptr);
     case 0x04: return (void*)(u32)fightTrainerDataBiosGetKindDataId(ptr);
-    case 0x05: return (void*)(u32)fn_801FCC3C(ptr);
-    case 0x06: return (void*)(u32)(u16)fn_801FCC08(ptr, (u8)idx);
-    case 0x07: return (void*)fn_801FCBF0(ptr);
-    case 0x08: return (void*)fn_801FCBBC(ptr, (u8)idx);
-    case 0x09: return (void*)fn_801FCBA4(ptr);
+    case 0x05: return (void*)(u32)fightTrainerDataBiosGetStatus05(ptr);
+    case 0x06: return (void*)(u32)(u16)fightTrainerDataBiosGetStatus06(ptr, (u8)idx);
+    case 0x07: return (void*)fightTrainerDataBiosGetStatus07(ptr);
+    case 0x08: return (void*)fightTrainerDataBiosGetStatus08(ptr, (u8)idx);
+    case 0x09: return (void*)fightTrainerDataBiosGetStatus09(ptr);
     case 0x0B: return (void*)fightTrainerPokemonPartDataBiosGetName(ptr);
     case 0x0C: return (void*)(u32)(u8)fightTrainerPokemonPartDataBiosGetWazaTypeRevise(ptr, (u8)idx);
     case 0x0E: return (void*)fightTrainerPokemonDataBiosGetNickname(ptr);

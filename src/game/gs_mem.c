@@ -45,8 +45,8 @@ u16 GSmemShrink(u8* allocation, u32 size);
 
 /*
  * Inline helpers.  Each is recovered from the target, not invented:
- * - GSmemEntryFromHandle: expanded in GSmemFree, fn_800E24B0,
- *   GSmemLock, fn_800E2B00 and GSmemAlloc; the free/lock/unlock copies
+ * - GSmemEntryFromHandle: expanded in GSmemFree, GSmemUnlock,
+ *   GSmemLock, GSmemAllocTail and GSmemAlloc; the free/lock/unlock copies
  *   re-test the handle on a stale condition register ("bne; bne").
  * - GSmemEntryHandle: GSmemShrink re-tests the entry for NULL after it has
  *   already returned on NULL (the helper's own guard).
@@ -338,7 +338,7 @@ s32 GSmemFree(u16 handle)
     return result;
 }
 
-s32 fn_800E24B0(u16 handle)
+s32 GSmemUnlock(u16 handle)
 {
     const char* messages = lbl_80270658;
     GSmemEntry* entry;
@@ -425,12 +425,12 @@ void* GSmemLock(u16 handle)
     return entry->data;
 }
 
-s32 fn_800E2AF8(u16 handle)
+s32 GSmemReturnTrue(u16 handle)
 {
     return 1;
 }
 
-u16 fn_800E2B00(u32 size, u16 alignment)
+u16 GSmemAllocTail(u32 size, u16 alignment)
 {
     GSmemBlock* block;
     void* address;
@@ -702,7 +702,7 @@ u16 _toolentryAlloc__FUl(u32 size)
     return GSmemAlloc(size, 0x20);
 }
 
-void fn_800E3560(s32 strategy)
+void GSmemSetDebugFlag(s32 strategy)
 {
     lbl_8047AB2C = strategy;
 }

@@ -31,7 +31,7 @@ extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 extern void  set__5GSvecFfff(void* out, f32 angle, f32 a, f32 b); /* rotation matrix */
 extern void  GSmtxMakeXRotation(void* out, f32 angle);
 extern void  GSmtxMakeYRotation(void* out, f32 angle);         /* angle to vector */
-extern void  fn_800E0108(void* dst, void* lhs, void* rhs);
+extern void  GSvecMulComponents(void* dst, void* lhs, void* rhs);
 extern void  GSmtxTranspose(void* dst, void* src);
 extern void  GSmtxRotateZ(void* matrix, f32 angle);
 extern void  GSmtxRotateY(void* matrix, f32 angle);
@@ -43,13 +43,13 @@ extern void* std092_getCurrentRoomID(void);                         /* GSfloor g
 /* Script/generator */
 extern void  fn_80169520(void* obj);                    /* status flag update */
 extern void  fn_8016A644(void* obj);                    /* resource cleanup */
-extern void  fn_800D305C(s32 param);                     /* gs_render_util: set render mode */
-extern void  fn_800E24B0(u16 handle);                  /* GSmemLock */
+extern void  GSgfxSetFrameClamp(s32 param);                     /* gs_render_util: set render mode */
+extern void  GSmemUnlock(u16 handle);                  /* GSmemLock */
 extern void  GSvecCopy(void* dst, void* src);
 extern u32  menuIsCheck(u32 a);
 extern void menuOpenCustom(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, ...);
 extern void GScameraRestoreState(void* a, void* b);
-extern void fn_800D258C(void* a);
+extern void GScameraSetCurrent(void* a);
 extern void GScameraSaveState(void* a, void* b);
 extern void _threadSwitch(void);
 extern void* GSresGetResource(u32 a, u32 b);

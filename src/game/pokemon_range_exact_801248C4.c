@@ -39,7 +39,7 @@ void pokemonInitAry(u8* ptr, u16 count) {
 void pokemonInit(u8* ptr) {
     extern void pokemonSetStatus(u8* ptr, u32 a, u32 b, u32 c, u32 d);
     extern u32 pokemonGetStatus(u8* ptr, u32 a, u32 b, u32 c);
-    extern void fn_8011B950(u32 base, u16 count);
+    extern void joutaiSlotsClear(u32 base, u16 count);
     extern void gamedataAttestInit(u32 val);
     extern void pokemonBiosSetEventGetFlag(u8* ptr, u8 val);
     u32 i;
@@ -51,7 +51,7 @@ void pokemonInit(u8* ptr) {
     if (ptr != NULL) { pokemonSetStatus(ptr, 0, 0xc5, 0, (u32)-0x64); }
     pokemonSetStatus(ptr, 0, 0xc6, 0, 0);
     pokemonSetStatus(ptr, 0, 0xc7, 0, 0);
-    fn_8011B950(pokemonGetStatus(ptr, 0, 0xc8, 0), 1);
+    joutaiSlotsClear(pokemonGetStatus(ptr, 0, 0xc8, 0), 1);
     pokemonSetStatus(ptr, 0, 0x6e, 0, 0);
     pokemonSetStatus(ptr, 0, 0x6f, 0, 0);
     gamedataAttestInit(pokemonGetStatus(ptr, 0, 0x70, 0));
@@ -66,7 +66,7 @@ void pokemonInit(u8* ptr) {
     pokemonSetStatus(ptr, 0, 0x77, 0, (u32)&local);
     pokemonSetStatus(ptr, 0, 0x79, 0, 0);
     pokemonSetStatus(ptr, 0, 0x7a, 0, 0);
-    fn_8011B950(pokemonGetStatus(ptr, 0, 0x7c, 0), 1);
+    joutaiSlotsClear(pokemonGetStatus(ptr, 0, 0x7c, 0), 1);
     pokemonSetStatus(ptr, 0, 0x7d, 0, 0);
     if (ptr != NULL) {
         for (i = 0; (u16)i < 4; i++) {
@@ -140,20 +140,20 @@ void pokemonInit(u8* ptr) {
 void pokemonInitDarkPokemon(u8* ptr) {
     extern void pokemonSetStatus(u8* a, u32 b, u32 c, u32 d, u32 e);
     extern u32 pokemonGetStatus(u8* a, u32 b, u32 c, u32 d);
-    extern void fn_8011B950(u8* a, u32 b);
+    extern void joutaiSlotsClear(u8* a, u32 b);
     pokemonSetStatus(ptr, 0, 0xc3, 0, 0);
     if (ptr != NULL) {
         pokemonSetStatus(ptr, 0, 0xc5, 0, (u32)-100);
     }
     pokemonSetStatus(ptr, 0, 0xc6, 0, 0);
     pokemonSetStatus(ptr, 0, 0xc7, 0, 0);
-    fn_8011B950((u8*)pokemonGetStatus(ptr, 0, 0xc8, 0), 1);
+    joutaiSlotsClear((u8*)pokemonGetStatus(ptr, 0, 0xc8, 0), 1);
 }
 
 void pokemonInitJoutai(u8* ptr) {
     extern u32 pokemonGetStatus(u8* a, u32 b, u32 c, u32 d);
-    extern void fn_8011B950(u8* a, u32 b);
-    fn_8011B950((u8*)pokemonGetStatus(ptr, 0, 0x7c, 0), 1);
+    extern void joutaiSlotsClear(u8* a, u32 b);
+    joutaiSlotsClear((u8*)pokemonGetStatus(ptr, 0, 0x7c, 0), 1);
 }
 
 void pokemonWazaInit(u8* ptr, u32 arg2) {

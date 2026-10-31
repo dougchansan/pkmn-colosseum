@@ -123,7 +123,7 @@ extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
 extern void  pokemonIsJoutaiDataId(void);
-extern void  fn_8011B67C(void);
+extern void  statusIsJoutaiDataId(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);
@@ -187,7 +187,7 @@ u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     extern void koukaExec(u16 koukaDataId, void* fightTarget, void* target, u32 flags);
     extern void* fightTargetGetPtr(u32 targetDataId, void* target, u16 fightType);
     extern u32 fightFloorGetStatus(u32, u16, u32, u16);
-    extern u8 fn_8020A8E0(u32 joukenDataId, void* target);
+    extern u8 fightJoukenCheck_8020A8E0(u32 joukenDataId, void* target);
 
     u32 koukaDataId;
     u32 targetDataId;
@@ -202,7 +202,7 @@ u32 fightKoukaDoFightKoukaJoukenAndKouka(void* target, u16 koukaDataIndex) {
     result = 0;
     fightType = fightFloorGetStatus(0, 0, 0x14, 0);
     fightTarget = fightTargetGetPtr(targetDataId, target, fightType);
-    if (fn_8020A8E0(joukenDataId, target) == 1) {
+    if (fightJoukenCheck_8020A8E0(joukenDataId, target) == 1) {
         koukaExec((u16)koukaDataId, fightTarget, target, 0);
         result = 1;
     }
@@ -236,14 +236,14 @@ u32 fightStartEncount(u32 p1) {
     extern void scriptSoundStop();
     extern void std104_soundSetBackgroundMusic();
     extern void soundStartRaw();
-    extern void fn_8018DA88();
+    extern void peopleHideAllAndSuspend();
     extern u8 std081_flagCheckTrue();
     extern void std079_flagSetTrue();
     extern void std078_flagSetFalse();
     extern void fadeCheck();
     extern void fadeSetEX(f32, f32, u32, u32, u32);
     extern void fadeSet();
-    extern void fn_801D0AFC();
+    extern void heroPartyHealAll();
     extern void mailMainReceiveTerminate();
     extern void fightSetEncountId();
     extern void battleSetResult();
@@ -252,7 +252,7 @@ u32 fightStartEncount(u32 p1) {
     extern u8 fightFloorIsGcHeroWin();
     extern void fightFloorSetStatus();
     extern u32 fightFloorGetStatus();
-    extern u32 fn_801FCC7C();
+    extern u32 fightTrainerDataBiosGetStatus03();
     extern u32 fightTrainerDataBiosGetPtr();
     extern u16 fightEncountDataBiosGetWipeEffectSndID();
     extern f32 fightEncountDataBiosGetWipeEffectTime();
@@ -303,7 +303,7 @@ u32 fightStartEncount(u32 p1) {
             fightEncountDataBiosGetFightTrainerDataId(uVar1, 1);
             trainerData = fightTrainerDataBiosGetPtr();
             if (trainerData != 0) {
-                msgValue = fn_801FCC7C();
+                msgValue = fightTrainerDataBiosGetStatus03();
                 sVar8 = charNameBiosSearchIndex();
                 if ((sVar8 != 0) && (sVar8 = charNameBiosGetHearFlag(), sVar8 != 0)) {
                     std078_flagSetFalse(sVar8);
@@ -335,8 +335,8 @@ u32 fightStartEncount(u32 p1) {
                 std079_flagSetTrue(0xe05);
                 uVar6 = heroGetStatus(0, 0xc, 0);
                 heroDecPokedoru(0, (s32)uVar6 / 2);
-                fn_801D0AFC(1);
-                fn_8018DA88();
+                heroPartyHealAll(1);
+                peopleHideAllAndSuspend();
                 floorReturnToSavedRoom();
                 floorSetFadeScript(0, 0x5960008);
                 _threadSwitch();

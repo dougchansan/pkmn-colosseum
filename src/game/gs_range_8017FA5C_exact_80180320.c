@@ -15,10 +15,10 @@
  *   copies to its own local, which only an inline expansion produces;
  *   arqAlloc, expanded in both, leaves the same pattern in r26.
  * - The synchronous wrappers are the asynchronous ones plus a busy wait.
- *   fn_80180450 expands fn_801807A8 and fn_80180320 expands fn_80180584
+ *   fsysMainToARAMSync expands fsysARQPost and fsysARAMToMainSync expands fsysARAMToMainAsync
  *   with NULL callbacks (`-inline auto` inlines these same-unit calls), and
- *   both expand fn_801808B4 in the wait loop ("mr r29,rN; lwz r0,0x24(rN)",
- *   the typed view of its handle). fn_801808B4 therefore has to live in the
+ *   both expand fsysARQIsBusy in the wait loop ("mr r29,rN; lwz r0,0x24(rN)",
+ *   the typed view of its handle). fsysARQIsBusy therefore has to live in the
  *   same object as its callers.
  *
  * GS_ASSERT: every wrapper copies `aram` with a record-form "mr. rN,r4"
@@ -41,7 +41,7 @@ extern void ARQPostRequest(void* request, u32 owner, u32 type, u32 priority,
 /* Address: 0x801808E4 | size: 0x68
  * ARQ completion callback: mark the entry idle, run the user callback,
  * release the entry and flush the transferred range. */
-void fn_801808E4(GsRangeARQEntry* entry)
+void fsysARQCallback2(GsRangeARQEntry* entry)
 {
     GsRangeARQEntry* e = entry;
 
@@ -55,7 +55,7 @@ void fn_801808E4(GsRangeARQEntry* entry)
 
 /* Address: 0x801808B4 | size: 0x30
  * Nonzero while the request is still in flight. */
-s32 fn_801808B4(void* handle)
+s32 fsysARQIsBusy(void* handle)
 {
     GsRangeARQEntry* entry = handle;
 
@@ -103,7 +103,7 @@ static inline GsRangeARQEntry* arqWrite(void* main, void* aram, u32 size,
         entry->size = alignedSize;
         DCFlushRange(main, size);
         ARQPostRequest(entry, (u32)entry, 0, 0, (u32)main, (u32)aram,
-                       (size + 0x1F) & ~0x1F, (void (*)(u32))fn_801808E4);
+                       (size + 0x1F) & ~0x1F, (void (*)(u32))fsysARQCallback2);
         OSRestoreInterrupts(level);
         return entry;
     }
@@ -132,7 +132,7 @@ static inline GsRangeARQEntry* arqRead(void* main, void* aram, u32 size,
         entry->size = alignedSize;
         DCFlushRange(main, size);
         ARQPostRequest(entry, (u32)entry, 1, 0, (u32)aram, (u32)main, alignedSize,
-                       (void (*)(u32))fn_801808E4);
+                       (void (*)(u32))fsysARQCallback2);
         OSRestoreInterrupts(level);
         return entry;
     }
@@ -140,14 +140,14 @@ static inline GsRangeARQEntry* arqRead(void* main, void* aram, u32 size,
 }
 
 /* Address: 0x801807A8 | size: 0x10C */
-GsRangeARQEntry* fn_801807A8(void* main, void* aram, u32 size)
+GsRangeARQEntry* fsysARQPost(void* main, void* aram, u32 size)
 {
     GsRangeARQEntry* entry = arqWrite(main, aram, size, NULL, NULL);
     return entry;
 }
 
 /* Address: 0x80180694 | size: 0x114 */
-GsRangeARQEntry* fn_80180694(void* main, void* aram, u32 size,
+GsRangeARQEntry* fsysMainToARAMAsync(void* main, void* aram, u32 size,
                              void (*callback)(void*, void*), void* arg)
 {
     GsRangeARQEntry* entry = arqWrite(main, aram, size, callback, arg);
@@ -155,7 +155,7 @@ GsRangeARQEntry* fn_80180694(void* main, void* aram, u32 size,
 }
 
 /* Address: 0x80180584 | size: 0x110 */
-GsRangeARQEntry* fn_80180584(void* main, void* aram, u32 size,
+GsRangeARQEntry* fsysARAMToMainAsync(void* main, void* aram, u32 size,
                              void (*callback)(void*, void*), void* arg)
 {
     GsRangeARQEntry* entry = arqRead(main, aram, size, callback, arg);
@@ -164,20 +164,20 @@ GsRangeARQEntry* fn_80180584(void* main, void* aram, u32 size,
 
 /* Address: 0x80180450 | size: 0x134
  * Synchronous main memory -> ARAM copy. */
-void fn_80180450(void* main, void* aram, u32 size)
+void fsysMainToARAMSync(void* main, void* aram, u32 size)
 {
-    GsRangeARQEntry* entry = fn_801807A8(main, aram, size);
+    GsRangeARQEntry* entry = fsysARQPost(main, aram, size);
 
-    while (fn_801808B4(entry)) {
+    while (fsysARQIsBusy(entry)) {
     }
 }
 
 /* Address: 0x80180320 | size: 0x130
  * Synchronous ARAM -> main memory copy. */
-void fn_80180320(void* main, void* aram, u32 size)
+void fsysARAMToMainSync(void* main, void* aram, u32 size)
 {
-    GsRangeARQEntry* entry = fn_80180584(main, aram, size, NULL, NULL);
+    GsRangeARQEntry* entry = fsysARAMToMainAsync(main, aram, size, NULL, NULL);
 
-    while (fn_801808B4(entry)) {
+    while (fsysARQIsBusy(entry)) {
     }
 }

@@ -12,9 +12,9 @@ u32 _fightSeqTurnEndSubFightOutPokemon(u32 r3, u32 r4, char* r5)
 
 {
     extern int fightOutPokemonGetJoutaiMigawariHp();
-    extern void fn_80201FDC();
-    extern u32 fn_80202108();
-    extern u32 fn_80202234();
+    extern void fightOutPokemonSetPokemonJoutai05();
+    extern u32 fightOutPokemonGetPokemonJoutai05();
+    extern u32 fightOutPokemonGetPokemonJoutaiKaisuu();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern void fightOutPokemonInitOneTurn();
@@ -40,8 +40,8 @@ u32 _fightSeqTurnEndSubFightOutPokemon(u32 r3, u32 r4, char* r5)
       pokemonSetStatus(r3,0,0xed,0,(u16)(status - 1));
     }
     if (fightOutPokemonIsPokemonJoutaiDataId(r3,0x12) == 1) {
-      current = fn_80202108(r3,0x12);
-      count = fn_80202234(r3,0x12);
+      current = fightOutPokemonGetPokemonJoutai05(r3,0x12);
+      count = fightOutPokemonGetPokemonJoutaiKaisuu(r3,0x12);
       current = (s8)current;
       count = (s8)count;
       next = (s8)(current + 1);
@@ -49,7 +49,7 @@ u32 _fightSeqTurnEndSubFightOutPokemon(u32 r3, u32 r4, char* r5)
         fightOutPokemonWriteJoutaiDataId(r3,0x12);
       }
       else {
-        fn_80201FDC(r3,0x12,next);
+        fightOutPokemonSetPokemonJoutai05(r3,0x12,next);
       }
     }
   }

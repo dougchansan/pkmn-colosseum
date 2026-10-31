@@ -53,7 +53,7 @@ void gfxSetScissor(u16 x1, u16 y1, u16 x2, u16 y2) {
     }
 }
 
-void fn_800D9E4C(s32 val) {
+void gfxSetFog_800D9E4C(s32 val) {
     u32 state = lbl_8047AA80;
     if (*(s32*)state == 1) {
         gfxRecordCommand(0x36, 1, val);
@@ -71,7 +71,7 @@ void fn_800D9E4C(s32 val) {
     }
 }
 
-void fn_800D9ED8(s32 val) {
+void gfxSetFlag1A(s32 val) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x35, 1, val); }
     else if (val == 1) { *(u8*)(lbl_8047AA80 + 0x1a) = 1; }
     else if (val == 0) { *(u8*)(lbl_8047AA80 + 0x1a) = 0; }

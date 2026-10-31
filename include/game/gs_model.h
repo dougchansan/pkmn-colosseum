@@ -34,11 +34,11 @@ void GSmodelSetShadowSurface(struct GSmodel* model, s32 count,
 /* HSD services used while constructing a GS model. */
 struct HSDJObj* HSD_JObjLoadJoint(struct GSjobjDesc* joint);
 void HSD_JObjAddNext(struct HSDJObj* jobj, struct HSDJObj* next);
-void fn_80190E60(struct GSbound* bound);
-void fn_8019146C(struct GSbound* bound, const struct GSvec* scale);
-void fn_80191474(struct GSbound* bound, const struct GSvec* rotation);
-void fn_8019147C(struct GSbound* bound, const struct GSvec* position);
-void fn_8019F1C4(struct HSDJObj* jobj, s32* vertexCount,
+void GSboundDebugDraw(struct GSbound* bound);
+void GSboundSetScale(struct GSbound* bound, const struct GSvec* scale);
+void GSboundSetRotation(struct GSbound* bound, const struct GSvec* rotation);
+void GSboundSetPosition(struct GSbound* bound, const struct GSvec* position);
+void HSD_JObjCountVisibleVertices(struct HSDJObj* jobj, s32* vertexCount,
                  s32* polygonCount);
 
 #endif /* GAME_GS_MODEL_H */

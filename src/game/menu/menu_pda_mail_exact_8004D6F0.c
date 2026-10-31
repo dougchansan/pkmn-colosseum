@@ -37,14 +37,14 @@ extern s32 mailGetNbMailInMailbox(void);
 extern u8* windowGetKeyInfo(void);
 extern void menuButtonNormal(void* window);
 extern void soundStart(s32 id, s32 arg1, s32 arg2, s32 arg3);
-extern s32 fn_801D1B78(s32 mailId);
-extern void fn_801D1C20(s32 mailId);
-extern void fn_801D228C(u16 mailId);
+extern s32 saveFlagBitsTest(s32 mailId);
+extern void saveFlagBitsSet(s32 mailId);
+extern void mailApplyReward(u16 mailId);
 extern void winSeqSetMenu(s32 context, s32 id);
 extern s32 lbl_8047A518;
 extern s32 menuOpenCustom(s32, s32, s32, s32, s32, s32, void*, ...);
 extern s32 windowGetActiveID(void);
-extern void fn_8004E9C0(s32 mailId);
+extern void pdaMailAttachRun(s32 mailId);
 extern void menuClose(s32 id);
 extern void menuCloseSync(s32 id, s32 wait);
 
@@ -105,14 +105,14 @@ s32 pdaMailViewKey(PdaMailWindow* window)
         **field = index;
     }
     mailId = pdaMailGetMailID(index);
-    if (fn_801D1B78(mailId) == 0) {
-        fn_801D1C20(mailId);
-        fn_801D228C((u16)mailId);
+    if (saveFlagBitsTest(mailId) == 0) {
+        saveFlagBitsSet(mailId);
+        mailApplyReward((u16)mailId);
     }
     return 0;
 }
 
-void fn_8004D8BC(PdaMailWindow* window)
+void pdaMailViewAttachKey(PdaMailWindow* window)
 {
     u8* state = windowGetKeyInfo();
 
@@ -122,7 +122,7 @@ void fn_8004D8BC(PdaMailWindow* window)
     }
 }
 
-s32 fn_8004D928(PdaMailPhaseWidget* widget)
+s32 pdaMailViewCtrl(PdaMailPhaseWidget* widget)
 {
     switch (widget->phase) {
     case 0:
@@ -141,7 +141,7 @@ s32 fn_8004D928(PdaMailPhaseWidget* widget)
     return 0;
 }
 
-s32 fn_8004D9C0(s32 selection)
+s32 pdaMailViewRun(s32 selection)
 {
     lbl_8047A518 = selection;
     for (;;) {
@@ -154,7 +154,7 @@ s32 fn_8004D9C0(s32 selection)
         {
             s32 mailId = pdaMailGetMailID(lbl_8047A518);
             if (mailGetAttachFileGroup(mailId) != 0) {
-                fn_8004E9C0(mailId);
+                pdaMailAttachRun(mailId);
             }
         }
     }

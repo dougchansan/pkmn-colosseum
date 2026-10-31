@@ -135,7 +135,7 @@ f32   PSVECDotProduct(void* a, void* b);
 f32   PSVECSquareDistance(void* a, void* b);
 
 /* GScolsys2 functions */
-extern void* fn_8010CBC0(void);                         /* GScolsys2_GetWZXData */
+extern void* GScolsys2GetCurFloor_8010CBC0(void);                         /* GScolsys2_GetWZXData */
 extern s32   GScolsys2GetObjEnable(u32 triIdx, void* outFlag);    /* GScolsys2_QueryTriVisible */
 extern void  colsysMakeSRTMatrix(void* mtxOut, u32 layerIdx);   /* GScolsys2_BuildInverseTransform */
 extern void  colsysMakeRotMatrix(void* mtxOut, u32 layerIdx);   /* GScolsys2_BuildTransform */
@@ -147,7 +147,7 @@ f32   GScolsys2UtilGetCpLinePoint(void* out, void* start, void* end, void* point
 s32   GScolsy2UtilChkInTri(void* point, void* verts, void* normal);
 
 /* ===== Cross-TU forward declarations (this split) ===== */
-s32 fn_80111864(GScolsys2Vec3* start, GScolsys2Vec3* end,
+s32 GScolsys2ThruTest(GScolsys2Vec3* start, GScolsys2Vec3* end,
                 GSfieldQueryTriangle* out); /* GScolsys2Thru, called from GScolsys2Check */
 
 #endif /* GAME_GS_FIELD_COLQUERY_TYPES_H */

@@ -31,7 +31,7 @@ SIZE = 0x1F34
 BANNER = "Metrowerks Target Resident Kernel for PowerPC"
 LABELS = {"gTRKInterruptVectorTable": 0, "lbl_80003FF0": 0xB44,
           "lbl_80004000": 0xB54, "gTRKInterruptVectorTableEnd": SIZE}
-TARGETS = {"fn_800053E0": (".init", 0x800053E0),
+TARGETS = {"__TRK_reset": (".init", 0x800053E0),
            "TRKInterruptHandler": (".text", 0x800C0EAC)}
 MACROS = {"trk_redirect", "vector_slot", "trk_vector", "trk_tlb_redirect"}
 MNEMONICS = {"andis.", "b", "beq", "dcbi", "icbi", "li", "lis", "mfcr",
@@ -212,7 +212,7 @@ def check_source(text, entry, evidence_text):
         else:
             require(operation in MNEMONICS, "Instruction is outside the registered hardware-template scope")
             if operation == "b":
-                require(operands in ("fn_800053E0", ".Lperformance_monitor"),
+                require(operands in ("__TRK_reset", ".Lperformance_monitor"),
                         "Unregistered direct vector branch target")
             elif operation == "beq":
                 require(operands == r".Lrestore_cr_\@", "Unregistered conditional vector branch target")
@@ -242,7 +242,7 @@ def symbol_addresses(text):
 
 
 def expected_relocations():
-    expected = {0x100: (REL24, "fn_800053E0")}
+    expected = {0x100: (REL24, "__TRK_reset")}
     for first, _ in REDIRECTS:
         expected[first + 2] = (ADDR16_HI, "TRKInterruptHandler")
         expected[first + 6] = (ADDR16_LO, "TRKInterruptHandler")
@@ -344,7 +344,7 @@ def check_control_transfers(payload, addresses):
                 if xo == 50:
                     require(word == 0x4C000064, "Malformed rfi instruction")
                     returns.add(offset)
-    expected = {0x100: (18, addresses["fn_800053E0"]), 0xF00: (18, BASE + 0xF54)}
+    expected = {0x100: (18, addresses["__TRK_reset"]), 0xF00: (18, BASE + 0xF54)}
     expected.update({slot + 0x14: (16, BASE + slot + 0x30) for slot in TLB_SLOTS})
     require(direct == expected, "Vector direct control-transfer destinations differ")
     require(returns == {first + 0x10 for first, _ in REDIRECTS}, "Vector rfi positions differ")

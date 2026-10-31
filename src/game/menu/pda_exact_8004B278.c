@@ -1,7 +1,7 @@
 /**
  * @file pda_exact_8004B278.c
  * @brief PDA mail screen per-frame update, 0x8004B278 - 0x8004B598:
- *        fn_8004B278 measures the frame time, eases the widgets' horizontal
+ *        pdaTopMenuCtrl measures the frame time, eases the widgets' horizontal
  *        and vertical offsets toward their targets and advances the
  *        background scroll.
  *        Copied from pda_range_80037158.c.
@@ -15,12 +15,12 @@ extern u8 lbl_803A6A60[];
 extern u8 std081_flagCheckTrue(s32 id);
 extern void menuItemBiosSetSelectFlag(s32 id, s32 flag);
 extern u32 GSgetFrameStep(void);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 
 /* Ease the widgets' horizontal offset toward its target: 10 x the gap per
  * second, at most 20 per frame, snapping once the remaining gap is within the
  * step or under 1. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8004B278_EaseX in this standalone copy (fn_8004B278) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8004B278_EaseX in this standalone copy (pdaTopMenuCtrl) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_8004B278_EaseX(f32* cur, f32* target)
 {
     f32 tgt;
@@ -49,7 +49,7 @@ static inline void pda_8004B278_EaseX(f32* cur, f32* target)
 }
 
 /* The same easing for the vertical offset. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8004B278_EaseY in this standalone copy (fn_8004B278) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_8004B278_EaseY in this standalone copy (pdaTopMenuCtrl) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_8004B278_EaseY(f32* cur, f32* target)
 {
     f32 delta;
@@ -83,12 +83,12 @@ static inline void pda_8004B278_EaseY(f32* cur, f32* target)
 }
 
 /* Per-frame timing, offset easing and background scroll for the mail screen. */
-s32 fn_8004B278(u8* work)
+s32 pdaTopMenuCtrl(u8* work)
 {
     u8* data;
 
     data = *(u8**)(work + 0x60);
-    *(f32*)((u8*)&lbl_803A6A60 + 8) = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+    *(f32*)((u8*)&lbl_803A6A60 + 8) = (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     if (std081_flagCheckTrue(0x3f0) != 0) {
         menuItemBiosSetSelectFlag(0x438, 1);
     } else {

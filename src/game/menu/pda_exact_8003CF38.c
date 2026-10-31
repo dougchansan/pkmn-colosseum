@@ -2,7 +2,7 @@
  * @file pda_exact_8003CF38.c
  * @brief PDA party list builder, 0x8003CF38 - 0x8003D1FC.
  *
- * Standalone copy of fn_8003CF38 from pda_range_80037158.c. Unit flag
+ * Standalone copy of pdaSnagListBuild from pda_range_80037158.c. Unit flag
  * -opt nopeephole replaces the shared file's local "peephole off".
  */
 #include "dolphin/types.h"
@@ -18,10 +18,10 @@ extern u32 lbl_8047A4D8;
 extern s32 lbl_8047A4DC;
 extern u32 GSmemGetHandleByPtr();
 extern u32 GSmemFree();
-extern u32 fn_800E24B0();
+extern u32 GSmemUnlock();
 extern u32 GSmemLock();
 extern u32 GSmemAlloc();
-extern s32 fn_801EE0BC(u16 id);
+extern s32 darkPokemonSaveGet4A4(u16 id);
 extern void* memcpy(void* dst, const void* src, u32 size);
 
 static inline void* pdaAlloc(s32 size, s32 align)
@@ -39,7 +39,7 @@ typedef struct PdaSortEntry {
     PdaListEntry entry;
 } PdaSortEntry;
 
-void fn_8003CF38(void)
+void pdaSnagListBuild(void)
 {
     extern u16 darkPokemonSaveGet4A0(u16 id);
     extern u8 darkPokemonCheckFlag16(u16 id);
@@ -74,7 +74,7 @@ void fn_8003CF38(void)
              darkPokemonGetFlag1C(i + 1) != 0)) {
             lbl_8047A4D4[count].field_00 = value;
             lbl_8047A4D4[count].battleId = (u16)(i + 1);
-            ((PdaSortEntry*)lbl_8047A4D8)[count].key = fn_801EE0BC(i + 1);
+            ((PdaSortEntry*)lbl_8047A4D8)[count].key = darkPokemonSaveGet4A4(i + 1);
             ((PdaSortEntry*)lbl_8047A4D8)[count].entry.field_00 =
                 lbl_8047A4D4[count].field_00;
             ((PdaSortEntry*)lbl_8047A4D8)[count].entry.battleId =
@@ -107,7 +107,7 @@ void fn_8003CF38(void)
 
     handle = GSmemGetHandleByPtr(lbl_8047A4D8);
     if ((u16)handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     lbl_8047A4D8 = 0;

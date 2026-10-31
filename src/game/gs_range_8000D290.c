@@ -10,7 +10,7 @@
 #include "dolphin/types.h"
 
 /* 0x8000D290 */
-u32 fn_8000D290(void) {
+u32 dbgMenuReturnTrue_8000D290(void) {
     return 1;
 }
 
@@ -21,7 +21,7 @@ extern s32 menuGetCursorItemID(void*);
 extern u32 GSmsgGetRect(void*);
 extern void GSmsgPrintColor(s16, s16, u32, void*);
 
-void fn_8000D298(u8* menu, u8* item)
+void fieldMenuDrawText(u8* menu, u8* item)
 {
     u8* item_data;
     s16 x;
@@ -60,10 +60,10 @@ typedef struct MenuSequenceMessageState {
     s8 previousSelection;
 } MenuSequenceMessageState;
 
-s32 fn_8000D3AC(MenuSequenceMessageState* state)
+s32 fieldMenuCtrl(MenuSequenceMessageState* state)
 {
     extern void winSeqSetMenu(s32 menuId, s32 state);
-    extern void fn_801081F8(void* context, u32 messageId, s32 action);
+    extern void winSeqSetItem(void* context, u32 messageId, s32 action);
 
     switch (state->mode) {
     case 0:
@@ -72,28 +72,28 @@ s32 fn_8000D3AC(MenuSequenceMessageState* state)
             if (state->menuId == 0x41) {
                 switch (state->selection) {
                 case 0:
-                    fn_801081F8(state, 0x65, 0x10);
+                    winSeqSetItem(state, 0x65, 0x10);
                     break;
                 case 1:
-                    fn_801081F8(state, 0xDB0, 0x10);
+                    winSeqSetItem(state, 0xDB0, 0x10);
                     break;
                 case 2:
-                    fn_801081F8(state, 0xDB1, 0x10);
+                    winSeqSetItem(state, 0xDB1, 0x10);
                     break;
                 case 3:
-                    fn_801081F8(state, 0xDB2, 0x10);
+                    winSeqSetItem(state, 0xDB2, 0x10);
                     break;
                 }
             } else if (state->menuId == 0x109) {
                 switch (state->selection) {
                 case 0:
-                    fn_801081F8(state, 0x12A9, 0x10);
+                    winSeqSetItem(state, 0x12A9, 0x10);
                     break;
                 case 1:
-                    fn_801081F8(state, 0x12AA, 0x10);
+                    winSeqSetItem(state, 0x12AA, 0x10);
                     break;
                 case 2:
-                    fn_801081F8(state, 0x12AB, 0x10);
+                    winSeqSetItem(state, 0x12AB, 0x10);
                     break;
                 }
             }
@@ -105,53 +105,53 @@ s32 fn_8000D3AC(MenuSequenceMessageState* state)
             if (state->menuId == 0x41) {
                 switch (state->selection) {
                 case 0:
-                    fn_801081F8(state, 0x65, 0x10);
+                    winSeqSetItem(state, 0x65, 0x10);
                     break;
                 case 1:
-                    fn_801081F8(state, 0xDB0, 0x10);
+                    winSeqSetItem(state, 0xDB0, 0x10);
                     break;
                 case 2:
-                    fn_801081F8(state, 0xDB1, 0x10);
+                    winSeqSetItem(state, 0xDB1, 0x10);
                     break;
                 case 3:
-                    fn_801081F8(state, 0xDB2, 0x10);
+                    winSeqSetItem(state, 0xDB2, 0x10);
                     break;
                 }
                 switch (state->previousSelection) {
                 case 0:
-                    fn_801081F8(state, 0x65, 0x15);
+                    winSeqSetItem(state, 0x65, 0x15);
                     break;
                 case 1:
-                    fn_801081F8(state, 0xDB0, 0x15);
+                    winSeqSetItem(state, 0xDB0, 0x15);
                     break;
                 case 2:
-                    fn_801081F8(state, 0xDB1, 0x15);
+                    winSeqSetItem(state, 0xDB1, 0x15);
                     break;
                 case 3:
-                    fn_801081F8(state, 0xDB2, 0x15);
+                    winSeqSetItem(state, 0xDB2, 0x15);
                     break;
                 }
             } else if (state->menuId == 0x109) {
                 switch (state->selection) {
                 case 0:
-                    fn_801081F8(state, 0x12A9, 0x10);
+                    winSeqSetItem(state, 0x12A9, 0x10);
                     break;
                 case 1:
-                    fn_801081F8(state, 0x12AA, 0x10);
+                    winSeqSetItem(state, 0x12AA, 0x10);
                     break;
                 case 2:
-                    fn_801081F8(state, 0x12AB, 0x10);
+                    winSeqSetItem(state, 0x12AB, 0x10);
                     break;
                 }
                 switch (state->previousSelection) {
                 case 0:
-                    fn_801081F8(state, 0x12A9, 0x15);
+                    winSeqSetItem(state, 0x12A9, 0x15);
                     break;
                 case 1:
-                    fn_801081F8(state, 0x12AA, 0x15);
+                    winSeqSetItem(state, 0x12AA, 0x15);
                     break;
                 case 2:
-                    fn_801081F8(state, 0x12AB, 0x15);
+                    winSeqSetItem(state, 0x12AB, 0x15);
                     break;
                 }
             }
@@ -182,11 +182,11 @@ s32 heroMoveRunEvent(u8 mode)
     extern void _threadSwitch(void);
     extern void GSmodelAllPauseAnimation(void);
     extern void GSmodelAllUnpauseAnimation(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void menuCreateOffScreen(f32 rate);
     extern u8 menuGetOffScreenFlag(void);
     extern void soundDuck(s32, s32, s32, s32);
-    extern void fn_800D3074(s32);
+    extern void GSgfxSetFrameInterval(s32);
     extern u32 std082_flagGetValue(u32 flag);
     extern void* floorGetCurrentContext(void);
     extern u32 GSeffectGetUpdateGapp(void);
@@ -195,12 +195,12 @@ s32 heroMoveRunEvent(u8 mode)
     extern void GSthreadBlockGroup(void* stack);
     extern void GSthreadCreate(s32 priority, void* stack, u32 stackSize,
                                s32 usesFpu, s32 group, void* entry);
-    extern void fn_8000DAB0(void);
+    extern void menuFightOpenAndWake(void);
     extern void menuClose(s32 menuId);
     extern void menuPokemonOpen(s32, s32, s32);
     extern void menuPdaOpen(void);
-    extern u16 fn_80018F88(s32, u32* value, s32);
-    extern u32 fn_80019070(u16 handle);
+    extern u16 bagMenuRunInMenuRoom(s32, u32* value, s32);
+    extern u32 bagTakeResultForItem(u16 handle);
     extern void heroMoveAddAutoEvent(u32 eventId, u32 handle, u32 value,
                                      s32, s32);
     extern s32 std223_askYesNoThenWarp395(void);
@@ -232,13 +232,13 @@ s32 heroMoveRunEvent(u8 mode)
     _threadSwitch();
     GSmodelAllPauseAnimation();
     lbl_8047A2A0 = 1;
-    menuCreateOffScreen(lbl_8047B6F0 / (f32)fn_800D37CC());
+    menuCreateOffScreen(lbl_8047B6F0 / (f32)GSgfxGetVsyncRate());
     while (!menuGetOffScreenFlag()) {
         _threadSwitch();
     }
 
     soundDuck(0x55, 0x1F4, 1, 1);
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
     if (std082_flagGetValue(0x8AE) == 0) {
         menuId = 0x41;
     } else {
@@ -249,14 +249,14 @@ s32 heroMoveRunEvent(u8 mode)
     case 0:
         if (std082_flagGetValue(0x8AE) == 0) {
             for (;;) {
-                fn_800D3074(1);
+                GSgfxSetFrameInterval(1);
                 lbl_8047A2A4 = menuId;
                 lbl_8047A2A8 = floorGetCurrentContext();
                 GSgappBlock(GSeffectGetUpdateGapp());
                 GSthreadBlockGroup(lbl_8047A2A8);
                 lbl_8047A2AC = (u8*)lbl_8047A2A8 - 0x20;
                 GSthreadCreate(0xF, lbl_8047A2AC, 0x4000, 1, 1,
-                               fn_8000DAB0);
+                               menuFightOpenAndWake);
                 _threadSwitch();
                 GSgappUnblock(GSeffectGetUpdateGapp());
 
@@ -273,10 +273,10 @@ s32 heroMoveRunEvent(u8 mode)
                 } else if (lbl_8047A2B0 == 2) {
                     menuClose(menuId);
                     GSmodelAllUnpauseAnimation();
-                    selectionHandle = fn_80018F88(0, &eventValue, 0);
+                    selectionHandle = bagMenuRunInMenuRoom(0, &eventValue, 0);
                     GSmodelAllPauseAnimation();
                     if (selectionHandle != 0) {
-                        eventId = fn_80019070(selectionHandle);
+                        eventId = bagTakeResultForItem(selectionHandle);
                         if (eventId != -1) {
                             heroMoveAddAutoEvent(eventId, selectionHandle,
                                                  eventValue, 0, 0);
@@ -289,14 +289,14 @@ s32 heroMoveRunEvent(u8 mode)
             }
         } else {
             for (;;) {
-                fn_800D3074(1);
+                GSgfxSetFrameInterval(1);
                 lbl_8047A2A4 = menuId;
                 lbl_8047A2A8 = floorGetCurrentContext();
                 GSgappBlock(GSeffectGetUpdateGapp());
                 GSthreadBlockGroup(lbl_8047A2A8);
                 lbl_8047A2AC = (u8*)lbl_8047A2A8 - 0x20;
                 GSthreadCreate(0xF, lbl_8047A2AC, 0x4000, 1, 1,
-                               fn_8000DAB0);
+                               menuFightOpenAndWake);
                 _threadSwitch();
                 GSgappUnblock(GSeffectGetUpdateGapp());
 
@@ -316,9 +316,9 @@ s32 heroMoveRunEvent(u8 mode)
         }
         break;
     case 1:
-        selectionHandle = fn_80018F88(0, &eventValue, 0);
+        selectionHandle = bagMenuRunInMenuRoom(0, &eventValue, 0);
         if (selectionHandle != 0) {
-            eventId = fn_80019070(selectionHandle);
+            eventId = bagTakeResultForItem(selectionHandle);
             if (eventId != -1) {
                 heroMoveAddAutoEvent(eventId, selectionHandle, eventValue,
                                      0, 0);
@@ -329,12 +329,12 @@ s32 heroMoveRunEvent(u8 mode)
         break;
     }
 
-    fn_80019070(selectionHandle);
+    bagTakeResultForItem(selectionHandle);
     soundUnduck(0x1F4, 1, 1);
     menuClose(menuId);
-    menuReleaseOffScreen(lbl_8047B6F0 / (f32)fn_800D37CC());
+    menuReleaseOffScreen(lbl_8047B6F0 / (f32)GSgfxGetVsyncRate());
     menuCloseSync(menuId, 1);
-    fn_800D3074(2);
+    GSgfxSetFrameInterval(2);
     heroMoveTermEvent();
     GSmodelAllUnpauseAnimation();
     lbl_8047A2A0 = 0;

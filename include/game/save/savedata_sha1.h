@@ -13,8 +13,8 @@
  * The functions keep their address names:
  *   sha1Calc  one-shot digest of a buffer (Init + Update + Final)
  *   savedataDecryptCheck  unscramble save data and check it against a digest
- *   fn_801CBE44  digest save data, then scramble it
- *   fn_801CBF64  SHA1Final
+ *   savedataEncrypt  digest save data, then scramble it
+ *   sha1Final  SHA1Final
  *   sha1Transform  SHA1Transform
  */
 typedef struct FieldSha1Context {
@@ -24,7 +24,7 @@ typedef struct FieldSha1Context {
 } FieldSha1Context;
 
 void sha1Calc(u8 digest[20], const u8* input, u32 length);
-void fn_801CBF64(u8 digest[20], FieldSha1Context* context);
+void sha1Final(u8 digest[20], FieldSha1Context* context);
 void sha1Transform(u32 state[5], const u8 input[64]);
 
 #endif /* GAME_SAVE_SAVEDATA_SHA1_H */

@@ -1,6 +1,6 @@
 /**
  * @file menu_candidate_80075390_r46_8007C23C.c
- * @brief fn_8007C23C (0x8007C23C - 0x8007C260): the GBA boot delay's alarm
+ * @brief _gbaBootAlarm (0x8007C23C - 0x8007C260): the GBA boot delay's alarm
  *        handler. It resumes the thread stored 0x28 bytes into the boot
  *        context, whose first member is the alarm (see GBA_BOOT_DELAY in
  *        menu_range_8007109C.c).
@@ -14,7 +14,7 @@
 
 extern s32 OSResumeThread(void* thread);
 
-void fn_8007C23C(u8* context)
+void _gbaBootAlarm(u8* context)
 {
     OSResumeThread(context + 0x28);
 }

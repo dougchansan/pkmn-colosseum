@@ -13,7 +13,7 @@ extern GSColSysState lbl_80404C68;
 extern u8* gfxVtxDescAlloc(void);
 extern void gfxVtxDescSetAttr(u8*, u32, u32, u32, u32, u8, u32, u8);
 
-void fn_8010D170(void)
+void GScolsys2Init(void)
 {
     u8* handle;
 

@@ -3,11 +3,11 @@
  * @brief GSgfx video-mode selection and GSgfxInit, 0x800D37D4 - 0x800D3E4C.
  *
  * Part of the GSgfx translation unit.  Its .sbss (0x8047AA80 - 0x8047AAA8)
- * is shared by GSgfxRenderEnd ... fn_800D3F50, and its .data starts with the
+ * is shared by GSgfxRenderEnd ... GSgfxSetInitialized, and its .data starts with the
  * render-mode tables below (0x803140F8 - 0x80314188).
  *
  * The four per-TV-standard tables are file-scope statics.  MWCC pools like
- * data objects, so fn_800D37D4 addresses them through one base register
+ * data objects, so GSgfxSetVideoMode_800D37D4 addresses them through one base register
  * loaded at entry (lis/addi of the pool) and indexes each table with
  * `addi base, offset` + lwzx; GC/1.3.2 keeps the per-table offset on the
  * base register, GC/1.3 folds it into the load displacement instead.
@@ -51,7 +51,7 @@ extern GXRenderModeObj lbl_803132D0; /* GXEurgb60Hz480Int */
 extern GXRenderModeObj lbl_8031330C; /* GXEurgb60Hz480IntAa */
 
 extern s32 GSgfxVideoVsyncRate;
-extern s32 lbl_8047AA98;  /* current TV standard (fn_800D37D4 mode) */
+extern s32 lbl_8047AA98;  /* current TV standard (GSgfxSetVideoMode_800D37D4 mode) */
 extern u8 lbl_8047AA9C;   /* 1 when a 50Hz-capable standard was chosen at init */
 extern u32 lbl_8047AAA0;  /* EFB height override (0 = keep the table's) */
 extern u8 lbl_8047AA84;
@@ -78,17 +78,17 @@ extern void* GSmemLock(u16);
 extern void GSlogWrite(const char*, ...);
 extern void HSD_SetInitParameter(s32, ...);
 extern void HSD_InitComponent(void);
-extern void fn_8019C690(u32, u32);
+extern void HSD_SetPixelFormat(u32, u32);
 extern void HSD_VISetUserPostRetraceCallback(void*);
 extern void HSD_VISetUserGXDrawDoneCallback(void*);
-extern void fn_80196C3C(void*);
-extern void fn_800D3F5C(void);
-extern void fn_800D3F50(void);
+extern void HSD_SetViewportCallback(void*);
+extern void GSgfxRetraceHandler(void);
+extern void GSgfxSetInitialized(void);
 extern void GSgfxSetViewportJitter(void);
 extern void gfxAllocRequestBuffer(u32);
 extern void gfxMatrixStackInit(u32);
 extern void gfxVtxDescPoolInit(u32);
-extern void fn_800DB890(u32);
+extern void gfxInitDeferredPool(u32);
 extern u32 gfxVtxDescAlloc(void);
 extern void gfxSetScissor(u16, u16, u16, u16);
 extern void gfxSetViewport(u16, u16, u16, u16);
@@ -99,13 +99,13 @@ extern void gfxSetAlphaCompare(u32, u32, u32, u32, u32, u32);
 extern void gfxSetCullMode(u32);
 extern void gfxSetCoPlanar(u32);
 extern void gfxSetDither(u32);
-extern void fn_800D9ED8(u32);
+extern void gfxSetFlag1A(u32);
 extern void gfxSetTevStage(u32, u32, u32, u32, u32);
 extern void gfxSetPerspective(f32, f32, f32, f32);
 extern void GSgfxBackFBInit__Fv(void);
 
 /*
- * Render modes per TV standard, indexed as fn_800D37D4 computes:
+ * Render modes per TV standard, indexed as GSgfxSetVideoMode_800D37D4 computes:
  * 0/1 240-line double-strike (plain/AA), 2/3 240-line interlaced field
  * (plain/AA), 4/5/6 480-line interlaced (plain/deflicker/AA),
  * 7/8 480-line progressive (plain/AA).
@@ -141,7 +141,7 @@ static GXRenderModeObj* mpalModes[9] = {
  * code has no initialising instruction for either and reads whatever the
  * registers hold (the `interlace` argument and the `lines` argument).
  */
-s32 fn_800D37D4(s32 standard, s32 lines, u8 interlace, s32 filter,
+s32 GSgfxSetVideoMode_800D37D4(s32 standard, s32 lines, u8 interlace, s32 filter,
                 u8 progressive, u16 retraces)
 {
     GXRenderModeObj renderMode;
@@ -335,9 +335,9 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     HSD_SetInitParameter(1, 2);
     HSD_SetInitParameter(4, renderMode);
     HSD_InitComponent();
-    fn_800D37D4(videoMode, 2, 0, 2, 0, 0);
+    GSgfxSetVideoMode_800D37D4(videoMode, 2, 0, 2, 0, 0);
     HSD_VISetBlack(1);
-    fn_8019C690(0, 0);
+    HSD_SetPixelFormat(0, 0);
 
     *(u32*)((u8*)lbl_8047AA80 + 0x048) = 0;
     *(u32*)((u8*)lbl_8047AA80 + 0x04C) = 0;
@@ -345,14 +345,14 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     *(u32*)((u8*)lbl_8047AA80 + 0x054) = 0;
     *(u32*)((u8*)lbl_8047AA80 + 0x058) = 1;
     *(u8*)((u8*)lbl_8047AA80 + 0x05C) = 1;
-    HSD_VISetUserPostRetraceCallback(fn_800D3F5C);
-    HSD_VISetUserGXDrawDoneCallback(fn_800D3F50);
-    fn_80196C3C(GSgfxSetViewportJitter);
+    HSD_VISetUserPostRetraceCallback(GSgfxRetraceHandler);
+    HSD_VISetUserGXDrawDoneCallback(GSgfxSetInitialized);
+    HSD_SetViewportCallback(GSgfxSetViewportJitter);
 
     gfxAllocRequestBuffer(heapSize);
     gfxMatrixStackInit(matrixSize);
     gfxVtxDescPoolInit(projectionCount);
-    fn_800DB890(lightCount);
+    gfxInitDeferredPool(lightCount);
     *(u32*)((u8*)lbl_8047AA80 + 0x20) = gfxVtxDescAlloc();
 
     display = &lbl_80466BC0;
@@ -367,7 +367,7 @@ void GSgfxInit__FP15_GSgfxInitParms(u32 heapSize, u32 matrixSize,
     gfxSetCullMode(2);
     gfxSetCoPlanar(0);
     gfxSetDither(1);
-    fn_800D9ED8(0);
+    gfxSetFlag1A(0);
 
     for (i = 0; i < 0x10; i++) {
         gfxSetTevStage(i, 0, i, i, 0);

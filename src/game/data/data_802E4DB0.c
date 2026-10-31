@@ -59,16 +59,16 @@ extern void* jumptable_802ED9B8[];
 extern u8 __OSDoHotReset[];
 extern u8 _sysvarsProcessData__FP16sysvarsFuncEntryPc[];
 extern u8 itemFieldUseParamItem[];
-extern u8 fn_8002FC58[];
+extern u8 gbaTradeSelectParty[];
 extern u8 gbaTradeRun[];
 #ifndef DATA_802E4DB0_SUFFIX_ONLY
 extern u8 cardeAwardCoupons[];
 #endif
-extern u8 fn_80034280[];
+extern u8 gbaTransferUI[];
 extern u8 cardeBattleRun[];
-extern u8 fn_8003F464[];
+extern u8 pdaMemoMainDrawText[];
 extern u8 pcBoxPokemonCommand[];
-extern u8 fn_80059034[];
+extern u8 menuPartySlotAction[];
 extern u8 menuColosseumBattleMain[];
 extern u8 menuTaisenAwardCoupons[];
 extern u8 demoScene16[];
@@ -301,28 +301,28 @@ void* jumptable_802E502C[8] = {
 };
 
 void* jumptable_802E504C[22] = {
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x130),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x64),
-    (void*)((u8*)fn_80034280 + 0x1D0),
-    (void*)((u8*)fn_80034280 + 0x294),
-    (void*)((u8*)fn_80034280 + 0x19C),
-    (void*)((u8*)fn_80034280 + 0x2B8),
-    (void*)((u8*)fn_80034280 + 0x250),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x130),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x64),
+    (void*)((u8*)gbaTransferUI + 0x1D0),
+    (void*)((u8*)gbaTransferUI + 0x294),
+    (void*)((u8*)gbaTransferUI + 0x19C),
+    (void*)((u8*)gbaTransferUI + 0x2B8),
+    (void*)((u8*)gbaTransferUI + 0x250),
 };
 
 void* jumptable_802E50A4[15] = {

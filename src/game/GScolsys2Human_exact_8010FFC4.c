@@ -7,7 +7,7 @@
  * .sdata2 pool 0x8047CF20-0x8047CF48 (GScolsys2CheckCollision and
  * GScolsys2HumanCollision, which live in GScolsys2Human_range_8010FAF4.c)
  * and manages the 48 human-collision slots of the current floor. Its last
- * function is fn_80110084, which registers a slot and uses the same
+ * function is GScolsys2HumanRegister, which registers a slot and uses the same
  * status codes as GScolsys2HumanEnable (1 no floor, 4 bad slot, 5 full);
  * the GScolsys2Thru triangle queries start at fn_801101B4. Neither
  * function here touches data, and both are exact on the project default
@@ -60,7 +60,7 @@ s32 GScolsys2HumanEnable(s32 index, s32 enable)
 }
 
 /* 0x80110084 | 0x130 */
-s32 fn_80110084(s32* outIndex, GSColFloorEvent* src)
+s32 GScolsys2HumanRegister(s32* outIndex, GSColFloorEvent* src)
 {
     GSColFloor* floor;
     s32 i;

@@ -21,7 +21,7 @@ extern u8 lbl_802EF0A8[];
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma kept for byte match - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void fn_8003C728(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaSnagListDrawItem3(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     s32 row;
     s16 baseY;

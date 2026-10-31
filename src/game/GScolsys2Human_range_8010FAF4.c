@@ -4,7 +4,7 @@
  *        GScolsys2HumanCollision, .text 0x8010FAF4-0x8010FFC4 with the
  *        TU's .sdata2 pool 0x8047CF20-0x8047CF48.
  *
- * The TU continues with GScolsys2HumanEnable and fn_80110084, linked as
+ * The TU continues with GScolsys2HumanEnable and GScolsys2HumanRegister, linked as
  * the carve GScolsys2Human_exact_8010FFC4.c. This unit owns the pool
  * (0.0f, 0.5, 3.0, 0.0, 1.0f, 0.0001f) and writes the constants as
  * literals; they are emitted in retail's order. Retail loads the 1.0f in

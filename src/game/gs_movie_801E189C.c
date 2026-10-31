@@ -4,11 +4,11 @@
  *
  * Address range: 0x801E189C - 0x801E1B54 (.text) plus its string pool at
  * 0x80279A68 - 0x80279AE8 (.rodata; the three "ERROR(GSmovie): ..." log
- * messages). fn_801E1924 addresses the pool through one base register
+ * messages). GSmovieOpen_801E1924 addresses the pool through one base register
  * (base + 0x00 / 0x30 / 0x5C), which only a TU-local literal pool produces,
  * so this unit owns that .rodata range.
  *
- * Built with GC/1.3.2 -O4,s: fn_801E1924's stmw r29 register save and
+ * Built with GC/1.3.2 -O4,s: GSmovieOpen_801E1924's stmw r29 register save and
  * pooled base register need -O4,s, and fn_801E189C's argument scheduling
  * needs 1.3.2+ (GC/1.3 cannot reproduce it at either optimisation level).
  */
@@ -60,13 +60,13 @@ extern void GSlogWrite(const char* format, ...);
 extern void THPPlayerGetVideoInfo(GsVtrOrigin* origin);
 extern void THPPlayerGetAudioInfo(u32* state);
 extern u32 THPPlayerCalcNeedMemory(void);
-extern u16 fn_800E2B00(u32 size, u32 alignment);
+extern u16 GSmemAllocTail(u32 size, u32 alignment);
 extern void* GSmemLock(u16 handle);
 extern void THPPlayerSetBuffer(void);
 extern u32 OSGetTick(void);
 extern BOOL THPPlayerPrepare(u32, u32, u32);
 extern u16 GSmemGetHandleByPtr(void* pointer);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void movieGetStreamIds(u32* first, u32* second);
 extern void sndStreamMixParameterEx(s32 id, u32, u32, u32, u32, u32);
@@ -74,14 +74,14 @@ extern void THPPlayerPlay(void);
 extern BOOL THPPlayerInit(void);
 
 /* Loader thread entry: opens the THP file and prepares playback. */
-void* fn_801E1924(void* param);
+void* GSmovieOpen_801E1924(void* param);
 
 void GSmovieOpen(const char* path, u8 onMemory)
 {
     lbl_8047B444 = 0;
     lbl_8047B448.onMemory = onMemory;
     lbl_8047B448.path = path;
-    OSCreateThread(&lbl_80467D08, fn_801E1924, &lbl_8047B448, lbl_80468020 + 0xFFC, 0x1000,
+    OSCreateThread(&lbl_80467D08, GSmovieOpen_801E1924, &lbl_8047B448, lbl_80468020 + 0xFFC, 0x1000,
                    0x10, 1);
     OSResumeThread(&lbl_80467D08);
     while (lbl_8047B444 == 0) {
@@ -89,7 +89,7 @@ void GSmovieOpen(const char* path, u8 onMemory)
     }
 }
 
-void* fn_801E1924(void* param)
+void* GSmovieOpen_801E1924(void* param)
 {
     GsMovieStartArgs* args = param;
     const char* path;
@@ -115,7 +115,7 @@ void* fn_801E1924(void* param)
     lbl_8047B458 = (lbl_8047B45C->width - lbl_80469030.x) >> 1;
     lbl_8047B454 = (lbl_8047B45C->height - lbl_80469030.y) >> 1;
 
-    handle = fn_800E2B00(THPPlayerCalcNeedMemory(), 0x20);
+    handle = GSmemAllocTail(THPPlayerCalcNeedMemory(), 0x20);
     if (handle != 0) {
         lbl_8047B450 = GSmemLock(handle);
     } else {
@@ -138,7 +138,7 @@ void* fn_801E1924(void* param)
         GSlogWrite("ERROR(GSmovie): Fail to prepare\n");
         handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
-            fn_800E24B0(handle);
+            GSmemUnlock(handle);
             GSmemFree(handle);
         }
         GSscratchSetValid();

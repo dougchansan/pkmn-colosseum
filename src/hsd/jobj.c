@@ -85,7 +85,7 @@
  *    inlines and emits out of line for the deeper ones (policy: repeated
  *    expansion). As a plain static function it is emitted at its own place,
  *    after the header-inline copies DispAll needs, as in retail;
- *  - fn_8019F1C4 (vertex count of a tree) is new, JObjUpdateFunc does not
+ *  - HSD_JObjCountVisibleVertices (vertex count of a tree) is new, JObjUpdateFunc does not
  *    clamp the scale, and HSD_JObjAddChild reports through
  *    HSD_ASSERTREPORT;
  *  - assert line numbers are those of Colosseum's longer file.
@@ -121,14 +121,14 @@
  * report use; they change no code. object.h's ref_INC_nocheck keeps its
  * name (symbols.txt, 0x801A0C1C): object.h's NULL-checking ref_INC also
  * exists in this TU, so no define can rename one without the other. */
-#define HSD_JObjMtxIsDirty fn_8019D980
+#define HSD_JObjMtxIsDirty HSD_JObjMtxIsDirty_8019D980
 #define HSD_JObjSetMtxDirty HSD_JObjSetMtxDirty
 #define iref_INC iref_INC_801A0C9C
 #define hsdDelete hsdDelete_801A0CE8
-#define iref_CNT fn_801A0D3C
+#define iref_CNT HSD_JObjGetRefCount
 #define ref_DEC ref_DEC_801A0D48
-#define HSD_CObjGetViewingMtxPtrDirect fn_801A1980
-#define HSD_JObjSetupMatrix fn_801A1988
+#define HSD_CObjGetViewingMtxPtrDirect HSD_JObjGetCameraPos
+#define HSD_JObjSetupMatrix HSD_JObjSetupMatrix_801A1988
 
 #include "crt/math_ppc.h"
 #include "dolphin/mtx.h"
@@ -148,27 +148,27 @@
 #define M_PI 3.14159265358979323846
 
 /* class.c */
-extern HSD_ClassInfo* fn_80193748(const char* class_name);
+extern HSD_ClassInfo* hsdSearchClassInfo_80193748(const char* class_name);
 extern BOOL hsdIsDescendantOf(void* info, void* p);
-extern void* fn_80193828(HSD_ClassInfo* info);
-#define hsdSearchClassInfo(n) fn_80193748(n)
+extern void* hsdNew_80193828(HSD_ClassInfo* info);
+#define hsdSearchClassInfo(n) hsdSearchClassInfo_80193748(n)
 #define hsdIsDescendantOf(i, p) hsdIsDescendantOf(i, p)
-#define hsdNew(i) fn_80193828(i)
+#define hsdNew(i) hsdNew_80193828(i)
 
 /* robj.c */
-extern void fn_801AE50C(HSD_RObj* robj);
-extern void fn_801AEBE4(HSD_RObj* robj, HSD_RObjDesc* desc);
+extern void HSD_RObjRemoveAll_801AE50C(HSD_RObj* robj);
+extern void HSD_RObjResolveRefsAll_801AEBE4(HSD_RObj* robj, HSD_RObjDesc* desc);
 extern void HSD_RObjUpdateAll(HSD_RObj* robj, void* obj, HSD_ObjUpdateFunc func);
 extern BOOL HSD_RObjGetGlobalPosition(HSD_RObj* robj, u32 type, Vec3* pos);
 extern void HSD_RObjReqAnimAllByFlags(HSD_RObj* robj, f32 frame, u32 flags);
-extern void fn_801B0040(HSD_RObj* robj);
-#define HSD_RObjRemoveAll fn_801AE50C
-#define HSD_RObjResolveRefsAll fn_801AEBE4
+extern void HSD_RObjAnimAll_801B0040(HSD_RObj* robj);
+#define HSD_RObjRemoveAll HSD_RObjRemoveAll_801AE50C
+#define HSD_RObjResolveRefsAll HSD_RObjResolveRefsAll_801AEBE4
 #define HSD_RObjUpdateAll HSD_RObjUpdateAll
 #define HSD_RObjGetGlobalPosition HSD_RObjGetGlobalPosition
 #define HSD_RObjAddAnimAll HSD_RObjAddAnimAll
 #define HSD_RObjReqAnimAllByFlags HSD_RObjReqAnimAllByFlags
-#define HSD_RObjAnimAll fn_801B0040
+#define HSD_RObjAnimAll HSD_RObjAnimAll_801B0040
 
 /* displayfunc.c */
 extern void HSD_JObjDisp(HSD_JObj* jobj, MtxPtr vmtx, u32 flags,
@@ -190,8 +190,8 @@ extern void HSD_MtxSRT(Mtx m, Vec3* scale, Vec3* rotate, Vec3* translate,
                        Vec3* parent_scale);
 extern void HSD_MtxSRTQuat(Mtx m, Vec3* scale, Quaternion* rotate,
                            Vec3* translate, Vec3* parent_scale);
-extern void fn_801A9DF0(Mtx inv, Mtx src, Mtx dest);
-#define HSD_MtxInverseConcat fn_801A9DF0
+extern void HSD_JObjAnimApplyValue(Mtx inv, Mtx src, Mtx dest);
+#define HSD_MtxInverseConcat HSD_JObjAnimApplyValue
 #define HSD_MtxGetRotation HSD_MtxGetRotation
 
 /* spline.c */
@@ -264,7 +264,7 @@ s32 JObjLoad(HSD_JObj* jobj, HSD_Joint* joint, HSD_JObj* parent);
 void JObjReleaseChild(HSD_JObj* jobj);
 
 /* HSD_JObjCheckDepend */
-void fn_801A3D04(HSD_JObj* jobj)
+void HSD_JObjSetMtxDirtySub_801A3D04(HSD_JObj* jobj)
 {
     if (jobj == NULL || HSD_JObjMtxIsDirty(jobj)) {
         return;
@@ -469,7 +469,7 @@ void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AnimJoint* an_joint,
 }
 
 /* HSD_JObjAddAnimAll */
-void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* ajoint,
+void HSD_JObjAddAnimAll_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* ajoint,
                  HSD_MatAnimJoint* mjoint, HSD_ShapeAnimJoint* sjoint)
 {
     HSD_JObj* jp;
@@ -485,7 +485,7 @@ void fn_801A2B5C(HSD_JObj* jobj, HSD_AnimJoint* ajoint,
             mj = mjoint != NULL ? mjoint->child : NULL;
             sj = sjoint != NULL ? sjoint->child : NULL;
             while (jp != NULL) {
-                fn_801A2B5C(jp, aj, mj, sj);
+                HSD_JObjAddAnimAll_801A2B5C(jp, aj, mj, sj);
                 jp = jp->next;
                 aj = aj != NULL ? aj->next : NULL;
                 mj = mj != NULL ? mj->next : NULL;
@@ -679,7 +679,7 @@ void HSD_JObjStrippedPathCheck(HSD_JObj* jp)
 void HSD_JObjAnim(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
-        fn_801A3D04(jobj);
+        HSD_JObjSetMtxDirtySub_801A3D04(jobj);
         HSD_AObjInterpretAnim(jobj->aobj, jobj, HSD_JOBJ_METHOD(jobj)->update);
         HSD_RObjAnimAll(jobj->robj);
         if (union_type_dobj(jobj)) {
@@ -689,7 +689,7 @@ void HSD_JObjAnim(HSD_JObj* jobj)
 }
 
 /* JObjAnimAll */
-void fn_801A1B7C(HSD_JObj* jobj)
+void JObjAnimAllSub(HSD_JObj* jobj)
 {
     HSD_JObj* child;
     if (jobj != NULL) {
@@ -697,7 +697,7 @@ void fn_801A1B7C(HSD_JObj* jobj)
         if (!(jobj->flags & JOBJ_INSTANCE)) {
             child = jobj->child;
             while (child != NULL) {
-                fn_801A1B7C(child);
+                JObjAnimAllSub(child);
                 child = child->next;
             }
         }
@@ -708,7 +708,7 @@ void HSD_JObjAnimAll(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
         HSD_AObjInitEndCallBack();
-        fn_801A1B7C(jobj);
+        JObjAnimAllSub(jobj);
         HSD_AObjInvokeCallBacks();
     }
 }
@@ -912,7 +912,7 @@ void HSD_JObjUnrefThis(HSD_JObj* jobj)
 }
 
 /* HSD_JObjRemove */
-HSD_JObj* fn_801A02B0(HSD_JObj* jobj)
+HSD_JObj* HSD_JObjRemove_801A02B0(HSD_JObj* jobj)
 {
     HSD_JObj* child;
     HSD_JObj* next;
@@ -1109,7 +1109,7 @@ HSD_JObj* HSD_JObjGetPrev(HSD_JObj* jobj)
 }
 
 /* HSD_JObjGetDObj */
-HSD_DObj* fn_8019FF48(HSD_JObj* jobj)
+HSD_DObj* HSD_JObjGetDObj_8019FF48(HSD_JObj* jobj)
 {
     if (jobj == NULL || !union_type_dobj(jobj)) {
         return NULL;
@@ -1264,7 +1264,7 @@ HSD_JObj* HSD_JObjAlloc(void)
 
 /* Counts the vertices of the tree's visible DObjs (both totals of
  * HSD_DObjCountVertices); an instance counts its instanced tree. */
-void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b)
+void HSD_JObjCountVisibleVertices(HSD_JObj* jobj, s32* total_a, s32* total_b)
 {
     HSD_JObj* child;
     s32 sum_a = 0;
@@ -1272,7 +1272,7 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b)
 
     if (jobj != NULL) {
         if (jobj->flags & JOBJ_INSTANCE) {
-            fn_8019F1C4(jobj->child, &sum_a, &sum_b);
+            HSD_JObjCountVisibleVertices(jobj->child, &sum_a, &sum_b);
         } else {
             if (!(jobj->flags & JOBJ_HIDDEN) && union_type_dobj(jobj)) {
                 HSD_DObjCountVertices(jobj->u.dobj, &sum_a, &sum_b);
@@ -1280,7 +1280,7 @@ void fn_8019F1C4(HSD_JObj* jobj, s32* total_a, s32* total_b)
             for (child = jobj->child; child != NULL; child = child->next) {
                 s32 child_a;
                 s32 child_b;
-                fn_8019F1C4(child, &child_a, &child_b);
+                HSD_JObjCountVisibleVertices(child, &child_a, &child_b);
                 sum_a += child_a;
                 sum_b += child_b;
             }
@@ -1677,7 +1677,7 @@ void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
 }
 
 /* HSD_JObjSetMtxDirtySub */
-void fn_8019D620(HSD_JObj* jobj)
+void HSD_JObjSetMtxDirtySub_8019D620(HSD_JObj* jobj)
 {
     jobj->flags |= JOBJ_MTX_DIRTY;
     if (!(jobj->flags & JOBJ_INSTANCE)) {
@@ -1686,7 +1686,7 @@ void fn_8019D620(HSD_JObj* jobj)
             if (!(jobj->flags & JOBJ_MTX_INDEP_PARENT) &&
                 !HSD_JObjMtxIsDirty(jobj))
             {
-                fn_8019D620(jobj);
+                HSD_JObjSetMtxDirtySub_8019D620(jobj);
             }
             jobj = jobj->next;
         }

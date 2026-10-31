@@ -53,7 +53,7 @@
 
 /* ===== External SDK / engine functions ===== */
 extern void  GSlogWrite(const char* fmt, ...);          /* OSReport / GSlog */
-extern void  fn_800E24B0(u16 handle);                    /* GSmemLock (raw) */
+extern void  GSmemUnlock(u16 handle);                    /* GSmemLock (raw) */
 extern void  GSmemFree(u16 handle);                    /* GSmemFree (raw) */
 extern u32   GSgetFrameStep(void);                          /* GSgfxGetTickCount */
 extern s32   GSvtrRegisterGSgapp(u32 taskId);            /* battle VFX registration */
@@ -432,7 +432,7 @@ _got_inst:
         gf->freeListHead = inst;
     }
 
-    fn_800E24B0(inst->memHandle);
+    GSmemUnlock(inst->memHandle);
     GSmemFree(inst->memHandle);
 }
 
