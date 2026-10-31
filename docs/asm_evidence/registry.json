@@ -426,7 +426,7 @@
     },
     {
       "path": "src/trk/TRKInterrupt.c",
-      "function": "fn_800C11F4",
+      "function": "ReadFPSCR",
       "mnemonics": [
         "addi",
         "blr",
@@ -441,7 +441,7 @@
     },
     {
       "path": "src/trk/TRKInterrupt.c",
-      "function": "fn_800C1218",
+      "function": "WriteFPSCR",
       "mnemonics": [
         "addi",
         "blr",
@@ -1554,7 +1554,7 @@
     },
     {
       "path": "src/trk/TRKDispatch_candidate_800C0E60.c",
-      "function": "fn_800C0E60",
+      "function": "__TRK_get_MSR",
       "mnemonics": [
         "blr",
         "mfmsr"
@@ -1563,7 +1563,7 @@
     },
     {
       "path": "src/trk/TRKDispatch_candidate_800C0E60.c",
-      "function": "fn_800C0E68",
+      "function": "__TRK_set_MSR",
       "mnemonics": [
         "blr",
         "mtmsr"
@@ -1675,7 +1675,7 @@
     },
     {
       "path": "src/dolphin/sdk_range_800A07C4.c",
-      "function": "fn_800A1208",
+      "function": "SystemCallVector",
       "mnemonics": [
         "entry",
         "isync",
@@ -1727,7 +1727,7 @@
     },
     {
       "path": "src/dolphin/sdk_range_80098108.c",
-      "function": "fn_8009A0C0",
+      "function": "__OSDBJump",
       "mnemonics": [
         "bla",
         "entry"

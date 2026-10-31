@@ -40,7 +40,7 @@ extern u8 lbl_803A6610[];
 
 extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void GSmemFree(u16 handle);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern u32 soundStartRaw(u32, u32, u32);
 extern s32 darkPokemonGetFlag1C(u16 id);
 extern u32 darkPokemonSaveGet8(u16 id);
@@ -289,7 +289,7 @@ void pdaSnagListRun(void)
     if (lbl_8047A4D0 != 0) {
         workHandle = GSmemGetHandleByPtr((void*)lbl_8047A4D0);
         if (workHandle != 0) {
-            fn_800E24B0(workHandle);
+            GSmemUnlock(workHandle);
             GSmemFree(workHandle);
         }
         lbl_8047A4D0 = 0;
@@ -297,7 +297,7 @@ void pdaSnagListRun(void)
     if (lbl_8047A4D4 != NULL) {
         listHandle = GSmemGetHandleByPtr(lbl_8047A4D4);
         if (listHandle != 0) {
-            fn_800E24B0(listHandle);
+            GSmemUnlock(listHandle);
             GSmemFree(listHandle);
         }
         lbl_8047A4D4 = NULL;

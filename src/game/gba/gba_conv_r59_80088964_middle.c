@@ -35,7 +35,7 @@ extern void GSgetFrameStep();
 extern void GSgfxGetVsyncRate();
 extern void GSmemGetHandleByPtr();
 extern void GSmemFree();
-extern void fn_800E24B0();
+extern void GSmemUnlock();
 extern void GSmemLock();
 extern void GSmemAlloc();
 extern void GSmodelIsAnimating();

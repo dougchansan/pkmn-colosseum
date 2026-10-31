@@ -18,7 +18,7 @@ extern u32 lbl_8047A4D8;
 extern s32 lbl_8047A4DC;
 extern u32 GSmemGetHandleByPtr();
 extern u32 GSmemFree();
-extern u32 fn_800E24B0();
+extern u32 GSmemUnlock();
 extern u32 GSmemLock();
 extern u32 GSmemAlloc();
 extern s32 darkPokemonSaveGet4A4(u16 id);
@@ -107,7 +107,7 @@ void pdaSnagListBuild(void)
 
     handle = GSmemGetHandleByPtr(lbl_8047A4D8);
     if ((u16)handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     lbl_8047A4D8 = 0;

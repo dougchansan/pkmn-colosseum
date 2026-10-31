@@ -50,8 +50,8 @@ extern PdaSceneWork lbl_803A6818;
 extern u8 lbl_802EF0A8[];
 extern u32 GSmsgGetRect(s32 id);
 extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
-extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
-extern void fn_800FE35C(void);
+extern void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2);
+extern void spriteClearScissor(void);
 
 extern s32 spriteSetOrigin(s16 x, s16 y);
 extern void spriteSetEnv(s32 env);
@@ -1173,12 +1173,12 @@ void pdaMemoMainDrawText(PdaSprite* alphaSprite, PdaSprite* sprite)
             /* Clip to the list window, layout entry 0xd8c, relative to this widget. */
             s16* e = (s16*)(lbl_802EF0A8 + sprite->eventId * 0x1c);
             s16* r = (s16*)(lbl_802EF0A8 + 0xd8c * 0x1c);
-            fn_800FE38C(r[1] - e[1], r[2] - e[2], r[3], r[4]);
+            spriteSetScissor(r[1] - e[1], r[2] - e[2], r[3], r[4]);
         }
         if (*(s8*)(S + 0x15d) != 4) {
             pdaDrawTabList(alphaSprite, S, 0);
         }
-        fn_800FE35C();
+        spriteClearScissor();
         break;
     case 0xd79:
         GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ed) >> 16)) / 2), -2,

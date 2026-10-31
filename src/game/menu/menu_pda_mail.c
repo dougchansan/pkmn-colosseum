@@ -1903,7 +1903,7 @@ void pdaMailSortInit(void)
 {
     extern u16 _toolentryAlloc__FUl(u32);
     extern void* GSmemLock(u16);
-    extern void fn_800E24B0(u16);
+    extern void GSmemUnlock(u16);
     extern void GSmemFree(u16);
     extern s32 pdaMailListRun(s32);
     extern s32 pdaMailViewRun(s32);
@@ -1972,7 +1972,7 @@ void pdaMailSortInit(void)
     }
 
     if (count > 0) {
-        fn_800E24B0(allocation);
+        GSmemUnlock(allocation);
         GSmemFree(allocation);
     }
 }

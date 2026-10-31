@@ -102,7 +102,7 @@ void pcBoxSetCursorTarget(s32, s32, s32);
 extern u8 menuColosseumBattleGetFlag(void);
 extern u32 GSmemGetHandleByPtr(void*);
 extern void GSmemFree(u32);
-extern void fn_800E24B0(u32);
+extern void GSmemUnlock(u32);
 extern void* GSmemLock(u32);
 extern void GSmsgGetText(void*, s32, void*);
 extern void shopRunAtLocation();

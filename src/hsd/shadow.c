@@ -79,13 +79,13 @@ void GXSetScissor(u32 left, u32 top, u32 wd, u32 ht);
 /* GSmemFindHandle */
 u16 GSmemGetHandleByPtr(void* ptr);
 /* GSmemLock */
-void fn_800E24B0(u16 handle);
+void GSmemUnlock(u16 handle);
 /* GSmemFree */
 void GSmemFree(u16 handle);
 /* GSmemGetPtr */
 void* GSmemLock(u16 handle);
 /* GSmemAllocTail */
-u16 fn_800E2B00(u32 size, u32 alignment);
+u16 GSmemAllocTail(u32 size, u32 alignment);
 
 /* HSD_JObjUnref */
 void HSD_JObjUnref(HSD_JObj* jobj);
@@ -316,7 +316,7 @@ void HSD_ShadowSetSize(HSD_Shadow* shadow, u16 width, u16 height)
 
         size = GXGetTexBufferSize(width, height, 0, 0, 0);
         HSD_ASSERT(319, size > 0);
-        idesc->image_ptr = GSmemLock(fn_800E2B00(size, 0x20));
+        idesc->image_ptr = GSmemLock(GSmemAllocTail(size, 0x20));
         idesc->width = width;
         idesc->height = height;
 
@@ -567,7 +567,7 @@ void modelShadowFreeTexture(HSD_Shadow* shadow)
 
     if (idesc->image_ptr) {
         handle = GSmemGetHandleByPtr(idesc->image_ptr);
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
         idesc->image_ptr = NULL;
     }

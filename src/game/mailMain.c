@@ -178,7 +178,7 @@ void menuDrawBlinkIcon(void) {
     extern s32 GStextureGetXsize(void*);
     extern s32 GStextureGetYsize(void*);
     extern void spriteSetOrigin(s32, s32);
-    extern void fn_800FE35C(void);
+    extern void spriteClearScissor(void);
     extern void spriteSetEnv(void);
     extern void gfxSetFlag1A(s32);
     extern void gfxSetVtxDesc(void*);
@@ -220,7 +220,7 @@ void menuDrawBlinkIcon(void) {
         width = GStextureGetXsize(texture);
         height = GStextureGetYsize(texture);
         spriteSetOrigin(0, 0);
-        fn_800FE35C();
+        spriteClearScissor();
         spriteSetEnv();
         gfxSetFlag1A(1);
         gfxSetVtxDesc(lbl_80314F98);

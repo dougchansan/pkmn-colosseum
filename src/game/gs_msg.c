@@ -46,7 +46,7 @@ typedef u8 M2C_UNK;
 extern void  GSlogWrite(const void* fmt, ...);          /* OSReport */
 extern u16   GSmemAllocRaw(u32 size);                    /* _toolentryAlloc__FUl */
 extern void* GSmemGetPtr(u16 handle);                    /* GSmemLock */
-extern void* GSmemLock(u16 handle);                      /* fn_800E24B0 */
+extern void* GSmemLock(u16 handle);                      /* GSmemUnlock */
 extern void  GSmemFree(u16 handle);                      /* GSmemFree */
 extern u16   GSmemAlloc(u32 alignment, u32 size);        /* GSmemAlloc */
 extern void  OSSetIdleFunction(void* func, void* arg,
@@ -68,9 +68,9 @@ extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
 extern void _GSthreadExitTrampoline(u32 arg);          /* GSthread trampoline / entry wrapper */
 extern void PADRead(void* buf);
 extern u32 SIProbe(u32 buttonIdx);
-extern void fn_800AB4FC(void*);
+extern void PADControlAllMotors(void*);
 extern void GSmemFree(u16 handle);
-extern void* fn_800E24B0(u16 handle);
+extern void* GSmemUnlock(u16 handle);
 extern void* GSmemLock(u16 handle);
 extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
@@ -320,8 +320,8 @@ extern void _msgMakeTexture(u8* work, const u8* pixels, s16 width, s16 height, s
 extern u16* _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO(u8* work, u16 code, void** outBank);
 extern s32 _msgGetLength__FPCUs(const void* str);
 extern s32 _msgGetSize__FPCUs(const u16* text);
-extern void fn_800FE35C(void);
-extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
+extern void spriteClearScissor(void);
+extern void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2);
 extern void spriteSetEnv(void);
 extern void spriteSetScale(f32 a, f32 b);
 extern void spriteGetOrigin(s16* outA, s16* outB);

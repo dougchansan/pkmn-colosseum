@@ -504,7 +504,7 @@ static inline BOOL IsThreadActive(OSThread* thread)
     return FALSE;
 }
 
-BOOL fn_800A1E54(OSThread* thread, u32* val)
+BOOL OSJoinThread(OSThread* thread, u32* val)
 {
     BOOL enabled;
 

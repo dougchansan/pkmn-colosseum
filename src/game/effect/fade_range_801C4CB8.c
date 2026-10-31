@@ -127,7 +127,7 @@ extern void GSlerpGetLinearInterpolationVector(GSvec* out, GSvec* from,
 extern void GSgfxEndBackFBCapture(void* texture);
 extern u32 _fadeEffectGetRandom__FUl(u32 range);
 extern u32 GSmemGetHandleByPtr(void* ptr);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void GSmemFree(u32 handle);
 extern u32 GSmemAlloc(u32 size, u32 align);
 extern void* GSmemLock(u32 handle);
@@ -1327,7 +1327,7 @@ void fadeFluidFreeTexture(void* ptr) {
     u32 masked = handle & 0xFFFF;
 
     if (masked != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }

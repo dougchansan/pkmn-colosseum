@@ -164,7 +164,7 @@ static inline void wazaViewerLoadFile(const char* messages, const char* path, vo
 static inline void wazaViewerPollCommand(const char* messages) {
     extern u16 GSmemAlloc(u32 size, u32 align);
     extern void* GSmemLock(u16 block);
-    extern void fn_800E24B0(u16 block);
+    extern void GSmemUnlock(u16 block);
     extern void GSmemFree(u16 block);
 
     void* readFile;
@@ -218,7 +218,7 @@ static inline void wazaViewerPollCommand(const char* messages) {
                         GSlogWrite(messages + 0x9C, path);
                     }
                 }
-                fn_800E24B0(block);
+                GSmemUnlock(block);
                 GSmemFree(block);
             }
         }
@@ -311,7 +311,7 @@ void wazaViewerSetup(void) {
     extern void GSmodelDisableColorSwap(void* model);
     extern void DVDInit(void);
     extern void wazaSequenceOwnerFree(void* sequence);
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
     extern u32 strlen(const char* s);
 
@@ -355,11 +355,11 @@ void wazaViewerSetup(void) {
     case 0:
         wazaSequenceOwnerFree(*(void**)(lbl_804673F8 + 0x61C));
         if (*(u16*)(lbl_804673F8 + 0x660) != 0) {
-            fn_800E24B0(*(u16*)(lbl_804673F8 + 0x660));
+            GSmemUnlock(*(u16*)(lbl_804673F8 + 0x660));
             GSmemFree(*(u16*)(lbl_804673F8 + 0x660));
             *(u16*)(lbl_804673F8 + 0x660) = 0;
             if (*(u16*)(lbl_804673F8 + 0x668) != 0) {
-                fn_800E24B0(*(u16*)(lbl_804673F8 + 0x668));
+                GSmemUnlock(*(u16*)(lbl_804673F8 + 0x668));
                 GSmemFree(*(u16*)(lbl_804673F8 + 0x668));
                 *(u16*)(lbl_804673F8 + 0x668) = 0;
             }
@@ -535,7 +535,7 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
 void wazaViewerLoadSequence(void) {
     extern u16 GSmemAlloc(u32 size, u32 align);
     extern void* GSmemLock(u16 block);
-    extern void fn_800E24B0(u16 block);
+    extern void GSmemUnlock(u16 block);
     extern void GSmemFree(u16 block);
     extern void GSmodelEnableColorSwap(void* model, s32 a, s32 b, s32 c, s32 d);
     extern void GSmodelEnableModulation(void* model, u8* color);
@@ -632,7 +632,7 @@ void wazaViewerLoadSequence(void) {
         break;
     }
     value = record[4];
-    fn_800E24B0(block);
+    GSmemUnlock(block);
     GSmemFree(block);
     color[3] = value >> 24;
     color[2] = (value >> 16) & 0xFF;

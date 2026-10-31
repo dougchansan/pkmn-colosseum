@@ -87,7 +87,7 @@ void pdaStrategyMemoRun(void) {
     extern void  menuModelTerm(void* subobj);
     extern void  menuOffScreenSetDisp(s32 a);
     extern u32   GSmemGetHandleByPtr(u32 flag);
-    extern void  fn_800E24B0(void);
+    extern void  GSmemUnlock(void);
     extern void  GSmemFree(u32 h);
     extern void  GScameraGetPosition(void* cam, void* outVec3);
     extern void  GScameraGetRotation(void* cam, void* outVec3);
@@ -1182,7 +1182,7 @@ void pdaStrategyMemoRun(void) {
     if (lbl_8047A4E0 != 0) {
         mem = GSmemGetHandleByPtr(lbl_8047A4E0);
         if ((u16)mem != 0) {
-            fn_800E24B0();
+            GSmemUnlock();
             GSmemFree(mem);
         }
         lbl_8047A4E0 = 0;
@@ -1194,7 +1194,7 @@ void pdaStrategyMemoRun(void) {
 
         mem = GSmemGetHandleByPtr((u32)lbl_8047A4E4);
     if ((u16)mem != 0) {
-        fn_800E24B0();
+        GSmemUnlock();
         GSmemFree(mem);
     }
     lbl_8047A4E4 = 0;

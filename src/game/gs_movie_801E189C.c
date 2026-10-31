@@ -60,13 +60,13 @@ extern void GSlogWrite(const char* format, ...);
 extern void THPPlayerGetVideoInfo(GsVtrOrigin* origin);
 extern void THPPlayerGetAudioInfo(u32* state);
 extern u32 THPPlayerCalcNeedMemory(void);
-extern u16 fn_800E2B00(u32 size, u32 alignment);
+extern u16 GSmemAllocTail(u32 size, u32 alignment);
 extern void* GSmemLock(u16 handle);
 extern void THPPlayerSetBuffer(void);
 extern u32 OSGetTick(void);
 extern BOOL THPPlayerPrepare(u32, u32, u32);
 extern u16 GSmemGetHandleByPtr(void* pointer);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void movieGetStreamIds(u32* first, u32* second);
 extern void sndStreamMixParameterEx(s32 id, u32, u32, u32, u32, u32);
@@ -115,7 +115,7 @@ void* GSmovieOpen_801E1924(void* param)
     lbl_8047B458 = (lbl_8047B45C->width - lbl_80469030.x) >> 1;
     lbl_8047B454 = (lbl_8047B45C->height - lbl_80469030.y) >> 1;
 
-    handle = fn_800E2B00(THPPlayerCalcNeedMemory(), 0x20);
+    handle = GSmemAllocTail(THPPlayerCalcNeedMemory(), 0x20);
     if (handle != 0) {
         lbl_8047B450 = GSmemLock(handle);
     } else {
@@ -138,7 +138,7 @@ void* GSmovieOpen_801E1924(void* param)
         GSlogWrite("ERROR(GSmovie): Fail to prepare\n");
         handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
-            fn_800E24B0(handle);
+            GSmemUnlock(handle);
             GSmemFree(handle);
         }
         GSscratchSetValid();

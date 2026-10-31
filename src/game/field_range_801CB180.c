@@ -163,7 +163,7 @@ extern void winMsgOpen(s32 id, s32 msg_id, s32 arg2, s32 arg3);
 extern s32 std011_dialogDisplayYesNoMenu(void);
 extern s32 menuSaveLoadSaveGame(s32 arg);
 extern void* GSmemGetHandleByPtr(void* ptr);
-extern void fn_800E24B0(void);
+extern void GSmemUnlock(void);
 extern s32 GSmemFree(void* ptr);
 extern void GSmemAlloc(s32 size, s32 align);
 extern void* GSmemLock(void);

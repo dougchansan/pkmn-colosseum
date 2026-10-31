@@ -39,7 +39,7 @@ typedef struct GSFilterState {
 extern void* memset(void* dst, int value, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void GSmemFree(u32 handle);
 extern void* gfxVtxDescAlloc(void);
 extern void gfxVtxDescSetAttr(void*, u32, u32, u32, u32, u8, void*, u8);
@@ -89,12 +89,12 @@ static inline void GSfilterRelease(void)
 
     handle = lbl_804526E0.filterHandle;
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     handle = lbl_804526E0.colorHandle;
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     if (lbl_804526E0.renderState != 0) {

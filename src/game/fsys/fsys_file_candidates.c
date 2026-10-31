@@ -40,9 +40,9 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 
 /* Memory allocation */
 extern u16  GSmemAlloc(u32 size, u32 alignment);
-extern u16  fn_800E2B00(u32 size, u32 alignment);
+extern u16  GSmemAllocTail(u32 size, u32 alignment);
 extern void* GSmemLock(u16 handle);
-extern void  fn_800E24B0(u16 handle);
+extern void  GSmemUnlock(u16 handle);
 extern void  GSmemFree(u16 handle);
 extern u16   GSmemGetHandleByPtr(void* ptr);
 
@@ -203,7 +203,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
 
         /* Allocate temporary buffer for compressed data */
         allocSize = (decompSize + 0x1F) & ~0x1F;
-        handle = fn_800E2B00(allocSize, 0x20);
+        handle = GSmemAllocTail(allocSize, 0x20);
         if (handle != 0) {
             compBuf = GSmemLock(handle);
         } else {
@@ -269,7 +269,7 @@ s32 fsysLoadEntrySync(FSYSSlot* slot) {
         {
             u16 tmpHandle = GSmemGetHandleByPtr(compBuf);
             if (tmpHandle != 0) {
-                fn_800E24B0(tmpHandle);
+                GSmemUnlock(tmpHandle);
                 GSmemFree(tmpHandle);
             }
         }
@@ -577,7 +577,7 @@ done:
     }
     handle = GSmemGetHandleByPtr(found->archiveData);
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     found->archiveData = NULL;
@@ -757,7 +757,7 @@ static DecompPoolEntry* FSYSFindDecompPool(u32 groupID) {
 static void* FSYSAllocHandle2B00(u32 size) {
     u16 handle;
 
-    handle = fn_800E2B00(FSYSAlign32(size), 0x20);
+    handle = GSmemAllocTail(FSYSAlign32(size), 0x20);
     if (handle != 0) {
         return GSmemLock(handle);
     }
@@ -779,7 +779,7 @@ static void FSYSFreeByPointer(void* ptr) {
 
     handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }
@@ -1139,7 +1139,7 @@ void fsysLoadEntryCompressed(FSYSSlot* slot, FSYSFileEntry* entry, u32 index) {
         sizeA = (entry->decompressedSize + 0x1F) & ~0x1Fu;
         sizeB = sizeA;
         sizeC = (sizeB + 0x1F) & ~0x1Fu;
-        handle = fn_800E2B00(sizeC, 0x20);
+        handle = GSmemAllocTail(sizeC, 0x20);
         if (handle != 0) {
             ptr = GSmemLock(handle);
         } else {

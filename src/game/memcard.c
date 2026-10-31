@@ -217,7 +217,7 @@ extern char* strcpy(char*, const char*);
 extern s32 strcmp(const char* lhs, const char* rhs);
 
 extern void* GSmemGetHandleByPtr(void* ptr);
-extern void fn_800E24B0(void);
+extern void GSmemUnlock(void);
 extern s32 GSmemFree(void* ptr);
 extern void GSmemAlloc(s32 size, s32 align);
 extern void* GSmemLock(void);
@@ -1678,7 +1678,7 @@ void* memcardFreeBuffer(void* ptr)
 {
     void* aligned = GSmemGetHandleByPtr(ptr);
 
-    fn_800E24B0();
+    GSmemUnlock();
     if (GSmemFree(aligned) == 0) {
         return NULL;
     }

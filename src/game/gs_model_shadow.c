@@ -224,7 +224,7 @@ void GSmodelSetShadowLight(GSmodel* model, GSlight* light)
 
 void GSmodelSetShadowSurface(GSmodel* model, s32 count, void* data)
 {
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
     extern u16 _toolentryAlloc__FUl(u32 size);
     extern void* GSmemLock(u16 handle);
@@ -232,7 +232,7 @@ void GSmodelSetShadowSurface(GSmodel* model, s32 count, void* data)
 
     if (count != model->shadowVtxCount) {
         if (model->shadowVtxHandle != 0) {
-            fn_800E24B0(model->shadowVtxHandle);
+            GSmemUnlock(model->shadowVtxHandle);
             GSmemFree(model->shadowVtxHandle);
             model->shadowVtxHandle = 0;
             model->shadowVtxCount = 0;
@@ -284,11 +284,11 @@ void GSmodelSetShadowFlags(GSmodel* model, u32 flags)
 
 void modelShadowFreeModelList__FP8_GSmodel(GSmodel* model)
 {
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
 
     if (model->shadowVtxHandle != 0) {
-        fn_800E24B0(model->shadowVtxHandle);
+        GSmemUnlock(model->shadowVtxHandle);
         GSmemFree(model->shadowVtxHandle);
         model->shadowVtxHandle = 0;
         model->shadowVtxCount = 0;

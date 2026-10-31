@@ -11265,7 +11265,7 @@
 "seed": "range"
 },
 {
-"name": "fn_8009A0C0",
+"name": "__OSDBJump",
 "addr": "0x8009A0C0",
 "size": 4,
 "label": "dolphin-sdk",
@@ -12417,7 +12417,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800A1208",
+"name": "SystemCallVector",
 "addr": "0x800A1208",
 "size": 32,
 "label": "dolphin-sdk",
@@ -12561,7 +12561,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800A1E54",
+"name": "OSJoinThread",
 "addr": "0x800A1E54",
 "size": 320,
 "label": "dolphin-sdk",
@@ -13977,7 +13977,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800AAD34",
+"name": "PADReset",
 "addr": "0x800AAD34",
 "size": 256,
 "label": "dolphin-sdk",
@@ -14009,7 +14009,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800AB4FC",
+"name": "PADControlAllMotors",
 "addr": "0x800AB4FC",
 "size": 184,
 "label": "dolphin-sdk",
@@ -15193,7 +15193,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800B5C5C",
+"name": "__GXDefaultTexRegionCallback",
 "addr": "0x800B5C5C",
 "size": 124,
 "label": "dolphin-sdk",
@@ -16529,7 +16529,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800BD91C",
+"name": "GXSetGPMetric",
 "addr": "0x800BD91C",
 "size": 2120,
 "label": "dolphin-sdk",
@@ -16537,7 +16537,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800BE164",
+"name": "GXReadGPMetric",
 "addr": "0x800BE164",
 "size": 424,
 "label": "dolphin-sdk",
@@ -17049,7 +17049,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800C0E60",
+"name": "__TRK_get_MSR",
 "addr": "0x800C0E60",
 "size": 8,
 "label": "dolphin-sdk",
@@ -17057,7 +17057,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800C0E68",
+"name": "__TRK_set_MSR",
 "addr": "0x800C0E68",
 "size": 8,
 "label": "dolphin-sdk",
@@ -17105,7 +17105,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800C11F4",
+"name": "ReadFPSCR",
 "addr": "0x800C11F4",
 "size": 36,
 "label": "dolphin-sdk",
@@ -17113,7 +17113,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800C1218",
+"name": "WriteFPSCR",
 "addr": "0x800C1218",
 "size": 36,
 "label": "dolphin-sdk",
@@ -21825,7 +21825,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800E24B0",
+"name": "GSmemUnlock",
 "addr": "0x800E24B0",
 "size": 768,
 "label": "gs-engine",
@@ -21849,7 +21849,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800E2B00",
+"name": "GSmemAllocTail",
 "addr": "0x800E2B00",
 "size": 260,
 "label": "gs-engine",
@@ -22769,7 +22769,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800EB904",
+"name": "_modelIntpJObj",
 "addr": "0x800EB904",
 "size": 1512,
 "label": "gs-engine",
@@ -24569,7 +24569,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800FE35C",
+"name": "spriteClearScissor",
 "addr": "0x800FE35C",
 "size": 48,
 "label": "gs-engine",
@@ -24577,7 +24577,7 @@
 "seed": "range"
 },
 {
-"name": "fn_800FE38C",
+"name": "spriteSetScissor",
 "addr": "0x800FE38C",
 "size": 328,
 "label": "gs-engine",
@@ -38041,7 +38041,7 @@
 "seed": "range"
 },
 {
-"name": "fn_8015FE88",
+"name": "sndInit",
 "addr": "0x8015FE88",
 "size": 280,
 "label": "musyx",
@@ -38473,7 +38473,7 @@
 "seed": "range"
 },
 {
-"name": "fn_80162858",
+"name": "hwSetVirtualSampleLoopBuffer",
 "addr": "0x80162858",
 "size": 32,
 "label": "musyx",
@@ -38489,7 +38489,7 @@
 "seed": "range"
 },
 {
-"name": "fn_8016288C",
+"name": "hwGetSampleType",
 "addr": "0x8016288C",
 "size": 20,
 "label": "musyx",
@@ -38497,7 +38497,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801628A0",
+"name": "hwGetSampleID",
 "addr": "0x801628A0",
 "size": 20,
 "label": "musyx",
@@ -43017,7 +43017,7 @@
 "seed": "range"
 },
 {
-"name": "fn_8018FC98",
+"name": "peopleGetModelPosition",
 "addr": "0x8018FC98",
 "size": 36,
 "label": "people",
@@ -43129,7 +43129,7 @@
 "seed": "prefix"
 },
 {
-"name": "fn_801909A8",
+"name": "GSflagInit",
 "addr": "0x801909A8",
 "size": 744,
 "label": "gs-engine",
@@ -46881,7 +46881,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801BBCE0",
+"name": "TObjInit",
 "addr": "0x801BBCE0",
 "size": 92,
 "label": "hsd",
@@ -46921,7 +46921,7 @@
 "seed": "range"
 },
 {
-"name": "fn_801BBE3C",
+"name": "HSD_TObjInsert",
 "addr": "0x801BBE3C",
 "size": 36,
 "label": "hsd",
@@ -50417,7 +50417,7 @@
 "seed": null
 },
 {
-"name": "fn_801E1B54",
+"name": "PushReadedBuffer2",
 "addr": "0x801E1B54",
 "size": 48,
 "label": "dolphin-sdk",
@@ -50425,7 +50425,7 @@
 "seed": null
 },
 {
-"name": "fn_801E1B84",
+"name": "PopReadedBuffer2",
 "addr": "0x801E1B84",
 "size": 52,
 "label": "dolphin-sdk",
@@ -50441,7 +50441,7 @@
 "seed": null
 },
 {
-"name": "fn_801E1BE8",
+"name": "PopReadedBuffer",
 "addr": "0x801E1BE8",
 "size": 52,
 "label": "dolphin-sdk",

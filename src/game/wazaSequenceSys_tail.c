@@ -23,7 +23,7 @@
  * Stops all active waza effects, frees all allocated memory.
  */
 void wazaSequenceSysRelease(void) {
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
     u8* entry = *(u8**)lbl_80467CC0;
     u16 count = *(u16*)(lbl_80467CC0 + 4);
@@ -39,7 +39,7 @@ void wazaSequenceSysRelease(void) {
             memset(entry, 0, 0x8C);
         }
     }
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
     memset(lbl_80467CC0, 0, 0x14);
 }

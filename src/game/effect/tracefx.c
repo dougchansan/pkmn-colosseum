@@ -66,7 +66,7 @@ extern void  GSlerpGetLinearInterpolationVector(void* dst, void* srcA,
 extern void  GSmodelSetVisibility(void* model, u32 flag);        /* GSpart set visibility */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
 extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
-extern void  fn_800E24B0(u16 handle);                   /* GSmemLock/free step */
+extern void  GSmemUnlock(u16 handle);                   /* GSmemLock/free step */
 extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 extern u32   wazaSequenceSysGetResID(void);                          /* Random seed generator */
 extern void  loadArchivePtr(u32 memOffset, u32 resId,
@@ -782,12 +782,12 @@ BOOL _tracefxStop(u8* w) {
         GXInvalidateVtxCache();
         handle = *(u16*)(w + 0x0C);
         if (handle != 0) {
-            fn_800E24B0(handle);
+            GSmemUnlock(handle);
             GSmemFree(handle);
         }
         handle = *(u16*)(w + 0x0E);
         if (handle != 0) {
-            fn_800E24B0(handle);
+            GSmemUnlock(handle);
             GSmemFree(handle);
         }
     }
@@ -878,7 +878,7 @@ BOOL tracefxStartEffect(u8* w) {
 
     handle = _toolentryAlloc__FUl(count32 << 4);
     if (handle == 0) {
-        fn_800E24B0(*(u16*)(w + 0x0C));
+        GSmemUnlock(*(u16*)(w + 0x0C));
         GSmemFree(*(u16*)(w + 0x0C));
         return FALSE;
     }

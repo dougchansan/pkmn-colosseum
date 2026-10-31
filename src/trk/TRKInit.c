@@ -5,7 +5,7 @@ extern void EnableEXI2Interrupts(void); /* EnableEXI2Interrupts */
 extern u8 gTRKCPUState[];
 extern u8 gTRKState[];
 extern u8 lbl_803FED58[]; /* exception table base */
-extern u32 fn_800C0E60(void); /* __TRK_get_MSR */
+extern u32 __TRK_get_MSR(void);
 u32 TRKTargetTranslate(u32 addr);
 extern u8 gTRKInterruptVectorTable[];
 extern u32 lbl_80313848[];
@@ -175,7 +175,7 @@ void __TRK_copy_vectors(void) {
 
 s32 TRKInitializeTarget(void) {
     *(s32*)&gTRKState[0x98] = 1;
-    *(u32*)&gTRKState[0x8C] = fn_800C0E60();
+    *(u32*)&gTRKState[0x8C] = __TRK_get_MSR();
     *(u32*)lbl_803FED58 = 0xE0000000;
     return 0;
 }

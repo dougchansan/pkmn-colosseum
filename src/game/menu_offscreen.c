@@ -26,7 +26,7 @@ extern void  GSlogWrite(const char* fmt, ...);         /* OSReport / GSlog */
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
 extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
-extern void* fn_800E24B0(u16 handle);                   /* GSmemLock */
+extern void* GSmemUnlock(u16 handle);                   /* GSmemLock */
 extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 
 /* GSgfx state */
@@ -69,7 +69,7 @@ extern s32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
 extern void  _threadSwitch(void);    /* yield */
 extern u32   gappReadGPMetric0(void);    /* rand or tick */
 extern u32   GXSetDrawSyncCallback(void*);   /* register fn, returns handle */
-extern void  fn_800BD91C(s32, s32);
+extern void  GXSetGPMetric(s32, s32);
 extern void  GXSetDrawSync(s32);
 extern void  GSgfxBeginBackFBCapture(u32, void*, void*);
 extern u32   GStextureCreate(s32, s32, s32, s32, s32);

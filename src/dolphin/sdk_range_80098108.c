@@ -1233,7 +1233,7 @@ entry __OSDBINTEND
 }
 
 /* OS.c's __OSDBJump; evidence: docs/asm_evidence/os_primitives.md */
-asm void fn_8009A0C0(void) {
+asm void __OSDBJump(void) {
     nofralloc
     bla     0x60
 entry __OSDBJUMPEND

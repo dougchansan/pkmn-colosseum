@@ -26,7 +26,7 @@ extern void OSCreateThread(void* thread, void* func, void* arg,
                            void* stackBase, u32 stackSize,
                            u32 priority, u32 detached);
 extern void OSResumeThread(void* thread);
-extern void fn_800A1E54(void* thread, u32 prio);
+extern void OSJoinThread(void* thread, u32 prio);
 extern void __OSSetExceptionHandler(u32 exception, void* handler);
 extern void* __va_arg(void* ap, u32 type);
 extern u32 OSGetStackPointer(void);
@@ -244,7 +244,7 @@ void osErrorReportCallback(u32 error, void* context, ...) {
     OSEnableScheduler();
     OSCreateThread(&thread, errorReportThread, NULL, lbl_8039E700 + 0x1FFC, 0x2000, 1, 0);
     OSResumeThread(&thread);
-    fn_800A1E54(&thread, 0);
+    OSJoinThread(&thread, 0);
 }
 
 /* =========================================================================

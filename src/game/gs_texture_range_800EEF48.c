@@ -21,7 +21,7 @@ typedef struct GStextureRange {
 
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u16 handle);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern void DCFlushRange(void* address, u32 size);
@@ -76,6 +76,6 @@ void GStextureConvertToHW(GStextureRange* texture)
     DCFlushRange(texture->data, texture->dataSize);
     GXInvalidateTexAll();
     texture->convertCount--;
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
 }

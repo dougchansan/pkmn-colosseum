@@ -28,8 +28,8 @@ extern PdaListEntry* lbl_8047A4D4;
 extern u32 lbl_8047A4D0;
 extern s32 lbl_8047A4DC;
 
-extern void fn_800FE35C(void);
-extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
+extern void spriteClearScissor(void);
+extern void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2);
 extern s32 GSmsgPrintColor(s32 x, s32 y, s32 color, void* data);
 extern u32 GSmsgGetGSchar(u32 msg);
 extern void msgctrlSetValue(s32 id, u32 value);
@@ -152,7 +152,7 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
 
     alphaSprite->alphaByte =
         255.0f * *(f32*)(lbl_803A6748 + 0x44);
-    fn_800FE38C(*(s16*)(lbl_802EF0A8 + 0x4fa2) -
+    spriteSetScissor(*(s16*)(lbl_802EF0A8 + 0x4fa2) -
                     *(s16*)(lbl_802EF0A8 + event->messageId * 0x1c + 2),
                 *(s16*)(lbl_802EF0A8 + 0x4fa4) -
                     *(s16*)(lbl_802EF0A8 + event->messageId * 0x1c + 4),
@@ -220,5 +220,5 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
         rowY = rowY + stride;
         off += 4;
     }
-    fn_800FE35C();
+    spriteClearScissor();
 }

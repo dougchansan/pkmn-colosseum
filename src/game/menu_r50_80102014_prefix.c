@@ -124,7 +124,7 @@ extern void gfxSetBlendMode(s32, s32, s32);
 extern void menuDrawBlinkIcon(void);
 extern void fadeDaemon(void);
 extern void spriteSetOrigin();
-extern void fn_800FE35C(void);
+extern void spriteClearScissor(void);
 extern void spriteSetEnv(void);
 extern u16 menuSeTableLookup(void*, s32);
 extern void cmsRunSync(void*, u32, ...);
@@ -631,7 +631,7 @@ void menuDaemon(void) {
         }
         if ((node->flags & 2) != 0) {
             spriteSetOrigin(node->x, node->y);
-            fn_800FE35C();
+            spriteClearScissor();
             spriteSetEnv();
             for (sprite = node->sprites; sprite != NULL; sprite = sprite->next) {
                 winSpriteDraw(node, sprite);
@@ -648,7 +648,7 @@ void menuDaemon(void) {
     }
 
     spriteSetOrigin(0, 0);
-    fn_800FE35C();
+    spriteClearScissor();
     gfxSetBlendMode(1, 6, 7);
     if (doFade != 0) {
         fadeDaemon();

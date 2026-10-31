@@ -83,7 +83,7 @@ extern void heroBiosSetPokedoru(u8* ptr, s32 value);
 extern void floorChangePos(u32 floorId, s16 direction, f32 x, f32 y, f32 z);
 
 
-/* GSflagClear, fn_801909A8 (XD GSflagInit) and GSflagInitBitPos, 0x801908D4 -
+/* GSflagClear, GSflagInit (XD GSflagInit) and GSflagInitBitPos, 0x801908D4 -
  * 0x80190E34, are linked from gs_flag_exact_801908D4.c. */
 
 /* fn_801902E0 (XD GSflagTest) is linked from gs_flag_test_exact_801902E0.c. */

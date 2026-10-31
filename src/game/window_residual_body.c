@@ -20,7 +20,7 @@ extern u32   GSmsgGetRect(void* message);
 /* GSmem */
 extern u16   _toolentryAlloc__FUl(u32 size);                     /* GSmemAllocRaw */
 extern void* GSmemLock(u16 handle);                   /* GSmemGetPtr */
-extern void* fn_800E24B0(u16 handle);                   /* GSmemLock */
+extern void* GSmemUnlock(u16 handle);                   /* GSmemLock */
 extern void  GSmemFree(u16 handle);                   /* GSmemFree */
 
 /* GSgfx state */
@@ -63,7 +63,7 @@ extern u32   GSthreadGetCurrentThread(void);    /* poll/yield -- 0 if pending */
 extern void  _threadSwitch(void);    /* yield */
 extern u32   gappReadGPMetric0(void);    /* rand or tick */
 extern u32   GXSetDrawSyncCallback(void*);   /* register fn, returns handle */
-extern void  fn_800BD91C(s32, s32);
+extern void  GXSetGPMetric(s32, s32);
 extern void  GXSetDrawSync(s32);
 extern void  GSgfxBeginBackFBCapture(u32, void*, void*);
 extern u32   GStextureCreate(s32, s32, s32, s32, s32);
@@ -148,8 +148,8 @@ extern void gfxEnd(void);
 extern void gfxVtxPos2s16(s16 x, s16 y);
 extern void gfxVtxColor1u32(s32 index, u32 color);
 extern void gfxSetLineWidth(f32 value);
-extern void fn_800FE38C(s16 x, s16 y, s16 width, s16 height);
-extern void fn_800FE35C(void);
+extern void spriteSetScissor(s16 x, s16 y, s16 width, s16 height);
+extern void spriteClearScissor(void);
 extern f64 fmod(f64 value, f64 modulus);
 extern void spriteGetOrigin(s16* x, s16* y);
 extern void winSpriteDraw(void* context, void* sprite);
@@ -404,7 +404,7 @@ s32 winMsgDrawItem(u8* window, u8* sprite) {
         gfxVtxPos2s16(0, *(s16*)(sprite + 0x56));
         gfxVtxColor1u32(0, colors[1]);
         gfxEnd();
-        fn_800FE38C(0, 0, *(s16*)(sprite + 0x54),
+        spriteSetScissor(0, 0, *(s16*)(sprite + 0x54),
                     *(s16*)(sprite + 0x56));
         break;
     case 0x6B:
@@ -429,7 +429,7 @@ s32 winMsgDrawItem(u8* window, u8* sprite) {
             gfxVtxColor1u32(0, colors[0]);
             gfxEnd();
         }
-        fn_800FE35C();
+        spriteClearScissor();
         break;
     }
     case 0x69:

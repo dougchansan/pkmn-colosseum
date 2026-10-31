@@ -193,7 +193,7 @@ extern void randSetSeed(u32 seed); /* RNG set seed */
 extern void savedataCreate(u32 a, u32 b); /* RNG init */
 extern void fightGSfloorRegister(void);    /* Battle system global init */
 extern u32  savedataGetStatus(u32 a, u32 b); /* RNG or calendar read */
-extern void fn_801909A8(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f); /* Calendar/RTC set */
+extern void GSflagInit(u32 a, u32 b, u32 c, u32 d, u32 e, u32 f); /* Calendar/RTC set */
 extern void GSvtrLoadTexture(void);    /* Card system tick */
 extern void mainNop_8010C220(void);    /* Effect system tick */
 extern void cameraInit(void);    /* World/map system init */
@@ -325,8 +325,8 @@ extern void OSCreateThread(void* thread, void* func, void* arg,
                          u32 priority, u32 detached);
 /* OSResumeThread = OSResumeThread */
 extern void OSResumeThread(void* thread);
-/* fn_800A1E54 = OSSetThreadPriority */
-extern void fn_800A1E54(void* thread, u32 prio);
+/* OSJoinThread */
+extern void OSJoinThread(void* thread, u32 prio);
 
 /* va_list for PPC - MetroWerks CW inline */
 typedef struct __va_list_struct {
@@ -777,7 +777,7 @@ void mainGameThread(void) {
     fightGSfloorRegister();
 
     /* Set the in-game calendar from RTC values (sec/min/hour/day/month/year) */
-    fn_801909A8(savedataGetStatus(0, 4), savedataGetStatus(0, 7), savedataGetStatus(0, 5),
+    GSflagInit(savedataGetStatus(0, 4), savedataGetStatus(0, 7), savedataGetStatus(0, 5),
                 savedataGetStatus(0, 8), savedataGetStatus(0, 6), savedataGetStatus(0, 9));
 
     /* Tick save/card system */

@@ -23,7 +23,7 @@
 
 extern void GSlogWrite(const void* fmt, ...);
 extern void GSmemFree(u16 handle);           /* GSmemFree */
-extern void* fn_800E24B0(u16 handle);          /* GSmemUnlock */
+extern void* GSmemUnlock(u16 handle);
 extern void* GSmemLock(u16 handle);          /* GSmemGetPtr */
 extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
@@ -232,8 +232,8 @@ void GSthreadSetArgs(void* threadPtr, s32 count, ...)
         }
     }
 
-    fn_800E24B0(thread->stackHandle);
-    fn_800E24B0(thread->ctxHandle);
+    GSmemUnlock(thread->stackHandle);
+    GSmemUnlock(thread->ctxHandle);
 }
 
 #undef GS_THREAD_VA_START
@@ -328,8 +328,8 @@ GSThread* GSthreadCreate(u32 affinity, u32 priority, u32 stackSize,
     ctx->ctr = (u32)_GSthreadExitTrampoline;
     *stack = -1; /* stack-overflow sentinel */
 
-    fn_800E24B0(thread->ctxHandle);
-    fn_800E24B0(thread->stackHandle);
+    GSmemUnlock(thread->ctxHandle);
+    GSmemUnlock(thread->stackHandle);
 
     /* Insert into the thread list, kept sorted by ascending affinity. */
     curr = (GSThread*)lbl_8047AC08;
@@ -473,8 +473,8 @@ void _GSthreadDispatch(arg0, arg1)
             if (GSscratchIsPtr(scratchStack) != 0) {
                 GSscratchFree(scratchStack);
             }
-            fn_800E24B0(thread->ctxHandle);
-            fn_800E24B0(thread->stackHandle);
+            GSmemUnlock(thread->ctxHandle);
+            GSmemUnlock(thread->stackHandle);
 
             if ((u32)thread == lbl_8047AC00 || (u32)thread == lbl_8047AC04) {
                 thread->pad1 = 1;
@@ -503,8 +503,8 @@ void _GSthreadDispatch(arg0, arg1)
                 GSscratchWaitForCompletion();
                 GSscratchFree(scratchStack);
             }
-            fn_800E24B0(thread->ctxHandle);
-            fn_800E24B0(thread->stackHandle);
+            GSmemUnlock(thread->ctxHandle);
+            GSmemUnlock(thread->stackHandle);
         }
 
         if (lbl_8047AC0C == 0 || (GSThread *)lbl_8047AC04 == threadFindRunnable(thread, arg0, arg1)) {
@@ -521,7 +521,7 @@ void _GSthreadDispatch(arg0, arg1)
                 GSscratchFree(nextStack);
             }
             if ((GSThread *)lbl_8047AC04 != NULL) {
-                fn_800E24B0(((GSThread *)lbl_8047AC04)->stackHandle);
+                GSmemUnlock(((GSThread *)lbl_8047AC04)->stackHandle);
                 dead = (GSThread *)lbl_8047AC04;
                 if (dead->pad1 != 0) {
                     lbl_8047AC04 = 0;

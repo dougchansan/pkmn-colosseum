@@ -1830,3 +1830,34 @@ fn_8023C368 -> fightReturnFalse_8023C368
 fn_8023CA9C -> fightAiCallWazaValueFunc
 fn_8024E534 -> fightTrainerAiSelectItem
 fn_80265598 -> fightMenuStatusMenuOpen
+
+# Clash-checked follow-up (2026-10-31): 26 names whose identifier only appeared in comments or stale prototypes, plus 3 SDK/TRK routines
+fn_800A1E54 -> OSJoinThread
+fn_800AAD34 -> PADReset
+fn_800AB4FC -> PADControlAllMotors
+fn_800B5C5C -> __GXDefaultTexRegionCallback
+fn_800BD91C -> GXSetGPMetric
+fn_800BE164 -> GXReadGPMetric
+fn_800C0E60 -> __TRK_get_MSR
+fn_800C0E68 -> __TRK_set_MSR
+fn_800C11F4 -> ReadFPSCR
+fn_800C1218 -> WriteFPSCR
+fn_800E24B0 -> GSmemUnlock
+fn_800E2B00 -> GSmemAllocTail
+fn_800EB904 -> _modelIntpJObj
+fn_800FE35C -> spriteClearScissor
+fn_800FE38C -> spriteSetScissor
+fn_8015FE88 -> sndInit
+fn_80162858 -> hwSetVirtualSampleLoopBuffer
+fn_8016288C -> hwGetSampleType
+fn_801628A0 -> hwGetSampleID
+fn_8018FC98 -> peopleGetModelPosition
+fn_801909A8 -> GSflagInit
+fn_801BBCE0 -> TObjInit
+fn_801BBE3C -> HSD_TObjInsert
+fn_801E1B54 -> PushReadedBuffer2
+fn_801E1B84 -> PopReadedBuffer2
+fn_801E1BE8 -> PopReadedBuffer
+fn_800053E0 -> __TRK_reset
+fn_8009A0C0 -> __OSDBJump
+fn_800A1208 -> SystemCallVector

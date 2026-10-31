@@ -243,7 +243,7 @@ extern void  GSpartFree(void* handle);
 extern void* GSpartGetMaterial(void* handle, u32 idx);
 extern void* GStextureCreate(u16 width, u16 height, s32 format, s32 tlutFormat, u8 mipLevels);
 extern void* GSmodelGetActiveEntry(u32 index);
-extern void  fn_800E24B0(u16 handle);
+extern void  GSmemUnlock(u16 handle);
 extern void  GSmemFree(u16 handle);
 extern void  GSresReleaseOwnerItem(u32 group, u32 resource);
 extern void  GSmodelSetVisibility(void* model, u32 visible);
@@ -678,7 +678,7 @@ u32 _lightningDestroy(void* ptr) {
     return 0;
 }
 #endif
-extern void fn_800E24B0(u16 a);
+extern void GSmemUnlock(u16 a);
 extern void GSmemFree(u16 a);
 #if 0
 asm void fn_80138680(void* ptr) {
@@ -693,7 +693,7 @@ u32 _lightningStop(void* ptr) {
         GXDrawDone();
         GXInvalidateVtxCache();
         if (val) {
-            fn_800E24B0(val);
+            GSmemUnlock(val);
             GSmemFree(val);
         }
         ret = 1;
@@ -965,7 +965,7 @@ u32 _leaffxStop(void* ptr) {
         }
 
         if (handle != 0) {
-            fn_800E24B0(handle);
+            GSmemUnlock(handle);
             GSmemFree(handle);
         }
     }
@@ -1461,7 +1461,7 @@ u32 _boltStop(void* ptr) {
         if (val) {
             GXDrawDone();
             GXInvalidateVtxCache();
-            fn_800E24B0(val);
+            GSmemUnlock(val);
             GSmemFree(val);
         }
     }
@@ -2374,7 +2374,7 @@ u32 _filterDestroy(void* ptr) {
         while (ptr != NULL) {
             val = *(u16*)((u8*)ptr + 0xc);
             next = *(void**)((u8*)ptr + 0x10);
-            fn_800E24B0(val);
+            GSmemUnlock(val);
             GSmemFree(val);
             ptr = next;
         }
@@ -2607,12 +2607,12 @@ u32 _surfStop(void* ptr) {
         GXInvalidateVtxCache();
         val = *(u16*)((u8*)ptr + 0x20);
         if (val) {
-            fn_800E24B0(val);
+            GSmemUnlock(val);
             GSmemFree(val);
         }
         val = *(u16*)((u8*)ptr + 0xc0);
         if (val) {
-            fn_800E24B0(val);
+            GSmemUnlock(val);
             GSmemFree(val);
         }
     }
@@ -2751,12 +2751,12 @@ u16 surfEffectStart(void* ptr) {
 cleanup:
     handle = *(u16*)(p + 0x20);
     *(u16*)(p + 0x20) = 0;
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
     handle = *(u16*)(p + 0xC0);
     *(u16*)(p + 0xC0) = 0;
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 fail:
@@ -3276,14 +3276,14 @@ u32 _seaStop(void* arg) {
             u16 val;
             val = *(u16*)((u8*)ptr + 0x1c);
             if (val != 0) {
-                fn_800E24B0(val);
+                GSmemUnlock(val);
                 GSmemFree(val);
             }
         }
 
         ptr = (void*)(u32)*(u16*)((u8*)ptr + 0x8c);
         if (ptr != 0) {
-            fn_800E24B0((u32)ptr);
+            GSmemUnlock((u32)ptr);
             GSmemFree((u32)ptr);
         }
     }
@@ -3447,13 +3447,13 @@ cleanup:
     handle = *(u16*)(p + 0x1C);
     *(u16*)(p + 0x1C) = 0;
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     handle = *(u16*)(p + 0x8C);
     *(u16*)(p + 0x8C) = 0;
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 fail:
@@ -4024,7 +4024,7 @@ u32 _envMapDestroy(void* ptr) {
         while (next != NULL) {
             val = *(u16*)((u8*)next + 0xc);
             next = *(void**)((u8*)next + 0x10);
-            fn_800E24B0(val);
+            GSmemUnlock(val);
             GSmemFree(val);
         }
         ret = 1;
@@ -4081,7 +4081,7 @@ u32 envMapEffectInit(void* ptr) {
                     while (ptr != NULL) {
                         val = *(u16*)((u8*)ptr + 0xc);
                         ptr = *(void**)((u8*)ptr + 0x10);
-                        fn_800E24B0(val);
+                        GSmemUnlock(val);
                         GSmemFree(val);
                     }
                 }
@@ -4271,7 +4271,7 @@ u32 _blurDestroy(void* ptr) {
         while (node) {
             val = *(u16*)((u8*)node + 0xc);
             node = *(void**)((u8*)node + 0x10);
-            fn_800E24B0(val);
+            GSmemUnlock(val);
             GSmemFree(val);
         }
     }

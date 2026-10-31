@@ -108,7 +108,7 @@ typedef struct GSflagDef {
  * Runtime state for the flag system.
  * Stored at SDA global lbl_80478EEC (8 bytes visible, full struct ~0x20).
  *
- * Offsets match the lwz/stw patterns in fn_801909A8 (GSflagInit):
+ * Offsets match the lwz/stw patterns in GSflagInit (GSflagInit):
  *   +0x04 = bitfield buffer pointer for level 0 (permanent)
  *   +0x08 = buffer word count for level 0
  *   +0x0C = allocator/save pointer

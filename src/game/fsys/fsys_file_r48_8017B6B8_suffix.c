@@ -33,7 +33,7 @@ extern u8 GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                       void (*callback)(s32 result));
 extern u32 fsysCacheLookup(u32 fileHandle, u32 groupID, u32 nameHash);
 extern void fsysARAMToMainAsync(void* dst, u32 src, u32 size, void (*callback)(void), void* userData);
-extern u16 fn_800E2B00(u32 size, u32 alignment);
+extern u16 GSmemAllocTail(u32 size, u32 alignment);
 extern void* GSmemLock(u16 handle);
 extern void fsysARQCallback(void);
 extern void fsysDVDReadCallback(s32 result);
@@ -121,7 +121,7 @@ static inline void* fsysAllocTop(u32 size)
     u16 handle;
 
     alignedSize = (size + 0x1F) & ~0x1F;
-    handle = fn_800E2B00(alignedSize, 0x20);
+    handle = GSmemAllocTail(alignedSize, 0x20);
     if (handle != 0) {
         return GSmemLock(handle);
     }

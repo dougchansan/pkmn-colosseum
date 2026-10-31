@@ -40,7 +40,7 @@ extern u32 _toolentryAlloc__FUl(u32 size);      /* GSmemAllocRaw */
 extern u32 GSmemAlloc(u32 size, u32 align);    /* GSmemAlloc */
 extern void* GSmemLock(u16 handle);           /* GSmemGetPtr */
 extern void GSmemFree(u16 handle);            /* GSmemFree */
-extern void* fn_800E24B0(u16 handle);           /* GSmemLock */
+extern void* GSmemUnlock(u16 handle);           /* GSmemLock */
 
 /* Registry state (.sbss, owned outside this split) */
 extern u16 lbl_8047AC58;        /* GSmem handle of the entry table */
@@ -90,7 +90,7 @@ void GSresReleaseOwner(u32 group) {
             continue;
         }
         if (entry->memHandle != 0) {
-            fn_800E24B0(entry->memHandle);
+            GSmemUnlock(entry->memHandle);
             GSmemFree(entry->memHandle);
             entry->memHandle = 0;
         }
@@ -110,7 +110,7 @@ void GSresReleaseOwnerItem(u32 group, u32 id) {
         return;
     }
     if (entry->memHandle != 0) {
-        fn_800E24B0(entry->memHandle);
+        GSmemUnlock(entry->memHandle);
         GSmemFree(entry->memHandle);
         entry->memHandle = 0;
     }

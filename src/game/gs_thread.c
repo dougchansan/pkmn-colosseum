@@ -59,7 +59,7 @@ typedef u8 M2C_UNK;
 extern void  GSlogWrite(const void* fmt, ...);          /* OSReport */
 extern u16   GSmemAllocRaw(u32 size);                    /* _toolentryAlloc__FUl */
 extern void* GSmemGetPtr(u16 handle);                    /* GSmemLock */
-extern void* GSmemLock(u16 handle);                      /* fn_800E24B0 */
+extern void* GSmemLock(u16 handle);                      /* GSmemUnlock */
 extern void  GSmemFree(u16 handle);                      /* GSmemFree */
 extern u16   GSmemAlloc(u32 alignment, u32 size);        /* GSmemAlloc */
 extern void  OSSetIdleFunction(void* func, void* arg,
@@ -82,9 +82,9 @@ extern void gappVSyncCallback(void);            /* GStaskSwapCallback */
 extern void _GSthreadExitTrampoline(u32 arg);          /* GSthread trampoline / entry wrapper */
 extern void PADRead(void* buf);
 extern u32 SIProbe(u32 buttonIdx);
-extern void fn_800AB4FC(void*);
+extern void PADControlAllMotors(void*);
 extern void GSmemFree(u16 handle);
-extern void* fn_800E24B0(u16 handle);
+extern void* GSmemUnlock(u16 handle);
 extern void* GSmemLock(u16 handle);
 extern u16 GSmemAlloc(u32 alignment, u32 size);
 extern u16 _toolentryAlloc__FUl(u32 size);
@@ -448,8 +448,8 @@ extern void _msgMakeTexture();
 extern u16 * _msgGetCodeInfo__FP13MSG_TASK_WORKUsPP12tagFONT_INFO();
 extern s32 _msgGetLength__FPCUs(const void* str);
 extern s32 _msgGetSize__FPCUs();
-extern void fn_800FE35C(void);
-extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
+extern void spriteClearScissor(void);
+extern void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2);
 extern void spriteSetEnv(void);
 extern void spriteSetScale(f32 a, f32 b);
 extern void spriteGetOrigin(s16* outA, s16* outB);
@@ -635,7 +635,7 @@ void inputUpdateMotors(void) {
         var_ctr -= 1;
     } while (var_ctr != 0);
     if (var_r0 != 0) {
-        fn_800AB4FC((u8 *)&lbl_80401C10 + 0x1C0);
+        PADControlAllMotors((u8 *)&lbl_80401C10 + 0x1C0);
     }
 }
 #pragma pop
@@ -3578,7 +3578,7 @@ s32 _msgGetSize__FPCUs(arg0)
 #pragma optimizewithasm off
 #pragma optimization_level 2
 #pragma scheduling off
-void fn_800FE35C(void) {
+void spriteClearScissor(void) {
     gfxSetScissor(0, 0, 0x27F, 0x1DF);
 }
 #pragma scheduling on
@@ -3593,7 +3593,7 @@ void fn_800FE35C(void) {
 #pragma peephole off
 #pragma push
 #pragma optimization_level 3
-void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2) {
+void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2) {
     s32 ax, ay, bx, by;
     f32 scale_x, scale_y;
     s32 cy2, cx2, cy1, cx1;

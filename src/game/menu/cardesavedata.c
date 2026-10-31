@@ -101,7 +101,7 @@ extern void GScharLenCpy(void*, const void*, u32);
 extern u16 GSmemAlloc(u32, u32);
 extern void* GSmemLock(u16);
 extern u16 GSmemGetHandleByPtr(void*);
-extern void fn_800E24B0(u16);
+extern void GSmemUnlock(u16);
 extern void GSmemFree(u16);
 extern s32 cardeArenaCountRecords(void*);
 extern void* cardeArenaWalk(void*, s32);
@@ -3055,7 +3055,7 @@ void* menuCardEMatrixBuild(void* window, const void* title) {
         if (handle == 0) {
             __assert(sCardEMatrixFile, 0x1AB, lbl_8047C140);
         }
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
         CARDE_CTX_U32(ctx, 0xB0) = 0;
     }
@@ -3330,7 +3330,7 @@ static inline void CardEFreeStatus(CardEStatusWork* status)
     if (handle == 0) {
         __assert(sCardEStatusFile, 0xF3, lbl_8047C198);
     }
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
 }
 

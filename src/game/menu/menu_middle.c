@@ -98,8 +98,8 @@ extern void GScharMakeFromSJIS();
 extern u32 GSmsgGetGSchar();
 extern void GSmsgGetRect();
 extern void GSmsgPrintColor();
-extern void fn_800FE35C();
-extern void fn_800FE38C();
+extern void spriteClearScissor();
+extern void spriteSetScissor();
 extern void std098_mapWarpToMenuRoom();
 extern s32 menuGetCursorFromItemID(s32 id, s32 itemId);
 extern s32 menuGetCursorItemID(s32 id);
@@ -2204,7 +2204,7 @@ void menuColoBattleBCDrawItem(void* window, void* sprite) {
     typedef struct MenuMiddleColors {
         MenuMiddleColor c[3];
     } MenuMiddleColors;
-    extern void fn_800FE38C(s32 x, s32 y, s32 w, s32 h);
+    extern void spriteSetScissor(s32 x, s32 y, s32 w, s32 h);
     extern void gfxSetFlags(s32 a);
     extern void gfxClearFlags(s32 a);
     extern void gfxSetPrimitive(s32 a);
@@ -2214,12 +2214,12 @@ void menuColoBattleBCDrawItem(void* window, void* sprite) {
     extern void gfxVtxColor1u32(s32 a, u32 color);
     extern void gfxEnd(void);
     extern void gfxSetLineWidth(f32 a);
-    extern void fn_800FE35C(void);
+    extern void spriteClearScissor(void);
     MenuMiddleColors colors;
     s16 y;
 
     colors = *(MenuMiddleColors*)lbl_80268674;
-    fn_800FE38C(0, 0, MENU_MIDDLE_S16_0054(sprite)->unk_0054, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
+    spriteSetScissor(0, 0, MENU_MIDDLE_S16_0054(sprite)->unk_0054, MENU_MIDDLE_S16_0056(sprite)->unk_0056);
     gfxSetFlags(1);
     gfxClearFlags(6);
     colors.c[1].a = colors.c[1].a * MENU_MIDDLE_U8_0067(sprite)->unk_0067 / 255;
@@ -2251,7 +2251,7 @@ void menuColoBattleBCDrawItem(void* window, void* sprite) {
         gfxVtxColor1u32(0, *(u32*)&colors.c[0]);
         gfxEnd();
     }
-    fn_800FE35C();
+    spriteClearScissor();
 }
 
 

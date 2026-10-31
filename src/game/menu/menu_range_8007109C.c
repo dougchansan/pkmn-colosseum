@@ -401,7 +401,7 @@ extern char lbl_8047C090;
 /* fn_8007109C (0x8007109C): release the current heap handle, if any. */
 void menuCommonFree(void) {
     extern u16 GSmemGetHandleByPtr(void);
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
     u16 handle;
 
@@ -410,7 +410,7 @@ void menuCommonFree(void) {
         __assert((const char*)lbl_80268708, 0xDE, (const char*)&lbl_8047C090);
     }
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }
@@ -3474,7 +3474,7 @@ extern void soundStartSE(u32 id);
 void menuExDiscCouponRun(void);
 void exDiscCouponMenu(void* backup);
 struct OSThread;
-extern BOOL fn_800A1E54(struct OSThread* thread, u32* val);
+extern BOOL OSJoinThread(struct OSThread* thread, u32* val);
 
 #define WAIT_MENU_TIME(limit_)           \
     do {                                 \
@@ -3884,14 +3884,14 @@ void exDiscResetEventAnim(void) {
 
 /* fn_8007AAA8 (0x8007AAA8): wait for the worker and release its state. */
 s32 gbaBootWaitThread(void) {
-    extern s32 fn_800A1E54(void* thread, void** result);
+    extern s32 OSJoinThread(void* thread, void** result);
     extern void gbaBootFreeImage(void);
     void* result;
 
     lbl_803F7A30[0x342] = 1;
     while (*(volatile u8*)(lbl_803F7A30 + 0x345) == 0) {
     }
-    fn_800A1E54(lbl_803F7A30 + 0x28, &result);
+    OSJoinThread(lbl_803F7A30 + 0x28, &result);
     gbaBootFreeImage();
     return 0;
 }
@@ -3958,7 +3958,7 @@ s32 gbaBootRun(s32 code, s32* state) {
     }
 
     if (lbl_803F7A30[0x345] != 0) {
-        fn_800A1E54((struct OSThread*)(lbl_803F7A30 + 0x28), (u32*)&event);
+        OSJoinThread((struct OSThread*)(lbl_803F7A30 + 0x28), (u32*)&event);
         lbl_803F7A30[0x345] = 0;
 
         if (SIProbe(1) != 0x40000) {
@@ -4510,7 +4510,7 @@ void exShrineModelClose(void) {
     extern void menuModelTerm(u32);
     extern void menuCloseCustom(s32, s32, s32);
     extern u16 GSmemGetHandleByPtr(u32);
-    extern void fn_800E24B0(void);
+    extern void GSmemUnlock(void);
     extern void GSmemFree(u16);
     u16 handle;
 
@@ -4518,7 +4518,7 @@ void exShrineModelClose(void) {
     menuCloseCustom(0xD8, 0, 1);
     handle = GSmemGetHandleByPtr(*(u32*)&lbl_8047A610);
     if (handle != 0) {
-        fn_800E24B0();
+        GSmemUnlock();
         GSmemFree(handle);
     }
     *(u32*)&lbl_8047A610 = 0;

@@ -427,7 +427,7 @@ extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
 extern u32 GSmemGetHandleByPtr();
 extern u32 GSmemFree();
-extern u32 fn_800E24B0();
+extern u32 GSmemUnlock();
 extern u32 GSmemLock();
 extern u32 GSmemAlloc();
 extern u32 fn_800FA280();

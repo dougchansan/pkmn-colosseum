@@ -121,7 +121,7 @@ extern void  floorRunMainScript(void);
 extern void  floorStartFrameScript(void);
 extern u16   _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u16 handle);
-extern void  fn_800E24B0(u16 handle);
+extern void  GSmemUnlock(u16 handle);
 extern void  GSmemFree(u16 handle);
 extern u32   _vmThreadCreate(u32 task, void* callback, u32 stackSize, u32 arg3,
                          u32 arg4, u32 arg5, ...);
@@ -360,7 +360,7 @@ static inline u16 floorSaveResourceState(void) {
             buf = data + size;
         }
     }
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     return handle;
 }
 
@@ -396,7 +396,7 @@ static inline void floorLoadResourceState(void) {
             buf = data + size;
         }
     }
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
 }
 

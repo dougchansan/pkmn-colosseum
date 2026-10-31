@@ -41,8 +41,8 @@
  *
  * Dolphin PAD calls that have no symbol name yet, identified by their order
  * in the SDK's Pad.c and by their arguments here:
- *   fn_800AAD34 PADReset(mask)            PADRecalibrate PADRecalibrate(mask)
- *   PADInit PADInit()                 fn_800AB4FC PADControlAllMotors(cmds)
+ *   PADReset PADReset(mask)            PADRecalibrate PADRecalibrate(mask)
+ *   PADInit PADInit()                 PADControlAllMotors PADControlAllMotors(cmds)
  */
 
 #include "game/input/input.h"
@@ -55,10 +55,9 @@ extern void GSlogWritef(const char* fmt, ...);
 extern u16 _toolentryAlloc__FUl(u32 size);   /* GSmemAllocRaw */
 extern void* GSmemLock(u16 handle);         /* GSmemGetPtr */
 extern u32 GSgfxGetRetraceCount(void);
-extern void fn_800AAD34(u32 mask);            /* PADReset */
 extern BOOL PADRecalibrate(u32 mask);            /* PADRecalibrate */
 extern BOOL PADInit(void);                /* PADInit */
-extern void fn_800AB4FC(const u32* commands); /* PADControlAllMotors */
+extern void PADControlAllMotors(const u32* commands);
 extern void PADSetAnalogMode(u32 mode);
 extern u32 PADRead(PADStatus* status);    /* PADRead */
 extern u32 SIProbe(s32 chan);             /* SI type/status probe */
@@ -311,7 +310,7 @@ void inputUpdateMotors(void) {
         }
     }
     if (changed) {
-        fn_800AB4FC((u32*)lbl_80401DD0);
+        PADControlAllMotors((u32*)lbl_80401DD0);
     }
 }
 
@@ -404,7 +403,7 @@ void GSinputInit(void) {
 
     PADSetAnalogMode(0);
     PADInit();
-    fn_800AB4FC((u32*)lbl_80401DD0);
+    PADControlAllMotors((u32*)lbl_80401DD0);
     PADRecalibrate(lbl_8047AC4C);
     SISetSamplingRate(11);
     PADSetSamplingCallback(inputPadCallback);
@@ -445,7 +444,7 @@ u32 GSinputRead(s32 id) {
     level = OSDisableInterrupts();
     now = GSgfxGetRetraceCount();
     if (lbl_8047AC4C != 0 && now != lbl_8047AC50) {
-        fn_800AAD34(lbl_8047AC4C);
+        PADReset(lbl_8047AC4C);
         lbl_8047AC50 = now;
     }
     memcpy(&pad->current, &pad->latched, sizeof(PADStatus));

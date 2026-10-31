@@ -328,8 +328,8 @@ __declspec(section ".init") void* TRK_memcpy(void* dst, const void* src, int len
 #endif /* !START_MEM_SUFFIX */
 
 #if !defined(START_MEM_PREFIX)
-/* fn_800053E0 - 0x800053E0 | size: 0x2C */
-__declspec(section ".init") void fn_800053E0(void) {
+/* __TRK_reset - 0x800053E0 | size: 0x2C */
+__declspec(section ".init") void __TRK_reset(void) {
     OSResetSystem(0, 0, 0);
 }
 

@@ -130,7 +130,7 @@ void pcBoxSetCursorTarget(s32, s32, s32);
 extern u8 menuColosseumBattleGetFlag(void);
 extern u32 GSmemGetHandleByPtr(void*);
 extern void GSmemFree(u32);
-extern void fn_800E24B0(u32);
+extern void GSmemUnlock(u32);
 extern void* GSmemLock(u32);
 extern void GSmsgGetText(void*, s32, void*);
 extern void shopRunAtLocation();
@@ -1757,7 +1757,7 @@ void menuColosseumBattleExit(void) {
     if ((u16)handle == 0) {
         __assert(lbl_802678D8, 0x252, &lbl_8047BF28);
     }
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
     lbl_8047A5A0 = NULL;
 }

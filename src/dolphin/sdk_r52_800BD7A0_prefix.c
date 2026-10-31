@@ -80,7 +80,7 @@ void __GXSetMatrixIndex(s32 value) {
     gx->field_002 = 1;
 }
 
-void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
+void GXSetGPMetric(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     switch (gx->perf0) {
     case GX_PERF0_VERTICES:
     case GX_PERF0_CLIP_VTX:
@@ -357,33 +357,33 @@ void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
 
 /* RULE-EXCEPTION(user-approved): named stand-in for another function's
  * compiler switch table - see docs/RULE_EXCEPTIONS.md.
- * fn_800BE164's switch table (GXPerf.c, unlinked). It starts at 0x80313714,
+ * GXReadGPMetric's switch table (GXPerf.c, unlinked). It starts at 0x80313714,
  * four-byte aligned only after this object's two tables, so it is defined
  * here rather than in its own 8-aligned data object. */
 void* jumptable_80313714[23] = {
-    (void*)((u8*)fn_800BE164 + 0x128),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x134),
-    (void*)((u8*)fn_800BE164 + 0x144),
-    (void*)((u8*)fn_800BE164 + 0x158),
-    (void*)((u8*)fn_800BE164 + 0x16C),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x188),
-    (void*)((u8*)fn_800BE164 + 0x188),
-    (void*)((u8*)fn_800BE164 + 0x188),
-    (void*)((u8*)fn_800BE164 + 0x188),
-    (void*)((u8*)fn_800BE164 + 0x180),
-    (void*)((u8*)fn_800BE164 + 0x190),
+    (void*)((u8*)GXReadGPMetric + 0x128),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x134),
+    (void*)((u8*)GXReadGPMetric + 0x144),
+    (void*)((u8*)GXReadGPMetric + 0x158),
+    (void*)((u8*)GXReadGPMetric + 0x16C),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x188),
+    (void*)((u8*)GXReadGPMetric + 0x188),
+    (void*)((u8*)GXReadGPMetric + 0x188),
+    (void*)((u8*)GXReadGPMetric + 0x188),
+    (void*)((u8*)GXReadGPMetric + 0x180),
+    (void*)((u8*)GXReadGPMetric + 0x190),
 };
 
 /* GXReadGPMetric */
@@ -410,7 +410,7 @@ static inline u32 ReadCPCounter(u32 regAddrL, u32 regAddrH)
    wraps its counter readers — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-void fn_800BE164(u32* count0, u32* count1)
+void GXReadGPMetric(u32* count0, u32* count1)
 {
     u32 cpCounter0;
     u32 cpCounter1;

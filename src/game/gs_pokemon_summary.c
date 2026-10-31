@@ -237,8 +237,8 @@ extern void* wazaDataBiosGetPtr(u16);
 extern u32 wazaDataBiosGetName(void* wazaData);
 extern u8* windowGetKeyInfo(void);
 extern void cursorBiosSetPos(u32, u16*);
-extern void fn_800FE38C(s32, s32, s32, s32);
-extern void fn_800FE35C(void);
+extern void spriteSetScissor(s32, s32, s32, s32);
+extern void spriteClearScissor(void);
 extern void spriteSetOrigin(s32, s32);
 extern void spriteSetEnv(void);
 extern void windowDrawSprite2(s32, s32, s32, s32, u32, s32, s32, s32);
@@ -910,7 +910,7 @@ s32 bagMenuDrawCursor2(SummaryPageContext* ctx, u8* item) {
 
     {
         SummaryLayout* layout = (SummaryLayout*)lbl_802EF0A8;
-        fn_800FE38C(layout->originX - layout->parts[*(s16*)(item + 0x06)].x,
+        spriteSetScissor(layout->originX - layout->parts[*(s16*)(item + 0x06)].x,
                     layout->originY - layout->parts[*(s16*)(item + 0x06)].y,
                     layout->width, layout->height);
     }
@@ -943,7 +943,7 @@ s32 bagMenuDrawCursor2(SummaryPageContext* ctx, u8* item) {
         }
     }
 
-    fn_800FE35C();
+    spriteClearScissor();
     return 0;
 }
 #pragma pop
@@ -968,7 +968,7 @@ s32 bagMenuDrawText(SummaryPageContext* ctx, u8* item) {
     s32 neighborIndex;
     f32 neighborX;
 
-    fn_800FE38C(0, 0, *(s16*)(item + 0x54), *(s16*)(item + 0x56));
+    spriteSetScissor(0, 0, *(s16*)(item + 0x54), *(s16*)(item + 0x56));
 
     halfWidth = *(s16*)(item + 0x54) / 2;
     titleId = SummaryGetPage(ctx->pageIndex)->titleId;
@@ -995,7 +995,7 @@ s32 bagMenuDrawText(SummaryPageContext* ctx, u8* item) {
         GSmsgPrintColor((s32)neighborX + (halfWidth - halfText), 0, -1, titleId);
     }
 
-    fn_800FE35C();
+    spriteClearScissor();
     return 0;
 }
 #pragma pop

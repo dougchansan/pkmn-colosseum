@@ -1309,17 +1309,17 @@ s32 itemStorageListDrawSprite2(void* window, void* sprite)
 
 s32 itemStorageDrawList(void* work, PdaSprite* sprite)
 {
-    extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
-    extern void fn_800FE35C(void);
+    extern void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2);
+    extern void spriteClearScissor(void);
     extern s32 itemStorageDrawItem(void* window, void* sprite);
     s32 x;
     s32 y;
 
     x = sprite->field_50;
     y = sprite->field_52;
-    fn_800FE38C(0x118 - x, 0x8b - y, 0x150, 0x10d);
+    spriteSetScissor(0x118 - x, 0x8b - y, 0x150, 0x10d);
     itemStorageDrawItem((u8*)work + 0x94, *(void**)((u8*)work + 0x88));
-    fn_800FE35C();
+    spriteClearScissor();
     return 0;
 }
 
@@ -2418,7 +2418,7 @@ extern u32 gfxClearFlags();
 extern u32 gfxSetFlags();
 extern u32 GSmemGetHandleByPtr();
 extern u32 GSmemFree();
-extern u32 fn_800E24B0();
+extern u32 GSmemUnlock();
 extern u32 GSmemLock();
 extern u32 GSmemAlloc();
 extern u32 fn_800FA280();
@@ -2874,14 +2874,14 @@ void pdaMemoDrawSpeciesColumn(u8* context, PdaSprite* sprite)
         break;
     default:
         entry = lbl_802EF0A8 + messageId * 0x1C;
-        fn_800FE38C(
+        spriteSetScissor(
             *(s16*)(lbl_802EF0A8 + 0x5712) - *(s16*)(entry + 2),
             *(s16*)(lbl_802EF0A8 + 0x5714) - *(s16*)(entry + 4),
             *(s16*)(lbl_802EF0A8 + 0x5716),
             *(s16*)(lbl_802EF0A8 + 0x5718));
         pdaDrawNameRows(context, 0,
                         *(f32*)((u8*)&lbl_803A6818 + 0x30));
-        fn_800FE35C();
+        spriteClearScissor();
         break;
     }
 }
@@ -3150,7 +3150,7 @@ void pdaSnagListBuild(void)
 
     handle = GSmemGetHandleByPtr(lbl_8047A4D8);
     if ((u16)handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
     lbl_8047A4D8 = 0;
@@ -3611,7 +3611,7 @@ void pdaStrategyMemoRun(void) {
     extern void  menuModelTerm(void* subobj);
     extern void  menuOffScreenSetDisp(s32 a);
     extern u32   GSmemGetHandleByPtr(u32 flag);
-    extern void  fn_800E24B0(void);
+    extern void  GSmemUnlock(void);
     extern void  GSmemFree(u32 h);
     extern void  GScameraGetPosition(void* cam, void* outVec3);
     extern void  GScameraGetRotation(void* cam, void* outVec3);
@@ -4706,7 +4706,7 @@ void pdaStrategyMemoRun(void) {
     if (lbl_8047A4E0 != 0) {
         mem = GSmemGetHandleByPtr(lbl_8047A4E0);
         if ((u16)mem != 0) {
-            fn_800E24B0();
+            GSmemUnlock();
             GSmemFree(mem);
         }
         lbl_8047A4E0 = 0;
@@ -4718,7 +4718,7 @@ void pdaStrategyMemoRun(void) {
 
         mem = GSmemGetHandleByPtr((u32)lbl_8047A4E4);
     if ((u16)mem != 0) {
-        fn_800E24B0();
+        GSmemUnlock();
         GSmemFree(mem);
     }
     lbl_8047A4E4 = 0;
@@ -6148,7 +6148,7 @@ static inline void pdaFree(void* p)
     if (p != NULL) {
         h = GSmemGetHandleByPtr(p);
         if ((u16)h != 0) {
-            fn_800E24B0();
+            GSmemUnlock();
             GSmemFree(h);
         }
     }
@@ -6478,7 +6478,7 @@ void pdaMemoMainDrawText(PdaSprite* alphaSprite, PdaSprite* sprite)
         break;
     case 0xd6f:
         pdaPlaceSprite(alphaSprite, sprite);
-        fn_800FE38C(
+        spriteSetScissor(
             *(s16*)(lbl_802EF0A8 + 0x17b52) -
                 *(s16*)(lbl_802EF0A8 + sprite->eventId * 0x1c + 2),
             *(s16*)(lbl_802EF0A8 + 0x17b54) -
@@ -6504,7 +6504,7 @@ void pdaMemoMainDrawText(PdaSprite* alphaSprite, PdaSprite* sprite)
                 off += 4;
             }
         }
-        fn_800FE35C();
+        spriteClearScissor();
         break;
     case 0xd79:
         GSmsgPrintColor((s16)((sprite->x - (s16)(GSmsgGetRect(0x36ed) >> 16)) / 2), -2,
@@ -9487,7 +9487,7 @@ void pdaSnagListRun(void)
     if (lbl_8047A4D0 != 0) {
         handle = GSmemGetHandleByPtr(lbl_8047A4D0);
         if ((u16)handle != 0) {
-            fn_800E24B0();
+            GSmemUnlock();
             GSmemFree(handle);
         }
         lbl_8047A4D0 = 0;
@@ -9495,7 +9495,7 @@ void pdaSnagListRun(void)
     if (lbl_8047A4D4 != NULL) {
         handle = GSmemGetHandleByPtr(lbl_8047A4D4);
         if ((u16)handle != 0) {
-            fn_800E24B0();
+            GSmemUnlock();
             GSmemFree(handle);
         }
         lbl_8047A4D4 = NULL;
@@ -9577,7 +9577,7 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
 
     alphaSprite->alphaByte =
         lbl_8047BAC0 * *(f32*)((u8*)&lbl_803A6748 + 0x44);
-    fn_800FE38C(*(s16*)(lbl_802EF0A8 + 0x4fa2) -
+    spriteSetScissor(*(s16*)(lbl_802EF0A8 + 0x4fa2) -
                     *(s16*)(lbl_802EF0A8 + event->messageId * 0x1c + 2),
                 *(s16*)(lbl_802EF0A8 + 0x4fa4) -
                     *(s16*)(lbl_802EF0A8 + event->messageId * 0x1c + 4),
@@ -9668,7 +9668,7 @@ void pdaSnagListDrawDetail(PdaSprite* alphaSprite, PdaEvent* event)
         rowY = rowY + stride;
         off += 4;
     }
-    fn_800FE35C();
+    spriteClearScissor();
 }
 #pragma peephole reset
 

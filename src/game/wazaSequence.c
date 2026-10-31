@@ -236,9 +236,9 @@ void wazaSequenceFree(void* obj) {
 
     handle = *(u16*)(sequence + 0x2A);
     if (handle != 0) {
-        extern void fn_800E24B0(u16 handle);
+        extern void GSmemUnlock(u16 handle);
         extern void GSmemFree(u16 handle);
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }
@@ -292,7 +292,7 @@ static inline u8* wazaSequenceLoadParticle(u8* seq, u8* entry, u8* parsed) {
 u8 wazaSequenceLoadData(void* sequence, void* resource) {
     extern u16 _toolentryAlloc__FUl(u32);
     extern void* GSmemLock(u16);
-    extern void fn_800E24B0(u16);
+    extern void GSmemUnlock(u16);
     extern void GSmemFree(u16);
     extern u32 GSgfxGetVsyncRate(void);
     extern void GSlogWrite(const char*, ...);
@@ -391,7 +391,7 @@ u8 wazaSequenceLoadData(void* sequence, void* resource) {
                 case 0:
                 default:
                     GSlogWrite(lbl_8027997C);
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                     return FALSE;
                 }

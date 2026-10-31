@@ -2,7 +2,7 @@
 #include "game/battle/battle_waza_types.h"
 
 extern u16 lbl_80467CD4[16];
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void battleCameraWazaStop(void);
 
@@ -46,7 +46,7 @@ void wazaSequenceSysRelease(void)
     for (; i < count; i++, entry++) {
         wazaSequenceClearEntry(entry);
     }
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
     memset(lbl_80467CC0, 0, 0x14);
     wazaSequenceReleaseResources();

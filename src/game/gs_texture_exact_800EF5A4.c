@@ -1,6 +1,6 @@
 #include "game/gs_texture.h"
 
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 
 void GStextureFree(GStextureHandle* texture)
@@ -12,6 +12,6 @@ void GStextureFree(GStextureHandle* texture)
         return;
     }
     texture->inUse = 0;
-    fn_800E24B0(texture->memHandle);
+    GSmemUnlock(texture->memHandle);
     GSmemFree(texture->memHandle);
 }

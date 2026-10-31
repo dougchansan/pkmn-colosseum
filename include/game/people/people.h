@@ -396,11 +396,10 @@ struct GSvec* peopleGetPosition(PeopleEntry* entry);
 /** Get scale data from model. peopleApplyPosition */
 void peopleGetScale(PeopleEntry* entry);
 
-/** Set position on model. fn_8018FC98 */
+/** Set position on model. peopleGetModelPosition */
 void peopleSetPosition(PeopleEntry* entry, void* pos);
 
-/** Get model position (world coords). fn_8018FCBC */
-void* peopleGetModelPosition(PeopleEntry* entry);
+/** Model position pointer (world coords): peopleGetPositionPtr, fn_8018FCBC. */
 
 /** Get model rotation. peopleApplyRotation */
 void peopleGetModelRotation(PeopleEntry* entry);

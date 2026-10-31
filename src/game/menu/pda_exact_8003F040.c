@@ -8,7 +8,7 @@
 
 extern u32 GSmemGetHandleByPtr(void* p);
 extern void GSmemFree(u32 handle);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void* GSmemLock(u32 handle);
 extern u32 GSmemAlloc(s32 size, s32 align);
 extern u32 lbl_8047A4E0;
@@ -78,7 +78,7 @@ static inline void pdaFree(void* p)
     if (p != NULL) {
         h = GSmemGetHandleByPtr(p);
         if ((u16)h != 0) {
-            fn_800E24B0(h);
+            GSmemUnlock(h);
             GSmemFree(h);
         }
     }

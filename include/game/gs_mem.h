@@ -13,10 +13,10 @@
  * "GSmem: ..." log strings):
  *   GSmemGetHandleByPtr          pointer -> handle lookup
  *   GSmemFree          free a handle
- *   fn_800E24B0          unlock (decrement the lock count)
+ *   GSmemUnlock          unlock (decrement the lock count)
  *   GSmemLock          lock (increment the lock count, return pointer)
  *   GSmemReturnTrue          always returns 1
- *   fn_800E2B00          aligned allocation from the top of a free block
+ *   GSmemAllocTail          aligned allocation from the top of a free block
  *   GSmemAlloc          aligned allocation (first/best/worst fit)
  *   GSmemShrink          place an allocation at a fixed address
  *   _toolentryAlloc__FUl 32-byte aligned allocation (GSmemAlloc)

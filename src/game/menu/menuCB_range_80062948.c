@@ -754,8 +754,8 @@ extern void gfxBegin(s32);
 extern void gfxVtxPos2s16(s32, s32);
 extern void gfxVtxColor1u32(s32, u32);
 extern void gfxEnd(void);
-extern void fn_800FE38C(s32, s32, s32, s32);
-extern void fn_800FE35C(void);
+extern void spriteSetScissor(s32, s32, s32, s32);
+extern void spriteClearScissor(void);
 extern u8 lbl_80314E08[];
 extern u32 lbl_8047BFC8;
 extern u32 lbl_8047BFCC;
@@ -1538,7 +1538,7 @@ void menuTaisenDrawTextBox(u8* context, UICmdMsg* msg)
     gfxVtxPos2s16(0, msg->s56);
     gfxVtxColor1u32(0, bottom.value);
     gfxEnd();
-    fn_800FE38C(0, 0, msg->s54, msg->s56);
+    spriteSetScissor(0, 0, msg->s54, msg->s56);
 
     gfxSetFlags(1);
     gfxClearFlags(6);
@@ -1557,7 +1557,7 @@ void menuTaisenDrawTextBox(u8* context, UICmdMsg* msg)
         gfxVtxColor1u32(0, top.value);
         gfxEnd();
     }
-    fn_800FE35C();
+    spriteClearScissor();
 }
 #endif
 #endif

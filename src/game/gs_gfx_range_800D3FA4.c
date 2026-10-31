@@ -268,7 +268,7 @@ extern u32 lbl_803145A8[];
 extern void jumptable_803152B8();
 extern void jumptable_80315340();
 extern void jumptable_80315320();
-extern void fn_800E24B0(u16);
+extern void GSmemUnlock(u16);
 extern void GSmemFree(u16);
 extern void GXCallDisplayList(u32, u32);
 extern void GSmemReturnTrue(u16);

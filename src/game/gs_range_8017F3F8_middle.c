@@ -28,10 +28,10 @@ extern void* GSresGetResource(u32 group, u32 handle);
 extern void* GSresAllocResourceAlign(u32 size, u32 alignment, u32 group,
                                       u32 handle, void* releaseCallback);
 extern void GSresReleaseOwnerItem(u32 group, u32 handle);
-extern u16 fn_800E2B00(u32 size, u32 alignment);
+extern u16 GSmemAllocTail(u32 size, u32 alignment);
 extern void* GSmemLock(u16 handle);
 extern u16 GSmemGetHandleByPtr(void* ptr);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern BOOL OSLink(OSModuleInfo* module, void* bss);
 extern BOOL OSUnlinkModule(OSModuleInfo* module);
@@ -63,7 +63,7 @@ void* floorRelPreRead(u32 group, u32 handle, u32 size)
 static inline void* memAllocTail(u32 size)
 {
     u32 alignedSize = (size + 0x1F) & ~0x1F;
-    u16 handle = fn_800E2B00(alignedSize, 0x20);
+    u16 handle = GSmemAllocTail(alignedSize, 0x20);
 
     if (handle) {
         return GSmemLock(handle);
@@ -134,7 +134,7 @@ void* floorRelPostRead(u32 group, u32 handle, u32 size)
     if (image) {
         imageHandle = GSmemGetHandleByPtr(image);
         if (imageHandle) {
-            fn_800E24B0(imageHandle);
+            GSmemUnlock(imageHandle);
             GSmemFree(imageHandle);
         }
     }

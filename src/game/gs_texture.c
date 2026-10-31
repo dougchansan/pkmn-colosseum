@@ -143,7 +143,7 @@ void GStextureSwizzleCI4(GStextureHandle* tex) {
     DCFlushRange(tex->mipData[0], tex->totalSize);
     GXInvalidateTexAll();
     tex->refCount--;
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
 }
 
@@ -292,7 +292,7 @@ void GStextureFree(GStextureHandle* tex) {
     }
 
     tex->inUse = 0;
-    fn_800E24B0(tex->memHandle);
+    GSmemUnlock(tex->memHandle);
     GSmemFree(tex->memHandle);
 }
 

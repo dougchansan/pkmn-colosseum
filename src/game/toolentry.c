@@ -137,14 +137,14 @@ void toolentryTaisenFreePokemonData(void* ctx, u32 slot, u32 param) {
     extern u32 lbl_8047B650;
     extern u32 GSmemGetHandleByPtr();
     extern void GSmemFree();
-    extern void fn_800E24B0();
+    extern void GSmemUnlock();
     u32 handle;
     u32 result;
     handle = lbl_8047B650;
     if (handle != 0) {
         result = GSmemGetHandleByPtr(handle);
         if ((result & 0xFFFF) != 0) {
-            fn_800E24B0(result);
+            GSmemUnlock(result);
             GSmemFree(result);
         }
         lbl_8047B650 = 0;
@@ -196,7 +196,7 @@ void toolentryDebugPokemonCreate(void) {
     extern void* memcpy(void*, const void*, u32);
     extern u32 GSmemGetHandleByPtr(void*);
     extern void GSmemFree(u32);
-    extern void fn_800E24B0(u32);
+    extern void GSmemUnlock(u32);
     extern u32 GSmemAlloc(u32, u32);
     extern void* GSmemLock(u32);
     s32 i;
@@ -263,7 +263,7 @@ void toolentryDebugPokemonCreate(void) {
     if (lbl_8047B654 != 0) {
         handle = GSmemGetHandleByPtr(lbl_8047B654);
         if ((u16)handle != 0) {
-            fn_800E24B0(handle);
+            GSmemUnlock(handle);
             GSmemFree(handle);
         }
         lbl_8047B654 = 0;

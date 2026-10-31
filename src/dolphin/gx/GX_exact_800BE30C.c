@@ -10,6 +10,6 @@ u32 gappReadGPMetric0(void)
     u32 hi;
     u32 lo;
 
-    fn_800BE164(&hi, &lo);
+    GXReadGPMetric(&hi, &lo);
     return hi;
 }

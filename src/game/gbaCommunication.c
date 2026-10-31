@@ -45,11 +45,11 @@ extern void OSUnlockMutex(void *p);
 extern void OSSetThreadPriority(void *p, u32 b);
 extern void gbaCommSetChannelResult(u32 port, u32 val);
 extern void OSSignalCond(void *p);
-extern void fn_800A1E54(void *p, u32 v);
+extern void OSJoinThread(void *p, u32 v);
 extern void gbaCommSetChannelBuffer(u32 port, void *a, void *b);
 extern u32 GSmemGetHandleByPtr(void *p);
 extern void __assert(const u8 *file, u32 line, const u8 *msg);
-extern void fn_800E24B0(u32 status);
+extern void GSmemUnlock(u32 status);
 extern void GSmemFree(u32 status);
 extern u32 OSGetCurrentThread(void);
 extern void OSYieldThread(void);
@@ -1631,7 +1631,7 @@ s32 gbaCommEnd(s32 channel)
     OSUnlockMutex(work);
     OSSetThreadPriority(work + GBA_DATA_OFFSET, GBA_THREAD_PRIORITY);
     OSSignalCond(work + 0x18);
-    fn_800A1E54(work + GBA_DATA_OFFSET, 0);
+    OSJoinThread(work + GBA_DATA_OFFSET, 0);
     gbaCommSetChannelBuffer(*(s32*)(work + GBA_STATE_PORT), NULL, NULL);
     gbaCommSetChannelResult(*(s32*)(work + GBA_STATE_PORT), 0);
 
@@ -1639,7 +1639,7 @@ s32 gbaCommEnd(s32 channel)
     if ((status & 0xFFFF) == 0) {
         __assert(lbl_8026F5A8, 0x1E6, &lbl_8047C1E8);
     }
-    fn_800E24B0(status);
+    GSmemUnlock(status);
     GSmemFree(status);
     *(u8**)((u8*)lbl_803FB328 + slot) = NULL;
 

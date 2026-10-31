@@ -325,7 +325,7 @@ void wazaSequenceOwnerUpdate(void* obj) {
  * Address: 0x801DD23C | Size: 0x1A8
  */
 void wazaSequenceOwnerRelease(void* obj) {
-    extern void fn_800E24B0(u16);
+    extern void GSmemUnlock(u16);
     extern void GSmemFree(u16);
     extern void GSmodelDisableColorSwap(u32);
     extern void GSmodelDisableModulation(u32);
@@ -347,7 +347,7 @@ void wazaSequenceOwnerRelease(void* obj) {
     if (data != NULL) {
         id = *(u16*)(data + 0x30);
         if (id != 0) {
-            fn_800E24B0(id);
+            GSmemUnlock(id);
             GSmemFree(id);
         }
 
@@ -394,7 +394,7 @@ void wazaSequenceOwnerRelease(void* obj) {
             }
             id = *(u16*)(data + 0x7C);
             if (id != 0) {
-                fn_800E24B0(id);
+                GSmemUnlock(id);
                 GSmemFree(id);
             }
         }

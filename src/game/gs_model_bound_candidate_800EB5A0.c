@@ -6,13 +6,13 @@
  * Shared by two objects: gs_model_bound_r55_800EB5A0_gc13_o2.c defines
  * GS_MODEL_BOUND_EMIT_BLEND_MODEL (modelCalculateBlendModel, 0x800EB5A0) and
  * gs_model_bound_r55_800EB6E0_suffix.c defines GS_MODEL_BOUND_EMIT_INTP
- * (_modelIntpJObjAll and fn_800EB904, 0x800EB6E0). gs_model_bound.c supplies
+ * (_modelIntpJObjAll and _modelIntpJObj, 0x800EB6E0). gs_model_bound.c supplies
  * the types only. Both build with GC/1.3.2: its -inline auto expands the
  * recursive _modelIntpJObjAll into itself four levels, as retail does, while
  * GC/1.3 does not inline the recursion at all; every other exact GSmodel
  * function in this lane also compiles identically under GC/1.3.2.
  *
- * fn_800EB904 is Colosseum's _modelIntpJObj: XD's modelIntpJObjTrans/Scale/
+ * _modelIntpJObj is Colosseum's _modelIntpJObj: XD's modelIntpJObjTrans/Scale/
  * Rotate bodies, written here through the jobj.h getters and setters, plus
  * the part-anim-mix Euler override.
  */
@@ -174,7 +174,7 @@ typedef struct ModelPartAnimMix {
     GSvec* value;
 } ModelPartAnimMix;
 
-void fn_800EB904(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
+void _modelIntpJObj(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
                  ModelIntpJObj* out, f32 blend);
 
 void _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
@@ -188,7 +188,7 @@ void _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
     if (from == NULL || to == NULL || out == NULL) {
         return;
     }
-    fn_800EB904(model, from, to, out, blend);
+    _modelIntpJObj(model, from, to, out, blend);
     if (!(from->flags & 0x1000)) {
         f = from->child;
         t = to->child;
@@ -203,7 +203,7 @@ void _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
     }
 }
 
-void fn_800EB904(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
+void _modelIntpJObj(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
                  ModelIntpJObj* out, f32 blend)
 {
     s32 i;

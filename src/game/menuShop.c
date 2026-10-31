@@ -1272,11 +1272,11 @@ end:
 #endif /* guard split */
 #if !defined(MENUSHOP_ISLAND_ONLY) || defined(MENUSHOP_CANDIDATE_8002B1A0_ONLY)
 /* menuShopDrawListText - 0x8002B1A0 | size: 0x26c */
-extern void fn_800FE38C(void);
+extern void spriteSetScissor(void);
 extern u32 itemDataBiosGetName(void);
 extern u32 itemDataBiosGetPrice(void);
 extern u32 itemDataBiosGetCoupon(void);
-extern void fn_800FE35C(void);
+extern void spriteClearScissor(void);
 extern const f32 lbl_8047B980;
 #if 0
 asm void menuShopDrawListText(void) {
@@ -1342,11 +1342,11 @@ static inline s32 shopListCount(u8* ctx)
 #endif
 s32 menuShopDrawListText(void* arg0, u8* arg1)
 {
-    extern void fn_800FE38C(s32, s32, s32, s32);
+    extern void spriteSetScissor(s32, s32, s32, s32);
     extern u32 itemDataBiosGetName(void);
     extern u32 itemDataBiosGetPrice(void);
     extern u32 itemDataBiosGetCoupon(void);
-    extern void fn_800FE35C(void);
+    extern void spriteClearScissor(void);
     extern const f32 lbl_8047B980;
 
     extern void msgctrlSetValue(s32, void*);
@@ -1382,7 +1382,7 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
     scroll_px = 0;
 
     /* draw the border rect */
-    fn_800FE38C(*(s16*)(tbl + 0x492e) - *(s16*)(entry + 0x2),
+    spriteSetScissor(*(s16*)(tbl + 0x492e) - *(s16*)(entry + 0x2),
                 *(s16*)(tbl + 0x4930) - *(s16*)(entry + 0x4),
                 *(s16*)(tbl + 0x4932), *(s16*)(tbl + 0x4934));
 
@@ -1428,7 +1428,7 @@ s32 menuShopDrawListText(void* arg0, u8* arg1)
                     (ctx[0x1d] & 1) ? 0x2b47 : 0x2b2c);
     }
 
-    fn_800FE35C();
+    spriteClearScissor();
     return 0;
 }
 #if !defined(MENUSHOP_CANDIDATE_8002B1A0_ONLY)
@@ -3193,7 +3193,7 @@ static inline u32 shopMemoryAlloc(void)
  *   menuCloseSync             : (s32 menuId, s32 flag)
  *   _toolentryAlloc__FUl / GSmemAllocRaw : (u32 size) -> u16 handle
  *   fn_800E27B0 / GSmemGetPtr   : (u16 handle) -> void*
- *   fn_800E24B0 / GSmemLock     : (u16 handle)
+ *   GSmemUnlock / GSmemLock     : (u16 handle)
  *   fn_800E209C / GSmemFree     : (u16 handle)
  */
 void std026_unkMenuSequence26(void)
@@ -3277,7 +3277,7 @@ void std026_unkMenuSequence26(void)
         } else {
             winMsgClose(1);
         }
-        fn_800E24B0(memory);
+        GSmemUnlock(memory);
         GSmemFree(memory);
         break;
     }
@@ -3385,7 +3385,7 @@ void shopRunAtLocation(u32 arg0)
         } else {
             winMsgClose(1);
         }
-        fn_800E24B0(memory);
+        GSmemUnlock(memory);
         GSmemFree(memory);
         break;
     }

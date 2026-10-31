@@ -71,7 +71,7 @@ gTRKInterruptVectorTable:
 # System reset. This relative transfer is retained exactly as stored; copying
 # the slot to a hardware vector address does not relocate the branch again.
     vector_slot 0x100
-    b fn_800053E0
+    b __TRK_reset
 
 # Machine check invalidates the instruction/data cache lines implicated by
 # SRR0 and DAR before entering the ordinary debugger exception path.

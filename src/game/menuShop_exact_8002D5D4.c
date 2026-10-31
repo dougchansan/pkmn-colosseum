@@ -34,7 +34,7 @@ extern void winMsgOpenWithSE(s32 kind, u32 message, s32 arg2, s32 arg3,
 extern void winMsgClose(s32 mode);
 extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void GSmemFree(u32 handle);
 extern void floorBattleEndTerminateScripts(void);
 extern void floorSetFadeScript(s32 mode, u32 value);
@@ -159,7 +159,7 @@ void std026_unkMenuSequence26(void)
         } else {
             winMsgClose(1);
         }
-        fn_800E24B0(memory);
+        GSmemUnlock(memory);
         GSmemFree(memory);
         break;
     }

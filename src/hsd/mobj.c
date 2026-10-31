@@ -124,11 +124,11 @@ extern void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specu
 /* HSD_SetupRenderModeWithCustomPE */
 extern void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc* pe);
 /* HSD_TObjAddNext */
-extern void fn_801BBE3C(HSD_TObj* tobj, HSD_TObj* next);
+extern void HSD_TObjInsert(HSD_TObj* tobj, HSD_TObj* next);
 
 #define HSD_StateInitTev() HSD_StateInitTev()
 #define HSD_SetMaterialShininess(s) HSD_SetMaterialShininess(s)
-#define HSD_TObjAddNext(t, n) fn_801BBE3C(t, n)
+#define HSD_TObjAddNext(t, n) HSD_TObjInsert(t, n)
 
 /* ========================================================================= */
 /*  Class system (hsd_class.c)                                               */

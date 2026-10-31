@@ -141,7 +141,7 @@ extern void* GSmemLock(u16 handle);
 /* Model system */
 extern void  GSmodelGetPart(void* model, u32 param);
 extern void  GSpartFree(void* model, u32 param);
-extern void  fn_800E24B0(u16 handle);
+extern void  GSmemUnlock(u16 handle);
 extern void  GSmemFree(u16 handle);
 extern void  set__5GSvecFfff(void* dst, void* src);
 extern void  GSvecCopy(void* dst, void* src);
@@ -3164,7 +3164,7 @@ s32 itemUse2PokemonSimulation(void* arg0, void* arg1, void* arg2, void* arg3, vo
     memcpy(savedFightFloor, fightFloor, 0xA4E8);
     result = itemUseApply(arg0, arg1, arg2, arg3, arg4);
     memcpy(fightFloor, savedFightFloor, 0xA4E8);
-    fn_800E24B0(memHandle);
+    GSmemUnlock(memHandle);
     GSmemFree(memHandle);
 
     return result;

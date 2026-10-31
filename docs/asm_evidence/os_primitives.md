@@ -5,7 +5,7 @@ interrupt primitives (`OSInterrupt.c`), the reboot jump (`OSReboot.c`'s `Run`)
 and the system-call vector (`OSSync.c`). Only the routines named below are
 admitted. Each body uses the exact retail mnemonics and matches the retail
 bytes in objdiff and in the final link. None of them branches to another
-function (`fn_8009A0C0`'s `bla 0x60` is an absolute branch to low memory,
+function (`__OSDBJump`'s `bla 0x60` is an absolute branch to low memory,
 not to a function).
 
 Common origin: Nintendo Dolphin SDK, `os/`, linked into Colosseum's main.dol.
@@ -45,7 +45,7 @@ after `OSDisableInterrupts` and `ICFlashInvalidate`.
 - Other decompilations: [zeldaret/tww, commit f5234ec8, `src/dolphin/os/OSReboot.c`](https://github.com/zeldaret/tww/blob/f5234ec8f4b8f4119b8db4a018c1ca25572988b1/src/dolphin/os/OSReboot.c#L25) keeps `Run` as an `asm` function with the same four instructions.
 - Origin: Nintendo Dolphin SDK, `os/OSReboot.c`, hand-written assembly in the vendor source.
 
-## fn_800A1208
+## SystemCallVector
 
 Retail address 0x800A1208, size 0x20 (with the `__OSSystemCallVectorStart`
 and `__OSSystemCallVectorEnd` labels); unit `dolphin/sdk_range_800A0D00.c`
@@ -75,7 +75,7 @@ Retail address 0x8009A09C, size 0x24, between the `__OSDBINTSTART` and
 - Other decompilations: [zeldaret/tww, commit f5234ec8, `src/dolphin/os/OS.c`](https://github.com/zeldaret/tww/blob/f5234ec8f4b8f4119b8db4a018c1ca25572988b1/src/dolphin/os/OS.c#L458) and [doldecomp/melee, commit e78dc834, `libs/dolphin/src/dolphin/os/OS.c`](https://github.com/doldecomp/melee/blob/e78dc8349c587ca5d2f97322834b625d3bd1abc3/libs/dolphin/src/dolphin/os/OS.c#L351) keep `__OSDBIntegrator` as an `asm` function with the same labels.
 - Origin: Nintendo Dolphin SDK, `os/OS.c`, hand-written assembly in the vendor source.
 
-## fn_8009A0C0
+## __OSDBJump
 
 Retail address 0x8009A0C0, size 0x4, ending at the `__OSDBJUMPEND` label;
 unit `dolphin/sdk_r48_80099790_suffix.c` via `src/dolphin/sdk_range_80098108.c`.

@@ -95,7 +95,7 @@ extern BOOL OSRestoreInterrupts(BOOL level);
 extern u32 GSmemAlloc(u32 size, u32 align);
 extern void* GSmemLock(u32 handle);
 extern u32 GSmemGetHandleByPtr(void);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void GSmemFree(u32 handle);
 extern s32 DVDGetCommandBlockStatus(const void* block);
 extern s32 DVDGetDriveStatus(void);
@@ -614,7 +614,7 @@ void _soundMemFree(void)
     u32 handle = GSmemGetHandleByPtr();
 
     if ((u16)handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }

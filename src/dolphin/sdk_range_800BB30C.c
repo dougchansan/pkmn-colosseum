@@ -165,7 +165,7 @@ extern void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
 extern void GXSetViewportJitter(f32 left, f32 top, f32 width, f32 height, f32 nearz,
                         f32 farz, u32 field);
 extern void __GXSetMatrixIndex(s32 value);
-extern void fn_800BE164(u32* hi, u32* lo);
+extern void GXReadGPMetric(u32* hi, u32* lo);
 extern void __GXSetDirtyState(void);
 extern void __GXSendFlushPrim(void);
 extern u32 __cvt_fp2unsigned(f32 value);
@@ -1063,7 +1063,7 @@ void __GXSetMatrixIndex(s32 value) {
     gx->field_002 = 1;
 }
 
-void fn_800BD91C(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
+void GXSetGPMetric(GXPerf0_800BB30C perf0, GXPerf1_800BB30C perf1) {
     switch (gx->perf0) {
     case GX_PERF0_VERTICES:
     case GX_PERF0_CLIP_VTX:
@@ -1346,7 +1346,7 @@ u32 gappReadGPMetric0(void) {
     u32 hi;
     u32 lo;
 
-    fn_800BE164(&hi, &lo);
+    GXReadGPMetric(&hi, &lo);
     return hi;
 }
 

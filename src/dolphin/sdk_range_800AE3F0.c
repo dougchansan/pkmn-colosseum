@@ -3314,7 +3314,7 @@ s32 CARDSetAttributes(s32 chan, s32 fileNo, u8 attr, void* callback) {
     return __CARDSetStatusExAsync(chan, fileNo, &entry, callback);
 }
 
-void* fn_800B5C5C(void* object) {
+void* __GXDefaultTexRegionCallback(void* object) {
     extern GXData* gx;
     s32 format;
     u32 count;
@@ -3423,7 +3423,7 @@ void __GXInitGX(void) {
     extern GXRenderModeObj lbl_80313294;
     extern u8 lbl_80312AB4[];
     extern u8 lbl_803129E4[];
-    extern void fn_800B5C5C();
+    extern void __GXDefaultTexRegionCallback();
     extern void GXSetCopyClear(GXColor, u32);
     extern void GXSetTexCoordGen2();
     extern void GXSetNumTexGens();
@@ -3492,7 +3492,7 @@ void __GXInitGX(void) {
     extern void GXPokeAlphaRead();
     extern void GXPokeDstAlpha();
     extern void GXPokeZMode();
-    extern void fn_800BD91C();
+    extern void GXSetGPMetric();
     extern void GXClearGPMetric();
 
     f32 identity[3][4];
@@ -3589,7 +3589,7 @@ void __GXInitGX(void) {
         gxState->nextTexRgn = 0;
         gxState->nextTexRgnCI = 0;
     }
-    GXSetTexRegionCallback(fn_800B5C5C);
+    GXSetTexRegionCallback(__GXDefaultTexRegionCallback);
     GXSetTlutRegionCallback(__GXDefaultTlutRegionCallback);
 
     GXSetTevOrder(0, 0, 0, 4);
@@ -3661,7 +3661,7 @@ void __GXInitGX(void) {
     GXPokeAlphaRead(1);
     GXPokeDstAlpha(0, 0);
     GXPokeZMode(1, 7, 1);
-    fn_800BD91C(0x23, 0x16);
+    GXSetGPMetric(0x23, 0x16);
     GXClearGPMetric();
 }
 #endif

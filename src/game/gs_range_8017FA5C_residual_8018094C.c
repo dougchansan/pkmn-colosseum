@@ -48,7 +48,7 @@
 #include "game/gs_range_8017FA5C_shared.h"
 
 extern u16 GSmemGetHandleByPtr(void* ptr);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void fsysLZSSJobFinish(void*, void*, u32, void*);
 extern void fsysLZSSJobSetup(void*, void*, u32, void*);
@@ -82,7 +82,7 @@ static inline void memFree(void* ptr)
 
     h = GSmemGetHandleByPtr(ptr);
     if (h) {
-        fn_800E24B0(h);
+        GSmemUnlock(h);
         GSmemFree(h);
     }
 }

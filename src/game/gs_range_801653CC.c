@@ -30,7 +30,7 @@ extern void _soundPool1Init(void);
 extern void _soundPool0Init(void);
 extern void _sndInitStack(void);
 extern void sndSetHooks(GSsndHooks* hooks);
-extern s32 fn_8015FE88(u32, u32, u32, u32, u32, u32);
+extern s32 sndInit(u32, u32, u32, u32, u32, u32);
 extern void sndAuxCallbackPrepareReverbHI(void* work);
 extern void sndAuxCallbackReverbHI(void);
 extern void sndSetAuxProcessingCallbacks(u32, void*, void*, u32, u32, u32,
@@ -77,7 +77,7 @@ u32 soundInit(u32 stackCount, u32 workSize, u32 extraStackCount,
     _soundPool0Init();
 
     sndSetHooks(&hooks);
-    if (fn_8015FE88(0x40, 0x30, 0x10, 1, 0, 0x9FC000) != 0) {
+    if (sndInit(0x40, 0x30, 0x10, 1, 0, 0x9FC000) != 0) {
         return 0;
     }
 

@@ -1,7 +1,7 @@
 #include "dolphin/types.h"
 
 extern u8 lbl_80478B28;
-extern void fn_800BD91C(s32, s32);
+extern void GXSetGPMetric(s32, s32);
 extern void gappDrawSyncCallback(u32);
 
 typedef void (*GappBreakPointCallback)(u32 token);
@@ -16,5 +16,5 @@ void gappLoadMeterInit(u8 param)
     }
     lbl_80478B28 = param;
     lbl_8047ACF4 = GXSetDrawSyncCallback(gappDrawSyncCallback);
-    fn_800BD91C(0x22, 0x16);
+    GXSetGPMetric(0x22, 0x16);
 }

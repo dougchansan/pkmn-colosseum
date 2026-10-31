@@ -291,7 +291,7 @@ extern GSvec lbl_8031554C; /* the Y axis */
 /* Memory */
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u32 handle);
-extern void fn_800E24B0(u32 handle);
+extern void GSmemUnlock(u32 handle);
 extern void GSmemFree(u32 handle);
 
 /* Models and parts */
@@ -431,7 +431,7 @@ extern void peopleApplyRotation(PeopleEntry* entry, void* rotation);
 extern void peopleGetRotation(PeopleEntry* entry, void* rotation);
 extern GSvec* peopleGetPosition(PeopleEntry* entry);
 extern void peopleApplyPosition(PeopleEntry* entry, void* position);
-extern void fn_8018FC98(PeopleEntry* entry, void* position);
+extern void peopleGetModelPosition(PeopleEntry* entry, void* position);
 extern void* peopleGetPositionPtr(PeopleEntry* entry);
 extern PeopleEntry* peopleCreate(void);
 
@@ -1025,7 +1025,7 @@ static inline void peopleGetPositionByID(u32 groupId, u32 index, GSvec* position
     }
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry != NULL) {
-        fn_8018FC98(entry, position);
+        peopleGetModelPosition(entry, position);
     }
 }
 
@@ -1052,7 +1052,7 @@ static inline s32 peopleFreeWalkList(u32 groupId, u32 index)
         return 0;
     }
     if (entry->walkListHandle != 0) {
-        fn_800E24B0(entry->walkListHandle);
+        GSmemUnlock(entry->walkListHandle);
         GSmemFree(entry->walkListHandle);
         entry->walkList = NULL;
         entry->walkListHandle = 0;
@@ -2071,7 +2071,7 @@ void std172_characterGetPosition(u32 groupId, u32 index, GSvec* position)
     }
     entry = peopleFindBySelf(peopleFindSelf(groupId, index));
     if (entry != NULL) {
-        fn_8018FC98(entry, position);
+        peopleGetModelPosition(entry, position);
     }
 }
 
@@ -2679,7 +2679,7 @@ void peopleMoveByVector(u32 groupId, u32 index, GSvec* offset, u8 face)
     if (entry == NULL) {
         return;
     }
-    fn_8018FC98(entry, &position);
+    peopleGetModelPosition(entry, &position);
     position.x += offset->x;
     position.z += offset->z;
     peopleMoveCommit(entry, &position, peopleGetTransform(entry));
@@ -2739,7 +2739,7 @@ static inline u8 peopleMoveAlongAngle(u32 groupId, u32 index, f32 yaw, f32 speed
         return FALSE;
     }
 
-    fn_8018FC98(entry, &position);
+    peopleGetModelPosition(entry, &position);
     GSmodelGetFrameCount(model, &frameStart, &frameEnd);
     if (GSgfxGetVsyncRate() == 50) {
         speed *= 1.2f;
@@ -3763,7 +3763,7 @@ s32 std075_characterAllocPathAlt(u32 groupId, u32 index) {
     }
 
     if (entry->walkListHandle != 0) {
-        fn_800E24B0(entry->walkListHandle);
+        GSmemUnlock(entry->walkListHandle);
         GSmemFree(entry->walkListHandle);
         entry->walkList = NULL;
         entry->walkListHandle = 0;
@@ -3785,7 +3785,7 @@ s32 peopleStartWander(u32 groupId, u32 index, f32 field80) {
 
     entry->state = PEOPLE_STATE_INTERACTING;
     entry->subState = 0;
-    fn_8018FC98(entry, &entry->collisionX);
+    peopleGetModelPosition(entry, &entry->collisionX);
     entry->field_80 = field80;
     entry->animBlendFactor = 0.0f;
     entry->field_88 = 5.0f;
@@ -3804,7 +3804,7 @@ s32 peopleFindNear(u32 groupId, u32 index, f32 field88, f32 field8C) {
 
     entry->state = PEOPLE_STATE_CUTSCENE;
     entry->subState = 0;
-    fn_8018FC98(entry, &entry->collisionX);
+    peopleGetModelPosition(entry, &entry->collisionX);
     entry->animBlendFactor = 0.0f;
     entry->field_88 = field88;
     entry->field_8C = field8C;
@@ -4062,7 +4062,7 @@ static inline void peopleUpdateShadows(PeopleEntry* entry)
     floor = floorDataBiosGetCurrentPtr();
     if (floor != NULL) {
         group = std093_getCurrentGroupID();
-        fn_8018FC98(entry, &floorPosition);
+        peopleGetModelPosition(entry, &floorPosition);
         if (!GScolsys2WalkGetLayer(&floorPosition, &layer, &subLayer)) {
             layer = 0;
             subLayer = 0;
@@ -4114,7 +4114,7 @@ void peopleMain(void)
             GSvecSub(&entry->collisionX, &modelPosition, &modelRotation);
         }
 
-        fn_8018FC98(entry, &currentPosition);
+        peopleGetModelPosition(entry, &currentPosition);
         peopleSetTransform(entry, &currentPosition);
         entry->talkRange = 0.0f;
 

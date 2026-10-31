@@ -54,7 +54,7 @@ extern u16 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u16 handle);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern s32 itemUseApply(void*, void*, void*, void*, void*);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 
 s32 itemDataBiosCheckImportable(u8* p)
@@ -107,7 +107,7 @@ s32 itemUse2PokemonSimulation(
     memcpy(savedFightFloor, fightFloor, 0xA4E8);
     result = itemUseApply(arg0, arg1, arg2, arg3, arg4);
     memcpy(fightFloor, savedFightFloor, 0xA4E8);
-    fn_800E24B0(memHandle);
+    GSmemUnlock(memHandle);
     GSmemFree(memHandle);
     return result;
 }

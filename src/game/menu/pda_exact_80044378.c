@@ -38,8 +38,8 @@ extern u16 lbl_8047A4E8;
 extern f32 lbl_8047BCA0;
 extern const f32 lbl_8047BCF4;
 extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
-extern void fn_800FE38C(s32 x1, s32 y1, s32 x2, s32 y2);
-extern void fn_800FE35C(void);
+extern void spriteSetScissor(s32 x1, s32 y1, s32 x2, s32 y2);
+extern void spriteClearScissor(void);
 extern void pdaMemoDrawModelSprite(u8* context, PdaSprite* sprite);
 
 static inline u32 pdaLoadRowPokemon(s32 offset)
@@ -151,14 +151,14 @@ void pdaMemoDrawSpeciesColumn(u8* context, PdaSprite* sprite)
         break;
     default:
         entry = lbl_802EF0A8 + messageId * 0x1C;
-        fn_800FE38C(
+        spriteSetScissor(
             *(s16*)(lbl_802EF0A8 + 0x5712) - *(s16*)(entry + 2),
             *(s16*)(lbl_802EF0A8 + 0x5714) - *(s16*)(entry + 4),
             *(s16*)(lbl_802EF0A8 + 0x5716),
             *(s16*)(lbl_802EF0A8 + 0x5718));
         pdaDrawNameRows(context, 0,
                         *(f32*)((u8*)&lbl_803A6818 + 0x30));
-        fn_800FE35C();
+        spriteClearScissor();
         break;
     }
 }

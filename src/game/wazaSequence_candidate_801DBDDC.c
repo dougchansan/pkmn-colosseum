@@ -52,7 +52,7 @@ typedef struct WazaSequenceLocal {
 
 void wazaSequenceFree(void* obj)
 {
-    extern void fn_800E24B0(u16 handle);
+    extern void GSmemUnlock(u16 handle);
     extern void GSmemFree(u16 handle);
     extern void GSresReleaseOwnerItem(u32, u32);
     extern void gsParticleKillAll(void*);
@@ -128,7 +128,7 @@ void wazaSequenceFree(void* obj)
 
     handle = sequence->nodeHandle;
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 
@@ -159,7 +159,7 @@ unlink:
     {
         u16 sequenceHandle = sequence->handle;
         if (sequenceHandle != 0) {
-            fn_800E24B0(sequenceHandle);
+            GSmemUnlock(sequenceHandle);
             GSmemFree(sequenceHandle);
         }
     }
