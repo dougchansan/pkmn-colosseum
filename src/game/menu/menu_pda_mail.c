@@ -363,7 +363,7 @@ typedef struct PdaMailSpinWork {
 } PdaMailSpinWork;
 
 #if 0
-asm s32 pdaMailAttachDrawItem(void* window, PdaMailSpinWork* sprite) {
+asm s32 fn_8004E144(void* window, PdaMailSpinWork* sprite) {
 #include "src/game/menu/menu_pda_mail_fn_8004E144.inc"
 }
 #else
@@ -410,7 +410,7 @@ typedef struct PdaMailOutA {
 } PdaMailOutA;
 
 #if 0
-asm s32 pdaMailDrawContents(PdaMailWindowA* window, PdaMailOutA* out) {
+asm s32 fn_8004D6AC(PdaMailWindowA* window, PdaMailOutA* out) {
 #include "src/game/menu/menu_pda_mail_fn_8004D6AC.inc"
 }
 #else
@@ -608,7 +608,7 @@ s32 pdaMailDrawHighlight(PdaMailWindowC* window, PdaMailSpriteField* field)
 extern u32 mailGetAttachFileGroup(s32 idx);
 
 #if 0
-asm s32 pdaMailDrawAttachIconA(PdaMailWindowA* window, void* fieldHandle) {
+asm s32 fn_8004D5EC(PdaMailWindowA* window, void* fieldHandle) {
 #include "src/game/menu/menu_pda_mail_fn_8004D5EC.inc"
 }
 #else
@@ -626,7 +626,7 @@ s32 pdaMailDrawAttachIconA(PdaMailWindowA* window, void* fieldHandle)
 #endif
 
 #if 0
-asm s32 pdaMailDrawAttachIconB(PdaMailWindowA* window, void* fieldHandle) {
+asm s32 fn_8004D64C(PdaMailWindowA* window, void* fieldHandle) {
 #include "src/game/menu/menu_pda_mail_fn_8004D64C.inc"
 }
 #else
@@ -707,7 +707,7 @@ s32 pdaMailDrawSubject(PdaMailWindowA* window, PdaMailOutA* out)
 #endif
 
 #if 0
-asm void pdaMailViewAttachKey(PdaMailWindowA* window) {
+asm void fn_8004D8BC(PdaMailWindowA* window) {
 #include "src/game/menu/menu_pda_mail_fn_8004D8BC.inc"
 }
 #else
@@ -968,7 +968,7 @@ typedef struct PdaMailPhaseWidget {
 } PdaMailPhaseWidget;
 
 #if 0
-asm s32 pdaMailViewCtrl(PdaMailPhaseWidget* w) {
+asm s32 fn_8004D928(PdaMailPhaseWidget* w) {
 #include "src/game/menu/menu_pda_mail_fn_8004D928.inc"
 }
 #else
@@ -1001,7 +1001,7 @@ extern f32 lbl_8047BE4C;
 extern f32 lbl_8047BE50;
 
 #if 0
-asm s32 pdaMailListCtrl(PdaMailWindowA* window) {
+asm s32 fn_8004D26C(PdaMailWindowA* window) {
 #include "src/game/menu/menu_pda_mail_fn_8004D26C.inc"
 }
 #else
@@ -1135,7 +1135,7 @@ s32 pdaMailDrawPageArrows(u8* context, u8* field)
 
 #if !defined(MENU_PDA_MAIL_PARTIAL) || defined(MENU_PDA_MAIL_SORT_ONLY)
 #if 0
-asm void pdaMailSortRefresh(void) {
+asm void fn_8004BFB0(void) {
 #include "src/game/menu/menu_pda_mail_fn_8004BFB0.inc"
 }
 #else
@@ -1208,7 +1208,7 @@ extern s32 lbl_8047A518;
 extern void pdaMailAttachRun(s32 mailId);
 
 #if 0
-asm s32 pdaMailViewRun(s32 a) {
+asm s32 fn_8004D9C0(s32 a) {
 #include "src/game/menu/menu_pda_mail_fn_8004D9C0.inc"
 }
 #else

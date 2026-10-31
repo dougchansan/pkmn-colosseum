@@ -423,7 +423,7 @@ extern void itemDataBiosSetKind(u8* p, u8 val);
 extern void itemDataBiosSetName(u8* p, u32 val);
 
 #if 0
-asm void itemSwapSlots(void) {
+asm void fn_80140A9C(void) {
 #include "src/game/people/people_data_fn_80140A9C.inc"
 }
 #else
@@ -449,7 +449,7 @@ extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
     ((entry) != NULL && PEOPLE_ENTRY_ID(entry) != 0 && PEOPLE_ITEM_ID_VALID(PEOPLE_ENTRY_ID(entry)))
 
 #if 0
-asm void heroItemChangeCount(void) {
+asm void fn_80140ACC(void) {
 #include "src/game/people/people_data_fn_80140ACC.inc"
 }
 #else
@@ -674,7 +674,7 @@ s32 heroItemChangeCount(u32* base, u16 count, u16 id, u16 amount, s16 index, u16
 #endif
 extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
 #if 0
-asm void itemSlotsAdd(void) {
+asm void fn_80141308(void) {
 #include "src/game/people/people_data_fn_80141308.inc"
 }
 #else
@@ -1226,7 +1226,7 @@ s32 itemSlotsAdd(u32* base, u16 count, u16 id, u16 amount, s16 index, u16 maxCou
 #endif
 extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
 #if 0
-asm void itemSlotsFind(void) {
+asm void fn_80142368(void) {
 #include "src/game/people/people_data_fn_80142368.inc"
 }
 #else
@@ -1265,7 +1265,7 @@ u32* itemSlotsFind(u32* base, u16 count, u16 id, u8 mode, u16 limit) {
 #endif
 extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
 #if 0
-asm void itemSlotsCompact(void) {
+asm void fn_801425E8(void) {
 #include "src/game/people/people_data_fn_801425E8.inc"
 }
 #else
@@ -1319,7 +1319,7 @@ void itemSlotsCompact(u32* base, u16 count, u8 mode) {
 #endif
 extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
 #if 0
-asm void itemIdIsValid(void) {
+asm void fn_80142984(void) {
 #include "src/game/people/people_data_fn_80142984.inc"
 }
 #else
@@ -1335,7 +1335,7 @@ s32 itemIdIsValid(u16 id) {
 #endif
 extern u32 lbl_80478BD8;   /* gPeopleFieldCount */
 #if 0
-asm void itemSlotIsValid(void) {
+asm void fn_801429E8(void) {
 #include "src/game/people/people_data_fn_801429E8.inc"
 }
 #else
@@ -1362,7 +1362,7 @@ s32 itemSlotIsValid(u32 arg) {
 #endif
 #endif
 #if 0
-asm void itemSlotsClear(void) {
+asm void fn_80142A88(void) {
 #include "src/game/people/people_data_fn_80142A88.inc"
 }
 #else
@@ -1390,7 +1390,7 @@ extern void fightItemBiosSetCount(u8* p, u32 val);
 extern void fightItemBiosSetBuff(u8* p, u32 val);
 extern void jumptable_80367D60();
 #if 0
-asm void fightItemCreate_80142B24(void* p, u32 a, u16 b, u32 c, u32 d) {
+asm void fn_80142B24(void* p, u32 a, u16 b, u32 c, u32 d) {
 #include "src/game/people/people_data_fn_80142B24.inc"
 }
 #else

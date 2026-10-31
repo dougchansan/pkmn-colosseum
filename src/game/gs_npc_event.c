@@ -142,7 +142,7 @@ extern void  GSmsgPrintColor(s32, s32, u32, u16);
 /* 0x80031188 | 0xA0 */
 extern u8 lbl_803A2688[];
 #if 0
-asm void gbaTradeMenuDrawText(void) {
+asm void fn_80031188(void) {
 #include "src/game/gs_npc_event_fn_80031188.inc"
 }
 #else
@@ -173,7 +173,7 @@ extern void pokemonCheckValid(void);
 extern void menuCBRule_CheckPokemonEventFlag(void);
 extern u8 lbl_80266E90[];
 #if 0
-asm void gbaTradeMenuDrawSprite3(void) {
+asm void fn_80031228(void) {
 #include "src/game/gs_npc_event_fn_80031228.inc"
 }
 #else
@@ -219,7 +219,7 @@ extern void menuSubGetPokemonSexForDisp(void);
 extern void pokemonBiosGetTamagoFlag(void);
 extern void GSmsgGetGSchar(void);
 #if 0
-asm void gbaTradeMenuDrawGender(void) {
+asm void fn_80031404(void) {
 #include "src/game/gs_npc_event_fn_80031404.inc"
 }
 #else
@@ -288,7 +288,7 @@ void gbaTradeMenuDrawGender(u8* arg0, u8* arg1) {
 extern void GSmsgGetRect(void);
 extern void* pokemonBiosGetNicknamePtr(void* pokemon);
 #if 0
-asm void gbaTradeMenuDrawNickname(void) {
+asm void fn_80031648(void) {
 #include "src/game/gs_npc_event_fn_80031648.inc"
 }
 #else
@@ -351,7 +351,7 @@ extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 extern u8  lbl_80266E90[];
 #if 0
-asm void gbaTradeMenuDrawSprite4(void) {
+asm void fn_800318D8(void) {
 #include "src/game/gs_npc_event_fn_800318D8.inc"
 }
 #else
@@ -387,7 +387,7 @@ void gbaTradeMenuDrawSprite4(s32 _unused, u8* tgt) {
 /* gbaTradeMenuDrawSprite5 - 0x80031A1C | size: 0x54 */
 extern u32 lbl_8047A42C;
 #if 0
-asm void gbaTradeMenuDrawSprite5(void) {
+asm void fn_80031A1C(void) {
 #include "src/game/gs_npc_event_fn_80031A1C.inc"
 }
 #else
@@ -409,7 +409,7 @@ void gbaTradeMenuDrawSprite5(void* r3, void* r4) {
 /* gbaTradeMenuDrawSprite6 - 0x80031A70 | size: 0x50 */
 extern u32 lbl_8047A42C;
 #if 0
-asm void gbaTradeMenuDrawSprite6(void) {
+asm void fn_80031A70(void) {
 #include "src/game/gs_npc_event_fn_80031A70.inc"
 }
 #else
@@ -434,7 +434,7 @@ void gbaTradeMenuDrawSprite6(void* r3, void* r4) {
 /* gbaTradeMenuDrawSprite7 - 0x80031AC0 | size: 0x50 */
 extern u32 lbl_8047A42C;
 #if 0
-asm void gbaTradeMenuDrawSprite7(void) {
+asm void fn_80031AC0(void) {
 #include "src/game/gs_npc_event_fn_80031AC0.inc"
 }
 #else
@@ -461,7 +461,7 @@ extern u32 menuFaceIsAnyLoading(void);
 extern void std113_mapObjectUnk_8018db68(u32);
 extern u32 lbl_8047A418;
 #if 0
-asm void cardeWaitFaceLoadAndStopObject(void) {
+asm void fn_80031B10(void) {
 #include "src/game/gs_npc_event_fn_80031B10.inc"
 }
 #else
@@ -962,7 +962,7 @@ extern u8 lbl_8047A40A;
 extern u32 lbl_8047A418;
 extern u32 lbl_8047A414;
 #if 0
-asm void cardeBattleSetupScene(void) {
+asm void fn_800324A0(void) {
 #include "src/game/gs_npc_event_fn_800324A0.inc"
 }
 #else
@@ -1719,7 +1719,7 @@ void* gbaTradeNextPartyEntry(GSnpcEventQueue* q) {
 
 /* menuDCDrawItem - 0x800301A8 | size: 0x4 */
 #if 0
-asm void menuDCDrawItem(void) {
+asm void fn_800301A8(void) {
 #include "src/game/gs_npc_event_fn_800301A8.inc"
 }
 #else
@@ -1728,7 +1728,7 @@ void menuDCDrawItem(void) { }
 
 /* menuDCCtrl - 0x800301AC | size: 0x4 */
 #if 0
-asm void menuDCCtrl(void) {
+asm void fn_800301AC(void) {
 #include "src/game/gs_npc_event_fn_800301AC.inc"
 }
 #else
@@ -1738,7 +1738,7 @@ void menuDCCtrl(void) { }
 
 /* menuDBDrawItem - 0x80030370 | size: 0xc */
 #if 0
-asm void menuDBDrawItem(void) {
+asm void fn_80030370(void) {
 #include "src/game/gs_npc_event_fn_80030370.inc"
 }
 #else
@@ -1749,7 +1749,7 @@ void menuDBDrawItem(u32 r3, u32* r4) {
 
 /* menuDBDrawItem2 - 0x8003037C | size: 0xc */
 #if 0
-asm void menuDBDrawItem2(void) {
+asm void fn_8003037C(void) {
 #include "src/game/gs_npc_event_fn_8003037C.inc"
 }
 #else
@@ -1760,7 +1760,7 @@ void menuDBDrawItem2(u32 r3, u32* r4) {
 
 /* menuDBDrawText - 0x80030388 | size: 0xa0 */
 #if 0
-asm void menuDBDrawText(void) {
+asm void fn_80030388(void) {
 #include "src/game/gs_npc_event_fn_80030388.inc"
 }
 #else
@@ -1787,7 +1787,7 @@ void menuDBDrawText(u8* r3, u8* r4) {
 
 /* menuDBDrawItem3 - 0x80030428 | size: 0x4 */
 #if 0
-asm void menuDBDrawItem3(void) {
+asm void fn_80030428(void) {
 #include "src/game/gs_npc_event_fn_80030428.inc"
 }
 #else
@@ -1802,7 +1802,7 @@ extern u8 lbl_80266F68[];
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void menuDBDrawItemName(void) {
+asm void fn_8003042C(void) {
 #include "src/game/gs_npc_event_fn_8003042C.inc"
 }
 #else
@@ -1851,7 +1851,7 @@ extern void GSmsgPrintRect(s32, s32, s32, s32, u32, u16);
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void menuDBDrawMove(void) {
+asm void fn_80030574(void) {
 #include "src/game/gs_npc_event_fn_80030574.inc"
 }
 #else
@@ -1951,7 +1951,7 @@ no_object:
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void menuDBDrawText2(void) {
+asm void fn_800307A8(void) {
 #include "src/game/gs_npc_event_fn_800307A8.inc"
 }
 #else
@@ -1992,7 +1992,7 @@ extern void pokemonDataBiosGetName(void);
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void menuDBDrawSpecies(void) {
+asm void fn_800308D4(void) {
 #include "src/game/gs_npc_event_fn_800308D4.inc"
 }
 #else
@@ -2046,7 +2046,7 @@ void menuDBDrawSpecies(u8* arg0, u8* arg1) {
 extern u32 lbl_8047A424;
 extern u32 lbl_8047A420;
 #if 0
-asm void menuDBDrawNickname(void) {
+asm void fn_80030A44(void) {
 #include "src/game/gs_npc_event_fn_80030A44.inc"
 }
 #else
@@ -2126,7 +2126,7 @@ extern u8 lbl_80314F98[];
 extern f32 lbl_8047B9D4;
 extern f32 lbl_8047B9F0;
 #if 0
-asm void menuDBDrawModel(void) {
+asm void fn_80030C14(void) {
 #include "src/game/gs_npc_event_fn_80030C14.inc"
 }
 #else
@@ -2164,7 +2164,7 @@ void menuDBDrawModel(void* r3, u8* r4) {
 /* gbaTradeMenuDrawSprite - 0x80030D34 | size: 0x1d8 */
 extern void pokemonBiosGetItemDataId(void);
 #if 0
-asm void gbaTradeMenuDrawSprite(void) {
+asm void fn_80030D34(void) {
 #include "src/game/gs_npc_event_fn_80030D34.inc"
 }
 #else
@@ -2218,7 +2218,7 @@ void gbaTradeMenuDrawSprite(u8* arg0, u8* arg1) {
 /* gbaTradeMenuDrawSprite2 - 0x80030F0C | size: 0x27c */
 extern void pokemonBiosGetDarkFlag(void);
 #if 0
-asm void gbaTradeMenuDrawSprite2(void) {
+asm void fn_80030F0C(void) {
 #include "src/game/gs_npc_event_fn_80030F0C.inc"
 }
 #else
@@ -2276,7 +2276,7 @@ void gbaTradeMenuDrawSprite2(u8* arg0, u8* arg1) {
 /* cardeSetRecordFlag - 0x800347B8 | size: 0xc */
 extern u32 lbl_8047A440;
 #if 0
-asm void cardeSetRecordFlag(void) {
+asm void fn_800347B8(void) {
 #include "src/game/gs_npc_event_fn_800347B8.inc"
 }
 #else
@@ -2288,7 +2288,7 @@ void cardeSetRecordFlag(void) {
 /* cardeBuzzer_800347C4 - 0x800347C4 | size: 0x24 */
 extern void soundStartSE(s32);
 #if 0
-asm void cardeBuzzer_800347C4(void) {
+asm void fn_800347C4(void) {
 #include "src/game/gs_npc_event_fn_800347C4.inc"
 }
 #else
@@ -2299,7 +2299,7 @@ void cardeBuzzer_800347C4(void) {
 
 /* cardeBuzzer_800347E8 - 0x800347E8 | size: 0x24 */
 #if 0
-asm void cardeBuzzer_800347E8(void) {
+asm void fn_800347E8(void) {
 #include "src/game/gs_npc_event_fn_800347E8.inc"
 }
 #else
@@ -2310,7 +2310,7 @@ void cardeBuzzer_800347E8(void) {
 
 /* cardeBuzzer_8003480C - 0x8003480C | size: 0x24 */
 #if 0
-asm void cardeBuzzer_8003480C(void) {
+asm void fn_8003480C(void) {
 #include "src/game/gs_npc_event_fn_8003480C.inc"
 }
 #else
@@ -2322,7 +2322,7 @@ void cardeBuzzer_8003480C(void) {
 /* cardeSubMenuDrawText - 0x80034DC0 | size: 0x78 | WALL 80%: oris+ori constant build pattern */
 extern u32 lbl_8047A44C;
 #if 0
-asm void cardeSubMenuDrawText(void) {
+asm void fn_80034DC0(void) {
 #include "src/game/gs_npc_event_fn_80034DC0.inc"
 }
 #else

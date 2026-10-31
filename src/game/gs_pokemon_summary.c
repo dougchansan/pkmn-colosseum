@@ -131,7 +131,7 @@ extern f32   gStickDeflection;    /* lbl_8047A2D0 */
 extern u32 lbl_8047A2DC;
 #if !defined(GS_POKEMON_SUMMARY_ISLAND)
 #if 0
-asm void pocketDrawMessage(void) {
+asm void fn_8001501C(void) {
 #include "src/game/gs_pokemon_summary_fn_8001501C.inc"
 }
 #else
@@ -402,7 +402,7 @@ static inline u16 SummaryPagePocketTotal(s32 pageIndex) {
 
 #if !defined(GS_POKEMON_SUMMARY_ISLAND)
 #if 0
-asm void bagMenuDrawCursor(void) {
+asm void fn_80015050(void) {
 #include "src/game/gs_pokemon_summary_fn_80015050.inc"
 }
 #else
@@ -468,7 +468,7 @@ extern const f32 lbl_8047B748;
 extern u32 lbl_8047A2D0;
 extern u32 lbl_8047A2C8;
 #if 0
-asm void pocketDrawKindItemList(void) {
+asm void fn_800150E4(void) {
 #include "src/game/gs_pokemon_summary_fn_800150E4.inc"
 }
 #else
@@ -611,7 +611,7 @@ extern const f32 lbl_8047B748;
 extern u32 lbl_8047A2D0;
 extern u32 lbl_8047A2C8;
 #if 0
-asm void bagDrawBerryList(void) {
+asm void fn_800155B0(void) {
 #include "src/game/gs_pokemon_summary_fn_800155B0.inc"
 }
 #else
@@ -895,7 +895,7 @@ extern u32 lbl_8047A2D4;
 extern const f32 lbl_8047B748;
 extern const f32 lbl_8047B750;
 #if 0
-asm void bagMenuDrawCursor2(void) {
+asm void fn_800161B0(void) {
 #include "src/game/gs_pokemon_summary_fn_800161B0.inc"
 }
 #else
@@ -954,7 +954,7 @@ extern u32 lbl_8047A2D4;
 extern const f32 lbl_8047B748;
 extern const f32 lbl_8047B750;
 #if 0
-asm void bagMenuDrawText(void) {
+asm void fn_80016348(void) {
 #include "src/game/gs_pokemon_summary_fn_80016348.inc"
 }
 #else
@@ -1008,7 +1008,7 @@ extern const f32 lbl_8047B744;
 extern u32 lbl_8047A2C4;
 extern const f32 lbl_8047B740;
 #if 0
-asm void bagMenuDrawCursor3(void) {
+asm void fn_800164D0(void) {
 #include "src/game/gs_pokemon_summary_fn_800164D0.inc"
 }
 #else
@@ -1038,7 +1038,7 @@ extern const f32 lbl_8047B744;
 extern u32 lbl_8047A2C4;
 extern const f32 lbl_8047B740;
 #if 0
-asm void bagMenuDrawCursor4(void) {
+asm void fn_80016618(void) {
 #include "src/game/gs_pokemon_summary_fn_80016618.inc"
 }
 #else
@@ -1073,7 +1073,7 @@ extern const f32 lbl_8047B758;
 extern const f32 lbl_8047B75C;
 extern const f32 lbl_8047B760;
 #if 0
-asm void bagMenuDrawCursor5(void) {
+asm void fn_800166BC(void) {
 #include "src/game/gs_pokemon_summary_fn_800166BC.inc"
 }
 #else
@@ -1275,7 +1275,7 @@ extern u32 lbl_8047A2C8;
 extern u32 lbl_8047A2D0;
 extern u32 lbl_8047A2D8;
 #if 0
-asm void bagMenuDrawCursor7(void) {
+asm void fn_80016F14(void) {
 #include "src/game/gs_pokemon_summary_fn_80016F14.inc"
 }
 #else
@@ -1300,7 +1300,7 @@ extern const f32 lbl_8047B750;
 extern const f32 lbl_8047B790;
 extern u32 lbl_8047A2DC;
 #if 0
-asm void bagMenuCursor(void) {
+asm void fn_80017028(void) {
 #include "src/game/gs_pokemon_summary_fn_80017028.inc"
 }
 #else
@@ -1487,7 +1487,7 @@ void bagMenuButton(void) {
 
 /* bagMenuDrawItem - 0x80017790 | size: 0xd8 */
 #if 0
-asm void bagMenuDrawItem(void) {
+asm void fn_80017790(void) {
 #include "src/game/gs_pokemon_summary_fn_80017790.inc"
 }
 #else
@@ -1522,7 +1522,7 @@ extern u32 heroGetStatus(u32 a, s32 b, s32 c);
 extern void* lbl_8047A2F8;
 extern u32 lbl_8047A2E0;
 #if 0
-asm void bagMenuDrawText2(void) {
+asm void fn_80017868(void) {
 #include "src/game/gs_pokemon_summary_fn_80017868.inc"
 }
 #else
@@ -1565,7 +1565,7 @@ s32 bagMenuDrawItem3(u32 unused, u8* ptr) {
 #if !defined(GS_POKEMON_SUMMARY_ISLAND) || defined(GS_POKEMON_SUMMARY_8001793C_ONLY)
 /* bagMenuDrawItem4 - 0x8001793C | size: 0x54 */
 #if 0
-asm void bagMenuDrawItem4(void) {
+asm void fn_8001793C(void) {
 #include "src/game/gs_pokemon_summary_fn_8001793C.inc"
 }
 #else
@@ -1579,7 +1579,7 @@ s32 bagMenuDrawItem4(SummaryPageContext* ctx, SummaryDrawItem* item) {
 
 /* bagMenuDrawItem5 - 0x80017990 | size: 0x7c */
 #if 0
-asm void bagMenuDrawItem5(void) {
+asm void fn_80017990(void) {
 #include "src/game/gs_pokemon_summary_fn_80017990.inc"
 }
 #else
@@ -1613,7 +1613,7 @@ extern const f32 lbl_8047B74C;
 extern const f32 lbl_8047B744;
 extern const f32 lbl_8047B79C;
 #if 0
-asm void bagMenuCtrl(void) {
+asm void fn_80017A0C(void) {
 #include "src/game/gs_pokemon_summary_fn_80017A0C.inc"
 }
 #else
@@ -1696,7 +1696,7 @@ s32 bagMenuCtrl(u8* ctx) {
 extern void* lbl_8047A2F8;
 extern u32 lbl_8047A2E0;
 #if 0
-asm void bagGetItemCommands(void) {
+asm void fn_80017CB8(void) {
 #include "src/game/gs_pokemon_summary_fn_80017CB8.inc"
 }
 #else

@@ -413,7 +413,7 @@ extern u32 lbl_8047AB3C;
 
 extern u32 lbl_8047AA80;
 #if 0
-asm void gfxGetViewportBox(void) {
+asm void fn_800D9AF0(void) {
 #include "src/game/gs_render_fn_800D9AF0.inc"
 }
 #else
@@ -422,7 +422,7 @@ void gfxGetViewportBox(u16* a, u16* b, u16* c, u16* d) { *a = *(u16*)(lbl_8047AA
 
 extern u32 lbl_8047AA80;
 #if 0
-asm void gfxGetScissorBox(void) {
+asm void fn_800D9B24(void) {
 #include "src/game/gs_render_fn_800D9B24.inc"
 }
 #else

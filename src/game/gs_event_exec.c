@@ -461,7 +461,7 @@ extern void msgWinDrawBackground(s32, s32, s32, s32, s32, s32);
 extern void msgctrlSetValue(s32, s32);
 extern void jumptable_802E4D90();
 #if 0
-asm void menuLvUpPanelDrawText(void) {
+asm void fn_8001329C(void) {
 #include "src/game/gs_event_exec_fn_8001329C.inc"
 }
 #else
@@ -1170,7 +1170,7 @@ s32 menuPocketDrawItem(u8* ctx, u8* tgt) {
 /* menuPocketDrawText - 0x8001431C | size: 0x7c */
 extern u32 lbl_8047A2FC;
 #if 0
-asm void menuPocketDrawText(void) {
+asm void fn_8001431C(void) {
 #include "src/game/gs_event_exec_fn_8001431C.inc"
 }
 #else
@@ -1405,7 +1405,7 @@ extern f32 lbl_8047B744;
 extern f32 lbl_8047A2C0;
 extern f32 lbl_8047B740;
 #if 0
-asm void bagSubMenuDrawItem(void) {
+asm void fn_80014AE4(void) {
 #include "src/game/gs_event_exec_fn_80014AE4.inc"
 }
 #else
@@ -1441,7 +1441,7 @@ s32 bagSubMenuDrawItem(u8* ctx, u8* tgt) {
 /* bagSubMenuDrawItem2 - 0x80014BA0 | size: 0x98 */
 extern s32 lbl_80266BB0[];
 #if 0
-asm void bagSubMenuDrawItem2(void) {
+asm void fn_80014BA0(void) {
 #include "src/game/gs_event_exec_fn_80014BA0.inc"
 }
 #else

@@ -420,7 +420,7 @@ extern u32 lbl_8047CAFC;
 #if !defined(GS_MATH_RANDOM_CANDIDATE_800E0C04) && \
     !defined(GS_MATH_RANDOM_CANDIDATE_800E0CA0)
 #if 0
-asm void GSsplineEvalStrip(void) {
+asm void fn_800E09E8(void) {
 #include "src/game/gs_render_fn_800E09E8.inc"
 }
 #else
@@ -494,7 +494,7 @@ extern f32 lbl_8047CB34;
 extern f32 lbl_8047CB30;
 extern f32 lbl_804011B8[];
 #if 0
-asm void GSsinTable(void) {
+asm void fn_800E0CA0(void) {
 #include "src/game/gs_render_fn_800E0CA0.inc"
 }
 #else

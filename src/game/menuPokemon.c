@@ -203,7 +203,7 @@ extern s8 fn_8001E074(u8, s16, s16, u32);
 #endif /* guard split */
 #if !defined(MENU_POKEMON_CARVE_ONLY) || defined(MENU_POKEMON_8001C064_ONLY)
 #if 0
-asm void menuPokemonGiveTakeItem(void) {
+asm void fn_8001C064(void) {
 #include "src/game/gs_pcbox_fn_8001C064.inc"
 }
 #else
@@ -408,7 +408,7 @@ static inline s32 menuPokemonItemMenu(s8* work, s8 slot, s32* itemArg) {
 }
 
 #if 0
-asm void menuPokemonCommandMenu(void) {
+asm void fn_8001C7B8(void) {
 #include "src/game/gs_pcbox_fn_8001C7B8.inc"
 }
 #else
@@ -573,7 +573,7 @@ extern f32 lbl_8047B7C8;
 extern f64 lbl_8047B7D0;
 extern f64 lbl_8047B7D8;
 #if 0
-asm void menuPokemonWaitSeconds(void) {
+asm void fn_8001D718(void) {
 #include "src/game/gs_pcbox_fn_8001D718.inc"
 }
 #else
@@ -1323,7 +1323,7 @@ extern u32 lbl_8047A2F8;
 extern u32 lbl_8047A2E4;
 extern u32 lbl_8047A2BC;
 #if 0
-asm void bagMenuOpen(void) {
+asm void fn_80018F54(void) {
 #include "src/game/gs_pcbox_fn_80018F54.inc"
 }
 #else
@@ -1347,7 +1347,7 @@ extern u32 lbl_8047A2E0;
 extern u32 lbl_8047A2E4;
 extern u32 lbl_8047A2F0;
 #if 0
-asm void bagMenuRunInMenuRoom(void) {
+asm void fn_80018F88(void) {
 #include "src/game/gs_pcbox_fn_80018F88.inc"
 }
 #else
@@ -1386,7 +1386,7 @@ u32 bagMenuRunInMenuRoom(s32 mode, s32* ptr, u32 val) {
 /* bagGetResultFlag - 0x80019064 | size: 0xc */
 extern u32 lbl_8047A2B8;
 #if 0
-asm void bagGetResultFlag(void) {
+asm void fn_80019064(void) {
 #include "src/game/gs_pcbox_fn_80019064.inc"
 }
 #else
@@ -1409,7 +1409,7 @@ typedef struct MenuPokemonSpeciesCache {
 
 extern u8 lbl_803A1B90[];
 #if 0
-asm void bagTakeResultForItem(void) {
+asm void fn_80019070(void) {
 #include "src/game/gs_pcbox_fn_80019070.inc"
 }
 #else
@@ -1478,7 +1478,7 @@ extern u32 lbl_8047B7A4;
 extern u32 lbl_8047A300;
 extern u32 lbl_8047B7A0;
 #if 0
-asm void menuPokemonItemListDrawSprite(void) {
+asm void fn_80019118(void) {
 #include "src/game/gs_pcbox_fn_80019118.inc"
 }
 #else
@@ -1526,7 +1526,7 @@ s32 menuPokemonItemListDrawSprite(u8* a, u8* b) {
 /* menuPokemonItemListDrawSprite2 - 0x80019204 | size: 0xa4 */
 extern u8 lbl_80266C00[];
 #if 0
-asm void menuPokemonItemListDrawSprite2(void) {
+asm void fn_80019204(void) {
 #include "src/game/gs_pcbox_fn_80019204.inc"
 }
 #else
@@ -1578,7 +1578,7 @@ typedef struct MenuPokemonSlotIds {
 } MenuPokemonSlotIds;
 
 #if 0
-asm void bagDrawItemRow(void) {
+asm void fn_800192A8(void) {
 #include "src/game/gs_pcbox_fn_800192A8.inc"
 }
 #else
@@ -1662,7 +1662,7 @@ s32 bagDrawItemRow(u8* a, u8* b) {
 #if !defined(MENU_POKEMON_CARVE_ONLY) || defined(MENU_POKEMON_ISLAND_800194D0_ONLY)
 /* menuPokemonItemListDrawItem - 0x800194D0 | size: 0x14 */
 #if 0
-asm void menuPokemonItemListDrawItem(void) {
+asm void fn_800194D0(void) {
 #include "src/game/gs_pcbox_fn_800194D0.inc"
 }
 #else
@@ -1682,7 +1682,7 @@ s32 menuPokemonItemListDrawItem(u8* a, u8* b) {
 /* menuPokemonItemListDrawItem2 - 0x800194E4 | size: 0xfc */
 extern u8 lbl_802E4E10[];
 #if 0
-asm void menuPokemonItemListDrawItem2(void) {
+asm void fn_800194E4(void) {
 #include "src/game/gs_pcbox_fn_800194E4.inc"
 }
 #else
@@ -1737,7 +1737,7 @@ s32 menuPokemonItemListDrawItem2(u8* a, u8* b) {
 /* menuPokemonItemListCursor - 0x800195E0 | size: 0xa0 */
 extern void winSeqSetMenu(s32 id, u32 seqId);
 #if 0
-asm void menuPokemonItemListCursor(void) {
+asm void fn_800195E0(void) {
 #include "src/game/gs_pcbox_fn_800195E0.inc"
 }
 #else
@@ -1781,7 +1781,7 @@ extern u32 lbl_8047A300;
 extern u32 lbl_8047B7AC;
 extern u32 lbl_8047B7A4;
 #if 0
-asm void menuPokemonItemListCtrl(void) {
+asm void fn_80019680(void) {
 #include "src/game/gs_pcbox_fn_80019680.inc"
 }
 #else
@@ -1828,7 +1828,7 @@ extern u32 lbl_80478BD8;
 extern u8  lbl_802E4E10[];
 extern u8  lbl_802EF0A8[];
 #if 0
-asm void menuPokemonItemList(void) {
+asm void fn_80019754(void) {
 #include "src/game/gs_pcbox_fn_80019754.inc"
 }
 #else
@@ -1911,7 +1911,7 @@ u16 menuPokemonItemList(u32 color) {
 extern s32 menuGetCursorItemID(u32 id);
 extern u8* windowGetAllocPtr();
 #if 0
-asm void menuMoveSummaryDrawText(void) {
+asm void fn_80019938(void) {
 #include "src/game/gs_pcbox_fn_80019938.inc"
 }
 #else
@@ -1955,7 +1955,7 @@ extern void menuItemBiosSetSelectFlag();
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern u32 lbl_80478870;
 #if 0
-asm void menuMoveSummaryCtrl(void) {
+asm void fn_800199F4(void) {
 #include "src/game/gs_pcbox_fn_800199F4.inc"
 }
 #else
@@ -2018,7 +2018,7 @@ s32 menuMoveSummaryCtrl(u8* arg) {
 
 /* bagCloseMenu42 - 0x80019B1C | size: 0x2c */
 #if 0
-asm void bagCloseMenu42(void) {
+asm void fn_80019B1C(void) {
 #include "src/game/gs_pcbox_fn_80019B1C.inc"
 }
 #else
@@ -2040,7 +2040,7 @@ void bagCloseMenu42(void) {
 extern void pokemonToMenuWazaStatus(void);
 extern u8 lbl_803A1BD8[];
 #if 0
-asm void menuPokemonOpenMoveSummary(void) {
+asm void fn_80019B48(void) {
 #include "src/game/gs_pcbox_fn_80019B48.inc"
 }
 #else
@@ -2073,7 +2073,7 @@ s32 menuPokemonOpenMoveSummary(s8 slot) {
 
 /* menuPokemonCursorNextValid - 0x80019D5C | size: 0x210 */
 #if 0
-asm void menuPokemonCursorNextValid(void) {
+asm void fn_80019D5C(void) {
 #include "src/game/gs_pcbox_fn_80019D5C.inc"
 }
 #else
@@ -3203,7 +3203,7 @@ s32 menuPokemonMain(void) {
 #if !defined(MENU_POKEMON_CARVE_ONLY) || defined(MENU_POKEMON_8001BEBC_ONLY)
 /* menuPokemonIterator - 0x8001BEBC | size: 0x1a8 */
 #if 0
-asm void menuPokemonIterator(void) {
+asm void fn_8001BEBC(void) {
 #include "src/game/gs_pcbox_fn_8001BEBC.inc"
 }
 #else

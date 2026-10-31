@@ -458,7 +458,7 @@ void GSmtxConcat(void* a, void* b, void* c)
 #endif
 
 #if 0
-asm void GSmtxScaleApply(void) {
+asm void fn_800E02C4(void) {
 #include "src/game/gs_render_fn_800E02C4.inc"
 }
 #else
@@ -505,7 +505,7 @@ void GSmtxRotateX(void* obj, f32 angle)
 #endif
 
 #if 0
-asm void GSmtxTransApply(void) {
+asm void fn_800E03B4(void) {
 #include "src/game/gs_render_fn_800E03B4.inc"
 }
 #else
@@ -515,7 +515,7 @@ void GSmtxTransApply(void* dst, f32* src) {
 #endif
 
 #if 0
-asm void GSmtxTranslate(void* a, f32 b, f32 c, f32 d) {
+asm void fn_800E03E8(void* a, f32 b, f32 c, f32 d) {
 #include "src/game/gs_render_fn_800E03E8.inc"
 }
 #else
@@ -535,7 +535,7 @@ void GSmtxFromQuat(void)
 
 extern u8 lbl_80315568[];
 #if 0
-asm void GSmtxMakeScaleVec(void) {
+asm void fn_800E042C(void) {
 #include "src/game/gs_render_fn_800E042C.inc"
 }
 #else
@@ -548,7 +548,7 @@ void GSmtxMakeScaleVec(u8* dst, f32* src) {
 #endif
 
 #if 0
-asm void GSmtxMakeScale(void) {
+asm void fn_800E048C(void) {
 #include "src/game/gs_render_fn_800E048C.inc"
 }
 #else
@@ -585,7 +585,7 @@ void GSmtxMakeXRotation(void* a) { PSMTXRotRad(a, 0x58); }
 #endif
 
 #if 0
-asm void GSmtxMakeTranslate(void) {
+asm void fn_800E0560(void) {
 #include "src/game/gs_render_fn_800E0560.inc"
 }
 #else
@@ -598,7 +598,7 @@ void GSmtxMakeTranslate(u8* dst, f32* src) {
 #endif
 
 #if 0
-asm void GSmtxMakeTrans(void) {
+asm void fn_800E05C0(void) {
 #include "src/game/gs_render_fn_800E05C0.inc"
 }
 #else
@@ -611,7 +611,7 @@ void GSmtxMakeTrans(u8* dst, f32 x, f32 y, f32 z) {
 #endif
 
 #if 0
-asm void GSmtxCopy(void) {
+asm void fn_800E0628(void) {
 #include "src/game/gs_render_fn_800E0628.inc"
 }
 #else
@@ -619,7 +619,7 @@ void GSmtxCopy(void* dst, void* src) { memcpy(dst, src, 0x30); }
 #endif
 
 #if 0
-asm void GSmtxIdentity(void) {
+asm void fn_800E064C(void) {
 #include "src/game/gs_render_fn_800E064C.inc"
 }
 #else

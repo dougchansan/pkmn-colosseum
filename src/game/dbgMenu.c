@@ -139,7 +139,7 @@ static inline void dbgMenuInitItems(u32* itemTable, u32 total)
  * helper either.
  */
 #if 0
-asm void GSparticleInitPool(void) {
+asm void fn_80132C6C(void) {
 #include "src/game/effect/effect_util_fn_80132C6C.inc"
 }
 #else
@@ -188,7 +188,7 @@ void GSparticleInitPool(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3) {
 #endif
 
 #if 0
-asm void dbgMenuToggleMenuAB(void) {
+asm void fn_80132F7C(void) {
 #include "src/game/effect/effect_util_fn_80132F7C.inc"
 }
 #else
@@ -240,7 +240,7 @@ u32 dbgMenuSetVideoModeEurgb60(void) {
 
 /* 0x801330C8 | 0x150 */
 #if 0
-asm void dbgMenuDrawTestTriangle(void) {
+asm void fn_801330C8(void) {
 #include "src/game/effect/effect_util_fn_801330C8.inc"
 }
 #else
@@ -427,7 +427,7 @@ u32 debugMenuNodrawArea(void) {
 #endif
 
 #if 0
-asm void dbgMenuTogglePartner(void) {
+asm void fn_8013356C(void) {
 #include "src/game/effect/effect_util_fn_8013356C.inc"
 }
 #else

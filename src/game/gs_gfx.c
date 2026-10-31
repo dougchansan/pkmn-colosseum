@@ -52,7 +52,7 @@ void GSgfxSetRetraceCallback(u32 val) {
 extern void gfxRecordCommand(s32 arg0, ...);
 extern void GXFlush(void);
 #if 0
-asm void gfxFlush(void) {
+asm void fn_800D30AC(void) {
 #include "src/game/gs_gfx_fn_800D30AC.inc"
 }
 #else

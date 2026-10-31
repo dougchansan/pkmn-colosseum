@@ -416,7 +416,7 @@ extern u32 lbl_8047AB3C;
 
 #if !defined(PR410_GS_LIGHT_BACKFB_EXACT) && !defined(PR410_GS_LIGHT_BACKFB_SUFFIX)
 #if 0
-asm void GSgfxRenderLayerNop2(void) {
+asm void fn_800DC874(void) {
 #include "src/game/gs_render_fn_800DC874.inc"
 }
 #else

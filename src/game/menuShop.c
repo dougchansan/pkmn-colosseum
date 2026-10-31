@@ -304,7 +304,7 @@ s32 bagPocketAddItem(ShopItemSlot* slots, s32 count, s32 item_id, s32 quantity,
 #if !defined(MENUSHOP_ISLAND_ONLY) || defined(MENUSHOP_EXACT_80029AC8_ONLY)
 /* shopBagSetItem - 0x80029AC8 | size: 0x1f8 */
 #if 0
-asm void shopBagSetItem(void) {
+asm void fn_80029AC8(void) {
 #include "src/game/gs_worldmap_fn_80029AC8.inc"
 }
 #else
@@ -350,7 +350,7 @@ typedef struct WorldMapBuf {
     WorldMapEntry items[48];
 } WorldMapBuf;
 #if 0
-asm void shopBagSortItems(void) {
+asm void fn_80029CC0(void) {
 #include "src/game/gs_worldmap_fn_80029CC0.inc"
 }
 #else
@@ -442,7 +442,7 @@ typedef struct WorldMapVaList {
 } WorldMapVaList;
 typedef WorldMapVaList WorldMapVaListArray[1];
 #if 0
-asm void shopFormatTextA(void) {
+asm void fn_80029FAC(void) {
 #include "src/game/gs_worldmap_fn_80029FAC.inc"
 }
 #else
@@ -487,7 +487,7 @@ u32 shopFormatTextA(u8* r3, s32 r4, s32 r5, s32 r6, ...) {
 extern u32 lbl_80478E54;
 extern u32 lbl_80478E3C;
 #if 0
-asm void shopFormatTextB(void) {
+asm void fn_8002A0B8(void) {
 #include "src/game/gs_worldmap_fn_8002A0B8.inc"
 }
 #else
@@ -534,7 +534,7 @@ extern void winMsgOpenWithSE(s32, u32, s32, s32, u8);
 extern u32 lbl_80478E54;
 extern u32 lbl_80478E4C;
 #if 0
-asm void shopMsgOpenA(void) {
+asm void fn_8002A1C4(void) {
 #include "src/game/gs_worldmap_fn_8002A1C4.inc"
 }
 #else
@@ -577,7 +577,7 @@ void shopMsgOpenA(u8* r3, s32 r4, s32 r5, ...) {
 extern u32 lbl_80478E54;
 extern u32 lbl_80478E3C;
 #if 0
-asm void shopMsgOpenB(void) {
+asm void fn_8002A2CC(void) {
 #include "src/game/gs_worldmap_fn_8002A2CC.inc"
 }
 #else
@@ -619,7 +619,7 @@ void shopMsgOpenB(u8* r3, s32 r4, s32 r5, ...) {
 
 /* shopSubMenuDrawItem - 0x8002A3D4 | size: 0x2c */
 #if 0
-asm void shopSubMenuDrawItem(void) {
+asm void fn_8002A3D4(void) {
 #include "src/game/gs_worldmap_fn_8002A3D4.inc"
 }
 #else
@@ -636,7 +636,7 @@ s32 shopSubMenuDrawItem(void* r3, u8* r4) {
 
 /* shopSubMenuDrawText - 0x8002A400 | size: 0x8c */
 #if 0
-asm void shopSubMenuDrawText(void) {
+asm void fn_8002A400(void) {
 #include "src/game/gs_worldmap_fn_8002A400.inc"
 }
 #else
@@ -687,7 +687,7 @@ typedef struct ShopDrawData {
 
 extern u8 lbl_80266E58[];
 #if 0
-asm void shopSubMenuDrawNumber(void) {
+asm void fn_8002A48C(void) {
 #include "src/game/gs_worldmap_fn_8002A48C.inc"
 }
 #else
@@ -731,7 +731,7 @@ s32 shopSubMenuDrawNumber(ShopMenuOwner* owner, ShopDrawData* draw) {
 
 /* shopSubMenuCtrl - 0x8002AA68 | size: 0x98 */
 #if 0
-asm void shopSubMenuCtrl(void) {
+asm void fn_8002AA68(void) {
 #include "src/game/gs_worldmap_fn_8002AA68.inc"
 }
 #endif
@@ -915,7 +915,7 @@ extern u8 lbl_80266E80[];
 extern u32 lbl_804788F0;
 extern u8 lbl_802E61D8[];
 #if 0
-asm void shopMenuDrawItem2(void) {
+asm void fn_8002AB40(void) {
 #include "src/game/gs_worldmap_fn_8002AB40.inc"
 }
 #else
@@ -987,7 +987,7 @@ s32 shopMenuDrawItem2(void* r3, u8* r4) {
 extern volatile u32 lbl_8047A660;
 extern u32 lbl_8047A664;
 #if 0
-asm void shopMenuDrawText(void) {
+asm void fn_8002ACB8(void) {
 #include "src/game/gs_worldmap_fn_8002ACB8.inc"
 }
 #else
@@ -1049,7 +1049,7 @@ done:
 
 /* shopMenuDrawItem3 - 0x8002AE44 | size: 0x24 */
 #if 0
-asm void shopMenuDrawItem3(void) {
+asm void fn_8002AE44(void) {
 #include "src/game/gs_worldmap_fn_8002AE44.inc"
 }
 #else
@@ -1065,7 +1065,7 @@ s32 shopMenuDrawItem3(void* r3, u8* r4) {
 
 /* shopMenuDrawItem4 - 0x8002AE68 | size: 0x34 */
 #if 0
-asm void shopMenuDrawItem4(void) {
+asm void fn_8002AE68(void) {
 #include "src/game/gs_worldmap_fn_8002AE68.inc"
 }
 #else
@@ -1183,7 +1183,7 @@ s32 shopMenuDrawText2(void* r3, u8* r4) {
 #if 0
 /* shopMenuDrawText3 - 0x8002B03C | size: 0x4c */
 #if 0
-asm void shopMenuDrawText3(void) {
+asm void fn_8002B03C(void) {
 #include "src/game/gs_worldmap_fn_8002B03C.inc"
 }
 #else
@@ -1202,7 +1202,7 @@ s32 shopMenuDrawText3(void* r3) {
 /* shopMenuDrawText4 - 0x8002B088 | size: 0x34 */
 extern u32 lbl_8047A3E4;
 #if 0
-asm void shopMenuDrawText4(void) {
+asm void fn_8002B088(void) {
 #include "src/game/gs_worldmap_fn_8002B088.inc"
 }
 #else
@@ -1217,7 +1217,7 @@ extern const f32 lbl_8047B97C;
 extern f32 lbl_8047A3E8;
 extern const f32 lbl_8047B978;
 #if 0
-asm void shopMenuDrawItem6(void) {
+asm void fn_8002B0BC(void) {
 #include "src/game/gs_worldmap_fn_8002B0BC.inc"
 }
 #else
@@ -1245,7 +1245,7 @@ extern const f32 lbl_8047B97C;
 extern f32 lbl_8047A3E8;
 extern const f32 lbl_8047B978;
 #if 0
-asm void shopMenuDrawItem7(void) {
+asm void fn_8002B134(void) {
 #include "src/game/gs_worldmap_fn_8002B134.inc"
 }
 #else
@@ -1446,7 +1446,7 @@ extern f32 lbl_8047B988;
 extern f32 lbl_8047B98C;
 extern f32 lbl_8047B990;
 #if 0
-asm void shopMenuDrawItem8(void) {
+asm void fn_8002B40C(void) {
 #include "src/game/gs_worldmap_fn_8002B40C.inc"
 }
 #else
@@ -1895,7 +1895,7 @@ typedef struct ShopPositionDrawData {
 
 extern u8 lbl_802E4F68[];
 #if 0
-asm void shopMenuDrawItem10(void) {
+asm void fn_8002BCE8(void) {
 #include "src/game/gs_worldmap_fn_8002BCE8.inc"
 }
 #else
@@ -1961,7 +1961,7 @@ extern f32 lbl_8047B9B8;
 extern f32 lbl_8047B9BC;
 extern u32 lbl_8047A3E4;
 #if 0
-asm void shopMenuCursor(void) {
+asm void fn_8002BE08(void) {
 #include "src/game/gs_worldmap_fn_8002BE08.inc"
 }
 #else
@@ -2033,7 +2033,7 @@ u32 shopMenuCursor(u8* arg0) {
 /* shopMenuButton - 0x8002C014 | size: 0xd0 */
 extern void menuButtonNormal(void*);
 #if 0
-asm void shopMenuButton(void) {
+asm void fn_8002C014(void) {
 #include "src/game/gs_worldmap_fn_8002C014.inc"
 }
 #else
@@ -2080,7 +2080,7 @@ extern const f32 lbl_8047B9C4;
 extern const f32 lbl_8047B97C;
 extern const f32 lbl_8047B9C8;
 #if 0
-asm void shopMenuCtrl(void) {
+asm void fn_8002C0E4(void) {
 #include "src/game/gs_worldmap_fn_8002C0E4.inc"
 }
 #else
@@ -2286,7 +2286,7 @@ extern u32 lbl_80478E44;
 extern u16 lbl_8047A3F4;
 extern u16 lbl_8047A3EC;
 #if 0
-asm void shopBuyMenu(void) {
+asm void fn_8002C284(void) {
 #include "src/game/gs_worldmap_fn_8002C284.inc"
 }
 #else
@@ -2370,7 +2370,7 @@ extern u32 lbl_8047A3E4;
 extern u32 lbl_8047A3E0;
 extern u32 lbl_80478E4C;
 #if 0
-asm void shopCouponRun(void) {
+asm void fn_8002C408(void) {
 #include "src/game/gs_worldmap_fn_8002C408.inc"
 }
 #else
@@ -2842,7 +2842,7 @@ extern u32 lbl_804788A8;
 extern u32 lbl_80478E54;
 extern u32 lbl_80478E44;
 #if 0
-asm void shopPurchaseRun(void) {
+asm void fn_8002CE6C(void) {
 #include "src/game/gs_worldmap_fn_8002CE6C.inc"
 }
 #else
@@ -2946,7 +2946,7 @@ extern u32 lbl_80478E54;
 extern u32 lbl_80478E44;
 extern u32 lbl_8047A3E4;
 #if 0
-asm void shopBuyRun(void) {
+asm void fn_8002D154(void) {
 #include "src/game/gs_worldmap_fn_8002D154.inc"
 }
 #else
@@ -3294,7 +3294,7 @@ void std026_unkMenuSequence26(void)
 extern u32 lbl_80478E54;
 extern u32 lbl_8047A3DC;
 #if 0
-asm void shopRunAtLocation(void) {
+asm void fn_8002D91C(void) {
 #include "src/game/gs_worldmap_fn_8002D91C.inc"
 }
 #else

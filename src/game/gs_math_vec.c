@@ -477,7 +477,7 @@ void GSvecTransform(void* a, void* b, void* c) { PSMTXMultVec(b, c, a); }
 #endif
 
 #if 0
-asm void GSvecCross(void) {
+asm void fn_800DFFCC(void) {
 #include "src/game/gs_render_fn_800DFFCC.inc"
 }
 #else
@@ -536,7 +536,7 @@ void vecNormalize(void* a, void* b, f32 scale) {
 #endif
 
 #if 0
-asm void GSvecNegate(void) {
+asm void fn_800E00E0(void) {
 #include "src/game/gs_render_fn_800E00E0.inc"
 }
 #else
@@ -544,7 +544,7 @@ void GSvecNegate(f32* dst, f32* src) { dst[0] = -src[0]; dst[1] = -src[1]; dst[2
 #endif
 
 #if 0
-asm void GSvecMulComponents(void) {
+asm void fn_800E0108(void) {
 #include "src/game/gs_render_fn_800E0108.inc"
 }
 #else

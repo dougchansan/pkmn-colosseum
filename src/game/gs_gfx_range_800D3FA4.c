@@ -993,7 +993,7 @@ u32* gfxPlayCommands(u32* command)
     defined(GS_GFX_RANGE_800D45F8_800D461C)
 extern u32 lbl_8047AA80;
 #if 0
-asm void gfxGetRecordMode(void) {
+asm void fn_800D45F8(void) {
 #include "src/game/gs_render_fn_800D45F8.inc"
 }
 #else
@@ -1002,7 +1002,7 @@ u32 gfxGetRecordMode(void) { return *(u32*)lbl_8047AA80; }
 
 extern u32 lbl_8047AA80;
 #if 0
-asm void gfxSetRecordMode(void) {
+asm void fn_800D4604(void) {
 #include "src/game/gs_render_fn_800D4604.inc"
 }
 #else
@@ -1713,7 +1713,7 @@ void gfxAddDrawStats(u32 a, u32 b) { *(u32*)(lbl_804001F0 + 0xc) += a; *(u32*)(l
 #endif
 
 #if 0
-asm void gfxCountPrims(void) {
+asm void fn_800D6A80(void) {
 #include "src/game/gs_render_fn_800D6A80.inc"
 }
 #else

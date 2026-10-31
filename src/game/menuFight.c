@@ -369,7 +369,7 @@ u32 menuFightCloseTop(void* obj) {
 
 /* 0x80011A1C | 0x130 */
 #if 0
-asm void menuFightOpenCommandMenu(void) {
+asm void fn_80011A1C(void) {
 #include "src/game/gs_npc_interact_fn_80011A1C.inc"
 }
 #else
@@ -585,7 +585,7 @@ extern u32 lbl_8047A2A4;
 extern u32 lbl_8047A2A8;
 extern u32 lbl_8047A2B0;
 #if 0
-asm void menuFightOpenAndWake(void) {
+asm void fn_8000DAB0(void) {
 #include "src/game/gs_npc_interact_fn_8000DAB0.inc"
 }
 #else

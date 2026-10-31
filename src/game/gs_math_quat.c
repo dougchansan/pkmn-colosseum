@@ -428,7 +428,7 @@ void GSquatFromEuler(void* a, void* b) { EulerToQuat(b, a); }
 #endif
 
 #if 0
-asm void GSquatRotAxisRad(void) {
+asm void fn_800E0718(void) {
 #include "src/game/gs_render_fn_800E0718.inc"
 }
 #else
@@ -444,7 +444,7 @@ void GSquatMultiply(void* a, void* b, void* c) { PSQUATMultiply(b, c, a); }
 #endif
 
 #if 0
-asm void GSquatCopy(void) {
+asm void fn_800E076C(void) {
 #include "src/game/gs_render_fn_800E076C.inc"
 }
 #else

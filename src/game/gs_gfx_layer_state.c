@@ -1008,7 +1008,7 @@ u8* gfxVtxDescAlloc(void) {
 
 #if defined(GS_GFX_LAYER_800D7940_800D7A70)
 #if 0
-asm void gfxDrawIndexedVertices(void) {
+asm void fn_800D7940(void) {
 #include "src/game/gs_render_fn_800D7940.inc"
 }
 #else
