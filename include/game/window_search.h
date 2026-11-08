@@ -7,7 +7,7 @@
  * Window lookup by menu ID over the open-window list (lbl_80404ACC + 0x0C,
  * linked through +0x10, ID at +0x04). This is windowSearchID's body
  * (0x80104704); the window TU expands the same sequence inline in
- * windowGetValue, fn_801044D0, windowGetCursor, windowCheckCursor and
+ * windowGetValue, windowSetCursorById, windowGetCursor, windowCheckCursor and
  * windowClose (same "id <= 0" guard, same walk, same NULL tail).
  */
 extern u8 lbl_80404ACC[];

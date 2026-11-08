@@ -57,9 +57,9 @@ extern const char lbl_8047CC34[5];
 extern void __assert(const char* file, u32 line, const char* condition);
 extern HSD_JObj* HSD_JObjLoadJoint(HSD_Joint* joint);
 extern void GSmodelSetAnimIndex(GSmodel* model, u32 index);
-extern void fn_80191460(GSbound* bound);
+extern void GSboundReset(GSbound* bound);
 extern void GSmodelSetAnimFrame(GSmodel* model, f32 frame);
-extern void fn_800EC134(GSmodel* model);
+extern void GSmodelApplyAnimation(GSmodel* model);
 extern void HSD_JObjSetupMatrixSub(HSDJObj* jobj);
 extern void GSmodelParse(GSmodel* model, BOOL is_visible, GSModelPObjDisp disp,
                          void* arg);
@@ -81,18 +81,18 @@ static inline BOOL HSD_JObjMtxIsDirty(HSDJObj* jobj)
     return result;
 }
 
-void fn_800EB268(GSmodel* model, u32 anim_index)
+void GSmodelComputeBound(GSmodel* model, u32 anim_index)
 {
     void* particle_bank;
     HSDJObj* jobj;
 
     GSmodelSetAnimIndex(model, anim_index);
-    fn_80191460(&model->bound);
+    GSboundReset(&model->bound);
     particle_bank = model->linkedGSparticleBank;
     model->linkedGSparticleBank = NULL;
     if (model->flags & 4) {
         GSmodelSetAnimFrame(model, lbl_8047CC28);
-        fn_800EC134(model);
+        GSmodelApplyAnimation(model);
         jobj = model->renderJObj;
         if (jobj != NULL && HSD_JObjMtxIsDirty(jobj)) {
             HSD_JObjSetupMatrixSub(jobj);
@@ -109,12 +109,12 @@ void GSmodelRecalculateBound(GSmodel* model)
     HSDJObj* jobj;
     void* particle_bank;
 
-    fn_80191460(&model->bound);
+    GSboundReset(&model->bound);
     particle_bank = model->linkedGSparticleBank;
     model->linkedGSparticleBank = NULL;
     if (model->flags & 4) {
         GSmodelSetAnimFrame(model, lbl_8047CC28);
-        fn_800EC134(model);
+        GSmodelApplyAnimation(model);
         jobj = model->renderJObj;
         if (jobj != NULL && HSD_JObjMtxIsDirty(jobj)) {
             HSD_JObjSetupMatrixSub(jobj);
@@ -142,7 +142,7 @@ void _modelBoundVertex__FUlPvPv(u32 flags, void* vertex, void* arg)
     extern void set__5GSvecFfff(GSvec* vec, f32 x, f32 y, f32 z);
     extern void GSvecTransform(GSvec* dst, GSmtx* matrix, GSvec* src);
     extern GSbound* GSmodelGetBound(GSmodel* model);
-    extern void fn_80191358(GSbound* bound, f32 x, f32 y, f32 z);
+    extern void GSboundAddPoint(GSbound* bound, f32 x, f32 y, f32 z);
     ModelBoundArgs* args = arg;
 
     if (flags & 1) {
@@ -160,7 +160,7 @@ void _modelBoundVertex__FUlPvPv(u32 flags, void* vertex, void* arg)
         set__5GSvecFfff(&position, ((f32*)vertex)[0], ((f32*)vertex)[1],
                         ((f32*)vertex)[2]);
         GSvecTransform(&position, matrix, &position);
-        fn_80191358(GSmodelGetBound(args->model), position.x, position.y,
+        GSboundAddPoint(GSmodelGetBound(args->model), position.x, position.y,
                     position.z);
     }
 }

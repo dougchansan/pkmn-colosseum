@@ -58,7 +58,7 @@ extern void gfxSetBlendMode(s32, s32, s32);
 extern void gfxSetUpdates(s32, s32, s32);
 extern void gfxSetZMode(s32, s32, s32);
 extern void gfxSetCullMode(s32);
-extern void fn_800D9ED8(s32);
+extern void gfxSetFlag1A(s32);
 extern void gfxLoadTexture(s32 map, void* texture);
 extern void gfxBegin(s32 primitive);
 extern void gfxVtxPos(f32 x, f32 y, f32 z);
@@ -121,7 +121,7 @@ void flareDraw(void)
     gfxSetUpdates(1, 1, 0);
     gfxSetZMode(0, 1, 1);
     gfxSetCullMode(0);
-    fn_800D9ED8(1);
+    gfxSetFlag1A(1);
 
     if (mode == 2) {
         vecNormalize(&dir, &dir, dist);

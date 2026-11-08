@@ -12,12 +12,12 @@ extern f32 lbl_8047BA60;
 extern f32 lbl_8047BA74;
 extern f32 lbl_8047BA78;
 
-void fn_80038124(void* window, PdaSprite* sprite)
+void menu1FDrawItem(void* window, PdaSprite* sprite)
 {
     sprite->value = lbl_8047BA74 - lbl_8047A478;
 }
 
-void fn_80038138(void* window, PdaSprite* sprite)
+void menu1EDrawItem(void* window, PdaSprite* sprite)
 {
     f32 new_var;
     int new_var4;

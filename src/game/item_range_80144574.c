@@ -2,7 +2,7 @@
  * @file item_range_80144574.c
  * @brief item-use game code, 0x80144574 - 0x8014635C (1 fn).
  *
- * Split out of the misnamed people_field.c unit (2026-07-02). fn_80144574
+ * Split out of the misnamed people_field.c unit (2026-07-02). itemUseApply
  * (size 0x1DE8) is item-use-on-Pokemon logic (calls hpRecover__FP20...);
  * it ends exactly at seqGetPrivateId (0x8014635C), the first MusyX seq.c
  * function. The range name stays until the real function name is known.
@@ -59,7 +59,7 @@ extern void* fightFloorGetFightPokemonPtrToFightTrainerPtr(s32, void*);
 extern void* fightTrainerCheckFightPokemonFightOut(void*, void*);
 extern void fightOutPokemonUpdateHensinStatus(void* fightOutPokemon, s32 id);
 extern void fightOutPokemonWritePokemonJoutaiDataId(void*, s32, u32);
-extern u8 fn_802025B8(void*, s32);
+extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId(void*, s32);
 extern u8 fightOutPokemonCheckWriteJoutaiDataId(void* fightPokemon, s32 statusId);
 extern void fightOutPokemonWriteJoutaiDataId(void* fightOutPokemon, s32 statusId);
 extern u8 fightOutPokemonIsPokemonJoutaiDataId(void* fightOutPokemon, s32 statusId);
@@ -496,7 +496,7 @@ static inline s16 itemUseFriendUp(
     return gained;
 }
 
-s16 fn_80144574(
+s16 itemUseApply(
     ItemUsePokemonLog* log, void* pokemon, void* fightPokemon,
     u16 itemDataId, u8 moveSlot)
 {
@@ -540,7 +540,7 @@ s16 fn_80144574(
 
     if (itemParamGetCriticalFlag(itemParam)) {
         fightOut = itemUseGetFightOut(fightPokemon);
-        if (fightOut != NULL && fn_802025B8(fightOut, 0xF) == 2) {
+        if (fightOut != NULL && fightOutPokemonCheckWritePokemonJoutaiDataId(fightOut, 0xF) == 2) {
             fightOutPokemonWritePokemonJoutaiDataId(fightOut, 0xF, 0);
             itemUseNotify(fightPokemon, 0x7C);
             itemUseNotify(fightPokemon, 0x99);

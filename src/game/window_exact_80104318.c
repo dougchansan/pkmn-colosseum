@@ -1,17 +1,17 @@
 /**
  * @file window_exact_80104318.c
- * @brief windowGetCursorToItem, windowGetValue, fn_801044D0
+ * @brief windowGetCursorToItem, windowGetValue, windowSetCursorById
  *        (0x80104318 - 0x80104530).
  *
  * Flags: the window TU is built with the project's -O4,p but with the
  * peephole pass off, like the winMsg TU that follows it (see
  * win_msg_exact_80105A3C.c). Retail keeps "clrlwi r0,rX,24; cmplwi r0,0"
  * pairs and uninverted "bne; b" branches. With "-opt nopeephole" and no
- * local pragmas, windowGetCursorToItem, fn_801044D0, windowCloseMain and
+ * local pragmas, windowGetCursorToItem, windowSetCursorById, windowCloseMain and
  * windowInit (all previously exact only under local optimization_level /
  * peephole pragmas) are exact, and so are windowGetValue and
  * windowCheckCursor. The compiler is GC/2.5, as for winMsg: every exact
- * window function is identical under GC/1.3 and GC/2.5, while fn_80105634
+ * window function is identical under GC/1.3 and GC/2.5, while winMsgDrawItem
  * (93.5 -> 94.8%) and windowOpen (80.6 -> 81.9%) only move closer with
  * GC/2.x. That one flag set (GC/2.5, -O4,p, "-opt nopeephole") also
  * replaces the old per-unit "-schedule off" (windowSearchItemID), "-O2",
@@ -99,7 +99,7 @@ s32 windowGetValue(s32 id)
 }
 
 /* 0x801044D0 | 0x60 */
-s32 fn_801044D0(s32 id, u16* cursor)
+s32 windowSetCursorById(s32 id, u16* cursor)
 {
     u8* window = windowSearchIDInline(id);
 

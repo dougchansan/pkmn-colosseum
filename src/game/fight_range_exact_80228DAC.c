@@ -5,7 +5,7 @@
 #include "dolphin/types.h"
 
 extern u8* lbl_8047B610;
-extern u32 fn_80077AF4(void);
+extern u32 menuCBRule_GetRule11(void);
 
 #pragma opt_propagation reset
 #define fn_8011BEB4 wazaGetStatus
@@ -262,11 +262,11 @@ first_check_done:
 
 #define fn_801F54A4 fightFloorGetStatus
 #define fn_8011BEB4 wazaGetStatus
-u8 fn_8022967C(u32 param2) {
+u8 fightAiCheckRule11Effect7(u32 param2) {
     extern u16 fn_8011BEB4();
     extern int fn_801F54A4();
     u8 a = (u8)fn_801F54A4(0, 0, 0x34, 0);
-    u32 b = fn_80077AF4();
+    u32 b = menuCBRule_GetRule11();
     u16 c = (u16)fn_8011BEB4(0, param2, 9, 0);
 
     if (a == 1 && (u8)b == 1 && c == 7) {

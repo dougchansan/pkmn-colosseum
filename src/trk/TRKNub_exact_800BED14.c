@@ -12,7 +12,7 @@ typedef struct TRKMessageBuffer {
     u8 data[0x880];
 } TRKMessageBuffer;
 
-extern void fn_80003488(void* dst, const void* src, u32 size);
+extern void TRK_memcpy(void* dst, const void* src, u32 size);
 
 s32 TRKReadBuffer(TRKMessageBuffer* buffer, u8* destination, u32 count)
 {
@@ -28,7 +28,7 @@ s32 TRKReadBuffer(TRKMessageBuffer* buffer, u8* destination, u32 count)
             error = 0x302;
             count = available;
         }
-        fn_80003488(destination, &buffer->data[position], count);
+        TRK_memcpy(destination, &buffer->data[position], count);
         buffer->position += count;
     }
     return error;
@@ -50,7 +50,7 @@ s32 TRKAppendBuffer(TRKMessageBuffer* buffer, u8* source, u32 count)
         if (count == 1) {
             buffer->data[position] = source[0];
         } else {
-            fn_80003488(&buffer->data[position], source, count);
+            TRK_memcpy(&buffer->data[position], source, count);
         }
         buffer->position += count;
         buffer->length = buffer->position;

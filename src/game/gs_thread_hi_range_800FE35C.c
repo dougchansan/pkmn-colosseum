@@ -14,17 +14,17 @@
  * stay extern.
  *
  * XD names (TeamOrre xd-decomp config/GXXE01/symbols.txt at 4989794e):
- * spriteClearScissor (fn_800FE35C), spriteSetScissor (fn_800FE38C),
+ * spriteClearScissor (spriteClearScissor), spriteSetScissor (spriteSetScissor),
  * spriteSetEnv, spriteGetOffset/spriteSetOffset (the origin accessors).
  * XD's copies take extra arguments, so the Colosseum symbols keep their
  * address names.
  *
  * Flags: GC/1.3, -O4,p and -opt nopeephole unit-wide. Without
- * -opt nopeephole fn_800FE35C's prologue store is scheduled after the
+ * -opt nopeephole spriteClearScissor's prologue store is scheduled after the
  * argument loads, unlike retail. All six functions are exact and the unit
- * links whole (it replaced the fn_800FE35C and accessor carves).
+ * links whole (it replaced the spriteClearScissor and accessor carves).
  *
- * fn_800FE38C (lane D9, 2026-09-29): the clipped edges reuse the result
+ * spriteSetScissor (lane D9, 2026-09-29): the clipped edges reuse the result
  * variables: `right = left + w`, then `right = (f32)right * scale`.
  * Retail keeps each edge in one register web (the GPR colouring simulator
  * finds exactly one single change that gives retail: merging x1's web with
@@ -56,14 +56,14 @@ extern void gfxSetZMode(s32 a, s32 b, s32 c);
 extern void gfxSetCullMode(s32 a);
 extern void gfxSetScissor(u16 left, u16 top, u16 right, u16 bottom);
 
-void fn_800FE35C(void) {
+void spriteClearScissor(void) {
     gfxSetScissor(0, 0, 639, 479);
 }
 
 /* RULE-EXCEPTION(title-path): local compiler control - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma opt_lifetimes off
-void fn_800FE38C(s32 x, s32 y, s32 w, s32 h) {
+void spriteSetScissor(s32 x, s32 y, s32 w, s32 h) {
     s32 bottom, right, top, left;
 
     left = lbl_8047AC70 + x;
@@ -123,12 +123,12 @@ void spriteSetEnv(void) {
     gfxSetCullMode(0);
 }
 
-void fn_800FE6A0(f32 x, f32 y) {
+void spriteSetScale(f32 x, f32 y) {
     lbl_80478B10 = x;
     lbl_80478B14 = y;
 }
 
-void fn_800FE6AC(s16* x, s16* y) {
+void spriteGetOrigin(s16* x, s16* y) {
     if (x != NULL) {
         *x = lbl_8047AC70;
     }
@@ -137,7 +137,7 @@ void fn_800FE6AC(s16* x, s16* y) {
     }
 }
 
-void fn_800FE6D0(s16 x, s16 y) {
+void spriteSetOrigin(s16 x, s16 y) {
     lbl_8047AC70 = x;
     lbl_8047AC72 = y;
 }

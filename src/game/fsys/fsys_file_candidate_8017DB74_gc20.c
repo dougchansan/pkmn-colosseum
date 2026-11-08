@@ -42,12 +42,12 @@ extern u16 GSmemAlloc(u32 size, u32 align);
 extern void* GSmemLock(u16 handle);
 extern void GSdvdReadAsync(u32 fileInfo, void* dst, u32 length, u32 offset,
                         void (*callback)(s32 result));
-extern u32 fn_8017F794(u32 fileHandle, u32 key1, u32 key2);
-extern void fn_8017F800(s32 handleID);
-extern u32 fn_8017FA5C(void);
-extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 key1, u32 key2);
-extern void fn_80180320(void* main, void* aram, u32 size);
-extern void fn_80180450(void* main, void* aram, u32 size);
+extern u32 fsysCacheLookup(u32 fileHandle, u32 key1, u32 key2);
+extern void fsysCacheFreeHandle(s32 handleID);
+extern u32 fsysCacheGetFreeSize(void);
+extern u32 fsysCacheReserve(u32 size, u32 fileHandle, u32 key1, u32 key2);
+extern void fsysARAMToMainSync(void* main, void* aram, u32 size);
+extern void fsysMainToARAMSync(void* main, void* aram, u32 size);
 extern void fsysDVDReadCallback(s32 result);
 
 /* A release-build assert: the test survives, the handler is compiled out
@@ -150,18 +150,18 @@ static inline void fsysCacheMakeRoom(FSYSSlot* slot, u32 size)
     s32 n;
     s32 handleID;
 
-    freeSize = fn_8017FA5C();
+    freeSize = fsysCacheGetFreeSize();
     if (size > freeSize && fsysCacheFindHandle(slot) < 0) {
         for (n = 0;; n++) {
             handleID = fsysCacheOldestHandle();
             if (handleID < 0) {
                 break;
             }
-            fn_8017F800(handleID);
+            fsysCacheFreeHandle(handleID);
             if (fsysCacheRemoveHandle(handleID) < 0) {
                 break;
             }
-            freeSize = fn_8017FA5C();
+            freeSize = fsysCacheGetFreeSize();
             if (size <= freeSize) {
                 break;
             }
@@ -190,19 +190,19 @@ void fsysSlotReadNextEntry(FSYSSlot* slot)
         slot->field_10 = slot->field_10 | 0x40000000;
     }
     headerSize = 0x40;
-    cached = fn_8017F794(slot->fileHandle, 0, 0);
+    cached = fsysCacheLookup(slot->fileHandle, 0, 0);
     if (!cached) {
         fsysCacheMakeRoom(slot, (headerSize + 0x1F) & ~0x1F);
-        cached = fn_8017F928((headerSize + 0x1F) & ~0x1F, slot->fileHandle, 0, 0);
+        cached = fsysCacheReserve((headerSize + 0x1F) & ~0x1F, slot->fileHandle, 0, 0);
         if (cached) {
-            fn_80180450(slot, (void*)cached, (headerSize + 0x1F) & ~0x1F);
+            fsysMainToARAMSync(slot, (void*)cached, (headerSize + 0x1F) & ~0x1F);
         }
     }
     slot->archiveData = fsysAlloc((tocSize + 0x1F) & ~0x1F);
     GS_ASSERT(slot->archiveData);
-    tocCached = fn_8017F794(slot->fileHandle, 0, 1);
+    tocCached = fsysCacheLookup(slot->fileHandle, 0, 1);
     if (tocCached) {
-        fn_80180320(slot->archiveData, (void*)tocCached, (tocSize + 0x1F) & ~0x1F);
+        fsysARAMToMainSync(slot->archiveData, (void*)tocCached, (tocSize + 0x1F) & ~0x1F);
         DCFlushRange(slot->archiveData, (tocSize + 0x1F) & ~0x1F);
         slot->status = 4;
         loaded = 1;

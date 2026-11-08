@@ -46,7 +46,7 @@ extern u8 _fightOutPokemonSoubiItemEffectSub[];
 extern u8 fightOutPokemonDoSoubiItemCheck[];
 extern u8 _wsTokuseiAfterDamage[];
 extern u8 _wsHitCheckJoutaiSub[];
-extern u8 fn_8023B498[];
+extern u8 fightTrainerAiScoreWazaToSide[];
 extern u8 fightTrainerAiGetWazaDamageValue[];
 extern u8 fightTrainerAiGetWazaHitValue[];
 extern u8 lbl_80379452[];
@@ -328,7 +328,7 @@ void* jumptable_8039A478[48] = {
 /* 0x8039A538 - 0x8039A578 (_wsHitCheckJoutaiSub's switch table) is owned by
  * fight_range_8022F2F8.c. */
 
-/* 0x8039A578 - 0x8039A5D8 (the switch tables of fn_8023B498, fightTrainerAiGetWazaDamageValue and
+/* 0x8039A578 - 0x8039A5D8 (the switch tables of fightTrainerAiScoreWazaToSide, fightTrainerAiGetWazaDamageValue and
  * fightTrainerAiGetWazaHitValue) is owned by fight_range_8023B498.c. */
 
 #endif

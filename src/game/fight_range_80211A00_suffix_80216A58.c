@@ -1,7 +1,7 @@
 /**
  * @file fight_range_80211A00_suffix_80216A58.c
  * @brief Beat Up damage and neighbours, 0x80216A58 - 0x80217018
- *        (wsCmdC4, fn_80216CF8, wsCmdC3, wsCmdC2).
+ *        (wsCmdC4, fightAiCalcBaseDamage, wsCmdC3, wsCmdC2).
  *
  * Standalone source at GC/1.3 -O4,s with no pragmas. wsCmdC4 walks the
  * party with heroGetStatus(party, 3, index): the index is the third argument,
@@ -106,7 +106,7 @@ void wsCmdC4(void)
 
 #define fn_8012640C pokemonGetStatus
 #define fn_8011BEB4 wazaGetStatus
-u32 fn_80216CF8(u32 p1, u32 p2, u16 p3, u32 p4, u8 p5) {
+u32 fightAiCalcBaseDamage(u32 p1, u32 p2, u16 p3, u32 p4, u8 p5) {
     extern u32 fn_8012640C();
     extern s32 fn_8011BEB4();
     s32 acc = fn_8012640C(0, p2, 0x4, 0);
@@ -140,7 +140,7 @@ void wsCmdC3(void)
     extern void fightOutPokemonSetPokemonJoutai08();
     extern void fightOutPokemonSetPokemonJoutai0C();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
-    extern u8 fn_802025B8();
+    extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern u32 fn_80205184();
     extern int fightSeqCalcDamage();
@@ -165,7 +165,7 @@ void wsCmdC3(void)
   uVar8 = fn_8011BEB4(uVar11,0,0x30,0);
   uVar3 = fn_801F025C(0x12,0);
   uVar5 = fn_801F025C(2,uVar3);
-  cVar9 = fn_802025B8(uVar3,0x34);
+  cVar9 = fightOutPokemonCheckWritePokemonJoutaiDataId(uVar3,0x34);
   if (cVar9 != 2) {
     lbl_8047B610 = (u8*)*(u32 *)(lbl_8047B610 + 1);
     return;

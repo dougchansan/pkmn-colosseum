@@ -31,11 +31,11 @@ extern void GXSetTevAlphaIn(u32 stage, u8 a, u8 b, u8 c, u8 d);
 extern void GXSetTevKColorSel(u32 stage, u32 sel);
 extern void GXSetTevKAlphaSel(u32 stage, u32 sel);
 extern void GXSetTevIndirect(u32 stage, u8 indStage, u8 format, u8 biasSel, u8 mtxSel, u8 wrapS, u8 wrapT, u8 addPrev, u8 utcLod, u8 alphaSel);
-extern void fn_800BBC7C(u32 stage, u8 indStage, u8 signedOffsets, u8 replaceMode, u8 mtxSel);
-extern void fn_800BBCE0(u32 stage, u8 indStage, u16 sizeS, u16 sizeT, u16 spacingS, u16 spacingT, u8 format, u8 mtxSel, u8 biasSel, u8 alphaSel);
-extern void fn_800BBE8C(u32 stage, u8 indStage, u8 mtxSel);
-extern void fn_800BBF98(u32 stage, u8 indStage, u8 mtxSel);
-extern void fn_800BBFDC(u32 stage);
+extern void GXSetTevIndWarp(u32 stage, u8 indStage, u8 signedOffsets, u8 replaceMode, u8 mtxSel);
+extern void GXSetTevIndTile(u32 stage, u8 indStage, u16 sizeS, u16 sizeT, u16 spacingS, u16 spacingT, u8 format, u8 mtxSel, u8 biasSel, u8 alphaSel);
+extern void GXSetTevIndBumpST(u32 stage, u8 indStage, u8 mtxSel);
+extern void GXSetTevIndBumpXYZ(u32 stage, u8 indStage, u8 mtxSel);
+extern void GXSetTevIndRepeat(u32 stage);
 extern void GXSetTevDirect(u32 stage);
 extern void GXSetTevKColor(u32 id, GXColor color);
 extern void GXSetTevSwapModeTable(u32 table, u32 r, u32 g, u32 b, u32 a);
@@ -114,20 +114,20 @@ void _gfxFlushTevState(void) {
                                 ind->wrapS, ind->wrapT, ind->addPrev, ind->utcLod, ind->alphaSel);
                     break;
                 case 1:
-                    fn_800BBC7C(i, ind->indStage, ind->warpSigned, ind->warpReplace, ind->mtxSel);
+                    GXSetTevIndWarp(i, ind->indStage, ind->warpSigned, ind->warpReplace, ind->mtxSel);
                     break;
                 case 2:
-                    fn_800BBCE0(i, ind->indStage, ind->tileSizeS, ind->tileSizeT, ind->tileSpacingS,
+                    GXSetTevIndTile(i, ind->indStage, ind->tileSizeS, ind->tileSizeT, ind->tileSpacingS,
                                 ind->tileSpacingT, ind->format, ind->mtxSel, ind->biasSel, ind->alphaSel);
                     break;
                 case 3:
-                    fn_800BBE8C(i, ind->indStage, ind->mtxSel);
+                    GXSetTevIndBumpST(i, ind->indStage, ind->mtxSel);
                     break;
                 case 4:
-                    fn_800BBF98(i, ind->indStage, ind->mtxSel);
+                    GXSetTevIndBumpXYZ(i, ind->indStage, ind->mtxSel);
                     break;
                 case 5:
-                    fn_800BBFDC(i);
+                    GXSetTevIndRepeat(i);
                     break;
                 }
             } else {

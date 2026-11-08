@@ -2,7 +2,7 @@
  * @file mail_exact_801D1338.c
  * @brief Mail: sort mode and sequence-entry type, 0x801D1338 - 0x801D13E4.
  *
- * mailBiosGetCounter / fn_801D1364 read and store the u16 at +0x444 of the save
+ * mailBiosGetCounter / mailBiosSetCounter read and store the u16 at +0x444 of the save
  * data's mailbox scratch; mailDataBiosGet08 returns a sequence entry's type
  * (0xFFFF when the index is out of range). Carved out of the mail.c range
  * at the function boundaries. Text-only: the entry table and its count
@@ -25,7 +25,7 @@ u16 mailBiosGetCounter(void)
 }
 
 /* Prototype from battle_waza_types.h. */
-void* fn_801D1364(u16 mode, s32 idx)
+void* mailBiosSetCounter(u16 mode, s32 idx)
 {
     MailPartyScratchExt* party = savedataGetStatus(0, 0x0A);
 

@@ -423,13 +423,13 @@ typedef struct _HSD_TexAnim {
 /* These addresses are not yet conservatively renamed in symbols.txt. */
 void HSD_TObjAnimAll(HSD_TObj* tobj);
 void HSD_TObjReqAnimAllByFlags(HSD_TObj* tobj, f32 startframe, u32 flags);
-void fn_801BEEDC(HSD_TObj* tobj, HSD_TexAnim* texanim);
+void HSD_TObjAddAnim_801BEEDC(HSD_TObj* tobj, HSD_TexAnim* texanim);
 void HSD_TObjSetupVolatileTev(HSD_TObj* tobj, u32 rendermode);
 void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj);
 
 #define HSD_TObjAnimAll HSD_TObjAnimAll
 #define HSD_TObjReqAnimAllByFlags HSD_TObjReqAnimAllByFlags
-#define HSD_TObjAddAnimAll fn_801BEEDC
+#define HSD_TObjAddAnimAll HSD_TObjAddAnim_801BEEDC
 
 HSD_TObj* HSD_TObjLoadDesc(HSD_TObjDesc* td);
 HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj* from, u32 mapping);

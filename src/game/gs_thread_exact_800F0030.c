@@ -5,7 +5,7 @@
  * Address range: 0x800F0030 - 0x800F036C (the head of the retail GSthread
  * translation unit), in address order: threadLoadGPRRegisters,
  * threadLoadFPRRegisters, threadSaveGPRRegisters, threadSaveFPRRegisters,
- * threadExecute, fn_800F02F4, _threadSwitch.
+ * threadExecute, GSthreadGetArg, _threadSwitch.
  *
  * Every routine here was written in assembly by the original developers:
  * they save and restore r0-r31/f0-f31 wholesale, swap the stack pointer and
@@ -236,7 +236,7 @@ L_800F02C8:
 }
 
 /* First-party assembly; evidence: docs/asm_evidence/gs_thread.md */
-asm void fn_800F02F4(void) {
+asm void GSthreadGetArg(void) {
     nofralloc
     lwz r3, 0x8(r1)
     mtlr r3

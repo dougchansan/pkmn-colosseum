@@ -11,7 +11,7 @@ typedef struct DebugTrainerPartData {
     u32 words[5];
 } DebugTrainerPartData;
 
-s32 fn_80051710(u16 trainerId)
+s32 dbgMenuTrainerPokemonPartEdit(u16 trainerId)
 {
     extern DebugTrainerPartData* fightTrainerPokemonPartDataBiosGetPtr(u16);
     extern s32 menuOpenCustom(s32, ...);
@@ -19,7 +19,7 @@ s32 fn_80051710(u16 trainerId)
     extern s32 menuOpen(s32, s32);
     extern s32 menuGetCursorItemID(s32);
     extern u32 fightTrainerGetStatus(u32, u16, u32, u32);
-    extern u8 fn_8001E224(u32, s32*, u32, u32, u32, u32);
+    extern u8 menuNumberInput(u32, s32*, u32, u32, u32, u32);
     extern void fightTrainerSetStatus(u32, u16, u32, u32, s32);
     extern void menuSubCloseNumberInput(void);
     DebugTrainerPartData saved;
@@ -54,7 +54,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x5FE: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 1),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 1),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -71,7 +71,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x5FF: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 2),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 2),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -88,7 +88,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x600: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 3),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 3),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -105,7 +105,7 @@ s32 fn_80051710(u16 trainerId)
         case 0xFED: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 4),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 4),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -122,7 +122,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x601: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 5),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 5),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -139,7 +139,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x602: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 6),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 6),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -156,7 +156,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x603: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 7),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 7),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -173,7 +173,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x604: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 8),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 8),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -190,7 +190,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x605: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 9),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 9),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -207,7 +207,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x606: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 0xA),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 0xA),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -224,7 +224,7 @@ s32 fn_80051710(u16 trainerId)
         case 0x607: {
             s32 value;
 
-            if (fn_8001E224(fightTrainerGetStatus(0, trainerId, 0xC, 0xB),
+            if (menuNumberInput(fightTrainerGetStatus(0, trainerId, 0xC, 0xB),
                             &value, 0, 0x32, 0x32, 0) == 1)
             {
                 if (value > 0xFF) {
@@ -258,13 +258,13 @@ static inline void dbgMenuFightTrainerInputDigit(u16 trainerId, u32 field,
                                                  s32 minimum)
 {
     extern u32 fightTrainerGetStatus(u32, u16, u32, u32);
-    extern u8 fn_8001E224(u32, s32*, u32, u32, u32, u32);
+    extern u8 menuNumberInput(u32, s32*, u32, u32, u32, u32);
     extern void fightTrainerSetStatus(u32, u16, u32, u32, s32);
     extern void menuSubCloseNumberInput(void);
     s32 value;
     u8 result;
 
-    result = fn_8001E224(fightTrainerGetStatus(0, trainerId, field, index),
+    result = menuNumberInput(fightTrainerGetStatus(0, trainerId, field, index),
                          &value, 0, 0x32, 0x32, 0);
     if (result == 1) {
         if (value > maximum) {
@@ -324,7 +324,7 @@ static inline void dbgMenuFightTrainerSelectStatus08460(u16 trainerId, u32 field
     }
 }
 
-s32 fn_80051E38(u16 trainerId)
+s32 dbgMenuTrainerAiDataEdit(u16 trainerId)
 {
     extern DebugTrainerData* fightTrainerAiDataBiosGetPtr(u16);
     extern s32 menuOpenCustom(s32, ...);

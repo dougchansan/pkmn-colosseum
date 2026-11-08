@@ -8,9 +8,9 @@ extern void* jumptable_802EE0F0[];
 extern void* jumptable_802EE20C[];
 extern void* jumptable_802EE31C[];
 
-extern u8 fn_800704AC[];
-extern u8 fn_800706C4[];
-extern u8 fn_80070A9C[];
+extern u8 menuColoBattleBEDrawSprite[];
+extern u8 menuColoBattleBEDrawSprite2[];
+extern u8 menuColoBattleBEDrawSprite3[];
 
 /* Auto-carved .data unit 0x802EDE54..0x802EDE78 (2 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
 

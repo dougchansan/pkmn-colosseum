@@ -10,9 +10,9 @@ typedef struct ToolentryBattleState {
     u32 count_18;
 } ToolentryBattleState;
 
-extern ToolentryBattleState* fn_8006B5A8(void);
+extern ToolentryBattleState* battleResultGetSave(void);
 
 u32 battleResultGet14(void)
 {
-    return fn_8006B5A8()->count_14;
+    return battleResultGetSave()->count_14;
 }

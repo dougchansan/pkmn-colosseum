@@ -6,7 +6,7 @@ typedef struct WazaSequenceScaleCtx {
     u16 field_2E;
 } WazaSequenceScaleCtx;
 
-void fn_801D9950(void* owner, f32* scale, s32 selector)
+void wazaSequenceGetScaleVec(void* owner, f32* scale, s32 selector)
 {
     extern void vecScale(void* dst, void* src, f32 scale);
     extern const f32 lbl_8047E348;

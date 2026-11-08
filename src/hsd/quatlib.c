@@ -7,7 +7,7 @@
  * library, where the helpers return 1 and the slerp's second half no
  * longer keeps 2t in a temporary.
  *
- * Only the slerp (fn_801AD7CC, Melee HSD_QuatLib_8037EF28) and EulerToQuat
+ * Only the slerp (HSD_QuatSlerp, Melee HSD_QuatLib_8037EF28) and EulerToQuat
  * (EulerToQuat) are referenced by the game; the linker strips the rest.
  * Under deferred inlining MWCC emits functions in reverse source order, so
  * EulerToQuat precedes the slerp here and the unreferenced helpers follow
@@ -56,7 +56,7 @@ s32 EulerToQuat(Vec3* euler, Quaternion* q)
 }
 
 /* Quaternion slerp (Melee HSD_QuatLib_8037EF28) */
-s32 fn_801AD7CC(Quaternion* p, Quaternion* q, Quaternion* out, f32 t)
+s32 HSD_QuatSlerp(Quaternion* p, Quaternion* q, Quaternion* out, f32 t)
 {
     f32 cosom;
     f32 theta;

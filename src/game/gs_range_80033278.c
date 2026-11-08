@@ -8,9 +8,9 @@
  * register in _sysvarsProcessData and fn_80034FB4 (lbl_803A3278 + 0x10 /
  * 0xB0 / 0xBC), and keeps the 0xBC object offset out of field displacements.
  *
- * fn_80035C48, fn_80035D70 and fn_80035DA0 live in game/gs_exact_80035C48.c.
+ * cardeArenaRoomInit, fn_80035D70 and cardeArenaRoomExit live in game/gs_exact_80035C48.c.
  *
- * fn_80035DD4 (formerly the last function here) is the opening-demo
+ * openingDemoFinish (formerly the last function here) is the opening-demo
  * finish callback of the movie TU and now lives in game/movie.c.
  */
 #include "dolphin/types.h"
@@ -143,12 +143,12 @@ extern void GBAInit(void);
 extern void gbaBootPrepare(s32);
 extern s32 windowGetActiveID(void);
 extern u8* windowGetKeyInfo(void);
-extern void fn_8007AAFC(void);
+extern void gbaBootCancel(void);
 extern void gbaBootWaitThread(void);
 extern s32 gbaBootRun(s32, s32*);
 extern void cardeDecode(void*, const void*, u32);
-extern void fn_8007C764(u8);
-extern void fn_8007C7A8(u8);
+extern void cardeMatrixSetFlagC9(u8);
+extern void cardeMatrixSetFlagC8(u8);
 extern s32 menuOpen(s32, s32);
 extern void menuClose(s32);
 extern s32 menuOpenCustom(s32, s32, s32, s32, s32, s32, ...);
@@ -156,43 +156,43 @@ extern u8* GScharCpy(void*, const void*);
 extern void* fightFloorDataBiosGetPtr(u16);
 extern void* fightFloorDataBiosGetName(void*);
 extern void* GSmsgGetGSchar(void*);
-extern void fn_8007CB54(void*);
+extern void cardeMatrixSetTitle(void*);
 extern void msgctrlSetValue(u32, u32);
 extern void winMsgOpen(s32, u32, s32, s32);
 extern void winMsgClose(s32);
 extern void __assert(const char*, s32, const char*);
-extern void fn_8007CAB0(void);
-extern CardEGridEntry* fn_800836AC(void*, CardEData*, u8);
-extern void fn_8007C7EC(void);
+extern void cardeMatrixUpdateSortKeys(void);
+extern CardEGridEntry* cardeGridGetRecord(void*, CardEData*, u8);
+extern void cardeMatrixLoadEntries(void);
 extern u8* cardeSaveGetCard(CardEGridEntry*, s8, s8, s8);
 extern u8* cardeSaveGetLevel(CardEGridEntry*, s8);
 extern void menuCardEMatrixSetTarget(u8, s8, s8, s8, s32);
-extern void fn_8007C414(void);
+extern void cardeMatrixClearAnimTimer(void);
 extern u8* cardeSaveSetCard(CardEGridEntry*, CardEData*, s8);
 extern u8* cardeSaveSetSummary(CardEGridEntry*, CardEData*, s8);
 extern void cardeSaveClearSummary(CardEGridEntry*, CardEData*, s8);
 extern void soundStartSE(u32);
 extern void _threadSwitch(void);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
-extern void fn_801D0AFC(s32);
+extern void heroPartyHealAll(s32);
 extern void* savedataGetStatus(s32, s32);
 extern void* heroBiosGetPokemonPtr(void*, u16);
 extern void pokemonBiosSetItemDataId(void*, u16);
 extern u32 cardeBuildTrainerEncounter(void*, s32, s32);
 extern void menuCardEMatrixSelectCard(u8, s8);
 extern u8 cardeSaveRemoveCard(CardEGridEntry*, CardEData*, s8);
-extern void fn_8007C634(void);
-extern void fn_80082650(CardEGridEntry*);
+extern void cardeMatrixCommitEntry(void);
+extern void cardeSaveClearIfEmpty(CardEGridEntry*);
 extern void soundStartRaw(s32, s32, s32);
 extern void heroAddPokecoupon(s32, s32);
 extern s32 heroItemAddItemDataId(void*, u16, s32, s32);
 extern u16 pcboxDelItem(void*, u16, s32);
 extern void std130_soundUnk_801653cc(s32, s32, s32);
 extern void cardeGridSetShadowPokemon(u8*, CardEData*, s8);
-extern s32 fn_80034280(void);
-extern void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut);
-extern void fn_80034830(u8 enabled, s32 selection,
+extern s32 gbaTransferUI(void);
+extern void cardeSelectOpponentLevel(u8* valid, s8* selectionOut, u8* valueOut);
+extern void cardeArenaRecordResult(u8 enabled, s32 selection,
                         SysvarsOpponentSource* source);
 
 static inline void sysvarsWaitForTransfer(void)
@@ -202,11 +202,11 @@ static inline void sysvarsWaitForTransfer(void)
     progress = lbl_8047B9F8;
     while (progress < lbl_8047BA18) {
         _threadSwitch();
-        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 
-/* The same wait for two seconds (fn_80034280's GBA link retries). */
+/* The same wait for two seconds (gbaTransferUI's GBA link retries). */
 static inline void sysvarsWaitTwoSeconds(void)
 {
     f32 progress;
@@ -214,7 +214,7 @@ static inline void sysvarsWaitTwoSeconds(void)
     progress = lbl_8047B9F8;
     while (progress < lbl_8047BA28) {
         _threadSwitch();
-        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 
@@ -239,7 +239,7 @@ static inline void sysvarsRestoreItems(void)
     s32 i;
     void* save;
 
-    fn_801D0AFC(0);
+    heroPartyHealAll(0);
     save = savedataGetStatus(0, 2);
     for (i = 0; i < 6; i++) {
         /* RULE-EXCEPTION(user-approved): codegen-only cast; (u8) before the u16 index parameter gives retail's clrlwi 24 and argument order (i < 6, so the value is unchanged) - see docs/RULE_EXCEPTIONS.md */
@@ -386,10 +386,10 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* text)
     u8 valid;
     void* floor;
 
-    fn_8007C764(lbl_8047A439 == 0);
-    fn_8007C7A8(1);
+    cardeMatrixSetFlagC9(lbl_8047A439 == 0);
+    cardeMatrixSetFlagC8(1);
     result = menuOpen(0xA6, 1);
-    fn_8007C7A8(0);
+    cardeMatrixSetFlagC8(0);
     if (result != 0) {
         return 1;
     }
@@ -402,7 +402,7 @@ s32 _sysvarsProcessData__FP16sysvarsFuncEntryPc(void* entry, char* text)
     name = lbl_803A3288;
 
 restart:
-    switch (fn_80034280()) {
+    switch (gbaTransferUI()) {
     case 0:
         return 0;
     case 1:
@@ -425,7 +425,7 @@ restart:
                 GScharCpy(lbl_803A3288, &lbl_8047BA1C);
             }
         }
-        fn_8007CB54(lbl_803A3288);
+        cardeMatrixSetTitle(lbl_803A3288);
         msgctrlSetValue(0x4D, (u32)lbl_803A3288);
         winMsgOpen(8, 0x3B55, 1, 0);
         winMsgClose(1);
@@ -436,9 +436,9 @@ restart:
         __assert(lbl_80266FAC, 0x6C8, lbl_80266FB8);
     }
 
-    fn_8007CAB0();
-    lbl_8047A434 = fn_800836AC(0, &lbl_803A3334, 1);
-    fn_8007C7EC();
+    cardeMatrixUpdateSortKeys();
+    lbl_8047A434 = cardeGridGetRecord(0, &lbl_803A3334, 1);
+    cardeMatrixLoadEntries();
     if (lbl_8047A434 == NULL) {
         __assert(lbl_80266FAC, 0x6DB, lbl_8047BA20);
         winMsgOpen(8, 0x3B91, 1, 0);
@@ -495,7 +495,7 @@ restart:
         menuCardEMatrixSetTarget(lbl_803A3334.cardId, open, lbl_803A3334.row, lbl_803A3334.column, 6);
         winMsgOpen(8, 0x3B5B, 1, 0);
         winMsgClose(1);
-        fn_8007C414();
+        cardeMatrixClearAnimTimer();
         return 2;
 
     case 4:
@@ -529,15 +529,15 @@ first_menu:
         menuCardEMatrixSetTarget(lbl_803A3334.cardId, lbl_8047A448, lbl_803A3334.row, lbl_803A3334.column, 7);
         soundStartSE(0x4C6);
         sysvarsWaitForTransfer();
-        fn_8007CAB0();
+        cardeMatrixUpdateSortKeys();
         if (cardeSaveRemoveCard(lbl_8047A434, &lbl_803A3334, lbl_8047A448) != 0) {
-            fn_8007C414();
-            fn_8007C634();
-            fn_8007CAB0();
-            fn_80082650(lbl_8047A434);
+            cardeMatrixClearAnimTimer();
+            cardeMatrixCommitEntry();
+            cardeMatrixUpdateSortKeys();
+            cardeSaveClearIfEmpty(lbl_8047A434);
         }
-        fn_8007C414();
-        fn_8007C7EC();
+        cardeMatrixClearAnimTimer();
+        cardeMatrixLoadEntries();
         return 2;
     }
 
@@ -570,17 +570,17 @@ first_menu:
             menuCardEMatrixSetTarget(lbl_803A3334.cardId, lbl_8047A448, lbl_803A3334.row, lbl_803A3334.column, 8);
             soundStartSE(0x4C6);
             sysvarsWaitForTransfer();
-            fn_8007CAB0();
+            cardeMatrixUpdateSortKeys();
             if (cardeSaveRemoveCard(lbl_8047A434, &lbl_803A3334, lbl_8047A448) != 0) {
-                fn_8007C414();
-                fn_8007C634();
-                fn_8007CAB0();
-                fn_80082650(lbl_8047A434);
+                cardeMatrixClearAnimTimer();
+                cardeMatrixCommitEntry();
+                cardeMatrixUpdateSortKeys();
+                cardeSaveClearIfEmpty(lbl_8047A434);
             }
-            fn_8007C414();
-            fn_8007C7EC();
+            cardeMatrixClearAnimTimer();
+            cardeMatrixLoadEntries();
             winMsgOpen(8, 0x3B78, 1, 0);
-            fn_8007C414();
+            cardeMatrixClearAnimTimer();
             if (sysvarsAskRetry() == 0) {
                 goto restart;
             }
@@ -609,11 +609,11 @@ first_menu:
             msgctrlSetValue(0x2D, item);
             winMsgOpen(8, 0x4273, 1, 0);
         }
-        fn_8007C414();
+        cardeMatrixClearAnimTimer();
     }
 
     if (!sysvarsAllFilled(&lbl_803A3334, lbl_8047A448)) {
-        fn_8007C414();
+        cardeMatrixClearAnimTimer();
         if (sysvarsAskRetry() == 0) {
             goto restart;
         }
@@ -630,7 +630,7 @@ first_menu:
 }
 
 /* Run the GBA transfer UI until it finishes or the user cancels it. */
-s32 fn_80034280(void)
+s32 gbaTransferUI(void)
 {
     s32 state;
     s32 nextState;
@@ -649,7 +649,7 @@ s32 fn_80034280(void)
         if (windowGetActiveID() == watchedWindow &&
             (*(u16*)(windowGetKeyInfo() + 4) & 0x20) != 0) {
             if (state == 18) {
-                fn_8007AAFC();
+                gbaBootCancel();
             } else {
                 if (transferActive != 0) {
                     gbaBootWaitThread();
@@ -717,8 +717,8 @@ s32 fn_80034280(void)
     }
 }
 
-/* fn_800345A4 - 0x800345A4 | size: 0x164 */
-void fn_800345A4(void* unused, u8* sprite) {
+/* cardeMenuDrawSprite - 0x800345A4 | size: 0x164 */
+void cardeMenuDrawSprite(void* unused, u8* sprite) {
     extern u32 lbl_802E61D8[];
     extern void winSpriteSetDisp(void*, u32);
     extern u32 heroGetStatus(s32, s32, s32);
@@ -765,8 +765,8 @@ void fn_800345A4(void* unused, u8* sprite) {
     }
 }
 
-/* fn_80034708 - 0x80034708 | size: 0xB0 */
-void fn_80034708(void* unused, u8* sprite) {
+/* cardeMenuDrawSprite2 - 0x80034708 | size: 0xB0 */
+void cardeMenuDrawSprite2(void* unused, u8* sprite) {
     extern u32 lbl_8047A458;
     extern u32 lbl_80266FA0[];
     extern void winSpriteSetDisp(void*, u32);
@@ -796,40 +796,40 @@ void fn_80034708(void* unused, u8* sprite) {
     }
 }
 
-/* fn_800347B8 - 0x800347B8 | size: 0xC */
-void fn_800347B8(void) {
+/* cardeSetRecordFlag - 0x800347B8 | size: 0xC */
+void cardeSetRecordFlag(void) {
     extern u8 lbl_8047A440;
 
     lbl_8047A440 = 1;
 }
 
-/* fn_800347C4 - 0x800347C4 | size: 0x24 */
+/* cardeBuzzer_800347C4 - 0x800347C4 | size: 0x24 */
 #pragma push
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma kept for byte match - see docs/RULE_EXCEPTIONS.md */
 #pragma scheduling off
-void fn_800347C4(void) {
+void cardeBuzzer_800347C4(void) {
     extern void soundStartSE(u32);
 
     soundStartSE(0x26);
 }
 #pragma pop
 
-/* fn_800347E8 - 0x800347E8 | size: 0x24 */
+/* cardeBuzzer_800347E8 - 0x800347E8 | size: 0x24 */
 #pragma push
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma kept for byte match - see docs/RULE_EXCEPTIONS.md */
 #pragma scheduling off
-void fn_800347E8(void) {
+void cardeBuzzer_800347E8(void) {
     extern void soundStartSE(u32);
 
     soundStartSE(0x26);
 }
 #pragma pop
 
-/* fn_8003480C - 0x8003480C | size: 0x24 */
+/* cardeBuzzer_8003480C - 0x8003480C | size: 0x24 */
 #pragma push
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma kept for byte match - see docs/RULE_EXCEPTIONS.md */
 #pragma scheduling off
-void fn_8003480C(void) {
+void cardeBuzzer_8003480C(void) {
     extern void soundStartSE(u32);
 
     soundStartSE(0x26);
@@ -845,7 +845,7 @@ void fn_8003480C(void) {
  * the four 0x2A-byte move slots, which is how the retail code addresses them
  * (base advancing by 0x2A, move payload at displacement 0x22).
  */
-void fn_80034830(u8 enabled, s32 selection,
+void cardeArenaRecordResult(u8 enabled, s32 selection,
                  SysvarsOpponentSource* source)
 {
     extern void GScharCpy(void*, const void*);
@@ -927,7 +927,7 @@ static inline u8 sysvarsGroupMaxLevel(u8* group)
     return maxRequired;
 }
 
-void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut)
+void cardeSelectOpponentLevel(u8* valid, s8* selectionOut, u8* valueOut)
 {
     extern void* heroGetStatus(s32, s32, u16);
     extern u8 pokemonCheckValid(void*);
@@ -997,8 +997,8 @@ void fn_80034B5C(u8* valid, s8* selectionOut, u8* valueOut)
     }
 }
 
-/* fn_80034DC0 - 0x80034DC0 | size: 0x78 */
-void fn_80034DC0(u8* arg0, u8* arg1) {
+/* cardeSubMenuDrawText - 0x80034DC0 | size: 0x78 */
+void cardeSubMenuDrawText(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A44C;
     extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern void msgctrlSetValue(s32, s32);
@@ -1015,8 +1015,8 @@ void fn_80034DC0(u8* arg0, u8* arg1) {
     GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), combined, 0x3CC9);
 }
 
-/* fn_80034E38 - 0x80034E38 | size: 0xB8 */
-void fn_80034E38(u8* arg0, u8* arg1) {
+/* cardeSubMenuDrawText2 - 0x80034E38 | size: 0xB8 */
+void cardeSubMenuDrawText2(u8* arg0, u8* arg1) {
     extern u32 lbl_8047A44C;
     extern u32 lbl_8047A450;
     extern void GSmsgPrintColor(s32, s32, u32, u16);
@@ -1043,11 +1043,11 @@ void fn_80034E38(u8* arg0, u8* arg1) {
     GSmsgPrintRect(0, 0, *(s16*)(arg1 + 0x54), *(s16*)(arg1 + 0x56), value, 0x3CC9);
 }
 
-/* fn_80034EF0 - 0x80034EF0 | size: 0x94 */
+/* cardeMenuDrawText - 0x80034EF0 | size: 0x94 */
 #pragma push
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma kept for byte match - see docs/RULE_EXCEPTIONS.md */
 #pragma optimization_level 1
-void fn_80034EF0(u8* arg0, u8* arg1) {
+void cardeMenuDrawText(u8* arg0, u8* arg1) {
     extern void GSmsgPrintColor(s32, s32, u32, u16);
     extern s32 heroGetStatus(s32, s32, s32);
     extern void msgctrlSetValue(s32, s32);
@@ -1072,19 +1072,19 @@ void fn_80034EF0(u8* arg0, u8* arg1) {
 }
 #pragma pop
 
-/* fn_80034F84 - 0x80034F84 | size: 0x2C */
+/* cardeSubMenuDrawText3 - 0x80034F84 | size: 0x2C */
 #pragma push
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma kept for byte match - see docs/RULE_EXCEPTIONS.md */
 #pragma optimize_for_size on
-void fn_80034F84(void) {
+void cardeSubMenuDrawText3(void) {
     extern void msgctrlSetValue();
     msgctrlSetValue(0x37, lbl_803A3288);
 }
 #pragma optimize_for_size reset
 #pragma pop
 
-/* fn_80034FB0 - 0x80034FB0 | size: 0x4 */
-void fn_80034FB0(void) {
+/* cardeNop_80034FB0 - 0x80034FB0 | size: 0x4 */
+void cardeNop_80034FB0(void) {
 }
 
 extern s32 lbl_8047A43C;
@@ -1156,7 +1156,7 @@ void cardeBattleRun(void)
     extern u8 lbl_8047BA1C;
     extern void cardeAwardCoupons(void);
     extern void cardeBattleSelectCard(void);
-    extern u8 fn_800FF52C(void);
+    extern u8 floorIsLinking(void);
     extern void floorBattleEndTerminateScripts(void);
     extern u8 menuIsCheck(s32);
     extern void fadeSet(u16, f32);
@@ -1231,7 +1231,7 @@ void cardeBattleRun(void)
 
                 lbl_8047A458 = _sysvarsProcessData__FP16sysvarsFuncEntryPc();
             }
-            fn_801D0AFC(0);
+            heroPartyHealAll(0);
             sysvarsLoadItems();
             if (lbl_8047A439 != 0) {
                 lbl_8047A458 = 0;
@@ -1265,7 +1265,7 @@ void cardeBattleRun(void)
 
         case 4:
             if (lbl_8047A449 != 0) {
-                fn_801D0AFC(0);
+                heroPartyHealAll(0);
             }
             if (lbl_8047A450 > lbl_8047A44C) {
                 std130_soundUnk_801653cc(0x4CE, 0, 0xFF);
@@ -1278,7 +1278,7 @@ void cardeBattleRun(void)
                 progress = lbl_8047B9F8;
                 while (progress < lbl_8047B9FC) {
                     _threadSwitch();
-                    progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                    progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                 }
             }
             winMsgOpen(8, 0x3B54, 1, 1);
@@ -1294,7 +1294,7 @@ void cardeBattleRun(void)
             break;
 
         case 5:
-            result = fn_80034280();
+            result = gbaTransferUI();
             switch (result) {
             case 0:
                 lbl_8047A458 = 4;
@@ -1316,7 +1316,7 @@ void cardeBattleRun(void)
                 continue;
             }
             save = savedataGetStatus(0, 0xD);
-            lbl_8047A434 = fn_800836AC(save, &lbl_803A3334, 0);
+            lbl_8047A434 = cardeGridGetRecord(save, &lbl_803A3334, 0);
             if (lbl_8047A434 != 0) {
                 result = 4;
                 entry = cardeSaveGetCard(lbl_8047A434, (s8)(menu->layerCount - 1),
@@ -1385,11 +1385,11 @@ void cardeBattleRun(void)
                 progress = lbl_8047B9F8;
                 while (progress < lbl_8047B9FC) {
                     _threadSwitch();
-                    progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                    progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                 }
             }
             if (lbl_8047A449 != 0) {
-                fn_801D0AFC(0);
+                heroPartyHealAll(0);
             }
             sysvarsLoadItems();
             result = 1;
@@ -1433,8 +1433,8 @@ void cardeBattleRun(void)
 
         case 10:
             /* RULE-EXCEPTION(user-approved): codegen-only cast; the s8 selection is read back as a u8 local - see docs/RULE_EXCEPTIONS.md */
-            fn_80034B5C(&valid, (s8*)&selection, &value);
-            fn_80034830(valid, selection,
+            cardeSelectOpponentLevel(&valid, (s8*)&selection, &value);
+            cardeArenaRecordResult(valid, selection,
                         &lbl_803A3334.opponents[(s8)value]);
             amount = lbl_8047A450 + 1;
             if (amount > 0x98967F) {
@@ -1444,7 +1444,7 @@ void cardeBattleRun(void)
             winMsgOpen(8, 0x3B5E, 1, 0);
             winMsgClose(1);
             if (lbl_8047A450 == 0) {
-                fn_801D0AFC(0);
+                heroPartyHealAll(0);
             }
             lbl_8047A458 = 11;
             break;
@@ -1470,7 +1470,7 @@ void cardeBattleRun(void)
                 lbl_803A3278.entries[index].region = 0;
                 lbl_803A3278.entries[index].variant = 0;
             }
-            fn_801D0AFC(0);
+            heroPartyHealAll(0);
             winMsgOpen(8, 0x3BD7, 1, 0);
             result = menuOpen(0xA9, 1);
             menuClose(0xA9);
@@ -1491,7 +1491,7 @@ void cardeBattleRun(void)
             progress = lbl_8047B9F8;
             while (progress < lbl_8047B9FC) {
                 _threadSwitch();
-                progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             }
             sysvarsLoadItems();
             if (lbl_8047A458 != 0) {
@@ -1519,7 +1519,7 @@ void cardeBattleRun(void)
         }
     }
 
-    if (fn_800FF52C() != 0) {
+    if (floorIsLinking() != 0) {
         floorBattleEndTerminateScripts();
     } else {
         floorLink(0x80, 0);

@@ -126,7 +126,7 @@ extern void __GXInitGX(void);
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-void* fn_800B5C5C(void* object) {
+void* __GXDefaultTexRegionCallback(void* object) {
     s32 format;
     u32 count;
     extern u32 GXGetTexObjFmt(void* object);
@@ -430,7 +430,7 @@ void __GXInitGX(void) {
     extern void GXSetCurrentMtx();
     extern void GXLoadTexMtxImm();
     extern void GXSetViewport(f32, f32, f32, f32, f32, f32);
-    extern void fn_800BD394();
+    extern void GXSetProjectionv();
     extern void GXSetCoPlanar();
     extern void GXSetCullMode();
     extern void GXSetClipMode();
@@ -483,8 +483,8 @@ void __GXInitGX(void) {
     extern void GXPokeAlphaRead();
     extern void GXPokeDstAlpha();
     extern void GXPokeZMode();
-    extern void fn_800BD91C();
-    extern void fn_800BE30C();
+    extern void GXSetGPMetric();
+    extern void GXClearGPMetric();
 
     f32 identity[3][4];
     GXColor clear = { 64, 64, 64, 255 };
@@ -560,7 +560,7 @@ void __GXInitGX(void) {
 
     GXSetViewport(0.0f, 0.0f, (f32)rmode->fbWidth,
                 (f32)rmode->xfbHeight, 0.0f, 1.0f);
-    fn_800BD394(lbl_80312AB4);
+    GXSetProjectionv(lbl_80312AB4);
     GXSetCoPlanar(0);
     GXSetCullMode(2);
     GXSetClipMode(0);
@@ -580,7 +580,7 @@ void __GXInitGX(void) {
         gxState->nextTexRgn = 0;
         gxState->nextTexRgnCI = 0;
     }
-    GXSetTexRegionCallback(fn_800B5C5C);
+    GXSetTexRegionCallback(__GXDefaultTexRegionCallback);
     GXSetTlutRegionCallback(__GXDefaultTlutRegionCallback);
 
     GXSetTevOrder(0, 0, 0, 4);
@@ -652,8 +652,8 @@ void __GXInitGX(void) {
     GXPokeAlphaRead(1);
     GXPokeDstAlpha(0, 0);
     GXPokeZMode(1, 7, 1);
-    fn_800BD91C(0x23, 0x16);
-    fn_800BE30C();
+    GXSetGPMetric(0x23, 0x16);
+    GXClearGPMetric();
 }
 
 #pragma peephole reset

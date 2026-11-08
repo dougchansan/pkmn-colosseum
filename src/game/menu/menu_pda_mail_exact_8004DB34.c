@@ -45,7 +45,7 @@ s32 pdaMailSortMenuDraw(PdaMailWindowB* window, void* fieldHandle)
 #pragma scheduling reset
 
 #pragma peephole off
-s32 fn_8004DB80(PdaMailPhaseWidget* w)
+s32 pdaMailSortCtrl(PdaMailPhaseWidget* w)
 {
     switch (w->phase) {
     case 0:
@@ -67,7 +67,7 @@ s32 fn_8004DB80(PdaMailPhaseWidget* w)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_8004DC18(s32 a)
+s32 pdaMailSortMenuRun(s32 a)
 {
     s32 out = 0;
     s32 choice =
@@ -86,7 +86,7 @@ s32 fn_8004DC18(s32 a)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_8004DCC0(void* unused, PdaMailOutC* window)
+s32 pdaMailPickerDrawMail(void* unused, PdaMailOutC* window)
 {
     s32 table[11];
     s32 i;

@@ -7,7 +7,7 @@
 
 #include "dolphin/types.h"
 
-/* Internal bounding box structure used by fn_80191358 and fn_80191460-8019147C */
+/* Internal bounding box structure used by GSboundAddPoint and GSboundReset-8019147C */
 typedef struct {
     u8 field0;     /* 0x00 */
     u8 init_flag;  /* 0x01: non-zero if uninitialized (reset to 0 on first expand) */
@@ -42,8 +42,8 @@ void ObjInfoInit(HSD_BBox* bound, f32* out) {
 extern void GSmtxMakeXRotation(void* dst, f32 angle);
 extern void GSmtxMakeYRotation(void* dst, f32 angle);
 extern void GSmtxMakeZRotation(void* dst, f32 angle);
-extern void fn_800E048C(void* dst, f32 x, f32 y, f32 z);
-extern void fn_800E0560(void* dst, f32* src);
+extern void GSmtxMakeScale(void* dst, f32 x, f32 y, f32 z);
+extern void GSmtxMakeTranslate(void* dst, f32* src);
 extern void GSmtxConcat(void* dst, void* lhs, void* rhs);
 extern void GSvecTransform(void* dst, void* mtx, void* vec);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
@@ -58,7 +58,7 @@ extern void gfxVtxPos(f32 x, f32 y, f32 z);
 extern void gfxVtxColor4u8(s32 idx, s32 r, s32 g, s32 b, s32 a);
 extern void gfxEnd(void);
 extern u8 lbl_80314638[];
-void fn_80190E60(HSD_ObjectTransformData* data) {
+void GSboundDebugDraw(HSD_ObjectTransformData* data) {
     f32 corner0[3];
     f32 corner1[3];
     f32 mtx_scale[3][4];
@@ -70,9 +70,9 @@ void fn_80190E60(HSD_ObjectTransformData* data) {
     GSmtxMakeXRotation(mtx, data->rotate[0]);
     GSmtxMakeYRotation(mtx_y, data->rotate[1]);
     GSmtxMakeZRotation(mtx_z, data->rotate[2]);
-    fn_800E048C(mtx_translate, data->translate[0], data->translate[1],
+    GSmtxMakeScale(mtx_translate, data->translate[0], data->translate[1],
                 data->translate[2]);
-    fn_800E0560(mtx_scale, data->scale);
+    GSmtxMakeTranslate(mtx_scale, data->scale);
     GSmtxConcat(mtx, mtx_y, mtx);
     GSmtxConcat(mtx, mtx_z, mtx);
     GSmtxConcat(mtx, mtx_translate, mtx);
@@ -125,7 +125,7 @@ extern const f32 lbl_8047D8C0;
  * form still needs CSE disabled. */
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (opt_common_subs off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma opt_common_subs off
-s32 fn_80191118(HSD_ObjectTransformData* data) {
+s32 GSboundIsVisible(HSD_ObjectTransformData* data) {
     f32 corner0[3];
     f32 corner1[3];
     f32 screen0[3];
@@ -145,9 +145,9 @@ s32 fn_80191118(HSD_ObjectTransformData* data) {
     GSmtxMakeXRotation(mtx, data->rotate[0]);
     GSmtxMakeYRotation(mtx_y, data->rotate[1]);
     GSmtxMakeZRotation(mtx_z, data->rotate[2]);
-    fn_800E048C(mtx_translate, data->translate[0], data->translate[1],
+    GSmtxMakeScale(mtx_translate, data->translate[0], data->translate[1],
                 data->translate[2]);
-    fn_800E0560(mtx_scale, data->scale);
+    GSmtxMakeTranslate(mtx_scale, data->scale);
     GSmtxConcat(mtx, mtx_y, mtx);
     GSmtxConcat(mtx, mtx_z, mtx);
     GSmtxConcat(mtx, mtx_translate, mtx);
@@ -201,7 +201,7 @@ s32 fn_80191118(HSD_ObjectTransformData* data) {
 /* 0x80191358 | 0x108 */
 extern void set__5GSvecFfff(void* vec, f32 x, f32 y, f32 z);
 extern void GSvecSub(void* dst, void* max, void* min);
-void fn_80191358(HSD_BBox* bbox, f32 x, f32 y, f32 z) {
+void GSboundAddPoint(HSD_BBox* bbox, f32 x, f32 y, f32 z) {
     if (bbox->init_flag != 0) {
         bbox->init_flag = 0;
         set__5GSvecFfff(bbox->min, x, y, z);
@@ -218,22 +218,22 @@ void fn_80191358(HSD_BBox* bbox, f32 x, f32 y, f32 z) {
 }
 
 /* 0x80191460 | 0xC */
-void fn_80191460(HSD_BBox* bbox) {
+void GSboundReset(HSD_BBox* bbox) {
     bbox->init_flag = 1;
 }
 
 /* 0x8019146C | 0x8 */
-void fn_8019146C(HSD_BBox* bbox, void* val) {
+void GSboundSetScale(HSD_BBox* bbox, void* val) {
     bbox->fieldC = val;
 }
 
 /* 0x80191474 | 0x8 */
-void fn_80191474(HSD_BBox* bbox, void* val) {
+void GSboundSetRotation(HSD_BBox* bbox, void* val) {
     bbox->field8 = val;
 }
 
 /* 0x8019147C | 0x8 */
-void fn_8019147C(HSD_BBox* bbox, void* val) {
+void GSboundSetPosition(HSD_BBox* bbox, void* val) {
     bbox->field4 = val;
 }
 
@@ -243,7 +243,7 @@ extern void* GSmemLock(u16 handle); /* GSmemGetPtr */
 extern u16  lbl_8047B208; /* GSmem handle for object instance pool */
 extern void* lbl_8047B20C; /* resolved pointer to object instance pool */
 extern u32  lbl_8047B210; /* object instance count */
-void fn_80191484(u32 count) {
+void GSboundInitPool(u32 count) {
     u32 handle;
     u32 i;
 

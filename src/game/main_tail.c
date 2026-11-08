@@ -12,11 +12,11 @@ extern void OSSetErrorHandler(u32 error, void* handler);
 extern void OSLoadContext(void* context);
 extern void OSEnableScheduler(void);
 extern void GSthreadExecuteAll(void);
-extern u8 fn_8000DAA8(void);
+extern u8 dbgGetFlag8047A2A0(void);
 extern void peopleMain(u32 a, u32 b);
 extern u8 GSinputIsConnected(u32 padIdx);
-extern void fn_8008AC34(u32 padIdx);
-extern u8 fn_8008ABA0(u32 padIdx);
+extern void gbaPollPort(u32 padIdx);
+extern u8 gbaCommIsReady(u32 padIdx);
 extern void GSinputRead(u32 padIdx);
 extern void* soundSetListener(void* color);
 extern void GSresRegisterResource(void* work, u32 time, u32 numFrames, u32 arg);
@@ -26,15 +26,15 @@ extern void OSCreateThread(void* thread, void* func, void* arg,
                            void* stackBase, u32 stackSize,
                            u32 priority, u32 detached);
 extern void OSResumeThread(void* thread);
-extern void fn_800A1E54(void* thread, u32 prio);
+extern void OSJoinThread(void* thread, u32 prio);
 extern void __OSSetExceptionHandler(u32 exception, void* handler);
 extern void* __va_arg(void* ap, u32 type);
 extern u32 OSGetStackPointer(void);
 
-void fn_800060F0(const char* file, s32 line, const char* fmt, ...);
-void fn_80006378(u32 error, void* context, ...);
-void fn_800064A0(u32 error, void* context);
-s32 fn_800064C4(void);
+void errorPanic(const char* file, s32 line, const char* fmt, ...);
+void osErrorReportCallback(u32 error, void* context, ...);
+void osExceptionResume(u32 error, void* context);
+s32 errorReportThread(void);
 
 extern s32 lbl_80478990;
 extern u32 lbl_8047A260;
@@ -75,51 +75,51 @@ extern int sprintf(char* buf, const char* fmt, ...);
 void mainLogicTask(u32 a, u32 b)
 {
     GSthreadExecuteAll();
-    if (fn_8000DAA8() == 0) {
+    if (dbgGetFlag8047A2A0() == 0) {
         peopleMain(a, b);
     }
 }
 
 /* =========================================================================
- *  fn_80005FFC / fn_80005FFC
+ *  mainPadPollTask / mainPadPollTask
  *  Address: 0x80005FFC, Size: 0x50
  *
  *  Controller polling task. Iterates pads 1-4:
  *  if a pad is NOT responding to GSinputIsConnected (connection check),
- *  it calls fn_8008AC34 to recalibrate that pad.
+ *  it calls gbaPollPort to recalibrate that pad.
  * =========================================================================
  */
-void fn_80005FFC(void) {
+void mainPadPollTask(void) {
     s32 i;
 
     for (i = 1; i <= 4; i++) {
         if (GSinputIsConnected(i) == 0) {
-            fn_8008AC34(i);
+            gbaPollPort(i);
         }
     }
 }
 
 /* =========================================================================
- *  fn_8000604C / fn_8000604C
+ *  mainPadReadTask / mainPadReadTask
  *  Address: 0x8000604C, Size: 0x50
  *
  *  Controller rumble update task. Iterates pads 1-4:
- *  if a pad is NOT responding to fn_8008ABA0 (motor check),
+ *  if a pad is NOT responding to gbaCommIsReady (motor check),
  *  it calls GSinputRead to reset that pad's rumble state.
  * =========================================================================
  */
-void fn_8000604C(void) {
+void mainPadReadTask(void) {
     s32 i;
 
     for (i = 1; i <= 4; i++) {
-        if (fn_8008ABA0(i) == 0) {
+        if (gbaCommIsReady(i) == 0) {
             GSinputRead(i);
         }
     }
 }
 
 /* =========================================================================
- *  InitBackgroundColor / fn_8000609C
+ *  InitBackgroundColor / mainRegisterSoundListener
  *  Address: 0x8000609C, Size: 0x54
  *
  *  Copies the default background color from rodata (lbl_80266438) into
@@ -127,14 +127,14 @@ void fn_8000604C(void) {
  *  Also configures a render schedule with a 2000-tick timeout.
  * =========================================================================
  */
-void fn_8000609C(void) {
+void mainRegisterSoundListener(void) {
     struct BgColor12 { u32 c[3]; } buf;
     buf = *(struct BgColor12*)lbl_80266438;
     GSresRegisterResource(soundSetListener(&buf), 0, 0x7D0, 0);
 }
 
-/* fn_800060F0 - 0x800060F0 | size: 0x160 */
-void fn_800060F0(const char* file, s32 line, const char* fmt, ...) {
+/* errorPanic - 0x800060F0 | size: 0x160 */
+void errorPanic(const char* file, s32 line, const char* fmt, ...) {
     va_list ap;
     int len;
     register u32 i;
@@ -149,15 +149,15 @@ void fn_800060F0(const char* file, s32 line, const char* fmt, ...) {
     for (i = 0, p = (u32*)OSGetStackPointer(); p && (u32)p != 0xFFFFFFFF && i++ < 0x20; p = (u32*)*p) {
         pos += sprintf((char*)lbl_803A0700 + pos, (const char*)(table + 0x1B4), p, p[0], p[1]);
     }
-    fn_800060F0(lbl_8047B6B8, 0x196, (char*)lbl_803A0700);
+    errorPanic(lbl_8047B6B8, 0x196, (char*)lbl_803A0700);
 }
 
 /* =========================================================================
- *  fn_80006250 / fn_80006250
+ *  osInstallErrorHandlers / osInstallErrorHandlers
  *  Address: 0x80006250, Size: 0x128
  *
  *  Sets up memory protection regions and installs a custom error handler
- *  (fn_80006378 / fn_80006378) for all relevant OS exception types:
+ *  (osErrorReportCallback / osErrorReportCallback) for all relevant OS exception types:
  *    0  = SYSTEM_RESET
  *    1  = MACHINE_CHECK
  *    2  = DSI
@@ -179,36 +179,36 @@ void fn_800060F0(const char* file, s32 line, const char* fmt, ...) {
  *    Region 1: 0x81800000, size 0x01800000, permission 3 (RW)
  * =========================================================================
  */
-void fn_80006250(void) {
+void osInstallErrorHandlers(void) {
     /* Set up memory protection regions */
     OSProtectRange(0, 0, 0x80000000, 3);
     OSProtectRange(1, 0x81800000, 0x01800000, 3);
 
     /* Install custom error handler for standard exceptions */
-    OSSetErrorHandler(0, fn_80006378);   /* SYSTEM_RESET */
-    OSSetErrorHandler(1, fn_80006378);   /* MACHINE_CHECK */
-    OSSetErrorHandler(2, fn_80006378);   /* DSI */
-    OSSetErrorHandler(3, fn_80006378);   /* ISI */
-    OSSetErrorHandler(5, fn_80006378);   /* ALIGNMENT */
-    OSSetErrorHandler(11, fn_80006378);  /* FLOATING_POINT */
-    OSSetErrorHandler(13, fn_80006378);  /* PERFORMACE_MONITOR */
-    OSSetErrorHandler(14, fn_80006378);  /* BREAKPOINT */
-    OSSetErrorHandler(15, fn_80006378);  /* SYSTEM_INTERRUPT */
+    OSSetErrorHandler(0, osErrorReportCallback);   /* SYSTEM_RESET */
+    OSSetErrorHandler(1, osErrorReportCallback);   /* MACHINE_CHECK */
+    OSSetErrorHandler(2, osErrorReportCallback);   /* DSI */
+    OSSetErrorHandler(3, osErrorReportCallback);   /* ISI */
+    OSSetErrorHandler(5, osErrorReportCallback);   /* ALIGNMENT */
+    OSSetErrorHandler(11, osErrorReportCallback);  /* FLOATING_POINT */
+    OSSetErrorHandler(13, osErrorReportCallback);  /* PERFORMACE_MONITOR */
+    OSSetErrorHandler(14, osErrorReportCallback);  /* BREAKPOINT */
+    OSSetErrorHandler(15, osErrorReportCallback);  /* SYSTEM_INTERRUPT */
 
     /* Store max error handler index */
     lbl_80478990 = 16;
-    OSSetErrorHandler(16, fn_80006378);  /* THERMAL_INTERRUPT */
+    OSSetErrorHandler(16, osErrorReportCallback);  /* THERMAL_INTERRUPT */
 
     /* If debugger is not attached, also handle program/trace/syscall */
     if (DBIsDebuggerPresent() == 0) {
-        OSSetErrorHandler(6, fn_80006378);   /* PROGRAM */
-        OSSetErrorHandler(10, fn_80006378);  /* SYSTEM_CALL */
-        OSSetErrorHandler(12, fn_80006378);  /* TRACE */
+        OSSetErrorHandler(6, osErrorReportCallback);   /* PROGRAM */
+        OSSetErrorHandler(10, osErrorReportCallback);  /* SYSTEM_CALL */
+        OSSetErrorHandler(12, osErrorReportCallback);  /* TRACE */
     }
 }
 
 /* =========================================================================
- *  fn_80006378 / fn_80006378
+ *  osErrorReportCallback / osErrorReportCallback
  *  Address: 0x80006378, Size: 0x128
  *
  *  Custom OS error handler. Called on any unhandled exception.
@@ -231,7 +231,7 @@ typedef struct ErrThread {
     u64 pad[0x318 / 8];
 } ErrThread;
 
-void fn_80006378(u32 error, void* context, ...) {
+void osErrorReportCallback(u32 error, void* context, ...) {
     ErrThread thread;
     ErrVaListArray args;
 
@@ -240,27 +240,27 @@ void fn_80006378(u32 error, void* context, ...) {
     lbl_8047A268 = *(u32*)__va_arg(args, 1);
     memcpy(lbl_803A1700, context, 0x2C8);
     lbl_8047A260 = (u16)error;
-    __OSSetExceptionHandler(8, fn_800064A0);
+    __OSSetExceptionHandler(8, osExceptionResume);
     OSEnableScheduler();
-    OSCreateThread(&thread, fn_800064C4, NULL, lbl_8039E700 + 0x1FFC, 0x2000, 1, 0);
+    OSCreateThread(&thread, errorReportThread, NULL, lbl_8039E700 + 0x1FFC, 0x2000, 1, 0);
     OSResumeThread(&thread);
-    fn_800A1E54(&thread, 0);
+    OSJoinThread(&thread, 0);
 }
 
 /* =========================================================================
- *  fn_800064A0 / fn_800064A0
+ *  osExceptionResume / osExceptionResume
  *  Address: 0x800064A0, Size: 0x24
  *
  *  Installed as exception handler 8 (decrementer). Simply loads
  *  the saved context to resume execution in the error display thread.
  * =========================================================================
  */
-void fn_800064A0(u32 error, void* context) {
+void osExceptionResume(u32 error, void* context) {
     OSLoadContext(context);
 }
 
 /* =========================================================================
- *  fn_800064C4 / fn_800064C4
+ *  errorReportThread / errorReportThread
  *  Address: 0x800064C4, Size: 0x16C
  *
  *  Thread entry function that renders the crash report to screen.
@@ -268,7 +268,7 @@ void fn_800064A0(u32 error, void* context) {
  *  produce a formatted crash dump visible on the TV output.
  * =========================================================================
  */
-s32 fn_800064C4(void) {
+s32 errorReportThread(void) {
     const char* strs = (const char*)lbl_80266448;
     s32 n;
     u32 i;
@@ -293,6 +293,6 @@ s32 fn_800064C4(void) {
         sp = (u32*)sp[0];
     }
 
-    fn_800060F0(lbl_8047B6B8, 0xD5, (char*)lbl_803A0700);
+    errorPanic(lbl_8047B6B8, 0xD5, (char*)lbl_803A0700);
     return 0;
 }

@@ -97,13 +97,13 @@ void TRKUARTInterruptHandler(void) {
 
 /* InitializeProgramEndTrap - 0x800C34A0 | size 0x58 | scope global */
 void InitializeProgramEndTrap(void) {
-    extern void fn_80003488(void* dst, const void* src, u32 size);
+    extern void TRK_memcpy(void* dst, const void* src, u32 size);
     extern void ICInvalidateRange(void* addr, u32 size);
     extern void DCFlushRange(void* addr, u32 size);
     extern void PPCHalt(void);
     u32* halt = (u32*)PPCHalt;
 
-    fn_80003488(halt + 1, EndofProgramInstruction, 4);
+    TRK_memcpy(halt + 1, EndofProgramInstruction, 4);
     ICInvalidateRange(halt + 1, 4);
     DCFlushRange(halt + 1, 4);
 }

@@ -6,7 +6,7 @@ extern s32 heroGetStatus(void* partyData, s32 slot, s32 p3);
 extern void msgctrlSetValue(s32 paramId, s32 value);
 extern void GSmsgPrintColor(s32 x, s32 y, u32 color, u16 messageId);
 
-void fn_80031188(u8* r3, u8* r4)
+void gbaTradeMenuDrawText(u8* r3, u8* r4)
 {
     u32 flags = *(u32*) (r4 + 0x64);
     s32 evtype = *(s16*) (r4 + 0x6);

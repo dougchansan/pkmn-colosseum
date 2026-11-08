@@ -1,11 +1,11 @@
 /**
  * @file cardesavedata_exact_80087AE8.c
- * @brief fn_80087AE8 (0x80087AE8-0x80087C64): wait for a Card-e message
+ * @brief cardeWaitMessage (0x80087AE8-0x80087C64): wait for a Card-e message
  * window, the B button or a port change. Linked on its own (data-free).
  */
 #include "dolphin/types.h"
 
-s32 fn_80087AE8(u8* work, int flags)
+s32 cardeWaitMessage(u8* work, int flags)
 {
     extern u32 SIProbe(s32);
     extern u8 menuIsCheck(s32);

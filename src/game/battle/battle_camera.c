@@ -225,7 +225,7 @@ void battleCameraStartRandom(void) {
     extern u32 lbl_80478CAC;
     extern f32 lbl_8047DF58;
     extern void* battleCameraWazaGetOwner(void);
-    extern void fn_801D2C74(void* owner);
+    extern void battleCameraWazaRestart(void* owner);
     extern s32 GSgetFrameStep(void);
     extern f32 GSrandf(void);
     extern u32 _fadeEffectGetRandom__FUl(u32 range);
@@ -271,7 +271,7 @@ void battleCameraStartRandom(void) {
                 continue;
             }
             if (ordinal == candidate) {
-                fn_801D2C74(group->slot);
+                battleCameraWazaRestart(group->slot);
                 lbl_80478CA8 = 200;
             }
             ordinal++;
@@ -279,7 +279,7 @@ void battleCameraStartRandom(void) {
             for (j = 0; j < memberCount; j++) {
                 if (group->pokemon[j] != NULL) {
                     if (ordinal == candidate) {
-                        fn_801D2C74(group->pokemon[j]);
+                        battleCameraWazaRestart(group->pokemon[j]);
                         lbl_80478CA8 = 200;
                     }
                     ordinal++;

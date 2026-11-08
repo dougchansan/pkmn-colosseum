@@ -26,7 +26,7 @@ extern void winSpriteSetDisp(void*, u32);
 extern const s32 lbl_80267AB0[18];
 
 /* Address: 0x8005D5CC | Size: 0xDC */
-s32 fn_8005D5CC(MenuWindow* menu, MenuSprite* sprite) {
+s32 menu9DDrawSprite5(MenuWindow* menu, MenuSprite* sprite) {
     typedef struct ColosseumSpriteTags {
         s32 values[18];
     } ColosseumSpriteTags;

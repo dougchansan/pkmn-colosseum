@@ -23,7 +23,7 @@
  * or trail per call instead of batching, passes the particle velocity to
  * psDispSubMakePolygon (which derives the trail's previous position), scales
  * billboards by the generator's scale block, clamps the texture-form trail
- * ratio at 1, and adds psSetFog/psRemoveFog (psSetFog/fn_8016EA88).
+ * ratio at 1, and adds psSetFog/psRemoveFog (psSetFog/HSD_FogReleaseCurrent).
  * particleSort lives in pslist.c.
  *
  * Compiler: the particle library flags (pslist.c, particle.c, generator.c,
@@ -432,7 +432,7 @@ void psSetFog(HSD_Fog* fog)
 }
 
 /* psRemoveFog */
-void fn_8016EA88(void)
+void HSD_FogReleaseCurrent(void)
 {
     if (psFog != NULL) {
         HSD_FogUnref(psFog);

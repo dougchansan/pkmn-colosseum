@@ -4,7 +4,7 @@
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_80089030(u8 x) {
+void gbaSetConnectionMode(u8 x) {
     extern u8 lbl_80478958;
 
     lbl_80478958 = (x == 0);

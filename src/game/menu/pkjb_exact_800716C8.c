@@ -8,7 +8,7 @@
 #include "game/menu/pkjb_uploader_shared.h"
 
 /* 0x800716C8 | 0x20 */
-s32 fn_800716C8(s32 chan, void* arg, void (*func)(s32 chan, void* arg))
+s32 gbaCommSetChannelBuffer(s32 chan, void* arg, void (*func)(s32 chan, void* arg))
 {
     lbl_803B6E18[chan].func = func;
     lbl_803B6E18[chan].arg = arg;
@@ -16,14 +16,14 @@ s32 fn_800716C8(s32 chan, void* arg, void (*func)(s32 chan, void* arg))
 }
 
 /* 0x800716E8 | 0x18 */
-s32 fn_800716E8(s32 chan, s32 value)
+s32 gbaCommSetChannelResult(s32 chan, s32 value)
 {
     lbl_803B6E08[chan] = value;
     return 0;
 }
 
 /* 0x80071700 | 0x2A8 */
-s32 fn_80071700(s32 chan)
+s32 gbaCmdHandshakeA(s32 chan)
 {
     s32 key;
     s32 result;
@@ -36,7 +36,7 @@ s32 fn_80071700(s32 chan)
 }
 
 /* 0x800719A8 | 0x13C */
-s32 fn_800719A8(s32 chan)
+s32 gbaCmdWaitReady(s32 chan)
 {
     return pkjbWaitZeroResponse(chan);
 }

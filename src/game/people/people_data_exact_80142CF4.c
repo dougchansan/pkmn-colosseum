@@ -10,8 +10,8 @@ extern u8* itemSoubiDataBiosGetPtr(u16 id);
 extern u32 itemDataBiosGetName(u8* p);
 extern u8 itemDataBiosGetKind(u8* p);
 extern u32 itemDataBiosGetPrice(u8* p);
-extern u8 fn_80143FCC(u8* p);
-extern u8 fn_80143FB4(u8* p);
+extern u8 itemDataGetField1(u8* p);
+extern u8 itemDataGetField2(u8* p);
 extern u32 itemDataBiosGetDoc(u8* p);
 extern u32 itemDataBiosGetItemSoubiDataId(u8* p);
 extern u32 itemDataBiosGetFightUseKoukaDataId(u8* p);
@@ -81,9 +81,9 @@ s32 itemGetStatus(u8* record, u16 id, u16 field, u16 arg)
     case 3:
         return (u16)itemDataBiosGetPrice(data);
     case 4:
-        return fn_80143FCC(data);
+        return itemDataGetField1(data);
     case 5:
-        return fn_80143FB4(data);
+        return itemDataGetField2(data);
     case 6:
         return itemDataBiosGetDoc(data);
     case 7:

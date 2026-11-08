@@ -55,14 +55,14 @@ extern u8 lbl_802ED9A0[];
 extern u8 __OSDoHotReset[];
 extern u8 _sysvarsProcessData__FP16sysvarsFuncEntryPc[];
 extern u8 itemFieldUseParamItem[];
-extern u8 fn_8002FC58[];
+extern u8 gbaTradeSelectParty[];
 extern u8 gbaTradeRun[];
 extern u8 cardeAwardCoupons[];
-extern u8 fn_80034280[];
+extern u8 gbaTransferUI[];
 extern u8 cardeBattleRun[];
-extern u8 fn_8003F464[];
+extern u8 pdaMemoMainDrawText[];
 extern u8 pcBoxPokemonCommand[];
-extern u8 fn_80059034[];
+extern u8 menuPartySlotAction[];
 extern u8 demoScene16[];
 extern u8 lbl_8047BB08[];
 extern u8 lbl_8047BB0C[];
@@ -680,7 +680,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x8001001E,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0x00000000,
     (void*)0x00000008,
     (void*)((u8*)__OSDoHotReset + 0x40),
@@ -698,7 +698,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x8001001E,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0x00000000,
     (void*)0xFFFFFFF8,
     (void*)((u8*)__OSDoHotReset + 0x40),
@@ -1052,7 +1052,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00070000,
     (void*)0xFFFFFF00,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0x00000000,
     (void*)0xFFFFFF9C,
     (void*)0xC003000A,
@@ -1085,7 +1085,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00070000,
     (void*)0xFFFFFF00,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0x00000000,
     (void*)0x000000C8,
     (void*)0xC003000A,
@@ -1118,7 +1118,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00070000,
     (void*)0xFFFFFF00,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0xFFFFFF38,
     (void*)0x00000000,
     (void*)0xC003000A,
@@ -1151,7 +1151,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00070000,
     (void*)0xFFFFFF00,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0x000000C8,
     (void*)0x00000000,
     (void*)0xC003000A,
@@ -1187,7 +1187,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00010003,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0xFFFFFF38,
     (void*)0x00000000,
     (void*)0xC003000A,
@@ -1226,7 +1226,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00010003,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0x000000C8,
     (void*)0x00000000,
     (void*)0xC003000A,
@@ -1265,7 +1265,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00010006,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0xFFFFFF38,
     (void*)0x00000000,
     (void*)0xC003000A,
@@ -1304,7 +1304,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00010006,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0x000000C8,
     (void*)0x00000000,
     (void*)0xC003000A,
@@ -1409,7 +1409,7 @@ void* lbl_802E6428[1584] = {
     (void*)0x00070000,
     (void*)0xFFFFFF00,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002FC58 + 0x3A8),
+    (void*)((u8*)gbaTradeSelectParty + 0x3A8),
     (void*)0x00000000,
     (void*)0xFFFFFF9C,
     (void*)0xA003000A,

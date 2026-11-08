@@ -111,9 +111,9 @@ extern MenuModelWork lbl_803A9720;
 extern u32 lbl_8047A560;
 
 extern void* pcBoxGetCursorPokemon(MenuCBPane* pane);
-extern s32 fn_800573C0(void);
-extern s32 fn_800566E8(void);
-extern s32 fn_80057E40(MenuCBPane* pane);
+extern s32 pcBoxCursorBusy(void);
+extern s32 pcBoxTabIsMoving(void);
+extern s32 pcBoxStreamGetState(MenuCBPane* pane);
 extern void GSmsgPrintColor(s32 x, s32 y, s32 color, u32 msgId);
 extern u32 GSmsgGetGSchar(u32 msgId);
 extern u32 GSmsgGetRect(u32 msgId);
@@ -141,32 +141,32 @@ extern s8 getPokemonBoxNbUsedSlot__5PCBOXFSc(void* pcbox, s8 box);
 extern void winSpriteSetDisp(MenuCBPane* pane, u8 enable);
 extern MenuKeyInfo* windowGetKeyInfo(void);
 extern void menuModelTerm(MenuModelWork* work);
-s32 fn_80057694(void);
-void fn_800576A4(u32 value);
-u32 fn_800567AC(void);
-u32 fn_80056704(void);
+s32 pcBoxGetHeldFlag(void);
+void pcBoxSetHeldFlag(u32 value);
+u32 pcBoxTabNext(void);
+u32 pcBoxTabPrev(void);
 void menuCursorNormal(MenuCBPane* pane);
 MenuCursorItem* windowGetCursorToItem();
-void fn_80057830(s16 x, s16 y, s32 selected);
-extern void fn_80054760(s32 forward, s32 wait);
+void pcBoxSetCursorTarget(s16 x, s16 y, s32 selected);
+extern void pcBoxOpenDetail(s32 forward, s32 wait);
 extern void pcBoxRun(void);
-extern void fn_80056A80(void);
-extern void fn_80056B74(MenuCBPane* pane, s32 enabled);
-extern void fn_80057A38(void);
-extern void fn_80057A64(void* pokemon, s32 arg1);
-extern s8 fn_801347D8(void);
-extern s32 fn_80055E38(MenuCBPane* pane);
-extern void fn_800FE6D0(s16 x, s16 y);
+extern void pcBoxCloseTabs(void);
+extern void pcBoxOpenTabs(MenuCBPane* pane, s32 enabled);
+extern void pcBoxCloseHeldWindow(void);
+extern void pcBoxOpenHeldWindow(void* pokemon, s32 arg1);
+extern s8 pcBoxGetSlotCount(void);
+extern s32 pcBoxTabMenuIdle(MenuCBPane* pane);
+extern void spriteSetOrigin(s16 x, s16 y);
 extern void spriteSetEnv(void);
 extern void* heroGetStatus(void* hero, s32 selector, u16 index);
 extern u8 pokemonCheckValid(void* pokemon);
-extern s32 fn_80057DE8(void* pokemon);
-extern void* fn_80057F94(void* pokemon);
+extern s32 pcBoxIsShadowPokemon(void* pokemon);
+extern void* pcBoxGetIconResource(void* pokemon);
 extern void gfxSetFlags(u32 flags);
-extern void fn_800DC0D4(s32, s32, s32, s32, s32);
-extern void fn_800DC14C(s32, s32, s32, s32, s32, s32);
-extern void fn_800DBFD4(s32, s32, s32, s32, s32);
-extern void fn_800DC04C(s32, s32, s32, s32, s32, s32);
+extern void gfxSetTevAlphaIn(s32, s32, s32, s32, s32);
+extern void gfxSetTevAlphaOp(s32, s32, s32, s32, s32, s32);
+extern void gfxSetTevColorIn(s32, s32, s32, s32, s32);
+extern void gfxSetTevColorOp(s32, s32, s32, s32, s32, s32);
 extern u16 GStextureGetXsize(void* texture);
 extern u16 GStextureGetYsize(void* texture);
 extern void gfxSetVtxDesc(void* resource);
@@ -180,17 +180,17 @@ extern void gfxEnd(void);
 extern void gfxClearFlags(u32 flags);
 extern void* menuSpriteBiosGetPtr(s32 id);
 extern void windowDrawSprite2(s32, s32, s16, s16, s32, void*, s32, s32);
-s32 fn_800576B4(void);
-s32 fn_80057538(void);
-s32 fn_80056A78(void);
+s32 pcBoxGetHoldState(void);
+s32 pcBoxHeldSequenceDone(void);
+s32 pcBoxGetTab(void);
 void* getPokemon__5PCBOXFScSc(void*, s8, s8);
 void delPokemon__5PCBOXFScSc(void*, s8, s8);
 void setPokemon__5PCBOXFP7PokemonScSc(void*, void*, s8, s8);
-void fn_800574FC(void* pokemon);
-void* fn_800574E0(void);
-void fn_800574A8(void);
-void fn_80057400(void);
-void fn_800576C4(s32 state);
+void pcBoxCopyToHeld(void* pokemon);
+void* pcBoxGetHeld(void);
+void pcBoxClearHeld(void);
+void pcBoxSwapHeldBuffer(void);
+void pcBoxSetHoldState(s32 state);
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off; dont_inline on; dont_inline reset; push; peephole off; scheduling on) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
@@ -199,7 +199,7 @@ void fn_800576C4(s32 state);
 #pragma push
 #pragma peephole off
 #pragma scheduling on
-s32 fn_80054914(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxCmdDrawSprite(MenuCBPane* pane, MenuCBPane* sprite) {
     typedef struct MessageIdTable {
         s32 ids[6][3];
     } MessageIdTable;
@@ -238,7 +238,7 @@ s32 fn_80054914(MenuCBPane* pane, MenuCBPane* sprite) {
 }
 #pragma pop
 
-s32 fn_800549F0(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxCmdDrawShift(MenuCBPane* pane, MenuCBPane* sprite) {
     MenuCBState* state = pane->state;
 
     if (state->cursorKind != 2) {
@@ -247,7 +247,7 @@ s32 fn_800549F0(MenuCBPane* pane, MenuCBPane* sprite) {
     return 0;
 }
 
-s32 fn_80054A2C(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxCmdDrawPlace(MenuCBPane* pane, MenuCBPane* sprite) {
     MenuCBState* state = pane->state;
 
     if (state->cursorKind != 1) {
@@ -256,7 +256,7 @@ s32 fn_80054A2C(MenuCBPane* pane, MenuCBPane* sprite) {
     return 0;
 }
 
-s32 fn_80054A68(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxCmdDrawMove(MenuCBPane* pane, MenuCBPane* sprite) {
     MenuCBState* state = pane->state;
 
     if (state->cursorKind != 0) {
@@ -265,7 +265,7 @@ s32 fn_80054A68(MenuCBPane* pane, MenuCBPane* sprite) {
     return 0;
 }
 
-s32 fn_80054AA4(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxCmdDrawDeposit(MenuCBPane* pane, MenuCBPane* sprite) {
     MenuCBState* state = pane->state;
 
     if (state->markKind == 0) {
@@ -274,7 +274,7 @@ s32 fn_80054AA4(MenuCBPane* pane, MenuCBPane* sprite) {
     return 0;
 }
 
-s32 fn_80054AE0(MenuCBPane* pane, MenuCBPane* sprite) {
+s32 pcBoxCmdDrawWithdraw(MenuCBPane* pane, MenuCBPane* sprite) {
     MenuCBState* state = pane->state;
 
     if (state->markKind != 0) {
@@ -288,7 +288,7 @@ s32 fn_80054AE0(MenuCBPane* pane, MenuCBPane* sprite) {
 #pragma push
 #pragma scheduling on
 #pragma peephole off
-s32 fn_80054B1C(s32 context, s32 mode) {
+s32 pcBoxSelectCommand(s32 context, s32 mode) {
     s32 result;
     u32 args[2];
 
@@ -332,7 +332,7 @@ s32 fn_80054B1C(s32 context, s32 mode) {
 
 #pragma push
 #pragma peephole off
-s32 fn_80054C44(MenuCBPane* pane) {
+s32 pcBoxMainCursor(MenuCBPane* pane) {
     MenuKeyInfo* keys;
     MenuCursorItem* item;
     s32 cursor;
@@ -340,28 +340,28 @@ s32 fn_80054C44(MenuCBPane* pane) {
     s32 previousAction;
 
     keys = windowGetKeyInfo();
-    if (fn_800573C0() != 0) {
+    if (pcBoxCursorBusy() != 0) {
         return 0;
     }
-    if (fn_800566E8() != 0) {
+    if (pcBoxTabIsMoving() != 0) {
         return 0;
     }
 
     if ((keys->buttonsRepeat & 0xC0) != 0) {
-        if (fn_80057694() != 0) {
+        if (pcBoxGetHeldFlag() != 0) {
             cursor = 0;
         } else {
             cursor = 1;
         }
-        fn_800576A4(cursor);
+        pcBoxSetHeldFlag(cursor);
     }
 
     if ((keys->buttons & 0x400) != 0) {
-        fn_800567AC();
+        pcBoxTabNext();
         return 0;
     }
     if ((keys->buttons & 0x200) != 0) {
-        fn_80056704();
+        pcBoxTabPrev();
         return 0;
     }
 
@@ -374,11 +374,11 @@ s32 fn_80054C44(MenuCBPane* pane) {
 
     if (action == 1) {
         if (keys->buttons == 8) {
-            fn_800567AC();
+            pcBoxTabNext();
             return 0;
         }
         if (keys->buttons == 4) {
-            fn_80056704();
+            pcBoxTabPrev();
             return 0;
         }
     }
@@ -418,17 +418,17 @@ s32 fn_80054C44(MenuCBPane* pane) {
     cursor = (u8)pane->boxIndex;
     if ((s8)cursor != pane->previousBoxIndex) {
         item = windowGetCursorToItem(pane);
-        fn_80057830(item->x, item->y, 0);
+        pcBoxSetCursorTarget(item->x, item->y, 0);
         return 0;
     }
     return 0;
 }
 #pragma pop
 
-void fn_80054E7C(MenuCBPane* pane) {
+void pcBoxMainButton(MenuCBPane* pane) {
     windowGetKeyInfo();
-    if (fn_800573C0() == 0) {
-        if (fn_800566E8() == 0) {
+    if (pcBoxCursorBusy() == 0) {
+        if (pcBoxTabIsMoving() == 0) {
             menuButtonNormal(pane);
         }
     }
@@ -442,64 +442,64 @@ void pcBoxMovePokemon(MenuCBPane* pane) {
     s32 state;
     s32 box;
 
-    state = fn_800576B4();
+    state = pcBoxGetHoldState();
     switch (state) {
     case 1:
-        if (fn_80057538() == 0) {
+        if (pcBoxHeldSequenceDone() == 0) {
             break;
         }
         box = pane->boxIndex;
         if (box >= 0 && box < 0x20) {
             selectedSlot = lbl_80267398[box].slot;
         }
-        box = fn_80056A78();
-        fn_800574FC(getPokemon__5PCBOXFScSc(NULL, (s8)box, (s8)selectedSlot));
+        box = pcBoxGetTab();
+        pcBoxCopyToHeld(getPokemon__5PCBOXFScSc(NULL, (s8)box, (s8)selectedSlot));
         delPokemon__5PCBOXFScSc(NULL, (s8)box, (s8)selectedSlot);
-        fn_800576C4(2);
+        pcBoxSetHoldState(2);
         break;
     case 2:
-        if (fn_80057538() == 0) {
+        if (pcBoxHeldSequenceDone() == 0) {
             break;
         }
-        fn_800576C4(3);
+        pcBoxSetHoldState(3);
         if ((s32)lbl_8047A560 != 0) {
             pane->flag98 = 1;
         }
         break;
     case 4:
-        if (fn_80057538() == 0) {
+        if (pcBoxHeldSequenceDone() == 0) {
             break;
         }
         box = pane->boxIndex;
         if (box >= 0 && box < 0x20) {
             selectedSlot = lbl_80267398[box].slot;
         }
-        box = fn_80056A78();
-        setPokemon__5PCBOXFP7PokemonScSc(NULL, fn_800574E0(), (s8)box,
+        box = pcBoxGetTab();
+        setPokemon__5PCBOXFP7PokemonScSc(NULL, pcBoxGetHeld(), (s8)box,
                                           (s8)selectedSlot);
-        fn_800574A8();
-        fn_800576C4(5);
+        pcBoxClearHeld();
+        pcBoxSetHoldState(5);
         break;
     case 5:
-        if (fn_80057538() == 0) {
+        if (pcBoxHeldSequenceDone() == 0) {
             break;
         }
-        fn_800576C4(0);
+        pcBoxSetHoldState(0);
         break;
     case 6:
-        if (fn_80057538() == 0) {
+        if (pcBoxHeldSequenceDone() == 0) {
             break;
         }
         box = pane->boxIndex;
         if (box >= 0 && box < 0x20) {
             selectedSlot = lbl_80267398[box].slot;
         }
-        box = fn_80056A78();
-        setPokemon__5PCBOXFP7PokemonScSc(NULL, fn_800574E0(), (s8)box,
+        box = pcBoxGetTab();
+        setPokemon__5PCBOXFP7PokemonScSc(NULL, pcBoxGetHeld(), (s8)box,
                                           (s8)selectedSlot);
-        fn_800574A8();
-        fn_80057400();
-        fn_800576C4(3);
+        pcBoxClearHeld();
+        pcBoxSwapHeldBuffer();
+        pcBoxSetHoldState(3);
         break;
     }
 }
@@ -508,14 +508,14 @@ void pcBoxMovePokemon(MenuCBPane* pane) {
 
 #pragma push
 #pragma peephole off
-s32 fn_800550B4(MenuCBStatusWork* work) {
+s32 pcBoxMainCtrl(MenuCBStatusWork* work) {
     MenuCursorItem* item;
     s32 selected;
 
     extern MenuCursorItem* windowGetCursorToItem(MenuCBStatusWork* work);
-    extern void fn_80057830(s16 x, s16 y, s32 selected);
-    extern void fn_80057948(void);
-    extern void fn_80056854(void);
+    extern void pcBoxSetCursorTarget(s16 x, s16 y, s32 selected);
+    extern void pcBoxUpdateCursor(void);
+    extern void pcBoxTabUpdateSlide(void);
     extern s32 windowGetActiveID(void);
     extern void pcBoxMovePokemon(MenuCBStatusWork* work);
 
@@ -527,12 +527,12 @@ s32 fn_800550B4(MenuCBStatusWork* work) {
             selected = FALSE;
         }
         item = windowGetCursorToItem(work);
-        fn_80057830(item->x, item->y, selected);
+        pcBoxSetCursorTarget(item->x, item->y, selected);
         work->initialized = 1;
         break;
     case 2:
-        fn_80057948();
-        fn_80056854();
+        pcBoxUpdateCursor();
+        pcBoxTabUpdateSlide();
         if (work->windowId == windowGetActiveID()) {
             pcBoxMovePokemon(work);
         }
@@ -547,7 +547,7 @@ s32 fn_800550B4(MenuCBStatusWork* work) {
 }
 #pragma pop
 
-s32 fn_80055194(s32* outSlot, s32 index) {
+s32 pcBoxGetGridCell(s32* outSlot, s32 index) {
     MenuCBSlotInfo* info;
 
     if (index < 0 || index >= 0x20) {
@@ -562,7 +562,7 @@ s32 fn_80055194(s32* outSlot, s32 index) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void* fn_800551CC(void* pokemon, s32 direction, s32* moveState)
+void* pcBoxGetPokemonAt(void* pokemon, s32 direction, s32* moveState)
 {
     extern void* getPokemon__5PCBOXFScSc(void*, s8, s8);
     s32 active;
@@ -593,14 +593,14 @@ void* fn_800551CC(void* pokemon, s32 direction, s32* moveState)
 
     if (direction == 2) {
         slot = moveState[2] + 1;
-        while (slot < fn_801347D8()) {
+        while (slot < pcBoxGetSlotCount()) {
             candidate = getPokemon__5PCBOXFScSc(NULL, (s8) box, (s8) slot);
             if (pokemonCheckValid(candidate) != 0) {
                 break;
             }
             slot++;
         }
-        if (slot < fn_801347D8()) {
+        if (slot < pcBoxGetSlotCount()) {
             moveState[2] = slot;
             return candidate;
         }

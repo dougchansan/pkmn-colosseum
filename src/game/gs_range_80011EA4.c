@@ -58,8 +58,8 @@ typedef struct WindowDisplayAnim {
 } WindowDisplayAnim;
 
 /*
- * fn_80012858 (0x80012858) is linked from gs_range_candidate_80012858.c.
- * fn_80011EA4 inlines it, so this unit keeps the body as an inline
+ * menuFightCmdDrawSprite (0x80012858) is linked from gs_range_candidate_80012858.c.
+ * menuFightCmdDrawText inlines it, so this unit keeps the body as an inline
  * definition that is not emitted here.
  */
 #if defined(GS_RANGE_CANDIDATE_80012858)
@@ -69,7 +69,7 @@ typedef struct WindowDisplayAnim {
 #endif
 #if !defined(GS_RANGE_CANDIDATE_80012858)
 #endif
-GS_RANGE_80012858_LINKAGE void fn_80012858(void* window, WindowSprite* sprite)
+GS_RANGE_80012858_LINKAGE void menuFightCmdDrawSprite(void* window, WindowSprite* sprite)
 {
     void* windowGetAllocPtr(void* window);
     WindowDisplayWork* work = windowGetAllocPtr(window);
@@ -136,7 +136,7 @@ GS_RANGE_80012858_LINKAGE void fn_80012858(void* window, WindowSprite* sprite)
 /*
  * Not referenced by the game, so the linker strips it. Its constants still
  * lead this TU's .sdata2 pool (0.0f at 0x8047B718, 100.0f at 0x8047B71C),
- * ahead of fn_80011EA4's 1200.0f, as in retail.
+ * ahead of menuFightCmdDrawText's 1200.0f, as in retail.
  */
 /* RULE-EXCEPTION(user-approved): reconstructed linker-stripped helper; its body is inferred from the .sdata2 pool layout only and exists to place 0.0f/100.0f first — see docs/RULE_EXCEPTIONS.md */
 f32 gsGaugeGetPercent(f32 current, f32 max)
@@ -150,10 +150,10 @@ f32 gsGaugeGetPercent(f32 current, f32 max)
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_80011EA4(u8* window, WindowSprite* sprite)
+void menuFightCmdDrawText(u8* window, WindowSprite* sprite)
 {
-    extern void fn_8001DACC(void*, WindowSprite*, u16, f32);
-    extern void fn_8010B9E8(void*, WindowSprite*, u16);
+    extern void spriteDrawBlendTexture(void*, WindowSprite*, u16, f32);
+    extern void menuFaceDraw(void*, WindowSprite*, u16);
     extern s32 fightFloorGetStatus(s32, s32, s32, s32);
     extern void GSmsgPrintColor(s32, s32, u32, s32);
     extern void msgctrlSetValue(s32, s32);
@@ -176,7 +176,7 @@ void fn_80011EA4(u8* window, WindowSprite* sprite)
 
     work = windowGetAllocPtr(window);
     anim = windowGetFreeWork(window);
-    fn_80012858(window, sprite);
+    menuFightCmdDrawSprite(window, sprite);
     if (winSpriteGetDisp(sprite) == 0) {
         return;
     }
@@ -188,14 +188,14 @@ void fn_80011EA4(u8* window, WindowSprite* sprite)
     case 0xA8:
     case 0xA9:
         if (work->flag == 2) {
-            fn_8001DACC(window, sprite, anim->value_06,
+            spriteDrawBlendTexture(window, sprite, anim->value_06,
                         (f32)anim->value_06 / 1200.0f);
             winSpriteSetDisp(sprite, 0);
         }
         break;
     case 0x9A:
     case 0xA5:
-        fn_8010B9E8(window, sprite, work->sprite_26);
+        menuFaceDraw(window, sprite, work->sprite_26);
         break;
     case 0xA1:
     case 0xAC: {

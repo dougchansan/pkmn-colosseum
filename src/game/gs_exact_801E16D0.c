@@ -4,7 +4,7 @@
 
 /* Retail symbols for the canonical GSmem API declared by gs_mem.h. */
 extern u16 GSmemGetHandleByPtr(void* ptr); /* GSmemFindHandle */
-extern void* fn_800E24B0(u16 handle); /* GSmemLock */
+extern void* GSmemUnlock(u16 handle); /* GSmemLock */
 extern void GSmemFree(u16 handle); /* GSmemFree */
 
 s32 GSmovieGetFrame(void)
@@ -14,7 +14,7 @@ s32 GSmovieGetFrame(void)
     return THPPlayerGetFrame();
 }
 
-void fn_801E16F0(void)
+void GSmovieUpdate(void)
 {
     extern u8 lbl_8047B440;
     extern u8 lbl_8047B441;
@@ -42,7 +42,7 @@ void fn_801E16F0(void)
                 THPPlayerClose();
                 handle = GSmemGetHandleByPtr(lbl_8047B450);
                 if (handle != 0) {
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                 }
                 lbl_8047B441 = 0;
@@ -53,7 +53,7 @@ void fn_801E16F0(void)
     }
 }
 
-void fn_801E17A8(void)
+void GSmovieDraw(void)
 {
     extern u8 lbl_8047B440;
     extern u8 lbl_8047B441;
@@ -89,7 +89,7 @@ void GSmovieClose(void)
         THPPlayerClose();
         handle = GSmemGetHandleByPtr(lbl_8047B450);
         if (handle != 0) {
-            fn_800E24B0(handle);
+            GSmemUnlock(handle);
             GSmemFree(handle);
         }
         lbl_8047B441 = 0;

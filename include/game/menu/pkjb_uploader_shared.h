@@ -8,7 +8,7 @@
  * 0x80268780 (PKJB_Prepare, pkjbPrepare); the command functions share its
  * statics (the idle callbacks at lbl_803B6E18 and cancel flags at
  * lbl_803B6E08, also used by pkjbValidateKey, and the boot key at lbl_8047A60C,
- * written by pkjbPrepare and checked by fn_80073C38), so they sit in the
+ * written by pkjbPrepare and checked by gbaCmdResetLink), so they sit in the
  * same unit. It has no .data or .sdata2.
  *
  * Unit flags: GC/2.5, -O4,p, "-opt nopeephole" (see pkjb_exact_80073990.c
@@ -20,13 +20,13 @@
  *   0xA == 8, idle callback, cancel flag), in every command function;
  * - pkjbSendCommand: GBAWrite of a command word followed by pkjbRecvWait
  *   (result + 11), before every command reply check;
- * - pkjbSwap32: the byte swap of GBA words (fn_80071AE4, fn_80071EA4,
- *   fn_800730F8, fn_80073A44);
- * - pkjbQuery44: fn_80071700 and fn_800722A0 are byte-identical copies;
- * - pkjbWaitZeroResponse: fn_800719A8 and fn_80072548 are byte-identical;
+ * - pkjbSwap32: the byte swap of GBA words (gbaCmdUpload22, gbaCmdRecv33,
+ *   gbaCmdSend77, gbaCmdReadKeys);
+ * - pkjbQuery44: gbaCmdHandshakeA and gbaCmdHandshakeB are byte-identical copies;
+ * - pkjbWaitZeroResponse: gbaCmdWaitReady and gbaCmdWaitReadyB are byte-identical;
  * - pkjbResetRetry / pkjbPingAA: the 5 ms reset retry followed by the 0xAA
- *   ping, expanded in fn_80072A00 and fn_800745B4 (and the reset retry
- *   again in fn_800733D0).
+ *   ping, expanded in gbaCmdPing60 and pkjbUploadStep (and the reset retry
+ *   again in gbaCmdUpload88).
  */
 
 #include "dolphin/types.h"
@@ -45,14 +45,14 @@ typedef struct PkjbIdleCallback {
     void* arg;
 } PkjbIdleCallback;
 
-/* Alarm that resumes the waiting thread after 1 ms (fn_80072684). */
+/* Alarm that resumes the waiting thread after 1 ms (_gbaCmdAlarm). */
 extern OSAlarm lbl_803B6DE0;
 /*
- * Per-channel cancel flags. fn_800716E8 sets them from the GBA
+ * Per-channel cancel flags. gbaCommSetChannelResult sets them from the GBA
  * communication code while the command functions poll them in their wait
  * loops, so they are volatile: every loop re-derives the flag address
  * instead of reusing the previous loop's, as MWCC does for volatile
- * objects (e.g. fn_80073C38's second wait loop reuses the idle-callback
+ * objects (e.g. gbaCmdResetLink's second wait loop reuses the idle-callback
  * slot pointer from the first loop but recomputes the flag address).
  */
 extern volatile s32 lbl_803B6E08[4];
@@ -68,8 +68,8 @@ extern void gbaCommandSetKeyState(s32 mode, s32 flag);
 extern u32 SIProbe(s32 chan);
 extern OSThread* OSGetCurrentThread(void);
 
-void fn_80072684(OSAlarm* alarm, OSContext* context);
-s32 fn_80073C38(s32 chan);
+void _gbaCmdAlarm(OSAlarm* alarm, OSContext* context);
+s32 gbaCmdResetLink(s32 chan);
 
 static inline u32 pkjbSwap32(u32 value)
 {
@@ -136,7 +136,7 @@ static inline s32 pkjbResetRetry(s32 chan)
     start = OSGetTick();
     do {
         expired = OSGetTick() - start > timeout;
-        result = fn_80073C38(chan);
+        result = gbaCmdResetLink(chan);
     } while (result == 1 && !expired);
     return result;
 }
@@ -168,7 +168,7 @@ static inline s32 pkjbQuery44(s32 chan)
     u8 length;
     s32 result;
 
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }
@@ -197,7 +197,7 @@ static inline s32 pkjbWaitZeroResponse(s32 chan)
     lbl_8047A600 = OSGetCurrentThread();
     OSCreateAlarm(&lbl_803B6DE0);
     enabled = OSDisableInterrupts();
-    OSSetAlarm(&lbl_803B6DE0, OSMillisecondsToTicks(1), fn_80072684);
+    OSSetAlarm(&lbl_803B6DE0, OSMillisecondsToTicks(1), _gbaCmdAlarm);
     OSSuspendThread(lbl_8047A600);
     OSRestoreInterrupts(enabled);
 

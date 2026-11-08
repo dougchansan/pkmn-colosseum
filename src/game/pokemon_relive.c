@@ -71,7 +71,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern int  fadeSet();
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();
@@ -107,7 +107,7 @@ void reliveSaveSound(int *r3)
 {
     extern int soundGetCurrentSubSound();
     extern int std228_soundGetCurrentBackgroundMusic();
-    extern int fn_801656D8();
+    extern int soundGetSlotVoiceState();
     extern void std104_soundSetBackgroundMusic();
     int iVar1;
     int iVar2;
@@ -116,14 +116,14 @@ void reliveSaveSound(int *r3)
 
     iVar1 = std228_soundGetCurrentBackgroundMusic();
     if (iVar1 != 0) {
-        iVar2 = fn_801656D8();
+        iVar2 = soundGetSlotVoiceState();
         std104_soundSetBackgroundMusic(1, 0x32, 0xff);
     } else {
         iVar2 = 0;
     }
     iVar3 = soundGetCurrentSubSound();
     if (iVar3 != 0) {
-        iVar4 = fn_801656D8();
+        iVar4 = soundGetSlotVoiceState();
     } else {
         iVar4 = 0;
     }
@@ -232,9 +232,9 @@ static inline u32 impl_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
     extern u32 floorDataBiosGetShadowReciveNum(void* floor);
     extern u32 floorDataBiosGetShadowReciveID(void* floor, u32 index);
     extern void* floorDataBiosGetCurrentPtr(void);
-    extern u32 fn_8018F470(u32 index);
-    extern u8 fn_801DDD28(u32 handle, u16 a, u16 b, s32 c);
-    extern u32 fn_801DE190(u32 id, u32 random, s32 flags);
+    extern u32 floorGetShadowLight(u32 index);
+    extern u8 wazaSequenceOwnerLoadWaza(u32 handle, u16 a, u16 b, s32 c);
+    extern u32 wazaSequencePokemonCreate(u32 id, u32 random, s32 flags);
     extern void* wazaSequenceOwnerGetModel(u32 handle);
     u16* pair;
     u32 light;
@@ -249,14 +249,14 @@ static inline u32 impl_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
     u32 surface;
     u32 surfaces[13];
 
-    handle = fn_801DE190(r4, _fadeEffectGetRandom__FUl(0xFFFFFFFF), 0);
+    handle = wazaSequencePokemonCreate(r4, _fadeEffectGetRandom__FUl(0xFFFFFFFF), 0);
     *r3 = handle;
     if (handle == 0) {
         return 0;
     }
     pair = r5;
     for (k = 0; k < r6; k++) {
-        if (fn_801DDD28(*r3, pair[0], pair[1], 0) == 0) {
+        if (wazaSequenceOwnerLoadWaza(*r3, pair[0], pair[1], 0) == 0) {
             return 0;
         }
         pair += 2;
@@ -265,7 +265,7 @@ static inline u32 impl_8025DF38(u32* r3, u32 r4, u16* r5, int r6)
         GSmodelClearShadowFlags(model, 1);
         floor = floorDataBiosGetCurrentPtr();
         if (floor != NULL) {
-            light = fn_8018F470(1);
+            light = floorGetShadowLight(1);
             count = floorDataBiosGetShadowReciveNum(floor);
             n = 0;
             if (count == 1) {
@@ -296,8 +296,8 @@ u32 effectCreate(u32* r3, u32 r4, u16* r5, int r6)
 #if defined(POKEMON_RELIVE_SEQUENCE_EXACT_ONLY)
 struct GSSceneVec3;
 struct GSRenderCamera;
-extern void* fn_801DE190(u16 index, void* model, u8 variant);
-extern BOOL fn_801DDD28(void* owner, u16 group, u16 index, u8 variant);
+extern void* wazaSequencePokemonCreate(u16 index, void* model, u8 variant);
+extern BOOL wazaSequenceOwnerLoadWaza(void* owner, u16 group, u16 index, u8 variant);
 extern void GSscene_GetCameraDirectionVector(struct GSSceneVec3* direction);
 extern void GSscene_GetCameraRotationVector(struct GSSceneVec3* rotation);
 extern void GSscene_GetCameraPositionVector(struct GSSceneVec3* position);
@@ -334,7 +334,7 @@ u32 loadSequence(int *r3,u32 r4,u16 *r5,int r6)
       uVar1 = pokemonBiosGetRnd(r4);
       uVar2 = (int)pokemonGetStatus(r4,0,0xc1,0);
       uVar2 = (-uVar2 | uVar2) >> 0x1f;
-      iResult = (u32)fn_801DE190(sVar6,(void*)uVar1,uVar2);
+      iResult = (u32)wazaSequencePokemonCreate(sVar6,(void*)uVar1,uVar2);
       *r3 = iResult;
       if (iResult == 0) {
         uVar1 = 0;
@@ -342,7 +342,7 @@ u32 loadSequence(int *r3,u32 r4,u16 *r5,int r6)
       else {
         u16 *p = r5;
         for (iVar3 = 0; iVar3 < r6; iVar3 = iVar3 + 1) {
-          cVar5 = fn_801DDD28((void*)*r3,*p,p[1],0);
+          cVar5 = wazaSequenceOwnerLoadWaza((void*)*r3,*p,p[1],0);
           if (cVar5 == '\0') {
             return 0;
           }
@@ -390,7 +390,7 @@ void std244_spawnEffectAtPosition(float f1, float f2, float f3, float f4, float 
   float fscale;
   sv1 = f1; sv2 = f2; sv3 = f3;
   sv4 = f4; sv5 = f5; sv6 = f6;
-  fn_801DADC0(1);
+  wazaSequenceSysInitEx(1);
   effectClear(&lbl_8047B658);
   if ((u8)(effectCreate(&lbl_8047B658, 0x3f, &lbl_80478DA0, 1) == 1) == 1) {
     r31 = validptr_8025E1BC(&lbl_8047B658);
@@ -812,7 +812,7 @@ int _cbWazaForget__FP7PokemonUsl(u32 r3,u16 r4)
     iVar2 = -1;
   }
   pokemonGetStatus(r3,0,0x6e,0);
-  fn_801DADC0(1);
+  wazaSequenceSysInitEx(1);
   iVar3 = loadSequence((int*)auStack_58,r3,(u16*)&lbl_80478DB0,1);
   if (iVar3 == 1) {
     fadeSet((double)lbl_8047E680,2);
@@ -915,7 +915,7 @@ void reliveCeremonyAll(u32 r3)
         wazaSequenceSysRelease();
         iVar3 = pokemonEvolutionAll(uVar1,evo,local_28[0],auStack_18,0,1,1,0);
         if (iVar3 == 0) {
-          fn_801DADC0(1);
+          wazaSequenceSysInitEx(1);
           iVar3 = loadSequence((int*)auStack_1c,uVar1,(u16*)&lbl_80478DB0,1);
           if (iVar3 == 1) {
             fadeSet((double)lbl_8047E680,2);
@@ -927,7 +927,7 @@ void reliveCeremonyAll(u32 r3)
         else {
           uVar2 = pokemonBiosGetNicknamePtr(uVar1);
           msgctrlSetValue(0x32,uVar2);
-          fn_801DADC0(1);
+          wazaSequenceSysInitEx(1);
           iVar3 = loadSequence((int*)auStack_20,uVar1,(u16*)&lbl_80478DB0,1);
           if (iVar3 == 1) {
             fadeSet((double)lbl_8047E680,2);
@@ -950,7 +950,7 @@ void reliveCeremonyAll(u32 r3)
       fadeCheck(1);
       wazaSequenceSysRelease();
       menuNameEntryOpenNoFade(2,r3);
-      fn_801DADC0(1);
+      wazaSequenceSysInitEx(1);
       iVar3 = loadSequence((int*)auStack_24,uVar1,(u16*)&lbl_80478DB0,1);
       if (iVar3 == 1) {
         fadeSet((double)lbl_8047E680,2);
@@ -999,7 +999,7 @@ void reliveMain(void)
     u8 seq[16];
 
     if ((lbl_804782BC.mode == 0) || (lbl_804782BC.mode == 1)) {
-        fn_801DADC0(1);
+        wazaSequenceSysInitEx(1);
         if (lbl_804782BC.mode == 0) {
             pokemon = heroGetStatus(0, 3, lbl_804782BC.index & 0xffff);
             if (pokemonCheckValid(pokemon) != 1) {

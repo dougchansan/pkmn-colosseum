@@ -19,7 +19,7 @@
  * doldecomp/melee src/sysdolphin/baselib/fobj.c; Colosseum's newer
  * sysdolphin differs in a few places:
  * - HSD_FObjAlloc/HSD_FObjFree report to an allocation hook
- *   (fn_80199A84, an empty function with the pool and "fobj: alloc" /
+ *   (fobjNullCB, an empty function with the pool and "fobj: alloc" /
  *   "fobj: free"); it is inlined away except where the inline depth runs
  *   out, which is why a copy is emitted after HSD_FObjLoadDesc.
  * - FObjLoadData is an ordinary function (4.6 KB with its parse helpers
@@ -493,7 +493,7 @@ void HSD_FObjInterpretAnimAll(void* fobj, void* obj,
 }
 
 /* Allocation hook: empty in the retail build. */
-void fn_80199A84(HSD_ObjAllocData* data, const char* msg)
+void fobjNullCB(HSD_ObjAllocData* data, const char* msg)
 {
 }
 
@@ -517,7 +517,7 @@ HSD_FObj* HSD_FObjLoadDesc(HSD_FObjDesc* desc)
 HSD_FObj* HSD_FObjAlloc(void)
 {
     HSD_FObj* new = HSD_ObjAlloc(&fobj_alloc_data);
-    fn_80199A84(&fobj_alloc_data, "fobj: alloc");
+    fobjNullCB(&fobj_alloc_data, "fobj: alloc");
     HSD_ASSERT(0x2F3, new);
     memset(new, 0, sizeof(HSD_FObj));
     return new;
@@ -526,5 +526,5 @@ HSD_FObj* HSD_FObjAlloc(void)
 void HSD_FObjFree(HSD_FObj* fobj)
 {
     HSD_ObjFree(&fobj_alloc_data, fobj);
-    fn_80199A84(&fobj_alloc_data, "fobj: free");
+    fobjNullCB(&fobj_alloc_data, "fobj: free");
 }

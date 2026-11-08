@@ -2,9 +2,9 @@
  * @file gs_thread_hi_range_800FEC34.c
  * @brief Floor resource request queue, .text 0x800FEC34 - 0x800FF0A0.
  *
- * fn_800FEC34 / fn_800FECB8 look up the active (state 3) request with a
- * given callback and unblock / block its thread. fn_800FED3C, fn_800FEE68
- * and fn_800FEF8C take a free slot from one of the three request pools
+ * threadReqUnblock / threadReqBlock look up the active (state 3) request with a
+ * given callback and unblock / block its thread. threadReqAlloc2, threadReqAlloc1
+ * and threadReqAlloc0 take a free slot from one of the three request pools
  * (lbl_8047ACB0 array of lbl_8047ACB4 + lbl_8047ACB8 + lbl_8047ACBC
  * entries), fill it in and insert it into the priority-ordered request list
  * headed by lbl_8047ACCC. floor.c calls them with priority 15.
@@ -40,7 +40,7 @@ static inline GSFloorResource* resourceFindCallback(u32 callback)
 }
 
 /* 0x800FEC34 | 0x84 */
-void fn_800FEC34(u32 callback)
+void threadReqUnblock(u32 callback)
 {
     GSFloorResource* resource = resourceFindCallback(callback);
 
@@ -53,7 +53,7 @@ void fn_800FEC34(u32 callback)
 }
 
 /* 0x800FECB8 | 0x84 */
-void fn_800FECB8(u32 callback)
+void threadReqBlock(u32 callback)
 {
     GSFloorResource* resource = resourceFindCallback(callback);
 
@@ -119,7 +119,7 @@ static inline void resourceInsert(GSFloorResource* resource)
 }
 
 /* 0x800FED3C | 0x12C: third pool */
-void fn_800FED3C(u8 priority, u32 floorId, void* callback)
+void threadReqAlloc2(u8 priority, u32 floorId, void* callback)
 {
     GSFloorResource* resource;
 
@@ -139,7 +139,7 @@ void fn_800FED3C(u8 priority, u32 floorId, void* callback)
 }
 
 /* 0x800FEE68 | 0x124: second pool */
-void fn_800FEE68(u8 priority, u32 floorId, void* callback)
+void threadReqAlloc1(u8 priority, u32 floorId, void* callback)
 {
     GSFloorResource* resource;
 
@@ -159,7 +159,7 @@ void fn_800FEE68(u8 priority, u32 floorId, void* callback)
 }
 
 /* 0x800FEF8C | 0x114: first pool */
-void fn_800FEF8C(u8 priority, u32 floorId, void* callback)
+void threadReqAlloc0(u8 priority, u32 floorId, void* callback)
 {
     GSFloorResource* resource;
 

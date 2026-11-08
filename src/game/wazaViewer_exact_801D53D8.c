@@ -19,7 +19,7 @@ void _wazaViewerInitialize(void) {
     struct GSmodel* model;
 
     wazaSequenceSysInit(8);
-    fn_801D58E4();
+    wazaViewerInitScene();
     model = GSresGetResource(0, 0x64);
     if (model != 0) {
         GSmodelSetVisibility(model, 0);

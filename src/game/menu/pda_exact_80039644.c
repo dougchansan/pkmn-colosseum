@@ -1,4 +1,4 @@
-/* Standalone copy of fn_80039644 from pda_range_80037158.c, linked on its own. */
+/* Standalone copy of itemStorageDrawItem from pda_range_80037158.c, linked on its own. */
 #include "dolphin/types.h"
 
 typedef struct PdaSprite PdaSprite;
@@ -10,7 +10,7 @@ extern f32 lbl_8047BAB0;
 
 extern void* pcboxGetItem(s32 box, s16 slot);
 extern u16 pcboxGetNbItemSlot(s32 box);
-extern u8 fn_801429E8(void* item);
+extern u8 itemSlotIsValid(void* item);
 extern s32 itemBiosGetItemDataId(void* item);
 extern s32 itemBiosGetNum(void* item);
 extern void* itemDataBiosGetPtr(s32 id);
@@ -27,7 +27,7 @@ static inline s32 pda_80039644_Slots(void)
 }
 
 /* The data id of the target-th listed item in PC box 0. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_80039644_ItemId in fn_80039644 - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_80039644_ItemId in itemStorageDrawItem - see docs/RULE_EXCEPTIONS.md */
 static inline s32 pda_80039644_ItemId(s32 target)
 {
     s32 slots;
@@ -39,7 +39,7 @@ static inline s32 pda_80039644_ItemId(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetItemDataId(item);
@@ -50,7 +50,7 @@ static inline s32 pda_80039644_ItemId(s32 target)
 }
 
 /* The count of the target-th listed item in PC box 0. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_80039644_ItemNum in fn_80039644 - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_80039644_ItemNum in itemStorageDrawItem - see docs/RULE_EXCEPTIONS.md */
 static inline s32 pda_80039644_ItemNum(s32 target)
 {
     void* item;
@@ -62,7 +62,7 @@ static inline s32 pda_80039644_ItemNum(s32 target)
     found = -1;
     for (i = 0; i < slots; i++) {
         item = pcboxGetItem(0, (s16)i);
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             found++;
             if (found >= target) {
                 return itemBiosGetNum(item);
@@ -73,7 +73,7 @@ static inline s32 pda_80039644_ItemNum(s32 target)
 }
 
 /* The number of listed items in PC box 0. */
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_80039644_Count in fn_80039644 - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_80039644_Count in itemStorageDrawItem - see docs/RULE_EXCEPTIONS.md */
 static inline s32 pda_80039644_Count(void)
 {
     s32 slots;
@@ -83,14 +83,14 @@ static inline s32 pda_80039644_Count(void)
     total = 0;
     slots = pda_80039644_Slots();
     for (i = 0; i < slots; i++) {
-        if ((u8)fn_801429E8(pcboxGetItem(0, (s16)i)) != 0) {
+        if ((u8)itemSlotIsValid(pcboxGetItem(0, (s16)i)) != 0) {
             total++;
         }
     }
     return total;
 }
 
-s32 fn_80039644(void* work, PdaSprite* sprite)
+s32 itemStorageDrawItem(void* work, PdaSprite* sprite)
 {
     s16 rectWidth;
     s32 start;

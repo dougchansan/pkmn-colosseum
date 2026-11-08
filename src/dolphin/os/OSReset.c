@@ -100,8 +100,8 @@ extern s32 __OSIsGcam;
 
 extern s32 DVDSetAutoInvalidation(s32 enable);
 extern DVDDiskID* DVDGetCurrentDiskID(void);
-extern void fn_8009FAEC(void);
-extern void fn_8009FADC(void* address);
+extern void Callback_8009FAEC(void);
+extern void Run_8009FADC(void* address);
 extern void DVDResume(void);
 extern BOOL DVDCheckDisk(void);
 extern void __DVDPrepareResetAsync(DVDCBCallback callback);
@@ -169,7 +169,7 @@ void __OSReboot(u32 resetCode, u32 bootDol) {
     DVDResume();
 
     lbl_8047A730[0] = FALSE;
-    __DVDPrepareResetAsync((DVDCBCallback)fn_8009FAEC);
+    __DVDPrepareResetAsync((DVDCBCallback)Callback_8009FAEC);
     __OSMaskInterrupts(0xFFFFFFE0);
     __OSUnmaskInterrupts(0x400);
     OSEnableInterrupts();
@@ -219,7 +219,7 @@ void __OSReboot(u32 resetCode, u32 bootDol) {
     ICInvalidateRange((void*)0x81300000, rebootSize);
     OSDisableInterrupts();
     ICFlashInvalidate();
-    fn_8009FADC((void*)0x81300000);
+    Run_8009FADC((void*)0x81300000);
 }
 #pragma pop
 #endif

@@ -17,9 +17,9 @@
  * that this link resolves for every section except that .rodata tail.
  *
  * TU extent (text and data):
- *   .text   0x801765F4-0x80179F4C  fn_801765F4 .. _cameraRestoreStateData;
+ *   .text   0x801765F4-0x80179F4C  battleCameraSetFlag3 .. _cameraRestoreStateData;
  *                                  gs_spline.c ends at 0x801765F4, the
- *                                  unoptimised fn_80179F4C after it is not
+ *                                  unoptimised fsysShowLoadingMenu after it is not
  *                                  camera code (gs_range_80179F4C.c)
  *   .rodata 0x80273D98-0x80273F70  cameraInit's initialisers, zero vectors,
  *                                  15 debug strings, the
@@ -56,7 +56,7 @@
  *   JP demo's linker map (NXXJ01 Master.MAP, published as NXXJ01.map in
  *   StarsMmd/Colo-XD-PBR-symbol-maps 6b51d3af) lists in camera.o
  *   "UNUSED 0x3EC cameraDispInfo", placed right after cameraSetMirrorFlag
- *   (our fn_801765F4) and cameraGetAddSize, and its .rodata as 15 UNUSED
+ *   (our battleCameraSetFlag3) and cameraGetAddSize, and its .rodata as 15 UNUSED
  *   strings @2606, @2614, @2617..@2629 whose sizes (0xD, 0xD, 0xC, 0x19,
  *   0x1B, 0xF, 0xF, 0x15, 0x1B, 0x1D, 0x1B, 0x15, 0xE, 0xE, 0xD) are exactly
  *   these 15 strings in this order; the seven short type names between
@@ -75,7 +75,7 @@
  *   and zero images included, is kept, while its code, a .data table and
  *   .sdata2 names are stripped. A research shape (three zero-initialized
  *   GSSceneVec3 locals, a static 9-name table, the 13 format strings in
- *   order, placed just above fn_801765F4) makes this unit's .rodata
+ *   order, placed just above battleCameraSetFlag3) makes this unit's .rodata
  *   byte-identical to retail apart from the relocated handler words; it is
  *   not committed because its body is not evidenced.
  * - cameraUpdate: exact with the XD-named view-mode helpers
@@ -95,7 +95,7 @@
  * (docs/CAMPAIGN_OPERATIONS.md, "Strict acceptance policy" and
  * "Reconstructed inline helpers") this unit cannot be linked, and with it
  * cameraPlayAnime, cameraPlayOffsetAnime, cameraUpdate, cameraInit,
- * cameraSetFloorDefault, fn_80179748, cameraResetFloor, cameraSetGScamera,
+ * cameraSetFloorDefault, fieldCameraClampForRoom, cameraResetFloor, cameraSetGScamera,
  * the pad/offset updaters and the save-state handlers stay unlinked. Four
  * facts, each checked against retail:
  *
@@ -241,7 +241,7 @@ extern u8 GScameraIsAnimating(GSRenderCamera* camera);
 extern f32 GScameraGetAnimFrame(GSRenderCamera* camera);
 extern void GScameraSetAnimIndex(void* camera, s32 index);
 extern void GScameraSetAnimFrame(void* camera, f32 frame);
-extern void fn_800D1858(void* camera, s32 loop);
+extern void cameraSetAnimHandle(void* camera, s32 loop);
 extern GSRenderCamera* GScameraGetActiveCamera(void);
 extern u32 GSthreadGetCurrentThread(void);
 extern void clear__5GSvecFv(void* vector);
@@ -251,22 +251,22 @@ extern void GSpartFree(void* part);
 extern void GSvecSub(void* dst, void* lhs, void* rhs);
 extern void GSlerpGetLinearInterpolationVector(void* dst, const void* start,
                                                const void* end, f32 t);
-extern u8 fn_801174C4(void);
-extern u8 fn_801174EC(void);
-extern void fn_80117500(void);
-extern void fn_80117330(f32 duration);
-extern s32 fn_800D37CC(void);
+extern u8 cameraReturnPending(void);
+extern u8 cameraGetReturnDone(void);
+extern void cameraSetReturnDone(void);
+extern void fieldCameraMoveTo(f32 duration);
+extern s32 GSgfxGetVsyncRate(void);
 extern s32 GSgetFrameStep(void);
 extern u8 dbgMenuIsOpen(void);
 extern u32 GSinputButtonsChanged(s32 pad);
-extern u32 fn_800F7BC4(s32 pad);
+extern u32 GSinputGetButtons(s32 pad);
 extern s8 GSinputGetLeftStickXData(s32 pad, s32 mode);
 extern s8 GSinputGetLeftStickYData(s32 pad, s32 mode);
 extern s8 GSinputGetRightStickXData(s32 pad, s32 mode);
 extern s8 GSinputGetRightStickYData(s32 pad, s32 mode);
 extern void menuClose(u32 id);
 extern void menuSetPosition(u32 id, s32 x, s32 y);
-extern void fn_800E0718(void* out, const void* axis, f32 angle);
+extern void GSquatRotAxisRad(void* out, const void* axis, f32 angle);
 extern void GSquatMultiply(void* out, const void* a, const void* b);
 extern void GSvecTransformQuat(void* out, const void* quat, const void* vec);
 extern void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void);
@@ -274,7 +274,7 @@ extern u32 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u16 handle);
 extern void* GScameraCreate(void);
 extern void GSresRegisterResource(void* resource, u32 group, u32 id, u32 flags);
-extern void fn_800FF4D4(void* data, u8 typeId);
+extern void floorRegisterHandler(void* data, u8 typeId);
 extern const GSSceneVec3 lbl_80315540;
 extern const GSSceneVec3 lbl_8031554C;
 extern const GSSceneVec3 lbl_80315558;
@@ -301,7 +301,7 @@ void cameraRefreshTargetPos(void);
 void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera);
 void _cameraPadRotateUpdate__FP9_GScamera(void* camera);
 void _cameraPadMoveUpdate__FP9_GScamera(void* camera);
-void fn_80179748(f32 height, f32 distance, f32 rotationY, f32 fov);
+void fieldCameraClampForRoom(f32 height, f32 distance, f32 rotationY, f32 fov);
 u32 _cameraGetStateSize(void);
 void _cameraMakeStateData(void* data);
 void _cameraRestoreStateData(void* data);
@@ -402,7 +402,7 @@ void _cameraRestoreStateData(void* data)
         camera = cameraGetCurrentAnimation();
     }
     GScameraRestoreState(camera, &save->camera);
-    fn_800D258C(camera);
+    GScameraSetCurrent(camera);
 }
 
 void _cameraMakeStateData(void* data)
@@ -460,13 +460,13 @@ void cameraInit(void) {
     set__5GSvecFfff(&((CameraPadState*)lbl_80478C40)->offsetScale,
                     lbl_8047D724, lbl_8047D724, lbl_8047D724);
     ((CameraPadState*)lbl_80478C40)->fov = lbl_8047D720;
-    fn_800FF4D4(&handlers, 1);
-    fn_800FF4D4(&handlers, 2);
+    floorRegisterHandler(&handlers, 1);
+    floorRegisterHandler(&handlers, 2);
     GScameraLookAt((GSRenderCamera*)camera,
                    (const GSRenderVec3*)&up,
                    (const GSRenderVec3*)&view);
     GScameraSetPosition(camera, &eye);
-    fn_800D258C(camera);
+    GScameraSetCurrent(camera);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
 }
 
@@ -491,7 +491,7 @@ void cameraSetFloorDefault(f32 height, f32 distance, f32 rotationY) {
     cameraSetRotY(rotationY);
 }
 
-void fn_80179748(f32 height, f32 distance, f32 rotationY, f32 fov) {
+void fieldCameraClampForRoom(f32 height, f32 distance, f32 rotationY, f32 fov) {
     CameraFloorEntry* floorEntry;
 
     floorEntry = cameraFindFloorEntry(std092_getCurrentRoomID());
@@ -566,7 +566,7 @@ void cameraSetGScamera(void* camera) {
 
     target->interest = source->interest;
     target->eye = source->eye;
-    fn_80179748(dist.y, dist.z, (f32)atan2(dist.x, dist.z), perspective);
+    fieldCameraClampForRoom(dist.y, dist.z, (f32)atan2(dist.x, dist.z), perspective);
 }
 
 void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
@@ -590,7 +590,7 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
         return;
     }
 
-    if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x400) != 0) {
+    if ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x400) != 0) {
         if ((u8)menuIsCheck(6)) {
             menuClose(6);
         } else {
@@ -599,11 +599,11 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
         }
     }
 
-    fn_800E0718(quatX, &lbl_80315540,
+    GSquatRotAxisRad(quatX, &lbl_80315540,
                  ((CameraPadState*)lbl_80478C40)->rotation.x);
-    fn_800E0718(quatY, &lbl_8031554C,
+    GSquatRotAxisRad(quatY, &lbl_8031554C,
                  ((CameraPadState*)lbl_80478C40)->rotation.y);
-    fn_800E0718(quatZ, &lbl_80315558,
+    GSquatRotAxisRad(quatZ, &lbl_80315558,
                  ((CameraPadState*)lbl_80478C40)->rotation.z);
     GSquatMultiply(quat, quatX, quatZ);
     GSquatMultiply(quat, quatY, quat);
@@ -613,11 +613,11 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
     rotateX = GSinputGetRightStickXData(1, 0) * frameDelta;
     rotateY = GSinputGetRightStickYData(1, 0) * frameDelta;
 
-    if ((fn_800F7BC4(1) & 0x40) != 0) {
+    if ((GSinputGetButtons(1) & 0x40) != 0) {
         movementDivisor *= 4.0f;
     }
 
-    if ((fn_800F7BC4(1) & 0x800) != 0) {
+    if ((GSinputGetButtons(1) & 0x800) != 0) {
         set__5GSvecFfff(&movement, moveX / movementDivisor,
                         -moveZ / movementDivisor,
                         0.0f);
@@ -629,7 +629,7 @@ void _cameraPadMoveUpdate__FP9_GScamera(void* camera) {
     GSvecAdd(&((CameraPadState*)lbl_80478C40)->direction,
              &((CameraPadState*)lbl_80478C40)->direction, &transformed);
 
-    if ((fn_800F7BC4(1) & 0x20) != 0) {
+    if ((GSinputGetButtons(1) & 0x20) != 0) {
         fov = rotateY / movementDivisor + cameraGetFov();
         cameraSetFov(fov);
     } else {
@@ -670,10 +670,10 @@ void _cameraPadRotateUpdate__FP9_GScamera(void* camera) {
                ((CameraPadState*)lbl_80478C40)->distance *
                    ((CameraPadState*)lbl_80478C40)->distance);
 
-    if ((fn_800F7BC4(1) & 0x20) != 0) {
+    if ((GSinputGetButtons(1) & 0x20) != 0) {
         fov = rotateY / 64.0f + cameraGetFov();
         cameraSetFov(fov);
-    } else if ((fn_800F7BC4(1) & 0x40) != 0) {
+    } else if ((GSinputGetButtons(1) & 0x40) != 0) {
         distance += rotateY / 64.0f;
     } else {
         angle -= rotateY / 4096.0f;
@@ -741,9 +741,9 @@ void _cameraOffsetAnimeUpdate__FP9_GScamera(GSRenderCamera* camera) {
     set__5GSvecFfff(&up, 0.0f, lbl_8047D724, 0.0f);
     GScameraGetPosition(animation, &eye);
 
-    fn_800E0108(&eye, &eye,
+    GSvecMulComponents(&eye, &eye,
                 &((CameraPadState*)lbl_80478C40)->offsetScale);
-    fn_800E0108(&interest, &interest,
+    GSvecMulComponents(&interest, &interest,
                 &((CameraPadState*)lbl_80478C40)->offsetScale);
     GSmtxMakeXRotation(
         rotation, ((CameraPadState*)lbl_80478C40)->offsetRotation.x);
@@ -936,7 +936,7 @@ void cameraUpdate(u32 captureIndex) {
     if (((CameraPadState*)lbl_80478C40)->flags[0] == 1) {
         if (((CameraPadState*)lbl_80478C40)->targetMoveActive != 0) {
             ((CameraPadState*)lbl_80478C40)->targetMoveTime +=
-                (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
+                (f32)(u32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             if (((CameraPadState*)lbl_80478C40)->targetMoveTime >=
                 ((CameraPadState*)lbl_80478C40)->targetMoveDuration) {
                 GSvecCopy(&((CameraPadState*)lbl_80478C40)->position,
@@ -954,7 +954,7 @@ void cameraUpdate(u32 captureIndex) {
         }
         if (((CameraPadState*)lbl_80478C40)->targetOffsetMoveActive != 0) {
             ((CameraPadState*)lbl_80478C40)->targetOffsetMoveTime +=
-                (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
+                (f32)(u32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             if (((CameraPadState*)lbl_80478C40)->targetOffsetMoveTime >=
                 ((CameraPadState*)lbl_80478C40)->targetOffsetMoveDuration) {
                 GSvecCopy(
@@ -975,7 +975,7 @@ void cameraUpdate(u32 captureIndex) {
         }
         if (((CameraPadState*)lbl_80478C40)->positionMoveActive != 0) {
             ((CameraPadState*)lbl_80478C40)->positionMoveTime +=
-                (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
+                (f32)(u32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             if (((CameraPadState*)lbl_80478C40)->positionMoveTime >=
                 ((CameraPadState*)lbl_80478C40)->positionMoveDuration) {
                 GSvecCopy(&((CameraPadState*)lbl_80478C40)->direction,
@@ -994,7 +994,7 @@ void cameraUpdate(u32 captureIndex) {
         }
         if (((CameraPadState*)lbl_80478C40)->rotationMoveActive != 0) {
             ((CameraPadState*)lbl_80478C40)->rotationMoveTime +=
-                (f32)(u32)GSgetFrameStep() / (f32)fn_800D37CC();
+                (f32)(u32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             if (((CameraPadState*)lbl_80478C40)->rotationMoveTime >=
                 ((CameraPadState*)lbl_80478C40)->rotationMoveDuration) {
                 GSvecCopy(&((CameraPadState*)lbl_80478C40)->rotation,
@@ -1016,7 +1016,7 @@ void cameraUpdate(u32 captureIndex) {
         case 0:
         case 1:
         case 5:
-            if (fn_801174C4() != 0 && fn_801174EC() != 0) {
+            if (cameraReturnPending() != 0 && cameraGetReturnDone() != 0) {
                 GSvecAdd(&moveVec,
                          &((CameraPadState*)lbl_80478C40)->position,
                          &((CameraPadState*)lbl_80478C40)->view);
@@ -1105,7 +1105,7 @@ void cameraUpdate(u32 captureIndex) {
         break;
     }
 
-    fn_800D258C(camera);
+    GScameraSetCurrent(camera);
     _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID();
 }
 
@@ -1135,7 +1135,7 @@ GSRenderCamera* cameraGetActive(void)
         return camera;
     }
     camera = (GSRenderCamera*)GSresGetResource(0, 0);
-    fn_800D258C(camera);
+    GScameraSetCurrent(camera);
     return camera;
 }
 
@@ -1287,9 +1287,9 @@ void cameraReturn(u8 wait, f32 duration)
     CameraFloorEntry* defaults;
 
     GSscene_SetMode(0);
-    if (fn_801174C4() != 0) {
-        fn_80117500();
-        fn_80117330(duration);
+    if (cameraReturnPending() != 0) {
+        cameraSetReturnDone();
+        fieldCameraMoveTo(duration);
     } else {
         defaults = cameraFindFloorEntry(std092_getCurrentRoomID());
         if (defaults != NULL) {
@@ -1387,14 +1387,14 @@ void cameraPlayAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     }
     GScameraSetAnimIndex(animation, 0);
     if (loop != 0) {
-        fn_800D1858(animation, 1);
+        cameraSetAnimHandle(animation, 1);
     } else {
-        fn_800D1858(animation, 0);
+        cameraSetAnimHandle(animation, 0);
     }
     GScameraSetAnimRate(animation, 0.5f);
     GScameraSetAnimFrame(animation, (f32)frame);
     GScameraStartAnimation(animation);
-    fn_800D258C(animation);
+    GScameraSetCurrent(animation);
 }
 
 void cameraPlayOffsetAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
@@ -1434,9 +1434,9 @@ void cameraPlayOffsetAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     }
     GScameraSetAnimIndex(animation, 0);
     if (loop != 0) {
-        fn_800D1858(animation, 1);
+        cameraSetAnimHandle(animation, 1);
     } else {
-        fn_800D1858(animation, 0);
+        cameraSetAnimHandle(animation, 0);
     }
     GScameraSetAnimRate(animation, 0.5f);
     GScameraSetAnimFrame(animation, (f32)frame);
@@ -1446,7 +1446,7 @@ void cameraPlayOffsetAnime(u32 groupId, u32 animationId, s32 frame, u8 loop)
     set__5GSvecFfff(&((CameraPadState*)lbl_80478C40)->offsetScale,
                     lbl_8047D724, lbl_8047D724, lbl_8047D724);
     camera = GSresGetResource(0, 0);
-    fn_800D258C(camera);
+    GScameraSetCurrent(camera);
 }
 
 s32 cameraGetResAnimFrame(u32 group, u32 id)
@@ -1657,7 +1657,7 @@ void cameraSetOffsetScale(GSSceneVec3* scale)
     GSvecCopy(&((CameraPadState*) lbl_80478C40)->offsetScale, scale);
 }
 
-void fn_801765F4(s32 value)
+void battleCameraSetFlag3(s32 value)
 {
     ((CameraPadState*) lbl_80478C40)->flags[2] = value;
 }

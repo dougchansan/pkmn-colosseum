@@ -16,7 +16,7 @@ void peopleSetHumanCollision(PeopleEntry* entry, u8 animationId)
     }
 }
 
-void fn_8018FB60(PeopleEntry* entry, u8 animationId)
+void peopleSetModelVisible(PeopleEntry* entry, u8 animationId)
 {
     void* model;
 

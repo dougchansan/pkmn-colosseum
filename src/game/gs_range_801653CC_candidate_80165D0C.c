@@ -6,7 +6,7 @@
 
 void soundWaitMs(u32 frames)
 {
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     extern const f32 lbl_8047D544;
     f32 duration = (f32)frames / lbl_8047D544;
@@ -14,6 +14,6 @@ void soundWaitMs(u32 frames)
 
     while (elapsed < duration) {
         _threadSwitch();
-        elapsed += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        elapsed += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }

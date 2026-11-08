@@ -24,7 +24,7 @@ void* floorCharacterBiosGetByIndex(u32 index)
         floorDataBiosGetPtr((u32)std092_getCurrentRoomID()), index);
 }
 
-void fn_80117154(void)
+void cameraClearReturn(void)
 {
     lbl_8047AD68 = 0;
     lbl_8047AD6C = 0;

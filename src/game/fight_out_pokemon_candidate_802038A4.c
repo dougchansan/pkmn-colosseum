@@ -50,7 +50,7 @@ extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
 extern void  pokemonIsJoutaiDataId(void);
-extern void  fn_8011B67C(void);
+extern void  statusIsJoutaiDataId(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);

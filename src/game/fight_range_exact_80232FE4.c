@@ -4,7 +4,7 @@
  */
 #include "dolphin/types.h"
 
-u32 fn_80232FE4(u32 r3, u32 r4, u32 r5)
+u32 _fightCheckJoutai16Sub(u32 r3, u32 r4, u32 r5)
 {
     extern u32 fightTargetGetRelativeHostSideFightTargetIdToTragetPtr();
     extern void fightOutPokemonSetOumuWazaDataId();

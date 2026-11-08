@@ -101,7 +101,7 @@ static void* Reader(void* arg)
     }
 }
 
-void* fn_801E1BE8(void)
+void* PopReadedBuffer(void)
 {
     OSMessage msg;
     OSReceiveMessage(&lbl_8046A3F0, &msg, OS_MESSAGE_BLOCK);
@@ -125,14 +125,14 @@ void PushFreeReadBuffer(void* buffer)
     OSSendMessage(&lbl_8046A410, buffer, OS_MESSAGE_BLOCK);
 }
 
-void* fn_801E1B84(void)
+void* PopReadedBuffer2(void)
 {
     OSMessage msg;
     OSReceiveMessage(&lbl_8046A3D0, &msg, OS_MESSAGE_BLOCK);
     return msg;
 }
 
-BOOL fn_801E1B54(void* buffer)
+BOOL PushReadedBuffer2(void* buffer)
 {
     return OSSendMessage(&lbl_8046A3D0, buffer, OS_MESSAGE_BLOCK);
 }

@@ -186,7 +186,7 @@ void __DVDInterruptHandler(__OSInterrupt interrupt, OSContext* context)
     OSSetCurrentContext(context);
 }
 
-void fn_800A41D0(OSAlarm* alarm, OSContext* context)
+void AlarmHandler_800A41D0(OSAlarm* alarm, OSContext* context)
 {
     BOOL error = ProcessNextCommand();
 }
@@ -295,7 +295,7 @@ static inline void WaitBeforeRead(void* address, u32 length,
     CommandList[1].command = -1;
     NextCommandNumber = 0;
     OSCreateAlarm(&AlarmForWA);
-    OSSetAlarm(&AlarmForWA, timeout, fn_800A41D0);
+    OSSetAlarm(&AlarmForWA, timeout, AlarmHandler_800A41D0);
 }
 
 BOOL DVDLowRead(void* address, u32 length, u32 offset,

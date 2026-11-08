@@ -2,7 +2,7 @@
  * @file fsys_file_exact_8017C1D8.c
  * @brief FSYS LZSS job completion (0x8017C1D8 - 0x8017C394).
  *
- * Called by the GSgapp job pool (fn_8018094C) once the background LZSS
+ * Called by the GSgapp job pool (fsysJobPoolUpdate) once the background LZSS
  * decode of an entry has finished: free the compressed image the job kept
  * (fsysLZSSJobSetup moved it there), then either mark the entry failed (state 7)
  * when no output buffer was allocated, or mark it done (state 6), flush the
@@ -17,7 +17,7 @@
 #include "game/gs_range_8017FA5C_shared.h"
 
 extern u16 GSmemGetHandleByPtr(void* ptr);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern void* GSresGetResource(u32 fileHandle, u32 nameHash);
 
@@ -28,7 +28,7 @@ static inline void fsysFree(void* ptr)
 
     handle = GSmemGetHandleByPtr(ptr);
     if (handle != 0) {
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }

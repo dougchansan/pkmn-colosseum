@@ -197,7 +197,7 @@ static void UpdateRoomDistances(void)
     }
 }
 
-void fn_8015DEC0(void) /* CheckRoomStatus */
+void s3dUpdateStudios(void) /* CheckRoomStatus */
 {
     SND_LISTENER* li;
     SND_EMITTER* em;
@@ -429,7 +429,7 @@ static u8 startListNumnum;
 static RUN_LIST runList[64];
 static u8 runListNum;
 
-void fn_8015E374(SND_EMITTER* em, f32* vol, f32* doppler, f32* xPan, f32* yPan, f32* zPan) /* CalcEmitter */
+void s3dCalcEmitterParams(SND_EMITTER* em, f32* vol, f32* doppler, f32* xPan, f32* yPan, f32* zPan) /* CalcEmitter */
 {
     SND_LISTENER* li;
     SND_FVECTOR d;
@@ -583,7 +583,7 @@ static void EmitterShutdown(SND_EMITTER* em)
     }
 }
 
-u32 fn_8015E890(SND_EMITTER* em) /* sndCheckEmitter */
+u32 s3dIsEmitterActive(SND_EMITTER* em) /* sndCheckEmitter */
 {
     if (lbl_8047AF18) {
         return (em->flags & 0x10000) != 0;
@@ -591,7 +591,7 @@ u32 fn_8015E890(SND_EMITTER* em) /* sndCheckEmitter */
     return FALSE;
 }
 
-SND_VOICEID fn_8015E8B0(SND_EMITTER* em_buffer, SND_FVECTOR* pos, SND_FVECTOR* dir, f32 maxDis,
+SND_VOICEID s3dAddEmitter(SND_EMITTER* em_buffer, SND_FVECTOR* pos, SND_FVECTOR* dir, f32 maxDis,
                         f32 comp, u32 flags, u16 fxid, u32 groupid, u8 maxVol, u8 minVol,
                         SND_ROOM* room, SND_PARAMETER_INFO* para, u8 studio) /* AddEmitter */
 {
@@ -623,7 +623,7 @@ SND_VOICEID fn_8015E8B0(SND_EMITTER* em_buffer, SND_FVECTOR* pos, SND_FVECTOR* d
             hwEnableIrq();
             return -1;
         }
-        fn_8015E374(em, &cvol, &pitch, &xPan, &yPan, &zPan);
+        s3dCalcEmitterParams(em, &cvol, &pitch, &xPan, &yPan, &zPan);
 
         if (cvol == 0.f) {
             hwEnableIrq();
@@ -661,7 +661,7 @@ SND_VOICEID sndAddEmitter(SND_EMITTER* em_buffer, SND_FVECTOR* pos, SND_FVECTOR*
                           f32 comp, u32 flags, SND_FXID fxid, u8 maxVol, u8 minVol, SND_ROOM* room)
 {
     if (lbl_8047AF18) {
-        return fn_8015E8B0(em_buffer, pos, dir, maxDis, comp, flags, fxid, fxid | 0x80000000, maxVol,
+        return s3dAddEmitter(em_buffer, pos, dir, maxDis, comp, flags, fxid, fxid | 0x80000000, maxVol,
                            minVol, room, NULL, 0);
     }
 
@@ -809,7 +809,7 @@ static void AddRunningEmitter(SND_EMITTER* em, f32 vol)
     runList[runListNum++].vol = vol;
 }
 
-u32 fn_8015F124(SND_EMITTER* em, f32 vol, f32 xPan, f32 yPan, f32 zPan, f32 pitch) /* AddStartingEmitter */
+u32 s3dAddStartVoice(SND_EMITTER* em, f32 vol, f32 xPan, f32 yPan, f32 zPan, f32 pitch) /* AddStartingEmitter */
 {
     s32 i;
     START_LIST* sl;
@@ -861,7 +861,7 @@ u32 fn_8015F124(SND_EMITTER* em, f32 vol, f32 xPan, f32 yPan, f32 zPan, f32 pitc
     return TRUE;
 }
 
-void fn_8015F270(void) /* StartContinousEmitters */
+void s3dStartQueuedVoices(void) /* StartContinousEmitters */
 {
     s32 i;
     START_LIST* sl;
@@ -939,7 +939,7 @@ void s3dHandle(void) /* s3dHandle */
             continue;
         }
         if ((em->flags & 0x20001) != 0) {
-            fn_8015E374(em, &vol, &pitch, &xPan, &yPan, &zPan);
+            s3dCalcEmitterParams(em, &vol, &pitch, &xPan, &yPan, &zPan);
         }
 
         if (!(em->flags & 0x80000)) {
@@ -954,7 +954,7 @@ void s3dHandle(void) /* s3dHandle */
                 }
 
                 if (em->flags & 1) {
-                    if (fn_8015F124(em, vol, xPan, yPan, zPan, pitch)) {
+                    if (s3dAddStartVoice(em, vol, xPan, yPan, zPan, pitch)) {
                         continue;
                     }
                 } else if (em->room == NULL || em->room->studio != 0xFF) {
@@ -1009,8 +1009,8 @@ void s3dHandle(void) /* s3dHandle */
             em->flags |= 0x20000;
         }
     }
-    fn_8015F270();
-    fn_8015DEC0();
+    s3dStartQueuedVoices();
+    s3dUpdateStudios();
     CheckDoorStatus();
 }
 

@@ -14,7 +14,7 @@
  * in exactly the same relative order as in XD, which is strong evidence
  * this is still one TU rather than several.
  *
- * fn_801123D4 and fn_801129CC previously carried invented
+ * floorLoadResidentArchives and fn_801129CC previously carried invented
  * "GSfield_ResourceInit" / "GSfield_UpdateObjects" names/signatures
  * from an earlier bad campaign pass (same class of issue documented in
  * include/game/gs_colsys.h); reverted to the standard fn_<addr>
@@ -128,25 +128,25 @@ s32 floorCheckFightKind(u32 id) {
 }
 
 /*
- * Resident-archive helpers used by fn_801123D4. The sync expansion occurs
+ * Resident-archive helpers used by floorLoadResidentArchives. The sync expansion occurs
  * six times there (ids 0x9A/0x0C/0x0B for kind 6, 0x0C for kind 1, 0x0B
  * for kind 2) and the release wait three times, each with identical call
  * order and constants: repeated-expansion evidence for static inlines.
  */
-extern s32 fn_8017B2CC(s32 id);
-extern void fn_800F915C(s32 id);
+extern s32 GSresGroupGetState(s32 id);
+extern void GSresReleaseOwner(s32 id);
 extern void GSresReleaseById(s32 id);
 extern void _threadSwitch(void);
 
 /* Wait out a pending load (status 1), then commit a loaded archive. */
 static inline void floorSyncResident(s32 id) {
-    switch (fn_8017B2CC(id)) {
+    switch (GSresGroupGetState(id)) {
     case 1:
-        while (fn_8017B2CC(id) == 1) {
+        while (GSresGroupGetState(id) == 1) {
             _threadSwitch();
         }
     case 0:
-        fn_800F915C(id);
+        GSresReleaseOwner(id);
         GSresReleaseById(id);
         break;
     case -1:
@@ -159,7 +159,7 @@ static inline void floorWaitResident(s32 id) {
     s32 status;
 
     while (TRUE) {
-        status = fn_8017B2CC(id);
+        status = GSresGroupGetState(id);
         if (status < 0) {
             GSlogWrite("読み出しエラー\n");
         } else if (status == 0) {
@@ -170,17 +170,17 @@ static inline void floorWaitResident(s32 id) {
 }
 
 /* 0x801123D4 | 0x32C */
-void fn_801123D4(FloorData* floor) {
+void floorLoadResidentArchives(FloorData* floor) {
     extern void GSscene_SetMode(s32);
-    extern void fn_800D36B4(FloorColor color);
+    extern void GSgfxSetFogColor(FloorColor color);
     extern void fsysRequestEntry(s32, u32);
-    extern void fn_8017B3E4(s32);
+    extern void fsysStartLoad(s32);
     extern u32 heroMoveGetKenObjID(void);
     FloorColor color = sFloorFadeColor;
     u32 objectId;
 
     GSscene_SetMode(3);
-    fn_800D36B4(color);
+    GSgfxSetFogColor(color);
 
     switch (floorDataBiosGetFloorKind(floor)) {
     case 6:
@@ -191,19 +191,19 @@ void fn_801123D4(FloorData* floor) {
     case 1:
         floorSyncResident(0x0C);
         objectId = heroMoveGetKenObjID();
-        if (objectId != 0x00F70400 && fn_8017B2CC(0x9A) != 0) {
+        if (objectId != 0x00F70400 && GSresGroupGetState(0x9A) != 0) {
             fsysRequestEntry(0x9A, objectId);
             floorWaitResident(0x9A);
         }
-        if (fn_8017B2CC(0x0B) != 0) {
-            fn_8017B3E4(0x0B);
+        if (GSresGroupGetState(0x0B) != 0) {
+            fsysStartLoad(0x0B);
             floorWaitResident(0x0B);
         }
         break;
     case 2:
         floorSyncResident(0x0B);
-        if (fn_8017B2CC(0x0C) != 0) {
-            fn_8017B3E4(0x0C);
+        if (GSresGroupGetState(0x0C) != 0) {
+            fsysStartLoad(0x0C);
             floorWaitResident(0x0C);
         }
         break;
@@ -224,16 +224,16 @@ void floorStartSoundScript(void) {
 /* 0x8011274C | 0x34 */
 void floorCheckFade(void) {
     extern void fadeCheck(s32);
-    extern void fn_800D3074(s32);
+    extern void GSgfxSetFrameInterval(s32);
     extern u8 lbl_80478DD0;
 
     fadeCheck(1);
     lbl_80478DD0 = 0;
-    fn_800D3074(1);
+    GSgfxSetFrameInterval(1);
 }
 
 /* 0x80112780 | 0x3C */
-void fn_80112780(void) {
+void floorRunMainScript(void) {
     extern void cmsRunSync(void* callback, s32 arg, ...);
     GSFieldColqueryState* state = (GSFieldColqueryState*)lbl_80408378;
     void* callback;
@@ -245,12 +245,12 @@ void fn_80112780(void) {
 }
 
 /* 0x801127BC | 0x88 */
-void fn_801127BC(void) {
+void floorStartFrameScript(void) {
     extern u8 lbl_80478DD0;
-    extern void fn_800D3074(s32);
+    extern void GSgfxSetFrameInterval(s32);
     extern u32 floorGetCurrentContext(void);
-    extern void fn_800FF2A0(u32, u32, void*);
-    extern void fn_80112844(void);
+    extern void floorTaskRegister1(u32, u32, void*);
+    extern void floorFrameScriptTask(void);
     s32 kind;
 
     lbl_80478DD0 = 1;
@@ -258,23 +258,23 @@ void fn_801127BC(void) {
     switch (kind) {
     case 5:
     case 6:
-        fn_800D3074(1);
+        GSgfxSetFrameInterval(1);
         break;
     case 1:
     case 2:
     case 3:
     case 4:
     default:
-        fn_800D3074(2);
+        GSgfxSetFrameInterval(2);
         break;
     }
     if (*(u32*)(lbl_80408378 + 0x28) != 0) {
-        fn_800FF2A0(0, floorGetCurrentContext(), (void*)fn_80112844);
+        floorTaskRegister1(0, floorGetCurrentContext(), (void*)floorFrameScriptTask);
     }
 }
 
 /* 0x80112844 | 0x48 */
-void fn_80112844(void) {
+void floorFrameScriptTask(void) {
     extern void cmsRunSync(void* callback, s32 arg, ...);
     GSFieldColqueryState* state = (GSFieldColqueryState*)lbl_80408378;
     void* callback;
@@ -282,7 +282,7 @@ void fn_80112844(void) {
     callback = (void*)state->transitionPollCallback;
     if (callback != NULL) {
         cmsRunSync(callback, 0);
-        floorTerminateTasks(fn_80112844);
+        floorTerminateTasks(floorFrameScriptTask);
     }
 }
 
@@ -295,24 +295,24 @@ void floorSetFadeScript(u32 a, u32 b) {
 }
 
 /* 0x801128A0 | 0x10C */
-void fn_801128A0(void) {
+void floorSystemInit(void) {
     extern u8 lbl_80408378[];
-    extern void fn_800FF3C0(s32, s32, void*);
-    extern void fn_800FF178(s32, s32, void*);
-    extern void fn_800FF4D4(void*, u32);
+    extern void floorTaskRegister0(s32, s32, void*);
+    extern void floorTaskRegister2(s32, s32, void*);
+    extern void floorRegisterHandler(void*, u32);
     extern s32 GSgetVersionMinor(void);
     extern void GSfloorOpen(u32);
-    extern void fn_800FF784(u32);
-    extern void fn_80118020(void);
+    extern void floorNop_800FF784(u32);
+    extern void tvRegisterFloorHandler(void);
     extern void floorResolveEntryPosition(void);
-    extern void fn_801129AC(void);
+    extern void floorTerminateMail(void);
     FloorReadFuncs funcs = sFloorDefaultReadFuncs;
     u32 r;
 
-    fn_800FF3C0(0, 0x5000, (void*)floorResolveEntryPosition);
-    fn_800FF178(0xFF, 0x5000, (void*)fn_801129AC);
-    fn_800FF4D4(&funcs, 1);
-    fn_800FF4D4(&funcs, 2);
+    floorTaskRegister0(0, 0x5000, (void*)floorResolveEntryPosition);
+    floorTaskRegister2(0xFF, 0x5000, (void*)floorTerminateMail);
+    floorRegisterHandler(&funcs, 1);
+    floorRegisterHandler(&funcs, 2);
     switch (GSgetVersionMinor()) {
     case 5:
         r = 0x3E4;
@@ -336,12 +336,12 @@ void fn_801128A0(void) {
     *(u8*)(lbl_80408378 + 0x8) = 1;
     *(u32*)(lbl_80408378 + 0xC) = 0;
     GSfloorOpen(r);
-    fn_800FF784(r);
-    fn_80118020();
+    floorNop_800FF784(r);
+    tvRegisterFloorHandler();
 }
 
 /* 0x801129AC | 0x20 */
-void fn_801129AC(void) {
+void floorTerminateMail(void) {
     extern void mailMainReceiveTerminate(void);
     mailMainReceiveTerminate();
 }
@@ -384,9 +384,9 @@ void fn_801129AC(void) {
  * the for header 99.27% (moves the `li`), and folding the loop into
  * floorEnterReset 99.71%.
  */
-extern u8 fn_800FF548(void);
-extern u8 fn_800FF554(void);
-extern u8 fn_800FF52C(void);
+extern u8 floorGetFadeOutFlag(void);
+extern u8 floorGetCurrentKind(void);
+extern u8 floorIsLinking(void);
 extern void GSflagClear(u32);
 extern u8 floorDataBiosGetArea(FloorData*);
 extern u32 floorDataBiosGetMapResID(FloorData*);
@@ -402,7 +402,7 @@ extern void GSpartFree(void*);
 extern void flareSetEnable(u32);
 extern void flareSetSunPos(void*);
 extern void msgctrlInitValue(void);
-extern void fn_801CBA84(void);
+extern void std_clearFlag8047B3C8(void);
 
 /*
  * Reset per-floor state on entering a floor: clear the floor flags (and the
@@ -420,7 +420,7 @@ static inline void floorEnterReset(void) {
      * Clear the per-floor flags on a floor change, and the per-area flags
      * when the next floor lies in another area (fights keep them).
      */
-    if (fn_800FF548() != 1 && fn_800FF554() != 1 && fn_800FF52C() == 0) {
+    if (floorGetFadeOutFlag() != 1 && floorGetCurrentKind() != 1 && floorIsLinking() == 0) {
         GSflagClear(1);
         data = floorDataBiosGetPtr(*(u32*)(lbl_80408378 + 0x0));
         if (data != NULL) {
@@ -439,7 +439,7 @@ static inline void floorEnterReset(void) {
     }
 
     msgctrlInitValue();
-    fn_801CBA84();
+    std_clearFlag8047B3C8();
 
     /*
      * Take the hero start position/direction from the current floor's
@@ -530,12 +530,12 @@ void floorResolveEntryPosition(FloorData* floor) {
     extern u32 floorDataBiosGetPreSctID(FloorData*);
     extern u32 floorDataBiosGetPostSctID(FloorData*);
     extern void floorDataBiosSetMainSctID(FloorData*, u32);
-    extern void fn_800FF3C0(u8, u32, void*);
-    extern void fn_800FF2A0(u8, u32, void*);
-    extern void fn_800FF178(u8, u32, void*);
-    extern void fn_800FEF8C(u8, u32, u32);
-    extern void fn_800FEE68(u8, u32, u32);
-    extern void fn_800FED3C(u8, u32, u32);
+    extern void floorTaskRegister0(u8, u32, void*);
+    extern void floorTaskRegister1(u8, u32, void*);
+    extern void floorTaskRegister2(u8, u32, void*);
+    extern void threadReqAlloc0(u8, u32, u32);
+    extern void threadReqAlloc1(u8, u32, u32);
+    extern void threadReqAlloc2(u8, u32, u32);
     extern void* floorDataBiosGetPreFunc(FloorData*);
     extern void* floorDataBiosGetPostFunc(FloorData*);
     extern void* floorDataBiosGetMainFunc(FloorData*);
@@ -543,11 +543,11 @@ void floorResolveEntryPosition(FloorData* floor) {
     extern void _floorUpdate__FUi14FloorEnterMode(void);
     extern void _fightInitialize__FUi14FloorEnterMode(void);
     extern void _fightFinalize__FUi14FloorEnterMode(void);
-    extern void fn_801EF488(void);
+    extern void fightFrameUpdate(void);
     extern void _wazaViewerInitialize(void);
     extern void _wazaViewerUpdate(void);
     extern void _wazaViewerFinalize(void);
-    extern void fn_801139BC(void);
+    extern void floorResetHeroAnimations(void);
     extern void floorStartMainThread(FloorData*);
     void* script;
     u32 resId;
@@ -589,50 +589,50 @@ void floorResolveEntryPosition(FloorData* floor) {
         cmsRunSync(script, 0);
     }
     task = floorGetCurrentContext();
-    if (fn_800FF548() == 0) {
+    if (floorGetFadeOutFlag() == 0) {
         switch (floorDataBiosGetFloorKind(floor)) {
         case 1:
             if (floorDataBiosGetMainSctID(floor) == 0) {
                 floorDataBiosSetMainSctID(floor, 0x05960003);
             }
-            fn_800FF3C0(10, task, _floorInitialize__FUi14FloorEnterMode);
-            fn_800FF2A0(20, task, _floorUpdate__FUi14FloorEnterMode);
-            fn_800FF178(10, task, fn_801139BC);
+            floorTaskRegister0(10, task, _floorInitialize__FUi14FloorEnterMode);
+            floorTaskRegister1(20, task, _floorUpdate__FUi14FloorEnterMode);
+            floorTaskRegister2(10, task, floorResetHeroAnimations);
             break;
         case 2:
-            fn_800FF3C0(15, task, _fightInitialize__FUi14FloorEnterMode);
-            fn_800FF2A0(20, task, fn_801EF488);
-            fn_800FF178(30, task, _fightFinalize__FUi14FloorEnterMode);
+            floorTaskRegister0(15, task, _fightInitialize__FUi14FloorEnterMode);
+            floorTaskRegister1(20, task, fightFrameUpdate);
+            floorTaskRegister2(30, task, _fightFinalize__FUi14FloorEnterMode);
             break;
         case 4:
-            fn_800FF3C0(15, task, _wazaViewerInitialize);
-            fn_800FF2A0(20, task, _wazaViewerUpdate);
-            fn_800FF178(25, task, _wazaViewerFinalize);
+            floorTaskRegister0(15, task, _wazaViewerInitialize);
+            floorTaskRegister1(20, task, _wazaViewerUpdate);
+            floorTaskRegister2(25, task, _wazaViewerFinalize);
             break;
         case 5:
         case 6:
-            fn_800FF2A0(20, task, _floorUpdate__FUi14FloorEnterMode);
+            floorTaskRegister1(20, task, _floorUpdate__FUi14FloorEnterMode);
             break;
         case 3:
             break;
         }
         if ((resId = floorDataBiosGetPreSctID(floor)) != 0) {
-            fn_800FEF8C(15, task, resId);
+            threadReqAlloc0(15, task, resId);
         }
         if ((resId = floorDataBiosGetMainSctID(floor)) != 0) {
-            fn_800FEE68(15, task, resId);
+            threadReqAlloc1(15, task, resId);
         }
         if ((resId = floorDataBiosGetPostSctID(floor)) != 0) {
-            fn_800FED3C(15, task, resId);
+            threadReqAlloc2(15, task, resId);
         }
         if ((script = floorDataBiosGetPreFunc(floor)) != NULL) {
-            fn_800FF3C0(15, task, script);
+            floorTaskRegister0(15, task, script);
         }
         if ((script = floorDataBiosGetPostFunc(floor)) != NULL) {
-            fn_800FF178(15, task, script);
+            floorTaskRegister2(15, task, script);
         }
         if (floorDataBiosGetMainFunc(floor) != NULL) {
-            fn_800FF2A0(15, task, floorStartMainThread);
+            floorTaskRegister1(15, task, floorStartMainThread);
         }
     }
 }
@@ -667,7 +667,7 @@ void floorInitPeople(FloorData* floor)
         /* 0x14 */ f32 y;
         /* 0x18 */ f32 z;
     } FloorObjectEntry;
-    extern u8 fn_800FF548(void);
+    extern u8 floorGetFadeOutFlag(void);
     extern void* peopleOpen(u32, u32, u32);
     extern void* peopleIsInGroup(u32, u32);
     extern void set__5GSvecFfff(void*, f32, f32, f32);
@@ -716,12 +716,12 @@ void floorInitPeople(FloorData* floor)
         }
 
         resourceId = 0x7FFF0000 | objectIndex++;
-        if (fn_800FF548() == 0) {
+        if (floorGetFadeOutFlag() == 0) {
             object = peopleOpen(group, resourceId, peopleInfo);
         } else {
             object = peopleIsInGroup(group, resourceId);
         }
-        if (object == NULL || fn_800FF548() == 1) {
+        if (object == NULL || floorGetFadeOutFlag() == 1) {
             continue;
         }
 
@@ -761,11 +761,11 @@ void _floorInitCharacters__FP11GSfloor_dd_(FloorData* floor) {
     extern u32 floorDataBiosGetCharNum(FloorData* floor);
     extern u8* floorCharacterBiosGetByIndex(u32 i);
     extern void* floorCharacterBiosGetPeopleInfoPtr(u8* obj);
-    extern u32 fn_8018F6B4(void* info);
-    extern u8 fn_800FF548(void);
+    extern u32 peopleInfoGetModelId(void* info);
+    extern u8 floorGetFadeOutFlag(void);
     extern u32 peopleOpen(u32 model, u32 i, s32 x);
     extern u32 peopleIsInGroup(u32 model, u32 i);
-    extern s32 fn_80183958(u32 model, u32 i);
+    extern s32 peopleGetMoveScriptId(u32 model, u32 i);
     extern void peopleStartScript(u32 model, u32 i, s32 a, u32 b, s32 c);
     extern void peopleSetFlagsByIndex(u32 model, u32 i, s32 flag);
     extern void floorCharacterBiosGetPos(u8* obj, void* out);
@@ -779,7 +779,7 @@ void _floorInitCharacters__FP11GSfloor_dd_(FloorData* floor) {
     extern void std151_characterFaceDirection(u32 model, u32 i, s32 x);
     extern u8 floorCharacterBiosGetMoveType(u8* obj);
     extern void peopleStartWander(u32 model, u32 i, f32 x);
-    extern void fn_801839A0(u32 model, u32 i, f32 x, f32 y);
+    extern void peopleFindNear(u32 model, u32 i, f32 x, f32 y);
     extern u8 floorCharacterBiosGetTalkStartType(u8* obj);
     extern u8 floorCharacterBiosGetTalkEndType(u8* obj);
     extern void peopleClearFlagsByIndex(u32 model, u32 i, s32 flag);
@@ -797,19 +797,19 @@ void _floorInitCharacters__FP11GSfloor_dd_(FloorData* floor) {
     count = floorDataBiosGetCharNum(floor);
     for (i = 0; i < count; i++) {
         obj = floorCharacterBiosGetByIndex(i);
-        result = fn_8018F6B4(floorCharacterBiosGetPeopleInfoPtr(obj));
-        if (fn_800FF548() == 0) {
+        result = peopleInfoGetModelId(floorCharacterBiosGetPeopleInfoPtr(obj));
+        if (floorGetFadeOutFlag() == 0) {
             result = peopleOpen(model, i, result);
         } else {
             result = peopleIsInGroup(model, i);
         }
         if (result == 0) {
             GSlogWrite("Error! [%s] 人の初期化に失敗\n", lbl_8035B888);
-        } else if (fn_800FF548() != 1) {
+        } else if (floorGetFadeOutFlag() != 1) {
             {
                 s32 emitId;
 
-                emitId = fn_80183958(model, i);
+                emitId = peopleGetMoveScriptId(model, i);
                 peopleStartScript(model, i, emitId, result, 0);
             }
             peopleSetFlagsByIndex(model, i, 4);
@@ -829,7 +829,7 @@ void _floorInitCharacters__FP11GSfloor_dd_(FloorData* floor) {
                 peopleStartWander(model, i, 15.0f);
                 break;
             case 3:
-                fn_801839A0(model, i, 5.0f, 3.0f);
+                peopleFindNear(model, i, 5.0f, 3.0f);
                 break;
             }
             switch (floorCharacterBiosGetTalkStartType(obj)) {
@@ -866,7 +866,7 @@ void floorInitMap(u32 group, u32 floorId)
     extern u32 floorReadMakeLightResID(u32);
     extern u32 floorReadMakeCameraResID(u32);
     extern u32 floorReadMakeFogResID(u32);
-    extern void fn_800F9210(u32, u32);
+    extern void GSresReleaseOwnerItem(u32, u32);
     extern void GSresRegisterResource(void*, u32, u32, void*);
     extern u32 _floorUnloadModel__FPvUlUl(u32);
     extern void GSmodelSetVisibility(void*, u32);
@@ -914,7 +914,7 @@ void floorInitMap(u32 group, u32 floorId)
                 GSlogWrite("マップモデルの初期化に失敗\n");
                 continue;
             }
-            fn_800F9210(group, resourceId);
+            GSresReleaseOwnerItem(group, resourceId);
             GSresRegisterResource(object, group, resourceId,
                                   _floorUnloadModel__FPvUlUl);
             GSmodelSetVisibility(object, 0);
@@ -1069,13 +1069,13 @@ s32 floorGetPlaceName(s32 param) {
 }
 
 /* 0x801139BC | 0x50 */
-void fn_801139BC(void) {
+void floorResetHeroAnimations(void) {
     extern void std051_characterSetAnimation(s32, s32, s32, s32, s32);
-    extern void fn_80117154(void);
+    extern void cameraClearReturn(void);
 
     std051_characterSetAnimation(0, 0x64, 1, 0, 1);
     std051_characterSetAnimation(0, 0x65, 1, 0, 1);
-    fn_80117154();
+    cameraClearReturn();
 }
 
 /* 0x80113A0C | 0x178 */
@@ -1086,11 +1086,11 @@ void _floorUpdate__FUi14FloorEnterMode(u32 floorId, s32 enterMode) {
         /* 0x04 */ u32 value;
     } FloorEventLog;
     extern u8* GSresGetResource(u32, u32);
-    extern void fn_801171C8(void);
+    extern void fieldCameraUpdate(void);
     extern void tvRender(void);
     extern void cameraUpdate(void);
-    extern void fn_8010D8D4(s32);
-    extern void fn_800D9ED8(s32);
+    extern void colsysDebugDraw(s32);
+    extern void gfxSetFlag1A(s32);
     extern void GSmsgPrintf(s32, s32, u32, const char*, ...);
     extern s8 lbl_8047AD60;
     extern FloorEventLog lbl_8035B818[10];
@@ -1099,16 +1099,16 @@ void _floorUpdate__FUi14FloorEnterMode(u32 floorId, s32 enterMode) {
     s32 i;
     FloorEventLog* entry;
 
-    fn_801171C8();
+    fieldCameraUpdate();
     tvRender();
     cameraUpdate();
     /* Debug overlay: resource (0, 2) holds the on/off flag. */
     debug = GSresGetResource(0, 2);
     if (debug != NULL && *debug != 0) {
-        fn_8010D8D4(0);
+        colsysDebugDraw(0);
         debug = GSresGetResource(0, 2);
         if (debug != NULL && *debug != 0) {
-            fn_800D9ED8(1);
+            gfxSetFlag1A(1);
             y = 0x1E;
             for (i = 0; i < 10; i++) {
                 entry = &lbl_8035B818[(lbl_8047AD60 + i) % 10];
@@ -1125,7 +1125,7 @@ void _floorUpdate__FUi14FloorEnterMode(u32 floorId, s32 enterMode) {
                 }
                 y += 12;
             }
-            fn_800D9ED8(0);
+            gfxSetFlag1A(0);
         }
     }
 }
@@ -1185,7 +1185,7 @@ static inline void floorInitDoors(FloorData* floor) {
 /* 0x80113B84 | 0x18C */
 void _floorInitialize__FUi14FloorEnterMode(FloorData* floor, s32 enterMode) {
     extern void heroMoveInit(void*, void*);
-    extern u8 fn_800FF548(void);
+    extern u8 floorGetFadeOutFlag(void);
     extern void _floorInitCharacters__FP11GSfloor_dd_(FloorData*);
     extern void floorInitPeople(FloorData*);
     extern void fieldCameraLoadList(FloorData*);
@@ -1196,13 +1196,13 @@ void _floorInitialize__FUi14FloorEnterMode(FloorData* floor, s32 enterMode) {
     extern void GSinputResetLeftSmoothing(s32, s32, s32);
     extern void GSinputResetRightSmoothing(s32, s32, s32);
     heroMoveInit(lbl_80408378 + 0x10, lbl_80408378 + 0x1C);
-    if (fn_800FF548() == 0) {
+    if (floorGetFadeOutFlag() == 0) {
         _floorInitCharacters__FP11GSfloor_dd_(floor);
         floorInitDoors(floor);
         floorInitPeople(floor);
     }
     fieldCameraLoadList(floor);
-    if (fn_800FF548() == 0) {
+    if (floorGetFadeOutFlag() == 0) {
         FloorViewVec view = sFloorCameraView;
 
         GSscene_SetMode(0);
@@ -1324,7 +1324,7 @@ void* floorGetResource(u32 key, u32 arg) {
 }
 
 /* 0x80113FB4 | 0x34 */
-u32 fn_80113FB4(u32 key) {
+u32 floorGetCurrentGroupId(u32 key) {
     FloorData* resource;
 
     resource = floorDataBiosGetPtr(key);

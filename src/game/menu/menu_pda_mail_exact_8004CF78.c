@@ -20,7 +20,7 @@ extern f32 lbl_8047BE1C;
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8004CF78(u8* window)
+s32 pdaMailListKey(u8* window)
 {
     typedef union PdaMailCursorState {
         u32 packed;
@@ -120,7 +120,7 @@ s32 fn_8004CF78(u8* window)
 /* RULE-EXCEPTION(user-approved): local peephole control and a no-op scalar
  * copy preserve retail FP allocation; see docs/RULE_EXCEPTIONS.md. */
 #pragma peephole off
-s32 fn_8004D26C(PdaMailWindowA* window)
+s32 pdaMailListCtrl(PdaMailWindowA* window)
 {
     s32** field = window->field_0x60;
     switch (window->phase) {

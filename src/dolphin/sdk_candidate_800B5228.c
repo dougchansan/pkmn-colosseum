@@ -210,7 +210,7 @@ s32 CARDSetStatusAsync(s32 chan, s32 fileNo, CARDStat* stat,
     return result;
 }
 
-s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry)
+s32 __CARDGetStatusEx(s32 chan, s32 fileNo, CARDDirEntry* entry)
 {
     CARDControl* card;
     s32 result;
@@ -234,7 +234,7 @@ s32 fn_800B57D0(s32 chan, s32 fileNo, CARDDirEntry* entry)
     return __CARDPutControlBlock(card, result);
 }
 
-s32 fn_800B588C(s32 chan, s32 fileNo, CARDDirEntry* input,
+s32 __CARDSetStatusExAsync(s32 chan, s32 fileNo, CARDDirEntry* input,
                 CARDCallback callback)
 {
     CARDControl* card;

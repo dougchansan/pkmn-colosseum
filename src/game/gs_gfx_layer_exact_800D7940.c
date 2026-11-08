@@ -11,7 +11,7 @@ extern void gfxVtxTexCoord1x16(u32 layer, u16 vertex);
 extern void gfxVtxTexCoord1x8(u32 layer, u8 vertex);
 extern void gfxEnd(void);
 
-void fn_800D7940(u8* object, u16 vertexCount)
+void gfxDrawIndexedVertices(u8* object, u16 vertexCount)
 {
     u16 vertex;
     s32 i;

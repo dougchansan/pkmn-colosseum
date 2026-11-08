@@ -15,7 +15,7 @@ extern void* pokemonGetStatus(void* context, u32 slot, u16 tableId, u32 flags);
  * Pokemon itself; any other kind is never set. */
 static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
     extern u16 joutaiDataBiosGetStatusKind(u16 id);
-    extern u8 fn_8011B67C(void* obj, u16 id);
+    extern u8 statusIsJoutaiDataId(void* obj, u16 id);
     extern u8 pokemonIsJoutaiDataId(void* obj, u16 id);
     void* slot;
     void* data;
@@ -32,12 +32,12 @@ static inline u8 fightPokemonIsJoutai(void* pokemon, u16 id) {
         } else if (joutaiDataBiosGetStatusKind(id) != 0xCD) {
             return 0;
         } else {
-            return fn_8011B67C(slot, id);
+            return statusIsJoutaiDataId(slot, id);
         }
     } else if (joutaiDataBiosGetStatusKind(id) != 0xD8) {
         return 0;
     } else {
-        return fn_8011B67C(pokemon, id);
+        return statusIsJoutaiDataId(pokemon, id);
     }
 }
 

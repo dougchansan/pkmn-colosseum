@@ -5,6 +5,6 @@
 #define MENU_MIDDLE_EXACT_8006CCC0_ONLY
 #include "menu_middle.c"
 
-/* Keep fn_8006F720's four-byte-aligned switch table immediately after this
+/* Keep menuColoBattleC0Ctrl's four-byte-aligned switch table immediately after this
  * unit's generated tables, at .data+0xBC, without a new section alignment. */
 #include "../data/data_802EE06C.c"

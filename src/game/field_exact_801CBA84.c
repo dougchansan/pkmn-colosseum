@@ -2,7 +2,7 @@
 
 extern u8 lbl_8047B3C8;
 
-void fn_801CBA84(void)
+void std_clearFlag8047B3C8(void)
 {
     lbl_8047B3C8 = 0;
 }

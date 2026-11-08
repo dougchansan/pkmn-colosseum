@@ -1,6 +1,6 @@
 /**
- * dbgMenu prefix, .text 0x80132C6C-0x80133050: fn_80132C6C (the debug-menu
- * slot/item pools), fn_80132F7C (menu 0xAB toggle) and dbgMenuMovieTest, in
+ * dbgMenu prefix, .text 0x80132C6C-0x80133050: GSparticleInitPool (the debug-menu
+ * slot/item pools), dbgMenuToggleMenuAB (menu 0xAB toggle) and dbgMenuMovieTest, in
  * address order.  Linked (user decision, 2026-09-28; see the note below).
  *
  * Built as C++ (the .cpp extension; no other flag and no compiler-control
@@ -16,7 +16,7 @@
  * All three functions are exact with GC/1.3 and the unit's normal flags,
  * with and without -schedule on (lane D15, 2026-09-28).
  *
- * fn_80132C6C -- admissibility note.
+ * GSparticleInitPool -- admissibility note.
  * Retail colours the first unrolled copy's item pointer before the
  * unroller's byte offset and before the counter (r5, r6, r7).  A declared
  * pointer local (any scope, C or C++, any form; see dbgMenu.c) is coloured
@@ -39,7 +39,7 @@
  * bindings" in docs/CAMPAIGN_OPERATIONS.md): in a TU evidenced as C++, a
  * reference to const bound to a computed value is natural C++ source.
  *
- * Linking needs "fn_80132F7C" and "dbgMenuMovieTest" in configure.py's
+ * Linking needs "dbgMenuToggleMenuAB" and "dbgMenuMovieTest" in configure.py's
  * force_active_symbols: they are menu callbacks referenced only from
  * unlinked data, so without them the linker strips both and .text shrinks
  * by 0xC0.
@@ -87,7 +87,7 @@ extern u32 lbl_8047AEC8;
 extern u32 lbl_8047AECC;
 
 /* 0x80132C6C | 0x310 */
-void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3)
+void GSparticleInitPool(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3)
 {
     u32 total;
     u32 i;
@@ -141,7 +141,7 @@ void fn_80132C6C(u32 count, u32 maxPerSlot, u32 arg2, u32 arg3)
 }
 
 /* 0x80132F7C | 0x5C */
-u32 fn_80132F7C(void)
+u32 dbgMenuToggleMenuAB(void)
 {
     if (menuIsCheck(0xab) & 0xFF) {
         menuClose(0xab);

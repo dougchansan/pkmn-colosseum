@@ -40,7 +40,7 @@ extern u8 lbl_803A6610[];
 
 extern u16 GSmemGetHandleByPtr(void* ptr);
 extern void GSmemFree(u16 handle);
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern u32 soundStartRaw(u32, u32, u32);
 extern s32 darkPokemonGetFlag1C(u16 id);
 extern u32 darkPokemonSaveGet8(u16 id);
@@ -53,7 +53,7 @@ extern void pokemonCreate(u32 work, u16 species, s32 level, u32 trainer);
 extern void pokemonBiosSetRnd(u32 work, u32 rnd);
 extern void pokemonBiosSetDarkpokemonDataId(u32 work, s32 id);
 extern void pokemonBiosSetDp(u32 work, s32 dp);
-extern void fn_8003CF38(void);
+extern void pdaSnagListBuild(void);
 extern void menuModelInit(void* work, s32 w, s32 h);
 extern void menuPokemonModelRequest(void* work, u32 pokemon);
 extern s32 menuOpen(s32 id, s32 flag);
@@ -85,7 +85,7 @@ void pdaSnagListRun(void)
 
     state = 0;
     running = 1;
-    fn_8003CF38();
+    pdaSnagListBuild();
     *(f32*)((u8*)&lbl_803A6748 + 0x14) = lbl_8047BAC4;
     *(f32*)((u8*)&lbl_803A6748 + 0x18) = lbl_8047BAC4;
     *(f32*)((u8*)&lbl_803A6748 + 0x1c) = lbl_8047BAC4;
@@ -289,7 +289,7 @@ void pdaSnagListRun(void)
     if (lbl_8047A4D0 != 0) {
         workHandle = GSmemGetHandleByPtr((void*)lbl_8047A4D0);
         if (workHandle != 0) {
-            fn_800E24B0(workHandle);
+            GSmemUnlock(workHandle);
             GSmemFree(workHandle);
         }
         lbl_8047A4D0 = 0;
@@ -297,7 +297,7 @@ void pdaSnagListRun(void)
     if (lbl_8047A4D4 != NULL) {
         listHandle = GSmemGetHandleByPtr(lbl_8047A4D4);
         if (listHandle != 0) {
-            fn_800E24B0(listHandle);
+            GSmemUnlock(listHandle);
             GSmemFree(listHandle);
         }
         lbl_8047A4D4 = NULL;

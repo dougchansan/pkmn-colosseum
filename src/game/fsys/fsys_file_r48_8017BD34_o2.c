@@ -6,8 +6,8 @@
  * cache: mark the entry's trailer reading (state 5) and the slot status
  * 101, allocate its destination (fsysAllocEntry: the group's allocator,
  * else GSres; entries of external archives refresh their size from the
- * disc file first) and queue the cached image's transfer (fn_80180584)
- * with fn_8017A95C as completion callback. fsysLoadEntryCompressed hands compressed
+ * disc file first) and queue the cached image's transfer (fsysARAMToMainAsync)
+ * with fsysARQDoneUncompressed as completion callback. fsysLoadEntryCompressed hands compressed
  * entries to the LZSS path and the rest to this function.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the
@@ -24,14 +24,14 @@
 #include "game/fsys/fsys_entry.h"
 
 extern void* GSresAllocResourceAlign(u32 size, u32 align, u32 group, u32 id, u32 param);
-extern u8 fn_80167EF8(const char* path);
+extern u8 GSdvdConvertPathToEntrynum(const char* path);
 extern u32 GSdvdOpen(const char* path);
 extern u32 GSdvdGetLength(u32 fileInfo);
 extern s32 GSdvdClose(u32 fileInfo);
-extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
-extern u32 fn_8017F728(u32 fileHandle, u32 groupID, u32 nameHash);
-extern void fn_80180584(void* dst, u32 src, u32 size, void (*callback)(void), void* userData);
-extern void fn_8017A95C(void);
+extern u32 fsysCacheLookup(u32 fileHandle, u32 groupID, u32 nameHash);
+extern u32 fsysCacheFindEntryOffset(u32 fileHandle, u32 groupID, u32 nameHash);
+extern void fsysARAMToMainAsync(void* dst, u32 src, u32 size, void (*callback)(void), void* userData);
+extern void fsysARQDoneUncompressed(void);
 
 /* GSres allocation of an entry buffer, 32-byte aligned (as in fsysLoadEntrySync). */
 static inline void* gsResAlloc(u32 size, u32 group, u32 id)
@@ -86,7 +86,7 @@ static inline void* fsysAllocEntry(FSYSSlot* slot, FSYSFileEntry* entry)
         archive = slot->archiveData;
         name = (char*)slot->archiveData + entry->dataOffset;
         slot->tocBuffer = NULL;
-        if (fn_80167EF8(name)) {
+        if (GSdvdConvertPathToEntrynum(name)) {
             slot->tocBuffer = (void*)GSdvdOpen(name);
         }
         sub = (FSYSSubEntry*)entry->subEntry;
@@ -124,9 +124,9 @@ void fsysLoadEntryUncompressed(FSYSSlot* slot, FSYSFileEntry* entry, u32 index)
     slot->status = 101;
     buffer = fsysAllocEntry(slot, entry);
     size = (entry->decompressedSize + 0x1F) & ~0x1F;
-    cached = fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
-    offset = fn_8017F728(slot->fileHandle, entry->groupID, entry->nameHash);
-    fn_80180584(buffer, cached, offset, fn_8017A95C, slot);
+    cached = fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
+    offset = fsysCacheFindEntryOffset(slot->fileHandle, entry->groupID, entry->nameHash);
+    fsysARAMToMainAsync(buffer, cached, offset, fsysARQDoneUncompressed, slot);
     /* RULE-EXCEPTION(title-path): dead store for register allocation; see docs/RULE_EXCEPTIONS.md. */
     cached = 0;
 }

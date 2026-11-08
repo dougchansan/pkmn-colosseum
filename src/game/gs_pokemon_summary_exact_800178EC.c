@@ -11,7 +11,7 @@ typedef struct SummaryDrawItem {
 
 extern u32 lbl_8047A2E0;
 
-s32 fn_800178EC(SummaryPageContext* unused, SummaryDrawItem* item)
+s32 bagMenuDrawItem2(SummaryPageContext* unused, SummaryDrawItem* item)
 {
     if ((s32)lbl_8047A2E0 != 3) {
         item->color[3] = 0;
@@ -21,7 +21,7 @@ s32 fn_800178EC(SummaryPageContext* unused, SummaryDrawItem* item)
     return 0;
 }
 
-s32 fn_80017914(SummaryPageContext* unused, SummaryDrawItem* item)
+s32 bagMenuDrawItem3(SummaryPageContext* unused, SummaryDrawItem* item)
 {
     if ((s32)lbl_8047A2E0 != 3) {
         item->color[3] = 0;

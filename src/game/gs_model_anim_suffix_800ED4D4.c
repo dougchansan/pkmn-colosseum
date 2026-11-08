@@ -137,18 +137,18 @@ extern char lbl_80270EE8[];
 
 void HSD_ForeachAnim(void* obj, u32 type, u32 mask, void* func, u32 arg_type, ...);
 void HSD_JObjReqAnimAllByFlags(HSD_JObj* jobj, u32 flags, f32 frame);
-void fn_801A2B5C(HSD_JObj* jobj, void* anim, void* mat_anim,
+void HSD_JObjAddAnimAll_801A2B5C(HSD_JObj* jobj, void* anim, void* mat_anim,
                  void* shape_anim);
 void modelCalculateBlendModel__FP8_GSmodelf(GSmodel* model);
-f32 fn_800ED8C4(s32 type, u8 fractional_frames, f32 frame,
+f32 modelCalcAnimFrame(s32 type, u8 fractional_frames, f32 frame,
                 f32 requested_frame, f32 end_frame, f32 rate);
-s32 fn_800D37CC(void);
+s32 GSgfxGetVsyncRate(void);
 void _modelGetAObjFunc__FP9_HSD_AObjPv(HSD_AObj* aobj, HSD_AObj** out);
 void _modelResetPartAnimMixes__FP8_GSmodel(GSmodel* model);
 void _modelSetLoopFlag__FP9_HSD_AObjUl(HSD_AObj* aobj, u32 enable);
 void _modelGetEndFrame(HSD_AObj* aobj, f32* end_frame);
-void fn_800ED6E4(GSmodel* model, u8 tex_anim);
-void fn_800ED7E4(GSmodel* model, u8 tex_anim, f32 delta);
+void GSmodelAnimEndEvent(GSmodel* model, u8 tex_anim);
+void GSmodelAnimAdvanceFrame(GSmodel* model, u8 tex_anim, f32 delta);
 GSpart* GSmodelGetPart(GSmodel* model, s32 index);
 void GSpartGetTransform(GSpart* part, GSvec* position, GSvec* rotation,
                         GSvec* scale);
@@ -156,11 +156,11 @@ void GSpartFree(GSpart* part);
 void GSquatFromEuler(GSquat* quaternion, GSvec* rotation);
 void GSvecTransformQuat(GSvec* dst, GSquat* quaternion, GSvec* src);
 void GSvecAdd(GSvec* dst, GSvec* lhs, GSvec* rhs);
-void fn_800E0108(GSvec* dst, GSvec* lhs, GSvec* rhs);
+void GSvecMulComponents(GSvec* dst, GSvec* lhs, GSvec* rhs);
 void modelSetPos(GSmodel* model, GSvec* position);
 void modelSetRot(GSmodel* model, GSvec* rotation);
 void modelSetScl(GSmodel* model, GSvec* scale);
-void fn_8019D620(HSD_JObj* jobj);
+void HSD_JObjSetMtxDirtySub_8019D620(HSD_JObj* jobj);
 void HSD_JObjSetupMatrixSub(HSD_JObj* jobj);
 
 typedef struct GSmodelAnimEndedInfo {
@@ -187,7 +187,7 @@ typedef struct GSmodelAnimEndedInfo {
                     }                                                         \
                 }                                                             \
                 if (dirty == 0) {                                             \
-                    fn_8019D620(dirty_jobj);                                  \
+                    HSD_JObjSetMtxDirtySub_8019D620(dirty_jobj);                                  \
                 }                                                             \
             }                                                                 \
         }                                                                     \
@@ -224,7 +224,7 @@ extern s32 lbl_8047ABAC;
 extern s32 lbl_8047ABB0;
 typedef void (*GSmodelAObjApplyFunc)(HSD_AObj* aobj, void* arg);
 void HSD_JObjWalkTree(HSD_JObj* jobj, GSmodelAObjApplyFunc func, u32 arg);
-void fn_800EE20C(HSD_AObj* aobj, void* arg);
+void jobjWalkFindNthCB(HSD_AObj* aobj, void* arg);
 
 #if !defined(GS_MODEL_ANIM_SUFFIX_SPLIT) || \
     defined(GS_MODEL_ANIM_SUFFIX_PREFIX)
@@ -250,7 +250,7 @@ void modelUpdateAttachments__FP8_GSmodel(GSmodel* model)
                            &model->attachment_position);
         GSvecAdd(&position, &position, &transformed_position);
         GSvecAdd(&rotation, &rotation, &model->attachment_rotation);
-        fn_800E0108(&scale, &scale, &model->attachment_scale);
+        GSvecMulComponents(&scale, &scale, &model->attachment_scale);
 
         modelSetPos(model, &model->attachment_position);
         modelSetRot(model, &model->attachment_rotation);
@@ -311,7 +311,7 @@ yes:
 no:
     return FALSE;
 }
-void fn_800ED6E4(GSmodel* model, u8 tex_anim)
+void GSmodelAnimEndEvent(GSmodel* model, u8 tex_anim)
 {
     u32 end_flag_mask;
     u32 anim_flag_mask;
@@ -362,7 +362,7 @@ void fn_800ED6E4(GSmodel* model, u8 tex_anim)
         model->anim_ended_callback(model, &info);
     }
 }
-void fn_800ED7E4(GSmodel* model, u8 tex_anim, f32 delta)
+void GSmodelAnimAdvanceFrame(GSmodel* model, u8 tex_anim, f32 delta)
 {
     u32 ended_flag;
     f32* frame_ptr;
@@ -425,14 +425,14 @@ extern u8 lbl_80478AF8;
  * literals (lbl_8047CC5C/CC60/CC78, and lbl_8047CC68/CC70 in
  * _modelResetPartAnimMixes) - see docs/RULE_EXCEPTIONS.md
  */
-f32 fn_800ED8C4(s32 type, u8 fractional_frames, f32 frame,
+f32 modelCalcAnimFrame(s32 type, u8 fractional_frames, f32 frame,
                 f32 requested_frame, f32 end_frame, f32 rate)
 {
     f32 current;
     f32 advance;
     f32 result = lbl_8047CC5C;
 
-    if (lbl_80478AF8 == 1 && fn_800D37CC() == 60) {
+    if (lbl_80478AF8 == 1 && GSgfxGetVsyncRate() == 60) {
         if (!fractional_frames) {
             if (frame - (f32)(s32)frame > lbl_8047CC78) {
                 advance = rate * (f32)(GSgetFrameStep() - 1);
@@ -568,7 +568,7 @@ s32 GSmodelWalkJObjs(GSmodel* model)
 {
     lbl_8047ABB0 = 0;
     lbl_8047ABAC = -1;
-    HSD_JObjWalkTree(model->jobj, fn_800EE20C, 0);
+    HSD_JObjWalkTree(model->jobj, jobjWalkFindNthCB, 0);
     if (model->flags & MODEL_FLAG_USE_JOBJ_CHILD) {
         lbl_8047ABB0 = lbl_8047ABB0 - 1;
     }

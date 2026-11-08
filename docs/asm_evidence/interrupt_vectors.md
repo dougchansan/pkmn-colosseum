@@ -74,17 +74,17 @@ The existing public symbols remain at their original addresses:
 | `lbl_80003FF0` | `0x80003FF0` | Existing interior label |
 | `lbl_80004000` | `0x80004000` | Existing interior label |
 | `gTRKInterruptVectorTableEnd` | `0x800053E0` | End-exclusive table boundary |
-| `fn_800053E0` | `0x800053E0` | Existing reset helper; `OSResetSystem(0, 0, 0)` |
+| `__TRK_reset` | `0x800053E0` | Existing reset helper; `OSResetSystem(0, 0, 0)` |
 | `TRKInterruptHandler` | `0x800C0EAC` | Common debugger entry |
 
-**External branch targets:** The reset entry transfers to `fn_800053E0`, and
+**External branch targets:** The reset entry transfers to `__TRK_reset`, and
 all 24 SRR-mediated debugger entries transfer to `TRKInterruptHandler`. The
 source declares symbolic relocations to those existing functions. Internal
 performance/TLB branches remain inside the template; there are no other
 external destinations.
 
 The reset instruction at stored address `0x800035AC` is represented as a
-relative branch to `fn_800053E0`, a displacement of `0x1E34`. Copying the slot
+relative branch to `__TRK_reset`, a displacement of `0x1E34`. Copying the slot
 without rewriting that instruction preserves its displacement, not its
 stored-table destination: execution at physical `0x100` would branch to
 `0x1F34`. Preserve and validate the original encoding rather than changing it

@@ -12,12 +12,12 @@ extern f32 lbl_80478ACC[];
 /* RULE-EXCEPTION(title-path): volatile extern stands in for this TU's own
  * pooled 0.0f literal so each absolute-value comparison reloads it (a plain
  * 0.0f literal gives retail's instructions but mints a new pool entry this
- * text-only carve cannot own); same form as fn_800D258C; see
+ * text-only carve cannot own); same form as GScameraSetCurrent; see
  * docs/RULE_EXCEPTIONS.md. */
 extern volatile f32 lbl_8047C998;
 extern double lbl_8047C9A0;
 
-extern void fn_800E0628(void* dst, void* src);
+extern void GSmtxCopy(void* dst, void* src);
 extern void* HSD_CObjGetViewingMtxPtr(void* cobj);
 extern void HSD_CObjGetEyePosition(void* cobj, void* data);
 extern void HSD_CObjGetUpVector(void* cobj, void* data);
@@ -27,14 +27,14 @@ extern void GSmtxLookAt(void* mtx, void* eye, void* up, void* interest);
 extern void GSmtxMakeXRotation(void* mtx, f32 angle);
 extern void GSmtxMakeYRotation(void* mtx, f32 angle);
 extern void GSmtxMakeZRotation(void* mtx, f32 angle);
-extern void fn_800E05C0(void* mtx, f32 x, f32 y, f32 z);
+extern void GSmtxMakeTrans(void* mtx, f32 x, f32 y, f32 z);
 extern void GSmtxConcat(void* dst, void* lhs, void* rhs);
 
 /*
  * Rebuilds the camera's view matrix. Retail expands this body identically in
- * GScameraGetInvMatrixPtr, GScameraGetMatrixPtr, fn_800D258C, _cameraLoadCameraMatrix and
- * fn_800D1070 (repeated expansion). In _cameraLoadCameraMatrix and
- * fn_800D1070 the expansion re-tests the isAnimating byte its caller already
+ * GScameraGetInvMatrixPtr, GScameraGetMatrixPtr, GScameraSetCurrent, _cameraLoadCameraMatrix and
+ * cameraObjectAnimUpdate (repeated expansion). In _cameraLoadCameraMatrix and
+ * cameraObjectAnimUpdate the expansion re-tests the isAnimating byte its caller already
  * tested and branched on, a stale-test inline fingerprint. Pokemon XD
  * (GXXE01) names it cameraBuildMatrix__FP9_GScamera (0x198 bytes, dead-stripped
  * from the NXXJ01 demo map because every use is inlined); XD's callers
@@ -45,7 +45,7 @@ extern void GSmtxConcat(void* dst, void* lhs, void* rhs);
  */
 static inline void cameraBuildMatrix(GSRenderCamera* c) {
     if (c->isAnimating != 0) {
-        fn_800E0628(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
+        GSmtxCopy(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
         HSD_CObjGetEyePosition(c->cobj, &c->eye);
         HSD_CObjGetUpVector(c->cobj, &c->upVector);
         HSD_CObjGetInterest(c->cobj, &c->interest);
@@ -76,7 +76,7 @@ static inline void cameraBuildMatrix(GSRenderCamera* c) {
         GSmtxMakeXRotation(c->viewMtx, -c->rotation.x);
         GSmtxMakeYRotation(tmp1, -c->rotation.y);
         GSmtxMakeZRotation(tmp2, -c->rotation.z);
-        fn_800E05C0(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
+        GSmtxMakeTrans(tmp3, -c->eye.x, -c->eye.y, -c->eye.z);
         GSmtxConcat(c->viewMtx, c->viewMtx, tmp1);
         GSmtxConcat(c->viewMtx, c->viewMtx, tmp2);
         GSmtxConcat(c->viewMtx, c->viewMtx, tmp3);

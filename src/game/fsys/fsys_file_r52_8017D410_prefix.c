@@ -25,8 +25,8 @@ extern FSYSFileHandle* lbl_8047B1B8; /* handle table, FSYS_MAX_HANDLES entries *
 extern s32 lbl_8047B1BC;             /* handle table fill count */
 
 extern void* memcpy(void* dst, const void* src, u32 size);
-extern void fn_8017F800(s32 handleID);
-extern void fn_8017D960(FSYSSlot* slot);
+extern void fsysCacheFreeHandle(s32 handleID);
+extern void fsysSlotFinish(FSYSSlot* slot);
 extern void fsysStartLoadMode1(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
                         u32 callbackB, u32 callbackC);
 extern void fsysStartLoadMode7(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
@@ -115,7 +115,7 @@ void fsysFlushCachedHandles(void)
 
     table = lbl_8047B1B8;
     for (i = 0; i < lbl_8047B1BC; i++) {
-        fn_8017F800(table[i].handleID);
+        fsysCacheFreeHandle(table[i].handleID);
         table[i].handleID = -1;
     }
     lbl_8047B1BC = 0;
@@ -205,13 +205,13 @@ void fsysStartPendingLoad(void)
 /* Address: 0x8017D8F8 | size: 0x34 */
 void fsysSlotFinishA(FSYSSlot* slot)
 {
-    fn_8017D960(slot);
+    fsysSlotFinish(slot);
     slot->status = FSYS_STATUS_FREE;
 }
 
 /* Address: 0x8017D92C | size: 0x34 */
 void fsysSlotFinishB(FSYSSlot* slot)
 {
-    fn_8017D960(slot);
+    fsysSlotFinish(slot);
     slot->status = FSYS_STATUS_FREE;
 }

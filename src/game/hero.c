@@ -29,21 +29,21 @@ extern void sodateyaInit(void* data);
 extern void memoInit(void* data);
 extern void exribbonInit(void* data);
 extern void savedataBattleInit(void* data);
-extern void fn_80083CBC(void* data);
-extern void fn_801EF128(void* data);
+extern void cardeArenaClear(void* data);
+extern void darkPokemonSaveInit(void* data);
 
 /* Save-record section accessors (pokemon_range_exact_80128CC0.c) and the
  * current save record. */
-extern void* fn_80128CC0(void* save);
-extern void* fn_80128CDC(void* save);
+extern void* savedataGetSection1C45C(void* save);
+extern void* savedataGetSection1B014(void* save);
 extern void* savedataBiosGetE3E8Ptr(void* save);
-extern void* fn_80128D14(void* save);
-extern void* fn_80128D30(void* save);
-extern void* fn_80128D4C(void* save);
-extern void* fn_80128D68(void* save);
-extern void* fn_80128DD4(void* save);
-extern void* fn_80128DEC(void* save);
-extern void* fn_80128E04(void* save);
+extern void* savedataGetSection9A1C(void* save);
+extern void* savedataGetSection82A8(void* save);
+extern void* savedataGetSection8168(void* save);
+extern void* savedataGetSection7D20(void* save);
+extern void* savedataGetSectionB88(void* save);
+extern void* savedataGetSection70(void* save);
+extern void* savedataGetSection0(void* save);
 extern void* savedataGetWorkPtr(void);
 
 void savedataInit(SaveData* save);
@@ -82,7 +82,7 @@ void savedataCreate(SaveData* save, const u16* name)
     s32 version;
 
     savedataInit(save);
-    gameData = savedataGetPart(save, fn_80128E04);
+    gameData = savedataGetPart(save, savedataGetSection0);
 
     version = GSgetVersionMajor();
     switch (version) {
@@ -97,7 +97,7 @@ void savedataCreate(SaveData* save, const u16* name)
         break;
     }
 
-    heroData = savedataGetPart(save, fn_80128DEC);
+    heroData = savedataGetPart(save, savedataGetSection70);
     if (name == NULL) {
         GScharMakeFromSJIS(defaultName, lbl_8047D028);
         name = defaultName;
@@ -128,9 +128,9 @@ void savedataCreate(SaveData* save, const u16* name)
 /* Initialize each saved-data subsystem from the selected slot. */
 void savedataInit(SaveData* save)
 {
-    gamedataInit(savedataGetPart(save, fn_80128E04));
-    heroInit(savedataGetPart(save, fn_80128DEC));
-    pcboxInit(savedataGetPart(save, fn_80128DD4));
+    gamedataInit(savedataGetPart(save, savedataGetSection0));
+    heroInit(savedataGetPart(save, savedataGetSection70));
+    pcboxInit(savedataGetPart(save, savedataGetSectionB88));
 
     if (save == NULL || save == savedataResolve(NULL)) {
         GSflagClear(1);
@@ -138,11 +138,11 @@ void savedataInit(SaveData* save)
         GSflagClear(3);
     }
 
-    mailInitMailbox(savedataGetPart(save, fn_80128D68));
-    sodateyaInit(savedataGetPart(save, fn_80128D4C));
+    mailInitMailbox(savedataGetPart(save, savedataGetSection7D20));
+    sodateyaInit(savedataGetPart(save, savedataGetSection8168));
     savedataBattleInit(savedataGetPart(save, savedataBiosGetE3E8Ptr));
-    memoInit(savedataGetPart(save, fn_80128D30));
-    fn_80083CBC(savedataGetPart(save, fn_80128D14));
-    fn_801EF128(savedataGetPart(save, fn_80128CDC));
-    exribbonInit(savedataGetPart(save, fn_80128CC0));
+    memoInit(savedataGetPart(save, savedataGetSection82A8));
+    cardeArenaClear(savedataGetPart(save, savedataGetSection9A1C));
+    darkPokemonSaveInit(savedataGetPart(save, savedataGetSection1B014));
+    exribbonInit(savedataGetPart(save, savedataGetSection1C45C));
 }

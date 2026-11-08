@@ -1,5 +1,5 @@
 /**
- * .text 0x80179F4C - 0x80179FA4: fn_80179F4C, the first function after
+ * .text 0x80179F4C - 0x80179FA4: fsysShowLoadingMenu, the first function after
  * camera.c (which ends at 0x80179F4C with _cameraRestoreStateData).
  *
  * Stores its argument in the scene state word lbl_80478C4C and opens custom
@@ -14,7 +14,7 @@
 
 #include "game/gs_scene_types.h"
 
-void fn_80179F4C(u32 param)
+void fsysShowLoadingMenu(u32 param)
 {
     lbl_80478C4C = param;
     if ((u8)menuIsCheck(0xFE) == 0) {

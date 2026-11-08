@@ -3,7 +3,7 @@
  * @file pda_exact_80046168.c
  * @brief PDA cry-playback thread, 0x80046168 - 0x800472CC.
  *
- * Standalone copy of fn_80046168 from pda_range_80037158.c together with the
+ * Standalone copy of pdaStrategyMemoUpdate from pda_range_80037158.c together with the
  * inline helpers the shared file inlines into it. Unit flag -opt nopeephole
  * replaces the shared file's local "peephole off".
  */
@@ -59,7 +59,7 @@ extern s32 menuOpen(s32 id, s32 flag);
 extern u32 soundStartRaw(u32, u32, u32);
 extern s32 GSsndGetStatus(u32 voice);
 extern u32 GSinputButtonsChanged(s32 chan);
-extern u32 fn_800F7BC4(s32 chan);
+extern u32 GSinputGetButtons(s32 chan);
 extern void pokemonCreate(u32 work, u16 species, s32 level, u32 trainer);
 extern void pokemonBiosSetRnd(u32 work, u32 rnd);
 extern void pokemonBiosSetCatchTrainerRnd(u32 work, u32 rnd);
@@ -285,10 +285,10 @@ static inline u8 pda_80046168_StickCancel(void)
     s8 y;
     f32 ang;
 
-    if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x8) != 0) {
+    if ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x8) != 0) {
         return 1;
     }
-    if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x4) != 0) {
+    if ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x4) != 0) {
         return 1;
     }
     x = GSinputGetLeftStickYData(1, 0);
@@ -306,7 +306,7 @@ static inline u8 pda_80046168_StickCancel(void)
 }
 
 /* Cry-playback thread for the PDA's Pokemon entry. */
-void fn_80046168(void)
+void pdaStrategyMemoUpdate(void)
 {
     extern void _threadSwitch(void);
     u8* S;
@@ -348,12 +348,12 @@ void fn_80046168(void)
                 menuCloseCustom(0x3e, 0, 1);
                 *(s32*)(S + 0x20) = 0;
             } else {
-                if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x100) != 0) {
+                if ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x100) != 0) {
                     voice = pdaCurrentVoice(lbl_803A6818.currentIndex);
                     soundStartRaw(voice, 0, 0);
                     cry = pda_80046168_CurrentCry(lbl_803A6818.currentIndex);
                     pdaPushCry(cry, voice);
-                } else if ((fn_800F7BC4(1) & GSinputButtonsChanged(1) & 0x200) != 0) {
+                } else if ((GSinputGetButtons(1) & GSinputButtonsChanged(1) & 0x200) != 0) {
                     if (*(s32*)(S + 0x1c) == 2) {
                         *(s32*)(S + 0x1c) = 8;
                         menuCloseCustom(0x3e, 0, 1);

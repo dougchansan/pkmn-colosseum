@@ -6,7 +6,7 @@
 
 extern u8 lbl_80266DD8[];
 
-s32 fn_80026640(void* owner, u8* draw)
+s32 menuNameEntryDrawItem7(void* owner, u8* draw)
 {
     void* context;
     u8* base;
@@ -24,7 +24,7 @@ s32 fn_80026640(void* owner, u8* draw)
     return 0;
 }
 
-s32 fn_80026680(void* owner, u8* draw)
+s32 menuNameEntryDrawItem8(void* owner, u8* draw)
 {
     void* context;
     u8* base;
@@ -42,7 +42,7 @@ s32 fn_80026680(void* owner, u8* draw)
     return 0;
 }
 
-s32 fn_800266C0(void* owner, u8* draw)
+s32 menuNameEntryDrawItem9(void* owner, u8* draw)
 {
     void* context;
     u8* base;
@@ -60,7 +60,7 @@ s32 fn_800266C0(void* owner, u8* draw)
     return 0;
 }
 
-s32 fn_80026700(void* owner, u8* draw)
+s32 menuNameEntryDrawItem10(void* owner, u8* draw)
 {
     void* context;
     u8* base;

@@ -2,7 +2,7 @@
 
 extern void GSdvdGetDriveStatus(void);
 
-void fn_8017B1AC(void)
+void fsysCheckDrive(void)
 {
     GSdvdGetDriveStatus();
 }

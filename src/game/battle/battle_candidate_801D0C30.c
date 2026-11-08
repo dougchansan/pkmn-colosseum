@@ -5,7 +5,7 @@
 #include "dolphin/types.h"
 
 extern u8 heroGetPokemonBallId(u32 index);
-extern u16 fn_801D0AFC(s32 mode);
+extern u16 heroPartyHealAll(s32 mode);
 
 typedef struct BattleIntroColor {
     u8 r;
@@ -37,7 +37,7 @@ void pokemonCenterHealSequence(void)
         switch (state) {
         case 0:
             timer = 0;
-            fn_801D0AFC(1);
+            heroPartyHealAll(1);
             state = 10;
             break;
         case 10:
@@ -152,12 +152,12 @@ extern void GSmodelStartAnimation(void* model);
 extern u8 GSmodelIsAnimating(void* model);
 extern void GSmodelSetVisibility(void* model, s32 visible);
 extern void GSmodelFree(void* model);
-extern u32 fn_801662E8(u32 arg0, u32 arg1);
+extern u32 soundFindOwnerWrapper(u32 arg0, u32 arg1);
 extern void soundPauseSong(u32 handle, u32 volume, u32 arg2);
 extern void soundResumeMusic(u32 handle);
 extern void soundPlayFanfare(s32 id, s32 fade, s32 volume);
 extern void soundStartRaw(s32 id, s32 pan, s32 volume);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern void _threadSwitch(void);
 
@@ -205,7 +205,7 @@ void pokemonCenterBallMachineSequence(s32 peopleGroup, s32 peopleId)
         case 0:
             i = 0;
             model = GSresFindById(battleIntroFindModel(std093_getCurrentGroupID(), battleIntroModels));
-            count = fn_801D0AFC(0);
+            count = heroPartyHealAll(0);
             for (j = 0; j < 6; j++) {
                 lbl_80467378[j] = NULL;
             }
@@ -231,7 +231,7 @@ void pokemonCenterBallMachineSequence(s32 peopleGroup, s32 peopleId)
             break;
         case 3:
             {
-                u32 se = fn_801662E8(0, 0x406);
+                u32 se = soundFindOwnerWrapper(0, 0x406);
 
                 if (se != -1) {
                     soundPauseSong(se, 0x1068, 0);
@@ -250,7 +250,7 @@ void pokemonCenterBallMachineSequence(s32 peopleGroup, s32 peopleId)
             state = 4;
             break;
         case 4:
-            frameDelta = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+            frameDelta = (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
             timer += frameDelta;
             lbl_8047B3E0 = frameDelta;
             if (timer >= 0.5f) {
@@ -282,7 +282,7 @@ void pokemonCenterBallMachineSequence(s32 peopleGroup, s32 peopleId)
             }
             timer = 0.0f;
             while (timer < 0.7f) {
-                frameDelta = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                frameDelta = (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                 timer += frameDelta;
                 lbl_8047B3E0 = frameDelta;
                 _threadSwitch();
@@ -298,7 +298,7 @@ void pokemonCenterBallMachineSequence(s32 peopleGroup, s32 peopleId)
             }
             timer = 0.0f;
             while (timer < 0.7f) {
-                frameDelta = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+                frameDelta = (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
                 timer += frameDelta;
                 lbl_8047B3E0 = frameDelta;
                 _threadSwitch();

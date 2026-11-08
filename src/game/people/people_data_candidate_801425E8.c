@@ -1,9 +1,9 @@
 /**
  * @file people_data_candidate_801425E8.c
- * @brief fn_801425E8 (0x801425E8 - 0x80142984, exact): compacts an
+ * @brief itemSlotsCompact (0x801425E8 - 0x80142984, exact): compacts an
  *        item-record array (mode 0/1) and sorts it by item id (mode 1).
  *
- * The record swap is the TU's fn_80140A9C, inlined. The sort compare reads
+ * The record swap is the TU's itemSwapSlots, inlined. The sort compare reads
  * both ids into u16 locals first (entry, then other), so the entry id gets
  * its own callee-saved web (r22) and retail's operand order; the inline
  * one-expression compare evaluated the other record first and shifted the
@@ -72,7 +72,7 @@ static inline void peopleSwapEntry(u32* a, u32* b)
     *b = tmp;
 }
 
-void fn_801425E8(u32* base, u16 count, u8 mode)
+void itemSlotsCompact(u32* base, u16 count, u8 mode)
 {
     s32 i;
     s32 j;

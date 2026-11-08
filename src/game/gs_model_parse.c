@@ -72,7 +72,7 @@ void _modelParseSetupInstanceMtx__FP5GSmtxP9_HSD_JObjP5GSmtx(f32* parent, HSD_JO
 void _modelParseJObjDisp__FP9_HSD_JObjP5GSmtx12HSD_TrspMaskbPFP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv_vPv_800EA7E4(HSD_JObj* jobj, f32* obj_mtx, HSD_TrspMask trsp_mask, u8 is_visible, GSModelPObjDisp disp, void* arg);
 void _modelParseJObjDispAll__FP9_HSD_JObjP5GSmtx12HSD_TrspMaskbPFP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv_vPv(HSD_JObj* jobj, f32* obj_mtx, HSD_TrspMask trsp_mask, u8 is_visible, GSModelPObjDisp disp, void* arg);
 extern f32 lbl_804016A0[12];
-extern void fn_800E064C(f32* matrix);
+extern void GSmtxIdentity(f32* matrix);
 extern void HSD_JObjMakePositionMtx(HSD_JObj*, f32* obj_mtx, f32* out);
 void _modelParseJObjDispSub__FP9_HSD_JObjP5GSmtxP5GSmtx12HSD_TrspMaskbPFP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtxPv_vPv(
     HSD_JObj* jobj, f32* vmtx, f32* pmtx, HSD_TrspMask pass,
@@ -86,7 +86,7 @@ extern HSD_JObj* HSD_JObjGetCurrent(void);
 extern void HSD_PObjGetMtxMark(s32 index, u32* object, u32* mark);
 extern void HSD_PObjSetMtxMark(s32 index, void* object, s32 mark);
 extern void PSMTXConcat(f32* left, f32* right, f32* out);
-extern void fn_800E0628(void* dst, void* src);
+extern void GSmtxCopy(void* dst, void* src);
 void _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
     HSD_PObj* pobj, f32* vmtx, f32* pmtx, f32* matrices);
 
@@ -100,7 +100,7 @@ static inline void modelParseLoadRigidMatrix(HSD_PObj* pobj, f32* vmtx, f32* pmt
     HSD_PObjGetMtxMark(0, &marked_object, &mark);
     if (marked_object != (u32)current || mark != 1) {
         HSD_PObjSetMtxMark(0, current, 1);
-        fn_800E0628(mtx, pmtx);
+        GSmtxCopy(mtx, pmtx);
     }
 }
 
@@ -126,12 +126,12 @@ static inline void modelParseLoadSharedMatrix(HSD_PObj* pobj, f32* vmtx, f32* pm
     HSD_PObjSetMtxMark(1, pobj->u.jobj, 1);
     if (setup_current || setup_joint) {
         if (setup_current) {
-            fn_800E0628(mtx, pmtx);
+            GSmtxCopy(mtx, pmtx);
         }
         if (setup_joint) {
             HSD_JObjSetupMatrix_800EA664(pobj->u.jobj);
             PSMTXConcat(vmtx, (f32*)((u8*)pobj->u.jobj + 0x44), matrix);
-            fn_800E0628(mtx + 12, matrix);
+            GSmtxCopy(mtx + 12, matrix);
         }
     }
 }
@@ -222,7 +222,7 @@ void _modelParseJObjDispDObj__FP9_HSD_JObjP5GSmtx12HSD_TrspMaskbPFP9_HSD_PObjP5G
     }
     HSD_JObjSetupMatrix_800EA664(jobj);
     if (obj_mtx == NULL) {
-        fn_800E064C(lbl_804016A0);
+        GSmtxIdentity(lbl_804016A0);
         obj_mtx = lbl_804016A0;
     }
     HSD_JObjMakePositionMtx(jobj, obj_mtx, vmtx);

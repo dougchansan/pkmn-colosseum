@@ -20,7 +20,7 @@ extern u32 mailGetSenderName(s32);
 extern u32 mailGetSubject(s32);
 extern void* GSmsgGetGSchar(u32);
 extern void msgctrlSetValue(s32, void*);
-extern s32 fn_801D1B78(s32);
+extern s32 saveFlagBitsTest(s32);
 extern u32 mailGetAttachFileGroup(s32);
 extern void winSpriteSetDisp(void*, s32);
 extern const s32 lbl_802672A0[10];
@@ -31,7 +31,7 @@ extern const s32 lbl_80267200[10];
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-u32 fn_8004C6C0(u8* context, u8* object)
+u32 pdaMailDrawRowSender(u8* context, u8* object)
 {
     PdaMailRowTable table;
     PdaMailRowCursor cursors[2];
@@ -64,7 +64,7 @@ u32 fn_8004C6C0(u8* context, u8* object)
     }
     mailId = pdaMailGetMailID(index);
     if (mailId >= 0) {
-        if (fn_801D1B78(mailId) != 0) {
+        if (saveFlagBitsTest(mailId) != 0) {
             object[0x64] = 0xFF;
             object[0x65] = 0xFF;
             object[0x66] = 0xFF;
@@ -77,7 +77,7 @@ u32 fn_8004C6C0(u8* context, u8* object)
     return 0;
 }
 
-u32 fn_8004C8AC(u8* context, u8* object)
+u32 pdaMailDrawRowSubject(u8* context, u8* object)
 {
     PdaMailRowTable table;
     PdaMailRowCursor cursors[2];
@@ -110,7 +110,7 @@ u32 fn_8004C8AC(u8* context, u8* object)
     }
     mailId = pdaMailGetMailID(index);
     if (mailId >= 0) {
-        if (fn_801D1B78(mailId) != 0) {
+        if (saveFlagBitsTest(mailId) != 0) {
             object[0x64] = 0xFF;
             object[0x65] = 0xFF;
             object[0x66] = 0xFF;
@@ -123,7 +123,7 @@ u32 fn_8004C8AC(u8* context, u8* object)
     return 0;
 }
 
-u32 fn_8004CA98(u8* context, u8* object)
+u32 pdaMailDrawRowAttach(u8* context, u8* object)
 {
     PdaMailRowTable table;
     PdaMailRowCursor cursors[2];
@@ -158,7 +158,7 @@ u32 fn_8004CA98(u8* context, u8* object)
     return 0;
 }
 
-u32 fn_8004CC38(u8* context, u8* object)
+u32 pdaMailDrawRowFlagA(u8* context, u8* object)
 {
     PdaMailRowTable table;
     PdaMailRowCursor cursors[2];
@@ -181,7 +181,7 @@ u32 fn_8004CC38(u8* context, u8* object)
     index += cursors[1].position.page * 10;
     mailId = pdaMailGetMailID(index);
     if (mailId >= 0) {
-        if (fn_801D1B78(mailId) != 0) {
+        if (saveFlagBitsTest(mailId) != 0) {
             visible = 1;
         } else {
             visible = 0;
@@ -193,7 +193,7 @@ u32 fn_8004CC38(u8* context, u8* object)
     return 0;
 }
 
-u32 fn_8004CDD8(u8* context, u8* object)
+u32 pdaMailDrawRowFlagB(u8* context, u8* object)
 {
     PdaMailRowTable table;
     PdaMailRowCursor cursors[2];
@@ -216,7 +216,7 @@ u32 fn_8004CDD8(u8* context, u8* object)
     index += cursors[1].position.page * 10;
     mailId = pdaMailGetMailID(index);
     if (mailId >= 0) {
-        if (fn_801D1B78(mailId) != 0) {
+        if (saveFlagBitsTest(mailId) != 0) {
             visible = 0;
         } else {
             visible = 1;

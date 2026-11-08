@@ -6,7 +6,7 @@ extern void GSmodelSetVisibility(void* model, u32 visible);
 extern void GXDrawDone(void);
 extern void GXInvalidateVtxCache(void);
 extern u32 _seaResetMaterial(void* model, void* work);
-extern void* fn_800E24B0(u32 handle);
+extern void* GSmemUnlock(u32 handle);
 extern void GSmemFree(u32 handle);
 
 /* RULE-EXCEPTION(user-approved): local optimizer control -- see docs/RULE_EXCEPTIONS.md. */
@@ -31,14 +31,14 @@ u32 _seaStop(void* arg) {
             u16 val;
             val = *(u16*)((u8*)ptr + 0x1c);
             if (val != 0) {
-                fn_800E24B0(val);
+                GSmemUnlock(val);
                 GSmemFree(val);
             }
         }
 
         ptr = (void*)(u32)*(u16*)((u8*)ptr + 0x8c);
         if (ptr != 0) {
-            fn_800E24B0((u32)ptr);
+            GSmemUnlock((u32)ptr);
             GSmemFree((u32)ptr);
         }
     }

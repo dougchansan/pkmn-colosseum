@@ -11,12 +11,12 @@ void wazaSequenceApplyStop(void* obj)
         owner = sequence->owner;
         if (sequence->active != 0) {
             if (sequence->cameraActive != 0) {
-                fn_801D3034(owner);
+                battleCameraWazaStopIfOwner(owner);
             }
             if (owner->animationActive == 0) {
                 wazaSequenceOwnerPlayIdle(owner, 1, 0);
             }
-            fn_800E3CC8(owner->model, 0);
+            GSmodelSetFlag200(owner->model, 0);
             if ((sequence->flags & 0x08000000) != 0) {
                 GSmodelLinkToGSparticleBank(owner->model, owner->particleBank);
             }
@@ -42,7 +42,7 @@ void wazaSequenceApplyStop(void* obj)
     }
 }
 
-void fn_801DBC30(void* obj)
+void wazaSequenceEntryStop_801DBC30(void* obj)
 {
     WazaSequence* sequence;
     WazaSequenceOwner* owner;
@@ -57,9 +57,9 @@ void fn_801DBC30(void* obj)
                 wazaSequenceOwnerPlayIdle(owner, 1, 0);
             }
             if (sequence->cameraActive != 0) {
-                fn_801D3034(owner);
+                battleCameraWazaStopIfOwner(owner);
             }
-            fn_800E3CC8(owner->model, 0);
+            GSmodelSetFlag200(owner->model, 0);
             owner->currentSequence = NULL;
         }
     }

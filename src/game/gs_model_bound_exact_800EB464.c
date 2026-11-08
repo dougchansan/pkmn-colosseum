@@ -47,7 +47,7 @@ extern u32 lbl_8047AB98;
 extern void set__5GSvecFfff(GSvec* vec, f32 x, f32 y, f32 z);
 extern void GSvecTransform(GSvec* dst, GSmtx* matrix, GSvec* src);
 extern GSbound* GSmodelGetBound(GSmodel* model);
-extern void fn_80191358(GSbound* bound, f32 x, f32 y, f32 z);
+extern void GSboundAddPoint(GSbound* bound, f32 x, f32 y, f32 z);
 extern HSD_JObj* HSD_JObjLoadJoint(HSD_Joint* joint);
 extern void _modelSetRotateEulerToQuatAll__FP9_HSD_JObj(HSD_JObj* jobj);
 
@@ -70,7 +70,7 @@ void _modelBoundVertex__FUlPvPv(u32 flags, void* vertex, void* arg)
         set__5GSvecFfff(&position, ((f32*)vertex)[0], ((f32*)vertex)[1],
                         ((f32*)vertex)[2]);
         GSvecTransform(&position, matrix, &position);
-        fn_80191358(GSmodelGetBound(args->model), position.x, position.y,
+        GSboundAddPoint(GSmodelGetBound(args->model), position.x, position.y,
                     position.z);
     }
 }

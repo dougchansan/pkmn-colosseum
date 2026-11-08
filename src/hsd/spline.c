@@ -11,7 +11,7 @@
  * auto,deferred, which emits them in reverse order.
  *
  * Colosseum's version differs from Melee's: the Simpson's-rule step of
- * splArcLengthGetParameter is a function of its own (fn_801B1AD0), called
+ * splArcLengthGetParameter is a function of its own (splSegmentArcLength), called
  * once per bisection step; the square root is the later MSL sqrtf (NaN for
  * negative and NaN input); splGetSplinePoint keeps one control-point pointer
  * for the cases it reads directly and hands the curve helpers their own.
@@ -197,7 +197,7 @@ static inline f32 splArcLengthPolynomial(const f32 coeffs[5], f32 t)
 }
 
 /* Simpson's rule over [start, end] of one segment's arc-length integrand. */
-f32 fn_801B1AD0(const f32 coeffs[5], f32 start, f32 end)
+f32 splSegmentArcLength(const f32 coeffs[5], f32 start, f32 end)
 {
     f32 dx = (end - start) / 8.0F;
     f32 t = start + dx;
@@ -252,7 +252,7 @@ f32 splArcLengthGetParameter(HSD_Spline* spl, f32 arg1)
             f32 simpsons;
 
             result = (start + end) / 2.0F;
-            simpsons = fn_801B1AD0(spl->segPoly[idx], start, result);
+            simpsons = splSegmentArcLength(spl->segPoly[idx], start, result);
             if (var_f22 < (0.00001F + simpsons)) {
                 end = result;
             } else {

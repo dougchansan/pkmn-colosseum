@@ -3,8 +3,8 @@
  * @brief fsysLZSSDecodeJob: LZSS-decode a job's compressed entry image into the
  *        entry's buffer (0x8017BC90 - 0x8017BD34).
  *
- * The decode step of the asynchronous entry-load job: fn_8018114C (the
- * GSgapp task that fn_8018094C starts for a job of type 0) calls it with the
+ * The decode step of the asynchronous entry-load job: _fsysJobDecodeTask (the
+ * GSgapp task that fsysJobPoolUpdate starts for a job of type 0) calls it with the
  * job's slot, the entry's name hash, the compressed image fsysLZSSJobSetup moved
  * aside, and the entry's runtime trailer. It returns the output buffer, or
  * NULL when the trailer has none.
@@ -17,7 +17,7 @@
  * synchronous loader fsysLoadEntrySync expands for the same step
  * (fsys_file_candidate_8017E30C_o2.c); the bodies here are the same text.
  * `out` is this function's own local, so the helper's destination parameter
- * is substituted, not copied (retail passes r30 straight to fn_8017F2C4 and
+ * is substituted, not copied (retail passes r30 straight to fsysLZSSDecode and
  * DCFlushRange). Retail's saved-but-unused r29 is the helper's `decoded`
  * flag, whose two stores leave no instruction, as in fsysLoadEntrySync; the
  * trailer parameter's r28 is folded into the lwz 0x4(r6) by the peephole
@@ -38,7 +38,7 @@ extern u8 lbl_80452FC8[];           /* LZSS sliding window */
 
 extern void* memcpy(void* dst, const void* src, u32 n);
 extern void DCFlushRange(void* addr, u32 nBytes);
-extern void fn_8017F2C4(void* dst, const void* src, u32 size);
+extern void fsysLZSSDecode(void* dst, const void* src, u32 size);
 
 /* Same expansion as fsysLZSSInit in fsys_file_candidate_8017E30C_o2.c. */
 static inline void fsysLZSSInit(void* src)
@@ -58,7 +58,7 @@ static inline void fsysDecodeLZSS(void* dst, void* src)
 
     decoded = 0;
     fsysLZSSInit(src);
-    fn_8017F2C4(dst, src, lbl_80453FDC.decompSize);
+    fsysLZSSDecode(dst, src, lbl_80453FDC.decompSize);
     DCFlushRange(dst, lbl_80453FDC.decompSize);
     decoded = 1;
 }

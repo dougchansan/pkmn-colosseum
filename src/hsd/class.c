@@ -45,9 +45,9 @@
  *
  * The symbols keep their address names: lbl_8036C638 is hsdClass,
  * lbl_8047B220 memory_list, lbl_8047B224 nb_memory_list, lbl_8047B228
- * current_hash, fn_80193B10 hsdAllocMemPiece, fn_80193AF0 hsdFreeMemPiece,
- * fn_801938FC _hsdClassInfoInit, fn_80193828 hsdNew, hsdIsDescendantOf
- * hsdIsDescendantOf, fn_80193748 hsdSearchClassInfo.
+ * current_hash, hsdAllocMemPiece_80193B10 hsdAllocMemPiece, hsdFreeMemPiece_80193AF0 hsdFreeMemPiece,
+ * ClassInfoInit_801938FC _hsdClassInfoInit, hsdNew_80193828 hsdNew, hsdIsDescendantOf
+ * hsdIsDescendantOf, hsdSearchClassInfo_80193748 hsdSearchClassInfo.
  */
 #include "dolphin/types.h"
 #include "hsd/hsd_class.h"
@@ -59,9 +59,9 @@ extern void* memcpy(void* dst, const void* src, u32 size);
 extern void* HSD_MemAlloc(s32 size); /* HSD_MemAlloc */
 extern void HSD_Free(void* mem); /* HSD_Free */
 
-void fn_801938FC(void);
+void ClassInfoInit_801938FC(void);
 
-HSD_ClassInfo lbl_8036C638 = { fn_801938FC }; /* hsdClass */
+HSD_ClassInfo lbl_8036C638 = { ClassInfoInit_801938FC }; /* hsdClass */
 
 HSD_Hash* lbl_8047B228;               /* current_hash */
 s32 lbl_8047B224;                     /* nb_memory_list */
@@ -102,19 +102,19 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info,
     }
 }
 
-void* fn_80193B10(s32 size)
+void* hsdAllocMemPiece_80193B10(s32 size)
 {
     return HSD_MemAlloc(size);
 }
 
-void fn_80193AF0(void* mem, s32 size)
+void hsdFreeMemPiece_80193AF0(void* mem, s32 size)
 {
     HSD_Free(mem);
 }
 
 HSD_Class* _hsdClassAlloc(HSD_ClassInfo* info)
 {
-    HSD_Class* mem_piece = fn_80193B10(info->head.obj_size);
+    HSD_Class* mem_piece = hsdAllocMemPiece_80193B10(info->head.obj_size);
 
     if (mem_piece != NULL) {
         info->head.nb_exist += 1;
@@ -137,7 +137,7 @@ void _hsdClassDestroy(HSD_Class* cls)
     HSD_ClassInfo* info = cls->class_info;
 
     info->head.nb_exist -= 1;
-    fn_80193AF0(cls, info->head.obj_size);
+    hsdFreeMemPiece_80193AF0(cls, info->head.obj_size);
 }
 
 void _hsdClassAmnesia(HSD_ClassInfo* info)
@@ -151,7 +151,7 @@ void _hsdClassAmnesia(HSD_ClassInfo* info)
     }
 }
 
-void fn_801938FC(void)
+void ClassInfoInit_801938FC(void)
 {
     hsdInitClassInfo(&lbl_8036C638, NULL, "sysdolphin_base_library",
                      "hsd_class", sizeof(HSD_ClassInfo), sizeof(HSD_Class));
@@ -172,7 +172,7 @@ static inline HSD_ClassInfo* ClassInfoInitGet(HSD_ClassInfo* info)
     return ret;
 }
 
-void* fn_80193828(HSD_ClassInfo* info)
+void* hsdNew_80193828(HSD_ClassInfo* info)
 {
     HSD_ClassInfo* ci;
     HSD_Class* cls;
@@ -213,7 +213,7 @@ BOOL hsdIsDescendantOf(void* info, void* p)
     return FALSE;
 }
 
-HSD_ClassInfo* fn_80193748(const char* class_name)
+HSD_ClassInfo* hsdSearchClassInfo_80193748(const char* class_name)
 {
     if (lbl_8047B228 != NULL) {
         return HSD_HashSearch(lbl_8047B228, (void*) class_name, 0);

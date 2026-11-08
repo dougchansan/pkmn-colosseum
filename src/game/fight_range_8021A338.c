@@ -21,7 +21,7 @@ void wsCmd9C(void)
     extern u32 fightTargetGetPtrAsNowFightType();
     extern void fightOutPokemonSetPokemonJoutai08();
     extern void fightOutPokemonWritePokemonJoutaiDataId();
-    extern u8 fn_802025B8();
+    extern u8 fightOutPokemonCheckWritePokemonJoutaiDataId();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
     extern u32 fightOutPokemonMaxHpWaruValue();
@@ -48,7 +48,7 @@ failed:
   lbl_80478D78[5] = 1;
   goto done;
 check_status:
-  if (fn_802025B8(attacker,0x14) != 2) {
+  if (fightOutPokemonCheckWritePokemonJoutaiDataId(attacker,0x14) != 2) {
     goto failed;
   }
   wazaSetStatus(move,0,0x2d,0,amount);
@@ -79,7 +79,7 @@ void wsCmd9B(void)
     extern void fightOutPokemonSetPokemonJoutai08();
     extern void fightOutPokemonSetPokemonJoutai0C(u32, u32, u16);
     extern void fightOutPokemonSetPokemonJoutaiKaisuu();
-    extern void fn_80201FDC(u32, u32, s8);
+    extern void fightOutPokemonSetPokemonJoutai05(u32, u32, s8);
     extern void fightOutPokemonWritePokemonJoutaiDataId();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
@@ -142,7 +142,7 @@ apply_hensin:
   fightOutPokemonSetPokemonJoutai08(uVar1,0x10,uVar4);
   lowByte = (u8)uVar6;
   fightOutPokemonSetPokemonJoutaiKaisuu(uVar1,0x10,(s8)lowByte);
-  fn_80201FDC(uVar1,0x10,(s8)(u8)(uVar6 >> 8));
+  fightOutPokemonSetPokemonJoutai05(uVar1,0x10,(s8)(u8)(uVar6 >> 8));
   fightOutPokemonSetPokemonJoutai0C(uVar1,0x10,uVar6 >> 0x10);
   cVar9 = fightOutPokemonIsPokemonJoutaiDataId(uVar1,0x29);
   if (cVar9 == 1) {

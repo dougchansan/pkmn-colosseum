@@ -10,7 +10,7 @@ extern void GSmsgPrintColor(s32, s32, s32, s32);
 extern void GSmsgPrintRight(s32, s32, s16, s16, s32, s32);
 extern u8 lbl_80266E58[];
 
-s32 fn_8002A3D4(void* owner, u8* draw)
+s32 shopSubMenuDrawItem(void* owner, u8* draw)
 {
     void* context;
 
@@ -22,7 +22,7 @@ s32 fn_8002A3D4(void* owner, u8* draw)
     return 0;
 }
 
-s32 fn_8002A400(void* owner, u8* draw)
+s32 shopSubMenuDrawText(void* owner, u8* draw)
 {
     u8* savedDraw;
     void* context;
@@ -69,7 +69,7 @@ typedef struct ShopDrawData {
     s16 y;
 } ShopDrawData;
 
-s32 fn_8002A48C(ShopMenuOwner* owner, ShopDrawData* draw)
+s32 shopSubMenuDrawNumber(ShopMenuOwner* owner, ShopDrawData* draw)
 {
     ShopDigitContext* context = owner->context;
     ShopDisplayEntry* entry;

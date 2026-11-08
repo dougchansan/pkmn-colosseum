@@ -28,9 +28,9 @@
 #include "sysdolphin/baselib/debug.h"
 
 extern void OSReport(const char* fmt, ...);
-extern HSD_ClassInfo* fn_80193748(const char* class_name); /* hsdSearchClassInfo */
-extern void* fn_80193828(HSD_ClassInfo* info);             /* hsdNew */
-extern void fn_801ACDAC(HSD_PObj* pobj, s32* total_a, s32* total_b);
+extern HSD_ClassInfo* hsdSearchClassInfo_80193748(const char* class_name); /* hsdSearchClassInfo */
+extern void* hsdNew_80193828(HSD_ClassInfo* info);             /* hsdNew */
+extern void HSD_DObjCountVerticesSub(HSD_PObj* pobj, s32* total_a, s32* total_b);
 extern void HSD_PObjAddAnimAll(HSD_PObj* pobj, HSD_ShapeAnim* shapeanim);
 extern void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj, f32 startframe, void* flags);
 extern void HSD_MObjReqAnimByFlags(HSD_MObj* mobj, f32 startframe, void* flags);
@@ -143,15 +143,15 @@ int DObjLoad(HSD_DObj* dobj_arg, HSD_DObjDesc* desc_arg)
         sub = NULL;
     } else {
         if (subdesc->class_name == NULL
-            || (info = fn_80193748(subdesc->class_name)) == NULL)
+            || (info = hsdSearchClassInfo_80193748(subdesc->class_name)) == NULL)
         {
             info = lbl_8047B260 ? lbl_8047B260 : (HSD_ClassInfo*) &lbl_8036C7A0;
-            sub = (HSD_DObj*) fn_80193828(info);
+            sub = (HSD_DObj*) hsdNew_80193828(info);
             if (sub == NULL) {
                 __assert(__FILE__, 0x214, "dobj");
             }
         } else {
-            sub = (HSD_DObj*) fn_80193828(info);
+            sub = (HSD_DObj*) hsdNew_80193828(info);
             if (sub == NULL) {
                 __assert(__FILE__, 0x181, "dobj");
             }
@@ -205,11 +205,11 @@ HSD_DObj* HSD_DObjLoadDesc(HSD_DObjDesc* desc)
     }
 
     if (desc->class_name == NULL ||
-        (info = fn_80193748(desc->class_name)) == NULL)
+        (info = hsdSearchClassInfo_80193748(desc->class_name)) == NULL)
     {
         dobj = HSD_DObjAlloc();
     } else {
-        dobj = HSD_DOBJ(fn_80193828(info));
+        dobj = HSD_DOBJ(hsdNew_80193828(info));
         if (dobj == NULL) {
             __assert(__FILE__, 385, "dobj");
         }
@@ -231,7 +231,7 @@ void HSD_DObjRemoveAll(HSD_DObj* dobj)
 
 inline HSD_DObj* HSD_DObjAlloc(void)
 {
-    HSD_DObj* dobj = fn_80193828(lbl_8047B260 != NULL
+    HSD_DObj* dobj = hsdNew_80193828(lbl_8047B260 != NULL
                                      ? lbl_8047B260
                                      : HSD_CLASS_INFO(&lbl_8036C7A0));
     if (dobj == NULL) {
@@ -265,7 +265,7 @@ void HSD_DObjCountVertices(HSD_DObj* dobj, s32* total_a, s32* total_b)
         s32 a;
         s32 b;
 
-        fn_801ACDAC(dobj->pobj, &a, &b);
+        HSD_DObjCountVerticesSub(dobj->pobj, &a, &b);
         sum_a += a;
         sum_b += b;
     }

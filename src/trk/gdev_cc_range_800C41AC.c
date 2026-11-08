@@ -7,8 +7,8 @@ extern void DBInitInterrupts(void); /* GDEV_InitInterrupts */
 extern u32 DBQueryData(void);
 extern s32 DBRead(void* buffer, u32 size);
 extern s32 DBWrite(const void* buffer, s32 size);
-extern void fn_800CE7D8(void); /* GDEV_PostStop */
-extern void fn_800CE7D4(void); /* GDEV_PreContinue */
+extern void gdevCcPostStopHook(void); /* GDEV_PostStop */
+extern void gdevCcPreContinueHook(void); /* GDEV_PreContinue */
 extern u32 CBGetBytesAvailableForRead(CircleBuffer* circle);
 
 extern s32 CircleBufferWriteBytes(CircleBuffer* circle, u8* buffer, u32 size);
@@ -48,13 +48,13 @@ s32 gdev_cc_peek(void) {
 
 /* gdev_cc_post_stop - Called after the target stops. */
 s32 gdev_cc_post_stop(void) {
-    fn_800CE7D8();
+    gdevCcPostStopHook();
     return 0;
 }
 
 /* gdev_cc_pre_continue - Called before the target continues. */
 s32 gdev_cc_pre_continue(void) {
-    fn_800CE7D4();
+    gdevCcPreContinueHook();
     return 0;
 }
 

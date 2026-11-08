@@ -7,7 +7,7 @@
  *
  * Merged from three candidate chunks (sdk_candidate_800BB81C,
  * sdk_candidate_800BB97C_gc13, sdk_candidate_800BBC0C) so that one object
- * owns the pool: GXSetIndTexMtx reads 1024.0f and fn_800BBCE0 the rest, and no
+ * owns the pool: GXSetIndTexMtx reads 1024.0f and GXSetTevIndTile the rest, and no
  * other code reads 0x8047C370 - 0x8047C388. The middle chunk was scored with
  * GC/1.3 (91-93%); under this range's GC/1.2.5n its two functions are exact.
  * Bodies copied, in address order, from sdk_range_800BB30C.c and the former
@@ -167,7 +167,7 @@ extern void GXSetTevIndirect(u32 dstCoord, u32 func, u32 srcParam, u32 mtx,
 extern void GXSetViewportJitter(f32 left, f32 top, f32 width, f32 height, f32 nearz,
                         f32 farz, u32 field);
 extern void __GXSetMatrixIndex(s32 value);
-extern void fn_800BE164(u32* hi, u32* lo);
+extern void GXReadGPMetric(u32* hi, u32* lo);
 extern void __GXSetDirtyState(void);
 extern void __GXSendFlushPrim(void);
 extern u32 __cvt_fp2unsigned(f32 value);
@@ -344,13 +344,13 @@ void GXSetTevDirect(u32 dstCoord) {
     GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
-void fn_800BBC7C(u32 dstCoord, u32 func, u8 normalize, u8 color, u32 postMtx) {
+void GXSetTevIndWarp(u32 dstCoord, u32 func, u8 normalize, u8 color, u32 postMtx) {
     u32 colorSel = color != 0 ? 6 : 0;
 
     GXSetTevIndirect(dstCoord, func, 0, normalize != 0 ? 7 : 0, postMtx, colorSel, colorSel, 0, 0, 0);
 }
 
-void fn_800BBCE0(u32 tev_stage, u32 ind_stage, u16 tilesize_s,
+void GXSetTevIndTile(u32 tev_stage, u32 ind_stage, u16 tilesize_s,
                  u16 tilesize_t, u16 tilespacing_s, u16 tilespacing_t,
                  u32 format, u32 matrix_sel, u32 bias_sel, u32 alpha_sel)
 {
@@ -384,7 +384,7 @@ void fn_800BBCE0(u32 tev_stage, u32 ind_stage, u16 tilesize_s,
                 wrap_t, 0, 1, alpha_sel);
 }
 
-void fn_800BBE8C(u32 tev_stage, u32 ind_stage, u32 matrix_sel)
+void GXSetTevIndBumpST(u32 tev_stage, u32 ind_stage, u32 matrix_sel)
 {
     u32 sm;
     u32 tm;
@@ -409,11 +409,11 @@ void fn_800BBE8C(u32 tev_stage, u32 ind_stage, u32 matrix_sel)
     GXSetTevIndirect(tev_stage + 2, ind_stage, 0, 0, 0, 0, 0, 1, 0, 0);
 }
 
-void fn_800BBF98(u32 dstCoord, u32 func, u32 normalize) {
+void GXSetTevIndBumpXYZ(u32 dstCoord, u32 func, u32 normalize) {
     GXSetTevIndirect(dstCoord, func, 0, 7, normalize, 0, 0, 0, 0, 0);
 }
 
-void fn_800BBFDC(u32 dstCoord) {
+void GXSetTevIndRepeat(u32 dstCoord) {
     GXSetTevIndirect(dstCoord, 0, 0, 0, 0, 6, 6, 1, 0, 0);
 }
 

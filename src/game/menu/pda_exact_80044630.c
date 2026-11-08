@@ -24,7 +24,7 @@ extern f32 lbl_8047BCC0;
 extern f32 lbl_8047BCC4;
 extern f32 lbl_8047BCC8;
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, fn_80041E48, fn_80044630) — see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, pdaMemoUpdateScroll, fn_80044630) — see docs/RULE_EXCEPTIONS.md */
 static inline f32 pdaAbsF(f32 x)
 {
     return x > 0.0f ? x : -x;
@@ -69,9 +69,9 @@ void pdaStrategyMemoRun(void) {
 
     extern u32   lbl_8047A4E0;
 
-    extern void  fn_80048918(void);
-    extern void  fn_80046168(void);
-    extern void  fn_8004BDB8(s32 a, s32 b);
+    extern void  pdaModelViewerSetup(void);
+    extern void  pdaStrategyMemoUpdate(void);
+    extern void  pdaStrategyMemoSetSelection(s32 a, s32 b);
     extern void* std112_modelGetResourceID(u32 id);
     extern void* GSresGetResource();
     extern void* std093_getCurrentGroupID(void);
@@ -87,7 +87,7 @@ void pdaStrategyMemoRun(void) {
     extern void  menuModelTerm(void* subobj);
     extern void  menuOffScreenSetDisp(s32 a);
     extern u32   GSmemGetHandleByPtr(u32 flag);
-    extern void  fn_800E24B0(void);
+    extern void  GSmemUnlock(void);
     extern void  GSmemFree(u32 h);
     extern void  GScameraGetPosition(void* cam, void* outVec3);
     extern void  GScameraGetRotation(void* cam, void* outVec3);
@@ -105,7 +105,7 @@ void pdaStrategyMemoRun(void) {
     u32 mem;
 
     tbl = lbl_80267150;
-    fn_80048918();
+    pdaModelViewerSetup();
     S = (u8*)&lbl_803A6818;
 
     S118 = S + 0x118;
@@ -116,7 +116,7 @@ void pdaStrategyMemoRun(void) {
     while (1) {
         switch (*(s32*)(S + 0x1C)) {
         case 0: {   /* .L_800446F0 */
-            fn_8004BDB8(-1, 1);
+            pdaStrategyMemoSetSelection(-1, 1);
             menuOpen(0x35, 0);
             menuOpen(0x3b, 0);
             menuOpen(0x36, 0);
@@ -148,7 +148,7 @@ void pdaStrategyMemoRun(void) {
         } break;
 
         case 2: {   /* .L_800447CC */
-            fn_80046168();
+            pdaStrategyMemoUpdate();
         } break;
 
         case 4: {   /* .L_800447D4 */
@@ -343,7 +343,7 @@ void pdaStrategyMemoRun(void) {
                     GSscene_SetMode(4);
 
                     *(s32*)(S + 0x78) = 1;
-                    fn_8004BDB8(-1, 2);
+                    pdaStrategyMemoSetSelection(-1, 2);
 
                     {
                         s32 sub = *(s32*)(S + 0x28);
@@ -1182,7 +1182,7 @@ void pdaStrategyMemoRun(void) {
     if (lbl_8047A4E0 != 0) {
         mem = GSmemGetHandleByPtr(lbl_8047A4E0);
         if ((u16)mem != 0) {
-            fn_800E24B0();
+            GSmemUnlock();
             GSmemFree(mem);
         }
         lbl_8047A4E0 = 0;
@@ -1194,7 +1194,7 @@ void pdaStrategyMemoRun(void) {
 
         mem = GSmemGetHandleByPtr((u32)lbl_8047A4E4);
     if ((u16)mem != 0) {
-        fn_800E24B0();
+        GSmemUnlock();
         GSmemFree(mem);
     }
     lbl_8047A4E4 = 0;

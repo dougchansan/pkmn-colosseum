@@ -33,7 +33,7 @@ extern void GSmodelSetTexAnimIndex(void* model, s32 index);
 extern void GSmodelSetTexAnimFrame(void* model, f32 frame);
 extern void GSmodelSetTexAnimRate(void* model, f32 rate);
 extern void GSmodelStartAnimation(void* model);
-extern void fn_8018F4C8(void* info, u8 motion, s32* outAnim, u8* outLoop);
+extern void peopleInfoGetMotion(void* info, u8 motion, s32* outAnim, u8* outLoop);
 extern void* peopleInfoBiosGetPtr(void* scriptObj);
 extern void peopleGetRotation(PeopleEntry* entry, void* rotation);
 
@@ -195,7 +195,7 @@ static inline void peopleSetMotionIndex(PeopleEntry* entry, s32 motionIndex)
     if (info == NULL) {
         return;
     }
-    fn_8018F4C8(info, (u8)entry->motionIndex, &animIndex, &loop);
+    peopleInfoGetMotion(info, (u8)entry->motionIndex, &animIndex, &loop);
     if (animIndex == -1) {
         return;
     }

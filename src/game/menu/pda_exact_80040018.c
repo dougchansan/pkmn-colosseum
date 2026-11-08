@@ -28,7 +28,7 @@ static inline f32 pdaAbsF(f32 x)
     return x > 0.0f ? x : -x;
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, fn_80041E48, fn_80044630) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, pdaMemoUpdateScroll, fn_80044630) - see docs/RULE_EXCEPTIONS.md */
 static inline void pdaApproach(f32* current, f32* target, f32 delta)
 {
     f32 step;

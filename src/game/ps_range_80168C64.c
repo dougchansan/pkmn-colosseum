@@ -301,7 +301,7 @@ extern void GXSetArray(u32 attr, u32 value, u8 value2);
 extern void HSD_StateInvalidate(s32 flags);
 extern f32 generateParticle_8017424C(PSGeneratorState* gen);
 extern void HSD_MulColor(GXColor* a, GXColor* b, GXColor* dest);
-extern void fn_800060F0(const char* file, s32 line, const char* message, ...);
+extern void errorPanic(const char* file, s32 line, const char* message, ...);
 extern void PSMTXInverse(const Mtx source, Mtx destination);
 extern void GXGetProjectionv(f32* projection);
 extern void HSD_MtxGetRotationMtx(f32 src[3][4], f32 dst[3][4], char axis0, char axis1);
@@ -916,7 +916,7 @@ void psInitDataBank(s32 bankIndex, void* data, void* objects,
 
     psInitDataBankLocate(data, objects, locations);
     if (locations != NULL && *(s32*)locations != *(s32*)objects) {
-        fn_800060F0(lbl_80273820 + 0x34, 0x5F,
+        errorPanic(lbl_80273820 + 0x34, 0x5F,
                     lbl_80273820 + 0x40);
     }
     banks[bankIndex] = (u32)bankData;
@@ -937,7 +937,7 @@ void psInitDataBank(s32 bankIndex, void* data, void* objects,
         banks[192 + bankIndex] =
             (u32)data + 0xC - firstCount * sizeof(u32);
     } else {
-        fn_800060F0(lbl_80273820 + 0x34, 0x7D,
+        errorPanic(lbl_80273820 + 0x34, 0x7D,
                     lbl_80273820 + 0x70);
     }
 }
@@ -1711,7 +1711,7 @@ PSParticle* psGenerateParticleID0(PSParticle* parent, s32 linkNo,
         object != NULL ? object->value : 0, NULL, arg);
 }
 
-void fn_8016EA88(void) {
+void HSD_FogReleaseCurrent(void) {
     HSD_Obj* obj;
 
     if ((obj = lbl_8047B128) != NULL) {
@@ -6080,7 +6080,7 @@ void HSD_JObjSetupMatrix(void* camSlot) {
 }
 
 void HSD_JObjAddTz(PSJObjTransform* jobj, f32 dz) {
-    extern void fn_8019D620(void* jobj);
+    extern void HSD_JObjSetMtxDirtySub_8019D620(void* jobj);
 
     if (jobj == NULL) {
         __assert(lbl_8047D670, 0x46B, lbl_8047D678);
@@ -6090,13 +6090,13 @@ void HSD_JObjAddTz(PSJObjTransform* jobj, f32 dz) {
 
     if (!(jobj->flags & 0x02000000)) {
         if (jobj != NULL && !PSJObjMtxIsDirty(jobj)) {
-            fn_8019D620(jobj);
+            HSD_JObjSetMtxDirtySub_8019D620(jobj);
         }
     }
 }
 
 void HSD_JObjAddTy(PSJObjTransform* jobj, f32 dy) {
-    extern void fn_8019D620(void* jobj);
+    extern void HSD_JObjSetMtxDirtySub_8019D620(void* jobj);
 
     if (jobj == NULL) {
         __assert(lbl_8047D670, 0x460, lbl_8047D678);
@@ -6106,13 +6106,13 @@ void HSD_JObjAddTy(PSJObjTransform* jobj, f32 dy) {
 
     if (!(jobj->flags & 0x02000000)) {
         if (jobj != NULL && !PSJObjMtxIsDirty(jobj)) {
-            fn_8019D620(jobj);
+            HSD_JObjSetMtxDirtySub_8019D620(jobj);
         }
     }
 }
 
 void HSD_JObjAddTx(PSJObjTransform* jobj, f32 dx) {
-    extern void fn_8019D620(void* jobj);
+    extern void HSD_JObjSetMtxDirtySub_8019D620(void* jobj);
 
     if (jobj == NULL) {
         __assert(lbl_8047D670, 0x455, lbl_8047D678);
@@ -6122,7 +6122,7 @@ void HSD_JObjAddTx(PSJObjTransform* jobj, f32 dx) {
 
     if (!(jobj->flags & 0x02000000)) {
         if (jobj != NULL && !PSJObjMtxIsDirty(jobj)) {
-            fn_8019D620(jobj);
+            HSD_JObjSetMtxDirtySub_8019D620(jobj);
         }
     }
 }

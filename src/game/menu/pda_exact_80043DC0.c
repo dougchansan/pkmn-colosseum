@@ -48,7 +48,7 @@ typedef struct PdaSceneWork {
 
 extern PdaSceneWork lbl_803A6818;
 
-void fn_80043DC0(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaMemoDrawAnim(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     extern u8 lbl_802EF0A8[];
     extern s32 lbl_804788C0;

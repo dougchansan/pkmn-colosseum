@@ -19,7 +19,7 @@
         "lbl_80004000": 2900,
         "gTRKInterruptVectorTableEnd": 7988
       },
-      "external_targets": ["fn_800053E0", "TRKInterruptHandler"],
+      "external_targets": ["__TRK_reset", "TRKInterruptHandler"],
       "macros": ["trk_redirect", "vector_slot", "trk_vector", "trk_tlb_redirect"],
       "mnemonics": [
         "andis.", "b", "beq", "dcbi", "icbi", "li", "lis", "mfcr",

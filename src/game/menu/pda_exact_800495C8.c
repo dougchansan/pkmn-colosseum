@@ -1,6 +1,6 @@
 /**
  * @file pda_exact_800495C8.c
- * @brief PDA mail-list backdrop, 0x800495C8 - 0x800499BC: fn_800495C8 fades
+ * @brief PDA mail-list backdrop, 0x800495C8 - 0x800499BC: pdaTopMenuDrawItem fades
  *        the panel, draws the scanlines and the scrolling sheared page edge.
  *        Copied from pda_range_80037158.c.
  */
@@ -35,7 +35,7 @@ typedef struct PdaSprite {
 extern u8 lbl_803A6A60[];
 extern u8 lbl_80314E08[];
 
-extern s32 fn_800411EC(void);
+extern s32 pdaSceneGetWork(void);
 extern void menuOffScreenSetDisp(s32 disp);
 extern void gfxSetLineWidth(f32 width);
 extern void gfxVtxColor1u32(s32 index, u32 color);
@@ -65,7 +65,7 @@ static inline void pda_800495C8_Scanline(PdaSprite* sprite, s16 y, s32 alpha)
     gfxEnd();
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_800495C8_RowLine (fn_800495C8) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_800495C8_RowLine (pdaTopMenuDrawItem) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_800495C8_RowLine(PdaSprite* sprite, f32 y, s32 alpha)
 {
     s16 row = 480.0f * y;
@@ -73,7 +73,7 @@ static inline void pda_800495C8_RowLine(PdaSprite* sprite, f32 y, s32 alpha)
     pda_800495C8_Scanline(sprite, row, alpha);
 }
 
-/* RULE-EXCEPTION(user-approved): single-use inline helper pda_800495C8_Panel (fn_800495C8) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): single-use inline helper pda_800495C8_Panel (pdaTopMenuDrawItem) - see docs/RULE_EXCEPTIONS.md */
 static inline void pda_800495C8_Panel(PdaSprite* sprite, s32 alpha)
 {
     u32 color;
@@ -91,7 +91,7 @@ static inline void pda_800495C8_Panel(PdaSprite* sprite, s32 alpha)
 }
 
 /* Mail-list backdrop: fade panel, scanlines, and the sheared page edge. */
-s32 fn_800495C8(void* work, PdaSprite* sprite)
+s32 pdaTopMenuDrawItem(void* work, PdaSprite* sprite)
 {
     u8* G = lbl_803A6A60;
     u8* data;
@@ -118,7 +118,7 @@ s32 fn_800495C8(void* work, PdaSprite* sprite)
             }
         }
     }
-    fn_800411EC();
+    pdaSceneGetWork();
     if (*(s8*)(lbl_803A6A60 + 0) == 1) {
         if (lbl_803A6A60[0x49] != 0 && lbl_803A6A60[0x4a] == 0) {
             menuOffScreenSetDisp(0);
@@ -156,7 +156,7 @@ s32 fn_800495C8(void* work, PdaSprite* sprite)
         if (y < 0.0f) {
             y += 1.0f;
         }
-        /* RULE-EXCEPTION(user-approved): redundant mask on the u8 row alpha, chosen for code generation (fn_800495C8) - see docs/RULE_EXCEPTIONS.md */
+        /* RULE-EXCEPTION(user-approved): redundant mask on the u8 row alpha, chosen for code generation (pdaTopMenuDrawItem) - see docs/RULE_EXCEPTIONS.md */
         pda_800495C8_RowLine(sprite, y, fade & 0xff);
     }
     return 0;

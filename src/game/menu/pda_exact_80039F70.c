@@ -15,7 +15,7 @@ extern void* pcboxGetItem(void* box, s16 slot);
 s32 itemStorageListSeq(u8* ctx)
 {
     extern void winSeqSetMenu(s32 sequence, s32 menu);
-    extern u8 fn_801429E8(void* item);
+    extern u8 itemSlotIsValid(void* item);
     extern u16 pcboxGetNbItemSlot(s32 box);
     extern u16 itemBiosGetItemDataId(void* item);
     extern void* itemDataBiosGetPtr(s32 id);
@@ -42,7 +42,7 @@ s32 itemStorageListSeq(u8* ctx)
             found = -1;
             for (i = 0; i < slots; i++) {
                 item = pcboxGetItem(0, (s16)i);
-                if ((u8)fn_801429E8(item) != 0) {
+                if ((u8)itemSlotIsValid(item) != 0) {
                     found++;
                     if (found >= target) {
                         itemId = itemBiosGetItemDataId(item);

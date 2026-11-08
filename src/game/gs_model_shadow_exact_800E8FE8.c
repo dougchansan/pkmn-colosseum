@@ -20,7 +20,7 @@ typedef struct GSmodel {
     u16 shadowVertexHandle;
 } GSmodel;
 
-extern void fn_800E24B0(u16 handle);
+extern void GSmemUnlock(u16 handle);
 extern void GSmemFree(u16 handle);
 extern u16 _toolentryAlloc__FUl(u32 size);
 extern void* GSmemLock(u16 handle);
@@ -38,7 +38,7 @@ void GSmodelSetShadowSurface(GSmodel* model, s32 count, const void* data)
 {
     if (count != model->shadowVertexCount) {
         if (model->shadowVertexHandle != 0) {
-            fn_800E24B0(model->shadowVertexHandle);
+            GSmemUnlock(model->shadowVertexHandle);
             GSmemFree(model->shadowVertexHandle);
             model->shadowVertexHandle = 0;
             model->shadowVertexCount = 0;

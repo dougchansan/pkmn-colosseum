@@ -216,7 +216,7 @@ u32 _fightOutPokemonSoubiItemEffectSub(void* rawCtx)
     extern void fightFloorSetStatus();
     extern u8 fightOutPokemonIsPokemonJoutaiDataId();
     extern void fightOutPokemonWriteJoutaiDataId();
-    extern void fn_80119F50();
+    extern void itemDataGetHoldEffect();
     extern u32 GSmsgGetGSchar();
     extern void msgctrlSetValue();
     extern u8 fightOutPokemonIsJoutaiNormal();
@@ -342,7 +342,7 @@ u32 _fightOutPokemonSoubiItemEffectSub(void* rawCtx)
         }
         msg = next;
         if (next != 0) {
-            fn_80119F50(0xA);
+            itemDataGetHoldEffect(0xA);
             msgctrlSetValue(0xD, GSmsgGetGSchar());
             lbl_80478D78[5] = 0;
             result = 2;
@@ -355,28 +355,28 @@ u32 _fightOutPokemonSoubiItemEffectSub(void* rawCtx)
             lbl_80478D78[5] = 0;
             if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 3) == 1 ||
                 fightOutPokemonIsPokemonJoutaiDataId(ctx, 4) == 1) {
-                fn_80119F50(3);
+                itemDataGetHoldEffect(3);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
             if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 8) == 1) {
                 fightOutPokemonWriteJoutaiDataId(ctx, 0x17);
-                fn_80119F50(8);
+                itemDataGetHoldEffect(8);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
             if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 5) == 1) {
-                fn_80119F50(5);
+                itemDataGetHoldEffect(5);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
             if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 6) == 1) {
-                fn_80119F50(6);
+                itemDataGetHoldEffect(6);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
             if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 7) == 1) {
-                fn_80119F50(7);
+                itemDataGetHoldEffect(7);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
             if (fightOutPokemonIsPokemonJoutaiDataId(ctx, 9) == 1) {
-                fn_80119F50(9);
+                itemDataGetHoldEffect(9);
                 msgctrlSetValue(0xD, GSmsgGetGSchar());
             }
             pokemonInitJoutai(pokemon);

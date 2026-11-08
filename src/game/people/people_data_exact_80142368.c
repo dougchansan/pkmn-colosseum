@@ -1,6 +1,6 @@
 /**
  * @file people_data_exact_80142368.c
- * @brief fn_80142368 (0x80142368 - 0x801425E8): finds an item record in an
+ * @brief itemSlotsFind (0x80142368 - 0x801425E8): finds an item record in an
  *        array - the first free slot (mode 2), the first record of an item
  *        id with count below a limit (mode 1), or the first record of an id.
  *
@@ -55,7 +55,7 @@ static inline u8 peopleEntryIs(u32* entry, u16 id)
     return 0;
 }
 
-u32* fn_80142368(u32* base, u16 count, u16 id, u8 mode, u16 limit)
+u32* itemSlotsFind(u32* base, u16 count, u16 id, u8 mode, u16 limit)
 {
     u16 i;
 

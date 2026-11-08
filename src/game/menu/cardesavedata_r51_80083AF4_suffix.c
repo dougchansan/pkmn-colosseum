@@ -1,6 +1,6 @@
 /**
  * @file cardesavedata_r51_80083AF4_suffix.c
- * @brief fn_80083AF4 / fn_80083BF8 (0x80083AF4 - 0x80083CBC): walk the Card-e
+ * @brief cardeArenaWalk / cardeArenaCountRecords (0x80083AF4 - 0x80083CBC): walk the Card-e
  *        save-data arena's grid records, returning the record at an index
  *        (or the terminating slot for a negative index) or the record count.
  *
@@ -42,7 +42,7 @@ static inline void CardEGridSetEntry(CardEGridEntry** entryOut,
     }
 }
 
-void* fn_80083AF4(void* arena, s32 index)
+void* cardeArenaWalk(void* arena, s32 index)
 {
     extern void* savedataGetStatus(u32, u32);
     CardEGridEntry* entry;
@@ -86,7 +86,7 @@ static inline void CardEGridSetCount(s32* countOut, s32 count)
 }
 
 /* Count well-formed records in the Card-e save-data arena. */
-s32 fn_80083BF8(void* arena)
+s32 cardeArenaCountRecords(void* arena)
 {
     extern void* savedataGetStatus(u32, u32);
     CardEGridEntry* entry;

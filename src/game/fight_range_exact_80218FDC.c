@@ -11,7 +11,7 @@ u32 fightSeqRendouWazaCheck(u16 id)
     return 0;
 }
 
-u8 fn_8021901C(u16 dataId)
+u8 fightAiIsSpecialEffect097(u16 dataId)
 {
     u16 effect = (u16)wazaGetStatus(0, dataId, 9, 0);
 

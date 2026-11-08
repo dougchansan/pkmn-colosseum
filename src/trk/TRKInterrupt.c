@@ -261,10 +261,10 @@ asm void TRKInterruptHandlerEnableInterrupts(void) {
     b TRKPostInterruptEvent
 }
 
-/* fn_800C11F4 - 0x800C11F4 | size: 0x24
+/* ReadFPSCR - 0x800C11F4 | size: 0x24
  * MetroTRK targimpl.c ReadFPSCR (upstream name; the symbol keeps its address).
  * Hand-written MetroTRK asm; evidence: docs/asm_evidence/trk_fpscr.md */
-asm void fn_800C11F4(register f64* data) {
+asm void ReadFPSCR(register f64* data) {
     nofralloc
     stwu r1, -0x40(r1)
     stfd f31, 0x10(r1)
@@ -277,10 +277,10 @@ asm void fn_800C11F4(register f64* data) {
     blr
 }
 
-/* fn_800C1218 - 0x800C1218 | size: 0x24
+/* WriteFPSCR - 0x800C1218 | size: 0x24
  * MetroTRK targimpl.c WriteFPSCR (upstream name; the symbol keeps its address).
  * Hand-written MetroTRK asm; evidence: docs/asm_evidence/trk_fpscr.md */
-asm void fn_800C1218(register f64* data) {
+asm void WriteFPSCR(register f64* data) {
     nofralloc
     stwu r1, -0x40(r1)
     stfd f31, 0x10(r1)

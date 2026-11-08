@@ -7,7 +7,7 @@
  * disabled interrupts it moves the active slot to the status that follows
  * the one it was waiting in (or marks a failed read with archiveHandle -1)
  * and closes the slot's open file. fsysARQCallback is the ARQ completion
- * callback fsysLoadEntry and fsysSlotStatusStartEntries pass to fn_80180584 (userData is
+ * callback fsysLoadEntry and fsysSlotStatusStartEntries pass to fsysARAMToMainAsync (userData is
  * the slot): status 162 on success, 152 otherwise.
  *
  * Built at optimisation level 0 with peephole and scheduling on, like the

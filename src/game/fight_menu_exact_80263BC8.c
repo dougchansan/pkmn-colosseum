@@ -61,7 +61,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern void fadeSet(f32 duration, u32 mode);
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();

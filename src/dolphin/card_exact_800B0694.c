@@ -21,7 +21,7 @@
 
 extern u32 bitrev(u32 data);
 extern s32 EXIImmEx(s32 chan, void* buf, s32 len, u32 mode); /* EXIImmEx */
-extern u32 fn_800AE794(void);                                   /* DSPCheckMailToDSP */
+extern u32 DSPCheckMailFromDSPFlag(void);                                   /* DSPCheckMailToDSP */
 extern void DSPSendMailToDSP(u32 mail);
 extern u32 OSGetTick(void);
 extern void __CARDMountCallback(s32 chan, s32 result);
@@ -297,11 +297,11 @@ void InitCallback(void* _task)
     param = (CARDDecParam*)card->workArea;
 
     DSPSendMailToDSP(0xFF000000);
-    while (fn_800AE794()) {
+    while (DSPCheckMailFromDSPFlag()) {
     }
 
     DSPSendMailToDSP((u32)param);
-    while (fn_800AE794()) {
+    while (DSPCheckMailFromDSPFlag()) {
     }
 }
 

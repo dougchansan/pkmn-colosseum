@@ -19,7 +19,7 @@ extern f32 lbl_8047BAC0;
 extern PdaModelWindow lbl_803A6748;
 extern void pdaSnagListDrawDetail(PdaSprite* sprite, PdaEvent* event);
 
-void fn_8003C24C(PdaSprite* sprite, PdaEvent* event)
+void pdaSnagListDrawItem2(PdaSprite* sprite, PdaEvent* event)
 {
     switch (event->messageId) {
     case 0x2e2:

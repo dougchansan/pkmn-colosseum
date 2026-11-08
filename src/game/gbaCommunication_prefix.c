@@ -12,7 +12,7 @@
 #include "dolphin/types.h"
 #include "game/gs_material.h"
 
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern void GSmodelSetAnimIndex(struct GSmodel* model, u32 index);
 extern void GSmodelStartAnimation(struct GSmodel* model);
@@ -59,13 +59,13 @@ extern void* windowSearchID(u32 id);
 extern void OSLockMutex(void *p);
 extern void OSUnlockMutex(void *p);
 extern void OSSetThreadPriority(void *p, u32 b);
-extern void fn_800716E8(u32 port, u32 val);
+extern void gbaCommSetChannelResult(u32 port, u32 val);
 extern void OSSignalCond(void *p);
-extern void fn_800A1E54(void *p, u32 v);
-extern void fn_800716C8(u32 port, void *a, void *b);
+extern void OSJoinThread(void *p, u32 v);
+extern void gbaCommSetChannelBuffer(u32 port, void *a, void *b);
 extern u32 GSmemGetHandleByPtr(void *p);
 extern void __assert(const u8 *file, u32 line, const u8 *msg);
-extern void fn_800E24B0(u32 status);
+extern void GSmemUnlock(u32 status);
 extern void GSmemFree(u32 status);
 extern u32 OSGetCurrentThread(void);
 extern void OSYieldThread(void);
@@ -128,7 +128,7 @@ void demoScene30(u32 ctx) {
     extern void GSmodelLinkToGSparticleBank(u32 handle, u32 val);
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -165,7 +165,7 @@ void demoScene30(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -210,7 +210,7 @@ void demoScene30(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0D041800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -242,7 +242,7 @@ void demoScene29(u32 ctx) {
     extern void GSmodelLinkToGSparticleBank(u32 handle, u32 val);
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -276,7 +276,7 @@ void demoScene29(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -308,7 +308,7 @@ void demoScene29(u32 ctx) {
 
     std115_mapObjectPlayAnimation(0x0CE61000, 2, 0, 0);
     waitFrames = 100;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1DC;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -327,7 +327,7 @@ void demoScene29(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0D021800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -356,7 +356,7 @@ void demoScene28(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern void scriptWaitSyncMotion(u32 id, u32 val);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -390,7 +390,7 @@ void demoScene28(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -428,7 +428,7 @@ void demoScene28(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0D011800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -458,7 +458,7 @@ void demoScene27(u32 ctx) {
     extern void GSmodelLinkToGSparticleBank(u32 handle, u32 val);
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -492,7 +492,7 @@ void demoScene27(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -530,7 +530,7 @@ void demoScene27(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0D001800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -597,7 +597,7 @@ void demoScene26(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames1 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames1 = (u32)lbl_8047C1D0;
         if (waitFrames1 < 1) {
             waitFrames1 = 1;
@@ -670,7 +670,7 @@ void demoScene26(u32 ctx) {
     cameraPlayAnime(ctx, 0x0CFF1800, 0, 0);
 
     waitFrames2 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames2 = (u32)lbl_8047C1D0;
         if (waitFrames2 < 1) {
             waitFrames2 = 1;
@@ -720,7 +720,7 @@ void demoScene25(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 model, u32 mode);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 motion, u32 arg2, u32 arg3);
     extern void scriptWaitSyncMotion(u32 id, u32 sync);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
     extern u32 GSmodelSetShadowFlags(u32 model, u32 flags);
@@ -774,7 +774,7 @@ void demoScene25(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -806,7 +806,7 @@ void demoScene25(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 3, 0, 0);
 
     waitFramesLater = 0x32;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFramesLater = (u32)lbl_8047C1E0;
         if (waitFramesLater < 1) {
             waitFramesLater = 1;
@@ -851,7 +851,7 @@ void demoScene25(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CFE1800, 0, 0);
     waitFramesFinal = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFramesFinal = (u32)lbl_8047C1D0;
         if (waitFramesFinal < 1) {
             waitFramesFinal = 1;
@@ -986,7 +986,7 @@ void demoScene24(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames1 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames1 = (u32)lbl_8047C1D0;
         if (waitFrames1 < 1) {
             waitFrames1 = 1;
@@ -1019,7 +1019,7 @@ void demoScene24(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 3, 0, 0);
 
     waitFrames2 = 0x32;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames2 = (u32)lbl_8047C1E0;
         if (waitFrames2 < 1) {
             waitFrames2 = 1;
@@ -1058,7 +1058,7 @@ void demoScene24(u32 ctx) {
     cameraPlayAnime(ctx, 0x0CFD1800, 0, 0);
 
     waitFrames3 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames3 = (u32)lbl_8047C1D0;
         if (waitFrames3 < 1) {
             waitFrames3 = 1;
@@ -1131,7 +1131,7 @@ void demoScene23(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames1 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames1 = (u32)lbl_8047C1D0;
         if (waitFrames1 < 1) {
             waitFrames1 = 1;
@@ -1164,7 +1164,7 @@ void demoScene23(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 3, 0, 0);
 
     waitFrames2 = 0x32;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames2 = (u32)lbl_8047C1E0;
         if (waitFrames2 < 1) {
             waitFrames2 = 1;
@@ -1198,7 +1198,7 @@ void demoScene23(u32 ctx) {
     cameraPlayAnime(ctx, 0x0CFC1800, 0, 0);
 
     waitFrames3 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames3 = (u32)lbl_8047C1D0;
         if (waitFrames3 < 1) {
             waitFrames3 = 1;
@@ -1236,7 +1236,7 @@ void demoScene22(u32 ctx) {
     extern void GSmodelLinkToGSparticleBank(u32 handle, u32 val);
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -1270,7 +1270,7 @@ void demoScene22(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1308,7 +1308,7 @@ void demoScene22(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CFB1800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1337,7 +1337,7 @@ void demoScene21(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern void scriptWaitSyncMotion(u32 id, u32 val);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -1371,7 +1371,7 @@ void demoScene21(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1410,7 +1410,7 @@ void demoScene21(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CFA1800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1440,7 +1440,7 @@ void demoScene20(u32 ctx) {
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
     extern void scriptWaitSyncMotion(u32 id, u32 val);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -1474,7 +1474,7 @@ void demoScene20(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1506,7 +1506,7 @@ void demoScene20(u32 ctx) {
 
     std115_mapObjectPlayAnimation(0x0CE61000, 3, 0, 0);
     waitFrames = 0x32;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1E0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1529,7 +1529,7 @@ void demoScene20(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CF91800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1561,7 +1561,7 @@ void demoScene19(u32 ctx) {
     extern void GSmodelLinkToGSparticleBank(u32 handle, u32 val);
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -1604,7 +1604,7 @@ void demoScene19(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     wf1 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         wf1 = (u32)lbl_8047C1D0;
         if (wf1 < 1) {
             wf1 = 1;
@@ -1636,7 +1636,7 @@ void demoScene19(u32 ctx) {
 
     std115_mapObjectPlayAnimation(0x0CE61000, 3, 0, 0);
     waitFrames = 0x32;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1E0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1668,7 +1668,7 @@ void demoScene19(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CF71800, 0, 0);
     cameraWaitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         cameraWaitFrames = (u32)lbl_8047C1D0;
         if (cameraWaitFrames < 1) {
             cameraWaitFrames = 1;
@@ -1702,7 +1702,7 @@ void demoScene18(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -1740,7 +1740,7 @@ void demoScene18(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1782,7 +1782,7 @@ void demoScene18(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CF61800, 0, 0);
     cameraWaitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         cameraWaitFrames = (u32)lbl_8047C1D0;
         if (cameraWaitFrames < 1) {
             cameraWaitFrames = 1;
@@ -1815,7 +1815,7 @@ void demoScene17(u32 ctx) {
     extern void GSmodelLinkToGSparticleBank(u32 handle, u32 val);
     extern void GSmodelSetGSparticleLinkAttachMode(u32 handle, u32 val);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -1849,7 +1849,7 @@ void demoScene17(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1888,7 +1888,7 @@ void demoScene17(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CF51800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1913,7 +1913,7 @@ void demoScene16(u32 ctx) {
     extern void GSmodelSetShadowTextureSize(u32 w, u32 h);
     extern void std116_mapObjectStopAnimation(u32 id);
     extern void std115_mapObjectPlayAnimation(u32 id, u32 slot, u32 x, u32 y);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern void _threadSwitch(void);
     extern u32 GSgetFrameStep(void);
     extern u32 std112_modelGetResourceID(u32 id);
@@ -1947,7 +1947,7 @@ void demoScene16(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -1982,7 +1982,7 @@ void demoScene16(u32 ctx) {
 
     cameraPlayAnime(ctx, 0x0CF41800, 0, 0);
     waitFrames = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames = (u32)lbl_8047C1D0;
         if (waitFrames < 1) {
             waitFrames = 1;
@@ -2051,7 +2051,7 @@ void demoScene15(u32 ctx) {
     std115_mapObjectPlayAnimation(0x0CE61000, 0, 0, 0);
 
     waitFrames1 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames1 = (u32)lbl_8047C1D0;
         if (waitFrames1 < 1) {
             waitFrames1 = 1;
@@ -2065,7 +2065,7 @@ void demoScene15(u32 ctx) {
     std116_mapObjectStopAnimation(0x0CE61000);
 
     waitFrames2 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames2 = (u32)lbl_8047C1D0;
         if (waitFrames2 < 1) {
             waitFrames2 = 1;
@@ -2138,7 +2138,7 @@ void demoScene15(u32 ctx) {
     cameraPlayAnime(ctx, 0x0CF31800, 0, 0);
 
     waitFrames3 = 1;
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         waitFrames3 = (u32)lbl_8047C1D0;
         if (waitFrames3 < 1) {
             waitFrames3 = 1;

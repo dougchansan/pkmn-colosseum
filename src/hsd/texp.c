@@ -13,7 +13,7 @@
  * -inline auto,deferred, which emits them in reverse order.
  *
  * Colosseum's version differs from Melee's: HSD_TETev gained an alpha range
- * and a per-expression TEV swap table (set by fn_801B6DC0), HSD_TECnst keeps
+ * and a per-expression TEV swap table (set by HSD_TExpSetSwapTable), HSD_TECnst keeps
  * comp/ctype as bytes, and the TEV descriptor carries the swap table.
  */
 #include "hsd/hsd_texp.h"
@@ -22,8 +22,8 @@
 #include "hsd/hsd_debug.h"
 
 /* hsdAllocMemPiece / hsdFreeMemPiece (class.c) */
-extern void fn_80193AF0(void* mem, s32 size);
-extern void* fn_80193B10(s32 size);
+extern void hsdFreeMemPiece_80193AF0(void* mem, s32 size);
+extern void* hsdAllocMemPiece_80193B10(s32 size);
 
 /* HSD_Panic (debug.c) */
 extern void HSD_Panic(const char* file, int line, const char* msg);
@@ -61,14 +61,14 @@ HSD_TExpType HSD_TExpGetType(HSD_TExp* texp)
  */
 static inline HSD_TExp* TevAlloc(void)
 {
-    HSD_TExp* texp = fn_80193B10(sizeof(HSD_TETev));
+    HSD_TExp* texp = hsdAllocMemPiece_80193B10(sizeof(HSD_TETev));
     HSD_ASSERT(63, texp);
     return texp;
 }
 
 static inline HSD_TExp* CnstAlloc(void)
 {
-    HSD_TExp* texp = fn_80193B10(sizeof(HSD_TECnst));
+    HSD_TExp* texp = hsdAllocMemPiece_80193B10(sizeof(HSD_TECnst));
     HSD_ASSERT(71, texp);
     return texp;
 }
@@ -77,10 +77,10 @@ static inline void HSD_TExpFree(HSD_TExp* texp)
 {
     switch (HSD_TExpGetType(texp)) {
     case HSD_TE_TEV:
-        fn_80193AF0(texp, sizeof(HSD_TETev));
+        hsdFreeMemPiece_80193AF0(texp, sizeof(HSD_TETev));
         break;
     case HSD_TE_CNST:
-        fn_80193AF0(texp, sizeof(HSD_TECnst));
+        hsdFreeMemPiece_80193AF0(texp, sizeof(HSD_TECnst));
         break;
     }
 }
@@ -287,7 +287,7 @@ void HSD_TExpColorOp(HSD_TExp* texp, GXTevOp op, GXTevBias bias,
 }
 
 /* Sets the TEV swap table used by this expression's stage. */
-void fn_801B6DC0(HSD_TExp* texp, GXTevColorChan red, GXTevColorChan green,
+void HSD_TExpSetSwapTable(HSD_TExp* texp, GXTevColorChan red, GXTevColorChan green,
                  GXTevColorChan blue, GXTevColorChan alpha)
 {
     HSD_ASSERT(443, texp);
@@ -1245,7 +1245,7 @@ int HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc,
     HSD_TExpSchedule(num, list, order, &res);
     *tevdesc = NULL;
     for (i = 0; i < num; ++i) {
-        HSD_TExpTevDesc* tdesc = fn_80193B10(sizeof(HSD_TExpTevDesc));
+        HSD_TExpTevDesc* tdesc = hsdAllocMemPiece_80193B10(sizeof(HSD_TExpTevDesc));
         tdesc->desc.stage = HSD_Index2TevStage(i);
         TExp2TevDesc(order[(num - i) - 1], tdesc, &init_cprev, &init_aprev);
         tdesc->desc.next = &(*tevdesc)->desc;
@@ -1262,7 +1262,7 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
     HSD_TExpTevDesc* next = tdesc;
     while (next != NULL) {
         HSD_TExpTevDesc* temp = (HSD_TExpTevDesc*) next->desc.next;
-        fn_80193AF0(next, sizeof(HSD_TExpTevDesc));
+        hsdFreeMemPiece_80193AF0(next, sizeof(HSD_TExpTevDesc));
         next = temp;
     }
 }

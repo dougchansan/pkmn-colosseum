@@ -4,7 +4,7 @@
  * 0x8014D598 - 0x8014D75C.
  *
  * Split out of the misnamed people_field.c unit (2026-07-02). Reference:
- * AxioDL/musyx `musyx/runtime/seq_api.c`. Boundary evidence: fn_8014D598
+ * AxioDL/musyx `musyx/runtime/seq_api.c`. Boundary evidence: seqIsPlaying
  * is sndSeqGetValid (calls seqGetPrivateId, returns id != -1); seqGetMIDIPriority
  * is seqGetMIDIPriority (simindex seq=1.0 vs MP4/Prime matched copies),
  * ending at sndFXCtrl (0x8014D75C), snd_synthapi.c's territory.
@@ -27,7 +27,7 @@ extern u16 lbl_80434910[8][16]; /* seqMIDIPriority */
 extern void hwDisableIrq(void);
 extern void hwEnableIrq(void);
 
-u32 fn_8014D598(u32 seqId) { return seqGetPrivateId(seqId) != -1; }
+u32 seqIsPlaying(u32 seqId) { return seqGetPrivateId(seqId) != -1; }
 
 void sndSeqStop(u32 seqId) {
   hwDisableIrq();

@@ -5,7 +5,7 @@ u16 pcboxGetNbItemSlot(s32 box)
     return 235;
 }
 
-s8 fn_801347D8(void)
+s8 pcBoxGetSlotCount(void)
 {
     return 30;
 }

@@ -46,7 +46,7 @@ static inline u8 pdaAllStopped(void)
 /* RULE-EXCEPTION(user-approved): local opt_loop_invariants pragma — see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma opt_loop_invariants off
-void fn_80038170(PdaSprite* context, PdaSprite* sprite)
+void pcMenuDrawItem5(PdaSprite* context, PdaSprite* sprite)
 {
     extern f32 lbl_802E5288[][2];
     extern s8 lbl_8047A47C;

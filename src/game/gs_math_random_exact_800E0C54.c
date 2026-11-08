@@ -16,7 +16,7 @@ u16 GSrand(void)
     return HSD_Rand();
 }
 
-void fn_800E0C78(void)
+void GSsrandTime(void)
 {
     u64 time = OSGetTime();
 

@@ -3,12 +3,12 @@
 
 extern s32 CARDUnmount(s32 chan);
 
-DVDDiskID* fn_800B01AC(s32 chan)
+DVDDiskID* CARDGetChanWord108(s32 chan)
 {
     return lbl_803FC620[chan].diskId;
 }
 
-s32 fn_800B01C4(s32 chan, DVDDiskID* diskId)
+s32 CARDSetChanWord108(s32 chan, DVDDiskID* diskId)
 {
     CARDControl* card = &lbl_803FC620[chan];
     DVDDiskID* id;

@@ -68,7 +68,7 @@ extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
 extern void  pokemonIsJoutaiDataId(void);
-extern void  fn_8011B67C(void);
+extern void  statusIsJoutaiDataId(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);
@@ -213,7 +213,7 @@ extern void fightTrainerEnemyPokemonBiosSetLv1banhikuiFlag(void* enemy, u32 flag
 extern void fightTrainerEnemyPokemonBiosSetNowhp1banhikuiFlag(void* enemy, u32 flag);
 extern void fightTrainerEnemyPokemonBiosSetStoreTokuseiData(void* enemy, u32 data);
 extern void fightTrainerEnemyPokemonBiosSetTokuseiFlag(void* enemy, u32 flag);
-extern void fn_801FBDF4(void* enemy, u8 index, u32 value);
+extern void fightTrainerEnemyBiosSetEntry(void* enemy, u8 index, u32 value);
 
 static inline u8 fightTrainerEnemyCheckValid(void* enemy)
 {
@@ -254,7 +254,7 @@ static inline void fightTrainerEnemyInit(void* enemy)
 
     fightTrainerEnemyPokemonBiosSetFightEntryeId(enemy, -1);
     for (j = 0; j < 4; j++) {
-        fn_801FBDF4(enemy, j, 0);
+        fightTrainerEnemyBiosSetEntry(enemy, j, 0);
     }
     fightTrainerEnemyPokemonBiosSetTokuseiFlag(enemy, 0);
     fightTrainerEnemyPokemonBiosSetStoreTokuseiData(enemy, 0);
@@ -379,7 +379,7 @@ void fightTrainerEnemyPokemonInitAry(void* ctx, u16 count) {
     extern void fightTrainerEnemyPokemonBiosSetNowhp1banhikuiFlag();
     extern void fightTrainerEnemyPokemonBiosSetStoreTokuseiData();
     extern void fightTrainerEnemyPokemonBiosSetTokuseiFlag();
-    extern void fn_801FBDF4(void* entry, u8 idx, u32 zero);
+    extern void fightTrainerEnemyBiosSetEntry(void* entry, u8 idx, u32 zero);
     extern void fightTrainerEnemyPokemonBiosSetFightEntryeId();
     u8 j;
     void* entry;
@@ -389,7 +389,7 @@ void fightTrainerEnemyPokemonInitAry(void* ctx, u16 count) {
         entry = (void*)((u32)ctx + (u32)i * 0x14);
         fightTrainerEnemyPokemonBiosSetFightEntryeId(entry, (void*)0xffffffff);
         for (j = 0; j < 4; j++) {
-            fn_801FBDF4(entry, j, 0);
+            fightTrainerEnemyBiosSetEntry(entry, j, 0);
         }
         fightTrainerEnemyPokemonBiosSetTokuseiFlag(entry, 0);
         fightTrainerEnemyPokemonBiosSetStoreTokuseiData(entry, 0);

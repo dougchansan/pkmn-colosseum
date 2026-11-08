@@ -94,7 +94,7 @@ u32 GSpartGetMaterialCount(GSpart* part)
     return count;
 }
 
-u8 fn_800EE7E0(GSpart* part)
+u8 GSmodelIsHidden(GSpart* part)
 {
     u8* jobj = part->jobj;
     u8* material;

@@ -24,7 +24,7 @@ extern void* GSdvdOpen(const char* path);
 extern u32 GSdvdGetLength(void* file);
 extern void GSdvdClose(void* file);
 extern s32 GSdvdRead(void* file, void* buf, u32 size, s32 offset);
-extern s32 fn_80167E54(void* file, void* buf, u32 size, s32 offset);
+extern s32 soundReturnMinusOne(void* file, void* buf, u32 size, s32 offset);
 
 /**
  * wazaViewerGetFilesize - size of a host file, or 0 if it cannot be opened.
@@ -58,7 +58,7 @@ static inline void wazaViewerLoadFile(const char* messages, const char* path, vo
     file = GSdvdOpen(path);
     if (writing) {
         if (file != NULL) {
-            if (fn_80167E54(file, buf, size, 0) < 0) {
+            if (soundReturnMinusOne(file, buf, size, 0) < 0) {
                 GSlogWrite(messages + 0xF8, path);
             }
             GSdvdClose(file);
@@ -111,7 +111,7 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
         }
     }
 
-    effect = fn_801DB154();
+    effect = wazaSequenceOwnerAlloc();
     if (effect == NULL) {
         return;
     }
@@ -143,7 +143,7 @@ void wazaViewerLoadSequenceFiles(s32 slot) {
             buf = animBuf;
             animPath = (char*)(lbl_804673F8 + 0x41C);
             wazaViewerLoadFile((const char*)viewerData, animPath, buf, animSize, FALSE);
-            if ((u8)fn_801DDB4C(effect, *(void**)(lbl_804673F8 + 0x664))) {
+            if ((u8)wazaViewerCreateSequence(effect, *(void**)(lbl_804673F8 + 0x664))) {
                 *(s32*)(lbl_804673F8 + 0x04) = 2;
             } else {
                 wazaSequenceSysStopWaza(effect, 0, 0);

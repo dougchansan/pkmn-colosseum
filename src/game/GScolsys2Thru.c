@@ -11,7 +11,7 @@
  * GScolsys2ThruGetEventID. The layout follows XD's GScolsys2Thru.o
  * (NXXJ01.map lines 6907-6919: stripped getCpPointPoint, getCpPointLine,
  * getCpPointPoly, addList, getCpSegPoly and getFixedMdlEventListPass).
- * fn_80110084 belongs to GScolsys2Human and fn_80111864 to the next TU,
+ * GScolsys2HumanRegister belongs to GScolsys2Human and GScolsys2ThruTest to the next TU,
  * which has its own 0.0f/1.0f pool at 0x8047CF60.
  *
  * History: lanes D10/D13/D14 brought the functions to 99%+ (see
@@ -284,7 +284,7 @@ s32 colsysPassGetEventID(GScolsys2Vec3* start, GScolsys2Vec3* end,
     s32 outCount;
 
     outCount = 0;
-    wzx = (GSFieldWzxData*)fn_8010CBC0();
+    wzx = (GSFieldWzxData*)GScolsys2GetCurFloor_8010CBC0();
     if (wzx == NULL) {
         return 0;
     }
@@ -620,7 +620,7 @@ s32 GScolsys2ThruGetEventList(
     s32 j;
 
     outCount = 0;
-    wzx = (GSFieldWzxData*)fn_8010CBC0();
+    wzx = (GSFieldWzxData*)GScolsys2GetCurFloor_8010CBC0();
     region = wzx->regions;
     for (regionIndex = 0; regionIndex < wzx->regionCount && outCount < 4;
          regionIndex++, region++) {
@@ -671,7 +671,7 @@ s32 GScolsys2ThruGetEventID(
     s32 outCount;
 
     outCount = 0;
-    if (fn_8010CBC0() == NULL) {
+    if (GScolsys2GetCurFloor_8010CBC0() == NULL) {
         return 0;
     }
 

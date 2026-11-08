@@ -13,13 +13,13 @@
  *   "movie/tpc.thp"          -- The Pokemon Company logo
  *
  * The movie translation unit (src/game/movie.c) spans 0x80035DD4 -
- * 0x80037158: the movie scene callbacks, the boot entry fn_800366A8 and
+ * 0x80037158: the movie scene callbacks, the boot entry bootMain and
  * the boot loader fn_8003686C with its two threads. They call into the THP
  * player library (fn_801E1874 for THPPlayerGetState, fn_801E189C for THPPlayerOpen, etc.)
  * and coordinate with the sound system (fn_80165A20) and flag system
  * (fn_801902E0, fn_80190528) for proper sequencing.
  *
- * fn_80035E04, fn_80035EE4, fn_80035F34, and fn_80035F64 are the real,
+ * openingDemoPlay, fn_80035EE4, staffrollFinish, and staffrollPlay are the real,
  * address/size-confirmed movie stop/cleanup, opening-demo, auto-demo, and
  * staff-roll functions (defined directly in movie.c under those fn_ names,
  * matching config/GC6E01/symbols.txt); nothing else in the tree calls them

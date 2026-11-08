@@ -12,10 +12,10 @@ typedef struct ColosseumSaveWork {
     u8 exitPending;
 } ColosseumSaveWork;
 
-extern void fn_800347B8(void);
-extern void fn_800347C4(void);
-extern void fn_800347E8(s32);
-extern void fn_8003480C(s32);
+extern void cardeSetRecordFlag(void);
+extern void cardeBuzzer_800347C4(void);
+extern void cardeBuzzer_800347E8(s32);
+extern void cardeBuzzer_8003480C(s32);
 extern void menuColosseumBattleClearFlag();
 extern void menuWaitFaceSprites();
 extern void floorRequestChange(s32);
@@ -48,7 +48,7 @@ void menuColosseumBattle(s32 battleKind) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void fn_8005CF2C(void* hero, s32 result) {
+void menuColosseumShowPartyError(void* hero, s32 result) {
     s32 messageId;
 
     menuOpenCustom(MENU_ID(0xBE), 0, NULL, 0x10, NULL, 1, 0xF5);
@@ -56,7 +56,7 @@ void fn_8005CF2C(void* hero, s32 result) {
                    hero, result, savedataBattleGetRulePtr(), 0);
     menuSetPosition(0xDA, 0, -0x28);
 
-    messageId = fn_80076054(hero, savedataBattleGetRulePtr());
+    messageId = menuRuleGetPartyError(hero, savedataBattleGetRulePtr());
     if ((u16)messageId == 0) {
         __assert(lbl_802678D8, 0x1BB, lbl_80267A20);
     }
@@ -85,8 +85,8 @@ void fn_8005CF2C(void* hero, s32 result) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-s32 fn_8005D094(void) {
-    fn_800347B8();
+s32 cardeRecordFlagCallback(void) {
+    cardeSetRecordFlag();
     return -1;
 }
 #pragma pop
@@ -95,8 +95,8 @@ s32 fn_8005D094(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; scheduling off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma scheduling off
-s32 fn_8005D0B8(void) {
-    fn_800347C4();
+s32 cardeBuzzerCallback_8005D0B8(void) {
+    cardeBuzzer_800347C4();
     return 0;
 }
 #pragma pop
@@ -105,12 +105,12 @@ s32 fn_8005D0B8(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8005D0DC(void) {
+s32 cardeMenu02Callback_8005D0DC(void) {
     s32 menuResult = menuOpen(2, 1);
 
     menuClose(2);
     if (menuResult >= 0) {
-        fn_800347E8(menuResult);
+        cardeBuzzer_800347E8(menuResult);
     }
     return 0;
 }
@@ -120,12 +120,12 @@ s32 fn_8005D0DC(void) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-s32 fn_8005D130(void) {
+s32 cardeMenu02Callback_8005D130(void) {
     s32 menuResult = menuOpen(2, 1);
 
     menuClose(2);
     if (menuResult >= 0) {
-        fn_8003480C(menuResult);
+        cardeBuzzer_8003480C(menuResult);
     }
     return 0;
 }

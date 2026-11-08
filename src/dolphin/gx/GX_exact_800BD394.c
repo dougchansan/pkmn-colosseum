@@ -1,6 +1,6 @@
 #include "dolphin/gx/GXInternal.h"
 
-void fn_800BD394(f32* projection)
+void GXSetProjectionv(f32* projection)
 {
     GXData* data;
     u32 type;

@@ -50,7 +50,7 @@ extern void  pokemonGrowBasisStatus();
 extern u32   itemGetStatus();
 extern void  joutaiDataBiosGetStatusKind(void);
 extern void  pokemonIsJoutaiDataId(void);
-extern void  fn_8011B67C(void);
+extern void  statusIsJoutaiDataId(void);
 extern void  pokemonGetSoubiItemDataId(void);
 extern void* fightActionGetPri(void* p);
 extern void  wazaGetStatus(void);
@@ -75,13 +75,13 @@ extern u32 fightFloorGetStatus();
 extern u16 joukenDataGet4(u16 idx);
 extern u32 joukenDataGet2(u16 idx);
 extern u8 joukenDataGet0();
-extern s16 fn_8020A5C0();
-extern s16 fn_8020A630();
-extern u8 fn_8020A6A0();
-extern u16 fn_8020A710();
-extern u16 fn_8020A780();
-extern u8 fn_8020A7F0();
-extern u16 fn_8020A860();
+extern s16 fightJoukenDataBiosGetTerm04();
+extern s16 fightJoukenDataBiosGetTerm02();
+extern u8 fightJoukenDataBiosGetTerm01();
+extern u16 fightJoukenDataBiosGetTerm08();
+extern u16 fightJoukenDataBiosGetTerm06();
+extern u8 fightJoukenDataBiosGetTermKind();
+extern u16 fightJoukenDataBiosGet02();
 extern u8 fightJoukenDataBiosGetType();
 
 /* RULE-EXCEPTION(user-approved): single-use inline helper - the per-slot value read is its own inline with an int slot parameter, which gives the two inlined fightJoukenCheck copies retail's conversion-web order - see docs/RULE_EXCEPTIONS.md */
@@ -98,12 +98,12 @@ static inline s32 fightJoukenGetValue(u32 id, int slot, void* target)
     void* targetPtr;
 
     value = 0;
-    valueMode = fn_8020A7F0(id, slot);
-    targetId = fn_8020A780(id, slot);
-    parameter = fn_8020A710(id, slot);
-    numerator = fn_8020A630(id, slot);
-    denominator = fn_8020A5C0(id, slot);
-    scaleMode = fn_8020A6A0(id, slot);
+    valueMode = fightJoukenDataBiosGetTermKind(id, slot);
+    targetId = fightJoukenDataBiosGetTerm06(id, slot);
+    parameter = fightJoukenDataBiosGetTerm08(id, slot);
+    numerator = fightJoukenDataBiosGetTerm02(id, slot);
+    denominator = fightJoukenDataBiosGetTerm04(id, slot);
+    scaleMode = fightJoukenDataBiosGetTerm01(id, slot);
     switch (valueMode) {
     case 0:
         break;
@@ -187,7 +187,7 @@ static inline u8 fightJoukenCheck(u32 id, void* target)
     return result;
 }
 
-u8 fn_8020A8E0(u32 conditionId, void* target)
+u8 fightJoukenCheck_8020A8E0(u32 conditionId, void* target)
 {
     u8 result;
     u8 rowResult;
@@ -195,7 +195,7 @@ u8 fn_8020A8E0(u32 conditionId, void* target)
     u16 next;
 
     result = fightJoukenCheck(conditionId, target);
-    next = fn_8020A860(conditionId);
+    next = fightJoukenDataBiosGet02(conditionId);
     if (next == 0) {
         return result;
     }

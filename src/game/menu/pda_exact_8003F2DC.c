@@ -7,7 +7,7 @@
 
 extern void* memcpy(void* dst, const void* src, u32 size);
 
-void fn_8003F2DC(u8* arr, s32 count, s32 dir) {
+void pdaMemoSortPairs(u8* arr, s32 count, s32 dir) {
     u8 tmp[4];
 
     if (dir == 0) {

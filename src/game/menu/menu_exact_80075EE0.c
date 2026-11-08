@@ -12,21 +12,21 @@ extern void msgctrlSetValue(s32 id, u32 value);
 extern u16 pokemonBiosGetPokemonDataId(u8* pokemon);
 extern u8 pokemonBiosGetEventGetFlag(u8* pokemon);
 
-s32 fn_80075F4C(void);
+s32 exDiscMusicThread(void);
 
-void fn_80075EE0(void)
+void exDiscStartMusic(void)
 {
     if (lbl_8047A618 == 0) {
-        GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, fn_80075F4C);
+        GSthreadCreate(1, floorGetCurrentContext(), 0x4000, 1, 1, exDiscMusicThread);
     } else {
         std104_soundSetBackgroundMusic(0x46a, 0, 0x7f);
     }
     fadeSet(2, lbl_8047C0C8);
 }
 
-s32 fn_80075F4C(void) { return std104_soundSetBackgroundMusic(0x46a, 0, 0x7f); }
+s32 exDiscMusicThread(void) { return std104_soundSetBackgroundMusic(0x46a, 0, 0x7f); }
 
-void fn_80075F78(void* rule)
+void exDiscStoryMenuDrawText(void* rule)
 {
     s32 messageId;
 

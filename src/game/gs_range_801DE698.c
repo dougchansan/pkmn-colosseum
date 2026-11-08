@@ -154,10 +154,10 @@ static inline void wazaPlayFinish(u8* owner) {
 }
 
 /**
- * fn_801DE698 - Waza stat change effect.
+ * wazaSequenceAnimEndHandler - Waza stat change effect.
  * Address: 0x801DE698 | Size: 0x5CC
  */
-void fn_801DE698(u32 model, u8* callback) {
+void wazaSequenceAnimEndHandler(u32 model, u8* callback) {
     u32 flags;
     u8* owner;
     u8* entry;

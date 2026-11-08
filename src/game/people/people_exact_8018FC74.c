@@ -12,7 +12,7 @@ void peopleApplyPosition(PeopleEntry* entry, struct GSvec* position)
     GSmodelSetPosition((struct GSmodel*)entry->modelHandle, position);
 }
 
-void fn_8018FC98(PeopleEntry* entry, struct GSvec* position)
+void peopleGetModelPosition(PeopleEntry* entry, struct GSvec* position)
 {
     GSmodelGetPosition((struct GSmodel*)entry->modelHandle, position);
 }

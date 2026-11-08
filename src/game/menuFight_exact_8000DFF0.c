@@ -2,14 +2,14 @@
 
 extern u8* windowGetKeyInfo(void);
 extern u32 windowGetParam(u8* window, s32 index);
-extern u8 fn_801F18DC(s32 controller);
+extern u8 fightFloorIsKind10(s32 controller);
 extern u8 fightFloorIsUseFightTimerCommand(s32 controller);
 extern u8 fightTimerCommandIsOver(void);
 extern u16 std103_battleGetResult(void);
 
 static inline u8 menuFightIsTimeUp(void)
 {
-    if (fn_801F18DC(0) != 0) {
+    if (fightFloorIsKind10(0) != 0) {
         if (fightFloorIsUseFightTimerCommand(0) == 1 && fightTimerCommandIsOver() == 1) {
             return 1;
         }

@@ -8,8 +8,8 @@
  */
 #include "game/menu/pkjb_uploader_shared.h"
 
-/* 0x800722A0 | 0x2A8: byte-identical to fn_80071700. */
-s32 fn_800722A0(s32 chan)
+/* 0x800722A0 | 0x2A8: byte-identical to gbaCmdHandshakeA. */
+s32 gbaCmdHandshakeB(s32 chan)
 {
     s32 key;
     s32 result;
@@ -21,20 +21,20 @@ s32 fn_800722A0(s32 chan)
     return result;
 }
 
-/* 0x80072548 | 0x13C: byte-identical to fn_800719A8. */
-s32 fn_80072548(s32 chan)
+/* 0x80072548 | 0x13C: byte-identical to gbaCmdWaitReady. */
+s32 gbaCmdWaitReadyB(s32 chan)
 {
     return pkjbWaitZeroResponse(chan);
 }
 
 /* 0x80072684 | 0x24: alarm handler, wakes the thread suspended above. */
-void fn_80072684(OSAlarm* alarm, OSContext* context)
+void _gbaCmdAlarm(OSAlarm* alarm, OSContext* context)
 {
     OSResumeThread(lbl_8047A600);
 }
 
 /*
- * Send words to the GBA, waiting for each to be taken. fn_800726A8 drops
+ * Send words to the GBA, waiting for each to be taken. gbaCmdSendWords drops
  * the result: in the target every failure branch of this loop lands on
  * the caller's "return 0" block.
  */
@@ -79,7 +79,7 @@ static inline s32 pkjbSendWordsIdle(s32 chan, const u32* data, s32 size)
 
 /*
  * One attempt of command 0x55: wait for a GBA on the port, reset, send the
- * command and upload 0x78 bytes. The fn_80073C38 result is returned through
+ * command and upload 0x78 bytes. The gbaCmdResetLink result is returned through
  * the inline's return value (tested in r3, then copied to the home register).
  */
 static inline s32 pkjbSend55(s32 chan, const u32* data)
@@ -105,7 +105,7 @@ static inline s32 pkjbSend55(s32 chan, const u32* data)
             return 1000;
         }
     }
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }
@@ -121,7 +121,7 @@ static inline s32 pkjbSend55(s32 chan, const u32* data)
 }
 
 /* 0x800726A8 | 0x358 */
-s32 fn_800726A8(s32 chan, const u32* data)
+s32 gbaCmdSendWords(s32 chan, const u32* data)
 {
     s32 key;
     s32 result;

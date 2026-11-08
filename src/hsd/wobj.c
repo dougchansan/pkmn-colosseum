@@ -27,13 +27,13 @@
 #include "sysdolphin/baselib/debug.h"
 #include "sysdolphin/baselib/jobj.h"
 
-extern HSD_ClassInfo* fn_80193748(const char* class_name); /* hsdSearchClassInfo */
-extern void* fn_80193828(HSD_ClassInfo* info);             /* hsdNew */
-extern void fn_801AE50C(void* robj);                      /* HSD_RObjRemoveAll */
-extern void fn_801AEBE4(void* robj, void* desc);            /* HSD_RObjResolveRefsAll */
-extern void fn_801B0040(void* robj);                      /* HSD_RObjAnimAll */
-extern void fn_801AFEFC(void* robj, f32 frame);            /* HSD_RObjReqAnimAll */
-extern void fn_801AFFE0(void* robj);                      /* HSD_RObjRemoveAnimAll */
+extern HSD_ClassInfo* hsdSearchClassInfo_80193748(const char* class_name); /* hsdSearchClassInfo */
+extern void* hsdNew_80193828(HSD_ClassInfo* info);             /* hsdNew */
+extern void HSD_RObjRemoveAll_801AE50C(void* robj);                      /* HSD_RObjRemoveAll */
+extern void HSD_RObjResolveRefsAll_801AEBE4(void* robj, void* desc);            /* HSD_RObjResolveRefsAll */
+extern void HSD_RObjAnimAll_801B0040(void* robj);                      /* HSD_RObjAnimAll */
+extern void HSD_RObjReqAnimAll_801AFEFC(void* robj, f32 frame);            /* HSD_RObjReqAnimAll */
+extern void HSD_RObjRemoveAnimAll_801AFFE0(void* robj);                      /* HSD_RObjRemoveAnimAll */
 
 void WObjInfoInit(void);
 int WObjLoad(HSD_WObj* wobj, HSD_WObjDesc* desc);
@@ -101,7 +101,7 @@ void WObjAmnesia(HSD_ClassInfo* info)
 }
 
 void WObjRelease(HSD_WObj* wobj) {
-    fn_801AE50C(wobj->robj);
+    HSD_RObjRemoveAll_801AE50C(wobj->robj);
     HSD_AObjRemove(wobj->aobj);
     HSD_OBJECT_PARENT_INFO(&lbl_8036C5F0)->release((HSD_Class*) wobj);
 }
@@ -110,7 +110,7 @@ HSD_WObj* HSD_WObjAlloc(void)
 {
     HSD_WObj* wobj;
 
-    if ((wobj = (HSD_WObj*) fn_80193828(
+    if ((wobj = (HSD_WObj*) hsdNew_80193828(
         lbl_8047B218 != NULL
             ? lbl_8047B218
             : HSD_CLASS_INFO(&lbl_8036C5F0))) == NULL)
@@ -155,16 +155,16 @@ HSD_WObj* HSD_WObjLoadDesc(HSD_WObjDesc* desc)
         HSD_ClassInfo* info;
 
         if (desc->class_name == NULL ||
-            !(info = fn_80193748(desc->class_name)))
+            !(info = hsdSearchClassInfo_80193748(desc->class_name)))
         {
             /* HSD_WObjAlloc() inlined */
-            wobj = (HSD_WObj*) fn_80193828(
+            wobj = (HSD_WObj*) hsdNew_80193828(
                 lbl_8047B218 ? lbl_8047B218 : HSD_CLASS_INFO(&lbl_8036C5F0));
             if (wobj == NULL) {
                 __assert(__FILE__, 0x257, "wobj");
             }
         } else {
-            wobj = (HSD_WObj*) fn_80193828(info);
+            wobj = (HSD_WObj*) hsdNew_80193828(info);
             if (wobj == NULL) {
                 __assert(__FILE__, 0x104, "wobj");
             }
@@ -183,20 +183,20 @@ void HSD_WObjInit(HSD_WObj* wobj, HSD_WObjDesc* desc)
 
     HSD_WObjSetPosition(wobj, &desc->pos);
     if (wobj->robj != NULL) {
-        fn_801AE50C(wobj->robj);
+        HSD_RObjRemoveAll_801AE50C(wobj->robj);
     }
     wobj->robj = (HSD_RObj*) HSD_RObjLoadDesc(desc->robjdesc);
-    fn_801AEBE4(wobj->robj, desc->robjdesc);
+    HSD_RObjResolveRefsAll_801AEBE4(wobj->robj, desc->robjdesc);
 }
 
 int WObjLoad(HSD_WObj* wobj, HSD_WObjDesc* desc)
 {
     HSD_WObjSetPosition(wobj, &desc->pos);
     if (wobj->robj != NULL) {
-        fn_801AE50C(wobj->robj);
+        HSD_RObjRemoveAll_801AE50C(wobj->robj);
     }
     wobj->robj = (HSD_RObj*) HSD_RObjLoadDesc(desc->robjdesc);
-    fn_801AEBE4(wobj->robj, desc->robjdesc);
+    HSD_RObjResolveRefsAll_801AEBE4(wobj->robj, desc->robjdesc);
     return 0;
 }
 
@@ -204,7 +204,7 @@ void HSD_WObjInterpretAnim(HSD_WObj* wobj) {
     if (wobj != NULL) {
         HSD_AObjInterpretAnim(wobj->aobj, wobj,
                               (HSD_ObjUpdateFunc) HSD_WOBJ_METHOD(wobj)->update);
-        fn_801B0040(wobj->robj);
+        HSD_RObjAnimAll_801B0040(wobj->robj);
     }
 }
 
@@ -273,7 +273,7 @@ void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_WObjAnim* desc) {
 void HSD_WObjReqAnim(HSD_WObj* wobj, f32 frame) {
     if (wobj != NULL) {
         HSD_AObjReqAnim(wobj->aobj, frame);
-        fn_801AFEFC(wobj->robj, frame);
+        HSD_RObjReqAnimAll_801AFEFC(wobj->robj, frame);
     }
 }
 
@@ -281,6 +281,6 @@ void HSD_WObjRemoveAnim(HSD_WObj* wobj) {
     if (wobj != NULL) {
         HSD_AObjRemove(wobj->aobj);
         wobj->aobj = NULL;
-        fn_801AFFE0(wobj->robj);
+        HSD_RObjRemoveAnimAll_801AFFE0(wobj->robj);
     }
 }

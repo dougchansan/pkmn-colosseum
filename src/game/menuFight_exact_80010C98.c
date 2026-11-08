@@ -5,13 +5,13 @@ extern u8 fightFloorCheckFightActionFightOutPokemonIrekaeSelect(s32, void*, void
 extern void* fightOutPokemonGetNicknamePtr(void*);
 extern void winMsgOpen(s32, s32, s32, s32);
 extern void winMsgClose(s32);
-extern u8 fn_801F18DC(s32);
+extern u8 fightFloorIsKind10(s32);
 extern u8 fightFloorIsUseFightTimerCommand(s32);
 extern u8 fightTimerCommandIsOver(void);
 extern u16 std103_battleGetResult(void);
 extern void _threadSwitch(void);
 extern u32 GSinputButtonsChanged(s32);
-extern u32 fn_800F7BC4(s32);
+extern u32 GSinputGetButtons(s32);
 extern void msgctrlSetValue();
 extern void fightFloorSetStatus();
 extern u32 fightFloorGetGcHeroFightTrainerPtr(s32);
@@ -22,7 +22,7 @@ extern s32 fightPokemonGetNicknamePtr(u32);
 extern void GSlogWrite(const char*, ...);
 extern u8 lbl_80266788[];
 extern u8 lbl_802E4B78[];
-extern u32 fn_80089F78(u32, u32, u32, u32);
+extern u32 gbaSendBattleSnapshot(u32, u32, u32, u32);
 extern u32 menuIsCheck();
 extern void menuCloseCustom();
 
@@ -31,7 +31,7 @@ u32 menuPokemonCheckPokemonChange(void* npc, u32 warpId, u32 variant)
 #define WAIT_FOR_DIALOG(waitLabel, checkLabel, haveLabel, doneLabel) \
     goto checkLabel; \
 waitLabel: \
-    advance = fn_801F18DC(0); \
+    advance = fightFloorIsKind10(0); \
     if (advance != 0) { \
         if ((fightFloorIsUseFightTimerCommand(0) == 1) && (fightTimerCommandIsOver() == 1)) { \
             advance = 1; \
@@ -49,7 +49,7 @@ haveLabel: \
     _threadSwitch(); \
 checkLabel: \
     inputFlags = GSinputButtonsChanged(1); \
-    maskedFlags = fn_800F7BC4(1); \
+    maskedFlags = GSinputGetButtons(1); \
     maskedFlags &= inputFlags; \
     if ((maskedFlags & 0x300) == 0) { \
         goto waitLabel; \
@@ -122,12 +122,12 @@ doneLabel:
 
 void menuFightOpenGBAMain(u32 a, u32 b, u32 c)
 {
-    fn_80089F78(a, b, c, 0);
+    gbaSendBattleSnapshot(a, b, c, 0);
 }
 
 void menuFightOpenGBAIrekae(u32 a, u32 b, u32 c)
 {
-    fn_80089F78(a, b, c, 1);
+    gbaSendBattleSnapshot(a, b, c, 1);
 }
 
 u32 menuFightCloseTarget(void* obj)

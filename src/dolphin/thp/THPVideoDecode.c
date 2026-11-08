@@ -80,7 +80,7 @@ static void* VideoDecoder(void* arg)
     while (TRUE) {
         if (lbl_8046AC60.audioExist) {
             while (lbl_8046AC60.videoDecodeCount < 0) {
-                readBuffer = (THPReadBuffer*)fn_801E1B84();
+                readBuffer = (THPReadBuffer*)PopReadedBuffer2();
                 curFrame = (readBuffer->frameNumber + lbl_8046AC60.initReadFrame) %
                            lbl_8046AC60.header.numFrames;
                 if (curFrame == lbl_8046AC60.header.numFrames - 1 &&
@@ -96,9 +96,9 @@ static void* VideoDecoder(void* arg)
         }
 
         if (lbl_8046AC60.audioExist) {
-            readBuffer = (THPReadBuffer*)fn_801E1B84();
+            readBuffer = (THPReadBuffer*)PopReadedBuffer2();
         } else {
-            readBuffer = (THPReadBuffer*)fn_801E1BE8();
+            readBuffer = (THPReadBuffer*)PopReadedBuffer();
         }
 
         VideoDecode(readBuffer);

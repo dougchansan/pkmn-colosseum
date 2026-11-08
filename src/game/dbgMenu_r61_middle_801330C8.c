@@ -1,7 +1,7 @@
 #include "dolphin/types.h"
 #include "game/effect/effect_util_types.h"
 
-u32 fn_801330C8(void)
+u32 dbgMenuDrawTestTriangle(void)
 {
     gfxSetFlags(1);
     gfxClearFlags(6);

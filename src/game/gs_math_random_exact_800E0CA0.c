@@ -11,7 +11,7 @@ extern f32 lbl_8047CB34;
 extern f32 lbl_8047CB30;
 extern f32 lbl_804011B8[];
 
-f32 fn_800E0CA0(f32 x)
+f32 GSsinTable(f32 x)
 {
     f32 scale;
     f32 reduced;

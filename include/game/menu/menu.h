@@ -103,7 +103,7 @@ struct MenuCardEMatrixWork;
 
 /* Shared battle-menu helpers implemented by the middle/common menu units. */
 u8* savedataBattleGetRulePtr(void);
-s32 fn_80076054(void* hero, void* battleRules);
+s32 menuRuleGetPartyError(void* hero, void* battleRules);
 
 /* =========================================================================
  * Callback function pointer types
@@ -227,7 +227,7 @@ typedef struct MenuCardEWork {
  * Card-E matrix raw matching overlays
  *
  * These partial layouts are anchored by menuCardEMatrixSelectCard, menuCardEMatrixSetTarget,
- * fn_8007C7EC, menuCardEMatrixWindowProc, menuCardE_CompareEntryPtrs, and fn_8007FDBC.
+ * cardeMatrixLoadEntries, menuCardEMatrixWindowProc, menuCardE_CompareEntryPtrs, and menuCardEMatrixBuild.
  * They intentionally stop at supported offsets and leave weak fields as
  * unk_XX. The older
  * MenuCardEMatrixWork below remains a high-level sketch used by exploratory
@@ -328,26 +328,26 @@ void menuCB_Common_ValidateStackNotEmpty(void);
 void menuCB_Common_ValidateMenuID(void);
 
 /**
- * fn_80071160: Retrieves the current menu ID from the top of stack.
+ * menuFindLiveSaveSlot: Retrieves the current menu ID from the top of stack.
  * Size: 0xA8
  */
 s32 menuCB_Common_GetCurrentMenuID(void);
 
 /**
- * fn_80071208: Main per-frame update dispatcher for the menu system.
+ * menuTaisenReadButtons: Main per-frame update dispatcher for the menu system.
  * Calls the appropriate callback based on current menu state.
  * Size: 0x110
  */
 void menuCB_Common_Update(void);
 
 /**
- * fn_80071318: Returns the current menu stack depth.
+ * windowSetSpriteRect: Returns the current menu stack depth.
  * Size: 0x2C
  */
 s32 menuCB_Common_GetStackDepth(void);
 
 /**
- * fn_80071344: Checks whether a menu transition is in progress.
+ * _menuReopenTop: Checks whether a menu transition is in progress.
  * Size: 0x54
  */
 BOOL menuCB_Common_IsTransitioning(void);
@@ -374,7 +374,7 @@ void _menuPop(void);
 void menuCB_Common_ValidateTransition(void);
 
 /**
- * fn_8007162C: Returns TRUE if the menu system is active.
+ * _menuPeekStackDepth: Returns TRUE if the menu system is active.
  * Size: 0x18
  */
 BOOL menuCB_Common_IsActive(void);
@@ -386,19 +386,19 @@ BOOL menuCB_Common_IsActive(void);
 void menuCB_Common_Init(void);
 
 /**
- * fn_8007169C: Shuts down the menu system.
+ * menuLinkFloor385: Shuts down the menu system.
  * Size: 0x2C
  */
 void menuCB_Common_Shutdown(void);
 
 /**
- * fn_800716C8: Sets the cursor bounds for the current menu.
+ * gbaCommSetChannelBuffer: Sets the cursor bounds for the current menu.
  * Size: 0x20
  */
 void menuCB_Common_SetCursorBounds(s32 nMax);
 
 /**
- * fn_800716E8: Gets the current cursor position.
+ * gbaCommSetChannelResult: Gets the current cursor position.
  * Size: 0x18
  */
 s32 menuCB_Common_GetCursorPos(void);
@@ -464,7 +464,7 @@ void menuCB_Rule_Init(void);
 void menuCB_Rule_HandleLevel(void);
 
 /**
- * fn_800774D4: Rule menu handler 3 - item rules.
+ * menuRuleCheckSlotModeDefault: Rule menu handler 3 - item rules.
  * Size: 0x210
  */
 void menuCB_Rule_HandleItems(void);
@@ -491,7 +491,7 @@ void menuExDiscShrine_Main(void);
  * ========================================================================= */
 
 /**
- * fn_800792D8: Coupon exchange menu main handler.
+ * menuExDiscCouponRun: Coupon exchange menu main handler.
  * References GBA thumb code: bg0thumbcode.bin, bg1thumbcode.bin, bg2thumbcode.bin
  * File: "menuExDiscCoupon.c"
  * Size: 0x610
@@ -544,7 +544,7 @@ void menuCardE_Matrix_Init(MenuCardEMatrixWork* cem);
 void menuCardE_Matrix_ValidateSeries(MenuCardEMatrixWork* cem, s32 i);
 
 /**
- * fn_8007C7EC: Reloads and sorts the Card-E entry pointer array.
+ * cardeMatrixLoadEntries: Reloads and sorts the Card-E entry pointer array.
  * Size: 0x2C4
  */
 void menuCardE_Matrix_ValidateAnim(MenuCardEMatrixWork* cem);

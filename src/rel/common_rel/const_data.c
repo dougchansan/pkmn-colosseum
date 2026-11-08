@@ -25,17 +25,17 @@ typedef struct Unk125Rodata5C {
     /* 0x10 */ f32 unk10;
     /* 0x14 */ u32 unk14;
 } Unk125Rodata5C;
-/* fn_8018FE30 */
+/* dbgFlagApplyPreset */
 const u32 lbl_125_rodata_0[2] = {
     0x00000000, 0x00180000,
 };
 
-/* fn_8018FE30 */
+/* dbgFlagApplyPreset */
 const u32 lbl_125_rodata_8[7] = {
     0x00000000, 0x00000000, 0x00000001, 0x00000001, 0x00000009, 0x000003FF, 0x00000000,
 };
 
-/* fn_8018FE30 */
+/* dbgFlagApplyPreset */
 const u16 lbl_125_rodata_24[4] = {
     0x0000, 0x0100, 0x0101, 0x0001,
 };
@@ -48,7 +48,7 @@ const Unk125Rodata2C lbl_125_rodata_2C[4] = {
     { 0x00000000, 0x00000000, 0x00000000 },
 };
 
-/* fn_80009178 */
+/* dbgFlagMenuCursor2 */
 const Unk125Rodata5C lbl_125_rodata_5C[54] = {
     { 0x00000000, 0x27100000, 0.0f, 0.0f, 0.0f, 0x00000000 },
     { 0x01000002, 0x27100000, -53.58000183105469f, 0.0f, 25.520000457763672f, 0x0000EB0D },

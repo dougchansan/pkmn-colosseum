@@ -17,7 +17,7 @@ extern const u32 lbl_8047B928, lbl_8047B92C;
 extern u8 lbl_802EF0A8[];
 extern f32 lbl_8047B93C, lbl_8047B934, lbl_8047B940, lbl_8047B938;
 
-s32 fn_80026FEC(void* window, u8* draw)
+s32 menuNameEntryDrawItem14(void* window, u8* draw)
 {
     f32 dh;
     s16 bottom;
@@ -71,7 +71,7 @@ s32 fn_80026FEC(void* window, u8* draw)
     return 0;
 }
 
-s32 fn_8002717C(void* window, u8* draw)
+s32 menuNameEntryDrawItem15(void* window, u8* draw)
 {
     f32 dh;
     s16 bottom;
@@ -125,7 +125,7 @@ s32 fn_8002717C(void* window, u8* draw)
     return 0;
 }
 
-s32 fn_8002730C(void* window, u8* draw)
+s32 menuNameEntryDrawItem16(void* window, u8* draw)
 {
     f32 dh;
     s16 bottom;

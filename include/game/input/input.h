@@ -93,7 +93,7 @@ typedef struct GSVMPool {
     /* 0x06 */ u16 unk06;
     /* 0x08 */ GSVMScript* scripts;
     /* 0x0C */ GSVMContext* contexts;
-    /* 0x10 */ void* nativeTable;  /* set by fn_800F75FC */
+    /* 0x10 */ void* nativeTable;  /* set by cms_PoolSetParam */
 } GSVMPool; /* size 0x14 */
 
 #endif /* GAME_INPUT_INPUT_H */

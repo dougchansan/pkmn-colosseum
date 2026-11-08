@@ -972,7 +972,7 @@ int SimplifyByMerge(HSD_TETev* tev)
  * propagates. No Melee counterpart. Each early decision jumps straight to the
  * alpha half, as retail does.
  */
-void fn_801B9048(HSD_TETev* tev)
+void HSD_TExpCalcCost(HSD_TETev* tev)
 {
     int range;
     int i;
@@ -1102,7 +1102,7 @@ int HSD_TExpSimplify(HSD_TExp* texp)
     if (SimplifyByMerge(tev) != 0) {
         res = TRUE;
     }
-    fn_801B9048(tev);
+    HSD_TExpCalcCost(tev);
     return res;
 }
 

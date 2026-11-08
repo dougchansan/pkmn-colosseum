@@ -26,7 +26,7 @@ typedef void (*ReportCallback)(const char* str, u32 len);
 typedef void (*PanicCallback)(OSContext* context, ...);
 
 /* OSPanic */
-void fn_800060F0(const char* file, s32 line, const char* msg, ...);
+void errorPanic(const char* file, s32 line, const char* msg, ...);
 /* Saves into lbl_80465080 itself. */
 void HSD_SaveContext(void);
 /* OSContext.c */
@@ -98,7 +98,7 @@ void HSD_Panic(const char* file, u32 line, const char* msg)
         OSReport("%s in %s on line %d.\n", msg, file, line);
         panicCallback(&lbl_80465080);
     }
-    fn_800060F0(file, line, msg);
+    errorPanic(file, line, msg);
 }
 
 void HSD_SetReportCallback(ReportCallback cb)

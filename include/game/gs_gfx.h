@@ -63,7 +63,7 @@ extern GSgfxState* lbl_8047AA80;
 u32 GSgetFrameStep(void);
 
 /* -----------------------------------------------------------------------
- * TV standards taken by GSgfxInit / fn_800D37D4; each selects one row of
+ * TV standards taken by GSgfxInit / GSgfxSetVideoMode_800D37D4; each selects one row of
  * render modes (the SDK GXNtsc*, GXPal*, GXEurgb60Hz* and GXMpal* objects).
  * ----------------------------------------------------------------------- */
 #define GSGFX_VMODE_NTSC       1

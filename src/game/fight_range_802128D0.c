@@ -28,7 +28,7 @@ void fightSeqTurnEnd(void)
     extern void fightMenuCloseMsg();
     extern u32 _fightSeqTurnEndSubFightOutPokemon();
     extern u32 _fightJoutai1ETurnEndSub();
-    extern u32 fn_80230318();
+    extern u32 _fightJoutai34TurnEndSub();
     extern void wsRunEndOfTurnScript();
     extern void fightSeqTurnEndAll();
     extern u8 lbl_80379F58[];
@@ -62,7 +62,7 @@ void fightSeqTurnEnd(void)
   fightSeqTurnEndAll();
   fightFloorLoopValidFightOutPokemon(0,_fightSeqTurnEndJoutaiSub,0,1);
   wsRunEndOfTurnScript();
-  fightFloorLoopValidFightOutPokemon(0,fn_80230318,0,0);
+  fightFloorLoopValidFightOutPokemon(0,_fightJoutai34TurnEndSub,0,0);
   wazaSequenceSysFreeAll();
   fightFloorLoopValidFightOutPokemon(0,_fightJoutai1ETurnEndSub,0,1);
   wazaSequenceSysFreeAll();

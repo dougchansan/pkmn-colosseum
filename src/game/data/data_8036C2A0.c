@@ -66,8 +66,8 @@ extern u8 fsysStatus3[];
 extern u8 fsysStatus2[];
 extern u8 fsysStatus1[];
 extern u8 fsysStatus0[];
-extern u8 fn_8017F3F8[];
-extern u8 fn_8017F484[];
+extern u8 floorRelPreRead[];
+extern u8 floorRelPostRead[];
 
 /* Auto-carved .data unit 0x8036C2A0..0x8036C4E8 (2 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
 
@@ -130,8 +130,8 @@ void* lbl_8036C2A0[80] = {
     (void*)0x00000000,
     (void*)0x00000064,
     (void*)0x0000000E,
-    (void*)((u8*)fn_8017F3F8),
-    (void*)((u8*)fn_8017F484),
+    (void*)((u8*)floorRelPreRead),
+    (void*)((u8*)floorRelPostRead),
     (void*)0x000002BC,
     (void*)0x0000000F,
     (void*)((u8*)floorReadPKXPreFunc),

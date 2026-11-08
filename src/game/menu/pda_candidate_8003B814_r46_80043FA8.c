@@ -53,7 +53,7 @@ extern PdaSceneWork lbl_803A6818;
 extern void GSmsgPrintColor(s32 arg0, s32 arg1, s32 arg2, void* data);
 extern u32 GSmsgGetRect(s32 id);
 /* Tab captions: pulse the active page's title and centre each caption. */
-void fn_80043FA8(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaModelViewDrawText(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     extern f64 sin(f64 x);
     f32 v;

@@ -25,7 +25,7 @@
 #include "game/gs_gfx_layer.h"
 
 extern void* memcpy(void* dst, const void* src, u32 n);
-extern void fn_800DB098(void);
+extern void gfxDLCaptureVertex(void);
 
 /* Save slot 0 (the vertex being replaced) and slot 1 (the held vertex). */
 static GSVtxValue3 sPos1;
@@ -41,7 +41,7 @@ static inline void GSgfxEmitVertex(void) {
     s32 n;
 
     if (lbl_8047AA80->captureActive == 1) {
-        fn_800DB098();
+        gfxDLCaptureVertex();
     } else if (lbl_8047AA80->layerDraw == lbl_8047AA80->layerCur &&
                (lbl_8047AA80->drawMask & lbl_8047AA80->drawEnable)) {
         desc = lbl_8047AA80->vtxDesc;

@@ -142,7 +142,7 @@ static inline void pda_8003B85C_Ease(f32* cur, f32 t, f32 c)
 s32 pdaSnagListDetailKey(void* window, s32 enabled)
 {
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     u16* keys;
     u16* ids;
     s32 held;
@@ -157,7 +157,7 @@ s32 pdaSnagListDetailKey(void* window, s32 enabled)
     keys = windowGetKeyInfo(window);
     held = 0;
     prevIndex = *(s32*)&lbl_803A6748;
-    dt = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+    dt = (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     *(f32*)((u8*)&lbl_803A6748 + 0x24) = dt;
     *(f32*)((u8*)&lbl_803A6748 + 0x28) = *(f32*)((u8*)&lbl_803A6748 + 0x28) + dt;
     if (*(f32*)((u8*)&lbl_803A6748 + 0x28) >= lbl_8047BAC8) {

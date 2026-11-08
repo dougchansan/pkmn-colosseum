@@ -115,7 +115,7 @@ static inline void menuNameEntryDrawName(u8* self, u8* draw, s32 type)
     }
 }
 
-s32 fn_800268F0(void* window, u8* draw)
+s32 menuNameEntryDrawText(void* window, u8* draw)
 {
     menuNameEntryDrawName(window, draw, 7);
     return 0;

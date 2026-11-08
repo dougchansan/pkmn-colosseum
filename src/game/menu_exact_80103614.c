@@ -19,7 +19,7 @@ double atan2(double y, double x);
 u8 GSinputIsConnected(s32 pad_id);
 u32 GSinputGetLeftStickYData(s32 pad_id, s32 axis);
 u32 GSinputGetLeftStickXData(s32 pad_id, s32 axis);
-u32 fn_800F7BC4(s32 pad_id);
+u32 GSinputGetButtons(s32 pad_id);
 
 /* RULE-EXCEPTION(title-path): extern stand-in for the menu TU's pooled 0.0f - see docs/RULE_EXCEPTIONS.md */
 extern const f32 lbl_8047CDC0;
@@ -64,7 +64,7 @@ u8 _menuGetGcKeyInfo__FlPUs(s32 port, u16* keys) {
         }
     }
 
-    buttons = fn_800F7BC4(padId);
+    buttons = GSinputGetButtons(padId);
     if (buttons & 0x8) result |= 0x1;
     if (buttons & 0x4) result |= 0x2;
     if (buttons & 0x1) result |= 0x4;

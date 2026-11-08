@@ -28,7 +28,7 @@ extern void menuCloseCustom(s32 slot, s32 arg1, s32 arg2);
 extern void* wazaSequenceOwnerGetModel(void* h);
 extern void GSmodelGetPosition(void* model, void* out);
 extern void GSmodelSetPosition(void* model, void* pos);
-extern u32 fn_800F7BC4(s32 chan);
+extern u32 GSinputGetButtons(s32 chan);
 extern void GSscene_SetMode(s32 mode);
 extern void* memcpy(void* dst, const void* src, u32 size);
 extern u32 gamedataGetStatus(s32 a, s32 b);
@@ -38,7 +38,7 @@ extern u32 memoDataGetPokemonTrainerRndFromID(s32 a, u32 id);
 extern void pokemonBiosSetRnd(u32 work, u32 rnd);
 extern void pokemonBiosSetCatchTrainerRnd(u32 work, u32 rnd);
 extern u8 pdaModelOrbitCamera(u8* work);
-extern u32 fn_80043728(u32 unused, s32 mode, u16 buttons);
+extern u32 pdaMemoListKey(u32 unused, s32 mode, u16 buttons);
 
 static inline u32 pdaLoadPokemon(s32 index)
 {
@@ -88,7 +88,7 @@ extern void GSlightSetColor(void* light, void* color);
 extern void GSlightSetPosition(void* light, void* pos);
 extern void GSlightSetTarget(void* light, void* target);
 extern void GSlightSetActive(void* light, s32 active);
-extern u8 fn_80047CC0(u8* work);
+extern u8 pdaModelFrameSingle(u8* work);
 extern u8 pdaModelFrameCamera(void* work, void* sub);
 
 
@@ -270,7 +270,7 @@ static inline f32 pdaAbsF(f32 x)
     return x > 0.0f ? x : -x;
 }
 
-/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, fn_80041E48, fn_80044630) - see docs/RULE_EXCEPTIONS.md */
+/* RULE-EXCEPTION(user-approved): reconstructed inline helpers pdaAbsF/pdaApproach (fn_80040018, pdaMemoUpdateScroll, fn_80044630) - see docs/RULE_EXCEPTIONS.md */
 static inline void pdaApproach(f32* current, f32* target, f32 delta)
 {
     f32 step;
@@ -330,11 +330,11 @@ static inline void pda_80042658_Spin(void)
     GSmodelGetPosition(model, &pos);
     pos.x = 0.0f;
     GSmodelSetPosition(model, &pos);
-    if ((fn_800F7BC4(1) & 0x40) != 0) {
+    if ((GSinputGetButtons(1) & 0x40) != 0) {
         if (*(f32*)((u8*)&lbl_803A6818 + 0x64) <= 3.0f) {
             *(f32*)((u8*)&lbl_803A6818 + 0x64) = *(f32*)((u8*)&lbl_803A6818 + 0x64) + *(f32*)((u8*)&lbl_803A6818 + 0x3c);
         }
-    } else if ((fn_800F7BC4(1) & 0x20) != 0) {
+    } else if ((GSinputGetButtons(1) & 0x20) != 0) {
         if (*(f32*)((u8*)&lbl_803A6818 + 0x64) > 1.0f) {
             *(f32*)((u8*)&lbl_803A6818 + 0x64) = *(f32*)((u8*)&lbl_803A6818 + 0x64) - *(f32*)((u8*)&lbl_803A6818 + 0x3c);
         }
@@ -345,7 +345,7 @@ static inline void pda_80042658_Spin(void)
 s32 pdaModelViewerControl(void* work, s32 mode)
 {
     extern u32 GSgetFrameStep(void);
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     u8* K = lbl_803A67FC;
     u16 keys;
     f32 dt;
@@ -375,7 +375,7 @@ s32 pdaModelViewerControl(void* work, s32 mode)
     if ((*(u16*)K & 3) != 0) {
         held = 1;
     }
-    dt = (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+    dt = (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     *(f32*)((u8*)&lbl_803A6818 + 0x3c) = dt;
     *(f32*)((u8*)&lbl_803A6818 + 0x40) = *(f32*)((u8*)&lbl_803A6818 + 0x40) + dt;
     if (*(f32*)((u8*)&lbl_803A6818 + 0x40) >= 1.0f) {
@@ -450,8 +450,8 @@ s32 pdaModelViewerControl(void* work, s32 mode)
     case 1:
     case 2:
     case 3:
-        ((u8*)&lbl_803A6818)[0x214] = fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
-        fn_80043728((u32)work, mode, keys);
+        ((u8*)&lbl_803A6818)[0x214] = pdaModelFrameSingle((u8*)&lbl_803A6818 + 0x7c);
+        pdaMemoListKey((u32)work, mode, keys);
         break;
     case 4:
         pda_80042658_Spin();
@@ -525,7 +525,7 @@ s32 pdaModelViewerControl(void* work, s32 mode)
         case 0xb:
         case 0xc:
             *((u8*)&lbl_803A6818 + 0x214) =
-                fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
+                pdaModelFrameSingle((u8*)&lbl_803A6818 + 0x7c);
             break;
         case 5:
             *((u8*)&lbl_803A6818 + 0x214) = pdaModelFrameCamera(

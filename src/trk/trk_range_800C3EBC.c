@@ -20,8 +20,8 @@ typedef struct CircleBuffer {
 } CircleBuffer;
 
 extern void* memcpy(void* dst, const void* src, u32 len);
-extern void fn_800C456C(u32* state);
-extern void fn_800C4548(u32* state);
+extern void TRKAcquireMutex_800C456C(u32* state);
+extern void TRKReleaseMutex_800C4548(u32* state);
 
 /* CircleBufferReadBytes - 0x800C3F44 | size: 0x108 | scope global */
 s32 CircleBufferReadBytes(CircleBuffer* circle, u8* buffer, u32 size) {
@@ -30,7 +30,7 @@ s32 CircleBufferReadBytes(CircleBuffer* circle, u8* buffer, u32 size) {
     if (size > circle->used) {
         return -1;
     }
-    fn_800C456C(&circle->state);
+    TRKAcquireMutex_800C456C(&circle->state);
     available = circle->size - (circle->readPtr - circle->buffer);
     if (size < available) {
         memcpy(buffer, circle->readPtr, size);
@@ -47,7 +47,7 @@ s32 CircleBufferReadBytes(CircleBuffer* circle, u8* buffer, u32 size) {
 
     circle->free += size;
     circle->used -= size;
-    fn_800C4548(&circle->state);
+    TRKReleaseMutex_800C4548(&circle->state);
     return 0;
 }
 
@@ -58,7 +58,7 @@ s32 CircleBufferWriteBytes(CircleBuffer* circle, u8* buffer, u32 size) {
     if (size > circle->free) {
         return -1;
     }
-    fn_800C456C(&circle->state);
+    TRKAcquireMutex_800C456C(&circle->state);
     available = circle->size - (circle->writePtr - circle->buffer);
     if (available >= size) {
         memcpy(circle->writePtr, buffer, size);
@@ -75,7 +75,7 @@ s32 CircleBufferWriteBytes(CircleBuffer* circle, u8* buffer, u32 size) {
 
     circle->free -= size;
     circle->used += size;
-    fn_800C4548(&circle->state);
+    TRKReleaseMutex_800C4548(&circle->state);
     return 0;
 }
 
@@ -99,7 +99,7 @@ s32 ddh_cc_initialize(u8** comm, void (*callback)(s32)) {
 
 /* CircleBufferInitialize - 0x800C4154 | size: 0x50 | scope global */
 void CircleBufferInitialize(CircleBuffer* circle, u8* buffer, u32 size) {
-    extern void fn_800C459C(u32* state);
+    extern void TRKInitializeMutex_800C459C(u32* state);
 
     circle->buffer = buffer;
     circle->size = size;
@@ -107,6 +107,6 @@ void CircleBufferInitialize(CircleBuffer* circle, u8* buffer, u32 size) {
     circle->writePtr = circle->buffer;
     circle->used = 0;
     circle->free = circle->size;
-    fn_800C459C(&circle->state);
+    TRKInitializeMutex_800C459C(&circle->state);
 }
 #endif

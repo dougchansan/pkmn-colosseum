@@ -3,7 +3,7 @@
  * @brief Strict item and item-ball accessors, 0x80143C50 - 0x80144064.
  *
  * itemDataBiosCheckExportable (0x8014402C) expands the important-flag getter
- * fn_80143FCC above it (retail re-tests the pointer inside the expansion),
+ * itemDataGetField1 above it (retail re-tests the pointer inside the expansion),
  * so it links in this unit rather than on its own.
  */
 #include "dolphin/types.h"
@@ -324,7 +324,7 @@ u32 itemDataBiosGetDoc(u8* p)
     return item->doc;
 }
 
-u8 fn_80143F9C(u8* p)
+u8 itemDataGetField3(u8* p)
 {
     ItemDataBios* item = (ItemDataBios*)p;
     if (item == NULL) {
@@ -333,7 +333,7 @@ u8 fn_80143F9C(u8* p)
     return item->field_03;
 }
 
-u8 fn_80143FB4(u8* p)
+u8 itemDataGetField2(u8* p)
 {
     ItemDataBios* item = (ItemDataBios*)p;
     if (item == NULL) {
@@ -342,7 +342,7 @@ u8 fn_80143FB4(u8* p)
     return item->useful;
 }
 
-u8 fn_80143FCC(u8* p)
+u8 itemDataGetField1(u8* p)
 {
     ItemDataBios* item = (ItemDataBios*)p;
     if (item == NULL) {
@@ -383,7 +383,7 @@ s32 itemDataBiosCheckExportable(u8* p)
     if (p == NULL) {
         return 0;
     }
-    if (fn_80143FCC(p)) {
+    if (itemDataGetField1(p)) {
         return 0;
     }
     return 1;

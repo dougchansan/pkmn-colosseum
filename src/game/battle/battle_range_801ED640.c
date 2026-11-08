@@ -141,7 +141,7 @@ u16 darkPokemonGetIdByIndex(u32 idx)
 
 #if defined(BATTLE_RANGE_EXACT_801EE0BC)
 
-s32 fn_801EE0BC(u16 id)
+s32 darkPokemonSaveGet4A4(u16 id)
 {
     extern void* darkPokemonSaveGetPtr(void* data);
     void* data = darkPokemonSaveGetPtr(NULL);
@@ -152,7 +152,7 @@ s32 fn_801EE0BC(u16 id)
     return -1;
 }
 
-void fn_801EE10C(u16 id, u8 value)
+void darkPokemonSaveSet49C(u16 id, u8 value)
 {
     extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
@@ -258,7 +258,7 @@ u8* darkPokemonSaveGetName(u16 id)
     return NULL;
 }
 
-u8 fn_801EE398(void)
+u8 darkPokemonAllFlag14Set(void)
 {
     u16 i;
 
@@ -286,7 +286,7 @@ u8 fn_801EE398(void)
     return 1;
 }
 
-u16 fn_801EE440(u16 index)
+u16 darkPokemonListGet(u16 index)
 {
     if (index > 0x30) {
         return 0;
@@ -299,7 +299,7 @@ u16 darkPokemonListCount(void)
     return 0x30;
 }
 
-u16 fn_801EE470(u16 id)
+u16 darkPokemonSaveGetDp(u16 id)
 {
     extern u8* darkPokemonSaveGetPtr(u32 data);
     u8* entry = (u8*)lbl_80478F6C + id * 0x38;
@@ -464,7 +464,7 @@ void darkPokemonSaveSet8(u16 id, u32 value)
     }
 }
 
-s32 fn_801EE824(u16 id, u16 index)
+s32 darkPokemonGetFlag24(u16 id, u16 index)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -567,7 +567,7 @@ static inline void battleRangeSetRuntimeStatusInline(u16 id, u32 status)
 }
 
 #if !defined(BATTLE_RANGE_ONLY_801EEB34)
-void fn_801EE958(u32 id, u8 value)
+void darkPokemonSetFlag16(u32 id, u8 value)
 {
     extern u8* darkPokemonSaveGetPtr(void* data);
     extern u32 fightFloorGetStatus(s32, s32, s32, s32);
@@ -619,7 +619,7 @@ void fn_801EE958(u32 id, u8 value)
 #endif
 
 #if !defined(BATTLE_RANGE_ONLY_801EE958)
-void fn_801EEB34(u32 id, u8 value)
+void darkPokemonSetFlag12(u32 id, u8 value)
 {
     extern u8* darkPokemonSaveGetPtr(void* data);
     extern u32 fightFloorGetStatus(s32, s32, s32, s32);
@@ -740,7 +740,7 @@ void darkPokemonSetFlag0C(u16 id, u8 value)
     }
 }
 
-u8 fn_801EEE44(u16 id)
+u8 darkPokemonGetByte0(u16 id)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 
@@ -802,7 +802,7 @@ u32 darkPokemonSaveGetC(u16 id)
     return 0;
 }
 
-u16 fn_801EEFAC(u16 id, s32 side)
+u16 darkPokemonGetSpecies(u16 id, s32 side)
 {
     BattleRangeDef* def = &lbl_80478F6C[id];
 

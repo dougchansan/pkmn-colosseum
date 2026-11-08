@@ -145,7 +145,7 @@ extern BOOL DVDLowAudioStream(u32 subcmd, u32 length, u32 offset,
 extern BOOL DVDLowRequestAudioStatus(u32 subcmd, DVDLowCallback callback);
 extern BOOL DVDLowAudioBufferConfig(u32 enable, u32 size,
                                     DVDLowCallback callback);
-extern void fn_800060F0(const char* file, s32 line, const char* fmt, ...);
+extern void errorPanic(const char* file, s32 line, const char* fmt, ...);
 extern char lbl_80311AD4[0x34];
 extern char lbl_804789D4[6];
 
@@ -367,7 +367,7 @@ void stateReadingFST(void)
     lbl_8047A82C = (void (*)(DVDCommandBlock*))stateReadingFST;
     if (bootInfo_8047A7F0[0x3C / sizeof(u32)] <
         BB2_803FC360.bb2.FSTLength) {
-        fn_800060F0(lbl_804789D4, 0x287, lbl_80311AD4);
+        errorPanic(lbl_804789D4, 0x287, lbl_80311AD4);
     }
     DVDLowRead((void*)bootInfo_8047A7F0[0x38 / sizeof(u32)],
                (BB2_803FC360.bb2.FSTLength + 0x1F) & ~0x1F,
@@ -1631,7 +1631,7 @@ static inline void dvdStateReadingFST(void)
     lbl_8047A82C = (void (*)(DVDCommandBlock*))stateReadingFST;
     if (bootInfo_8047A7F0[0x3C / sizeof(u32)] <
         BB2_803FC360.bb2.FSTLength) {
-        fn_800060F0(lbl_804789D4, 0x287, lbl_80311AD4);
+        errorPanic(lbl_804789D4, 0x287, lbl_80311AD4);
     }
     DVDLowRead((void*)bootInfo_8047A7F0[0x38 / sizeof(u32)],
                (BB2_803FC360.bb2.FSTLength + 0x1F) & ~0x1F,

@@ -66,7 +66,7 @@ void OSTicksToCalendarTime(u64 ticks, GSCalendarTime* td);
 void* memcpy(void* dst, const void* src, u32 n);
 
 void GSmemFree(u16 handle);  /* GSmem: free handle */
-void fn_800E24B0(u16 handle);  /* GSmem: unlock handle */
+void GSmemUnlock(u16 handle);  /* GSmem: unlock handle */
 void* GSmemLock(u16 handle); /* GSmem: lock handle, return pointer */
 
 u32 GSlogGetLine(u32 count);
@@ -113,7 +113,7 @@ u32 GSlogGetLine(u32 count) {
         sum += entries[i];
     }
     ret = (u32)lbl_8047AAFC + sum;
-    fn_800E24B0(lbl_8047AAFA);
+    GSmemUnlock(lbl_8047AAFA);
     return ret;
 }
 
@@ -325,7 +325,7 @@ u32 GSlogInit(u32 size, u8 timestamps) {
 
     lbl_8047AB00 = (u16*)GSmemLock(lbl_8047AAFA);
     if (lbl_8047AB00 == NULL) {
-        fn_800E24B0(lbl_8047AAF8);
+        GSmemUnlock(lbl_8047AAF8);
         GSmemFree(lbl_8047AAF8);
         GSmemFree(lbl_8047AAFA);
         GSlogWrite("GSlog: Init FAILED\n");

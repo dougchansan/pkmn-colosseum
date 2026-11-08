@@ -17,10 +17,10 @@ EVIDENCE_TEXT = """
 Why it cannot be C: The template uses privileged exception state and fixed hardware slots.
 Other decompilations: https://github.com/example/fixture/blob/0123456789abcdef0123456789abcdef01234567/template.s
 Origin: This synthetic fixture represents a vendor hardware exception template.
-External branch targets: fn_800053E0 is the reset destination and TRKInterruptHandler is the SRR0 destination.
+External branch targets: __TRK_reset is the reset destination and TRKInterruptHandler is the SRR0 destination.
 """
 SYMBOL_TEXT = """
-fn_800053E0 = .init:0x800053E0; // type:function size:0x2C
+__TRK_reset = .init:0x800053E0; // type:function size:0x2C
 TRKInterruptHandler = .text:0x800C0EAC; // type:function size:0x194
 """
 
@@ -59,7 +59,7 @@ def object_fixture():
         struct.pack_into(">H", relocated, offset + 6, 0x0EAC)
 
     symbol_names = ["", "fixture.s (asm)", "", *verifier.LABELS,
-                    "fn_800053E0", "TRKInterruptHandler"]
+                    "__TRK_reset", "TRKInterruptHandler"]
     strings = bytearray(b"\0")
     name_offsets = {"": 0}
     for name in symbol_names:
@@ -73,7 +73,7 @@ def object_fixture():
                 for name, offset in verifier.LABELS.items()]
     symbols += [(name_offsets[name], 0, 0, 0x10, 0, 0) for name in verifier.TARGETS]
     symbol_indices = {name: index for index, name in enumerate(symbol_names) if name}
-    relocations = [(0x100, 10, "fn_800053E0")]
+    relocations = [(0x100, 10, "__TRK_reset")]
     for offset, _ in verifier.REDIRECTS:
         relocations += [(offset + 2, 5, "TRKInterruptHandler"),
                         (offset + 6, 4, "TRKInterruptHandler")]
@@ -149,7 +149,7 @@ class InterruptVectorSourceTests(unittest.TestCase):
 
     def test_macro_body_cannot_hide_includes_or_other_external_branch(self):
         for changed in (self.source.replace("    rfi", '    .include "body.inc"\n    rfi', 1),
-                        self.source.replace("b fn_800053E0", "b TRKInterruptHandler"),
+                        self.source.replace("b __TRK_reset", "b TRKInterruptHandler"),
                         self.source.replace(".Lrestore_cr_\\@", "WrongLabel", 1),
                         self.source.replace("\\offset, 0", "\\offset, 0xff"),
                         self.source.replace("    rfi", "    bl HiddenFunction\n    rfi", 1)):
@@ -202,8 +202,8 @@ class InterruptVectorSourceTests(unittest.TestCase):
         bad_target = (fixture["symbols"]["TRKInterruptHandler"] << 8) | 10
         for record, values in ((0, (0x100, bad_target, 0)),
                                (1, (0x23A, (fixture["symbols"]["TRKInterruptHandler"] << 8) | 6, 0)),
-                               (0, (0x100, (fixture["symbols"]["fn_800053E0"] << 8) | 10, 4)),
-                               (0, (0x104, (fixture["symbols"]["fn_800053E0"] << 8) | 10, 0))):
+                               (0, (0x100, (fixture["symbols"]["__TRK_reset"] << 8) | 10, 4)),
+                               (0, (0x104, (fixture["symbols"]["__TRK_reset"] << 8) | 10, 0))):
             with self.subTest(record=record, values=values):
                 altered = bytearray(blob)
                 struct.pack_into(">IIi", altered, offset + 12 * record, *values)

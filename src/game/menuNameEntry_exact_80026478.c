@@ -8,7 +8,7 @@ extern void* heroGetStatus(s32, s32, u32);
 extern u8 pokemonCheckValid(void);
 extern u8 pokemonGetSex(void* pokemon);
 
-s32 fn_80026478(void* owner, u8* draw)
+s32 menuNameEntryDrawGender(void* owner, u8* draw)
 {
     void* context;
     void* pokemon;
@@ -33,7 +33,7 @@ done:
     return 0;
 }
 
-s32 fn_8002651C(void* owner, u8* draw)
+s32 menuNameEntryDrawGender2(void* owner, u8* draw)
 {
     void* context;
     void* pokemon;

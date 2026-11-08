@@ -105,7 +105,7 @@ static inline s32 gsMenuGetValidEntry(s32 target)
     return -1;
 }
 
-void fn_80009178(GsMenuNumberInput* input)
+void dbgFlagMenuCursor2(GsMenuNumberInput* input)
 {
     extern s32 menuDataBiosGetType(s32 menuId);
     GsMenuCursor cursor;
@@ -153,20 +153,20 @@ void fn_80009178(GsMenuNumberInput* input)
     input->result = gsMenuGetValidEntry(cursor.row + cursor.column);
 }
 
-s32 fn_800093D0(void)
+s32 dbgMenuFlagEdit(void)
 {
-    extern u32 fn_800F7BC4(s32 padId);
+    extern u32 GSinputGetButtons(s32 padId);
     extern s32 menuOpen(s32 menuId, s32 arg);
     extern u32 std082_flagGetValue(s32 flagId);
     extern u8 menuSelectInput(u32 value, u32* out);
     extern void _flagSet(s32 flagId, u32 value);
     extern void menuClose(s32 menuId);
-    extern void fn_8018FE30(s32 value);
+    extern void dbgFlagApplyPreset(s32 value);
     s32 result;
     u32 selected;
     u32 value;
 
-    if (fn_800F7BC4(1) & 0x20) {
+    if (GSinputGetButtons(1) & 0x20) {
         for (;;) {
             result = menuOpen(0xDD, 1);
             if (result >= 0) {
@@ -187,7 +187,7 @@ s32 fn_800093D0(void)
         result = menuOpen(0xB, 1);
         menuClose(0xB);
         if (result >= 0) {
-            fn_8018FE30(result);
+            dbgFlagApplyPreset(result);
         } else if (result == -1) {
             return -1;
         }
@@ -196,7 +196,7 @@ s32 fn_800093D0(void)
     return 0;
 }
 
-void fn_800094A4(GsMenuNumberInput* input)
+void dbgPokemonEditMenuButton(GsMenuNumberInput* input)
 {
     void* pokemon;
     s32* amount;

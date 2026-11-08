@@ -4,7 +4,7 @@ extern u32 lbl_80478BD8;
 
 extern s32 itemGetStatus(u32 entry, u16 id, u16 field, u32 value);
 
-s32 fn_80142984(u16 id)
+s32 itemIdIsValid(u16 id)
 {
     s32 result;
 
@@ -15,7 +15,7 @@ s32 fn_80142984(u16 id)
     return lbl_80478BD8 > id;
 }
 
-s32 fn_801429E8(u32 entry)
+s32 itemSlotIsValid(u32 entry)
 {
     u16 id;
     u8 valid;

@@ -143,12 +143,12 @@ typedef struct GbaPokemon {
  */
 #define GbaMisc_GetMappedContextByte std213_gbaGetLinkedGameId
 #define GbaMisc_HasActiveContextState std212_gbaIsLinkActive
-#define GbaMisc_PollEntryStatusA fn_80089CA8
-#define GbaMisc_ResetEntryStatusA fn_80089D30
-#define GbaMisc_GetEntryStatus fn_8008A9E4
-#define GbaMisc_SendPackedEntryStatus fn_8008AB20
+#define GbaMisc_PollEntryStatusA gbaCommWaitReadyA
+#define GbaMisc_ResetEntryStatusA gbaPortUpload22
+#define GbaMisc_GetEntryStatus gbaEntryCheckStatus
+#define GbaMisc_SendPackedEntryStatus gbaCommSendCmd77
 #define GbaMisc_SetEntryState gbaCommandSetKeyState
-#define GbaMisc_RunFlagDispatch fn_8008C700
+#define GbaMisc_RunFlagDispatch demoScenePlayNext
 
 #define GBA_MISC_ENTRY_WORD_OFFSET(idx) ((idx) << 2)
 #define GBA_MISC_ENTRY_HALF_OFFSET(idx) ((idx) << 1)
@@ -171,29 +171,29 @@ typedef struct GbaPokemon {
 
 /* ===== External function declarations ===== */
 extern void std011_dialogDisplayYesNoMenu();
-extern void fn_80071700();
-extern void fn_800719A8();
-extern s32 fn_80071AE4();
-extern void fn_800722A0();
-extern void fn_80072548();
-extern s32 fn_800726A8();
-extern void fn_80072A00();
-extern void fn_80072C74();
-extern void fn_80072D58();
+extern void gbaCmdHandshakeA();
+extern void gbaCmdWaitReady();
+extern s32 gbaCmdUpload22();
+extern void gbaCmdHandshakeB();
+extern void gbaCmdWaitReadyB();
+extern s32 gbaCmdSendWords();
+extern void gbaCmdPing60();
+extern void gbaCmdPollWord();
+extern void gbaCmdUpload66();
 extern s32 _AGB_EntryGetStatus__FlPUl(s32, u32*);
-extern void fn_800730F8();
-extern void fn_800733D0();
-extern void fn_80073990();
-extern void fn_80073A44();
-extern void fn_800830A4();
-extern void fn_80083BF8();
-extern GbaMiscContext* fn_80083CFC();
-extern void fn_80083D30();
-extern void fn_80083ECC();
+extern void gbaCmdSend77();
+extern void gbaCmdUpload88();
+extern void gbaCmdKeepAlive();
+extern void gbaCmdReadKeys();
+extern void cardeSaveCompact();
+extern void cardeArenaCountRecords();
+extern GbaMiscContext* cardeArenaGetPtr();
+extern void cardeEncodePartyMoveText();
+extern void cardeEncodeMoveText();
 extern void __cvt_fp2unsigned();
 extern void memmove();
 extern void GSgetFrameStep();
-extern void fn_800D37CC();
+extern void GSgfxGetVsyncRate();
 extern void GSmodelSetGSparticleLinkAttachMode();
 extern void GSmodelLinkToGSparticleBank();
 extern void GSmodelSetShadowTextureSize();
@@ -261,43 +261,43 @@ extern s32 lbl_803FB318[];
 
 /* ===== Forward declarations ===== */
 void gbaReceiveHero(void);
-u32 fn_800896B8(void);
-u32 fn_800896C0(void);
-u32 fn_800896C8(void);
-void fn_800896D0(u32 v);
-void fn_800896D8(u32 v);
-void fn_800896E0(u32 v);
+u32 fightGetResult80478960(void);
+u32 cardeGetEncounterParam8047A674(void);
+u32 cardeGetEncounterParam8047A670(void);
+void cardeSetEncounterParam80478960(u32 v);
+void cardeSetEncounterParam8047A674(u32 v);
+void cardeSetEncounterParam8047A670(u32 v);
 s32 std215_battleStartTrainerWithPrompt(void* work, void* arg);
 u8 gbaBuildTrainerPokemon(u8* pokemon, u8* entry);
 u8 GbaMisc_GetMappedContextByte(void);
 s32 GbaMisc_HasActiveContextState(void);
 s32 std220_gbaUnk_80083bf8(void);
-void fn_80089C84(s32 param);
+void gbaCommHandshakeA(s32 param);
 s32 GbaMisc_PollEntryStatusA(s32 r31);
 s32 GbaMisc_ResetEntryStatusA(s32 param, const u8* data);
-void fn_80089D74(s32 param);
-s32 fn_80089D98(s32 r31);
-s32 fn_80089E20(s32 idx, void* obj, u32 packedStatus, u32 highHalf);
-u32 fn_80089F58(u32 v);
-u32 fn_80089F60(u32 v);
-u32 fn_80089F68(u32 v);
-u32 fn_80089F70(u32 v);
-u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae);
-s32 fn_8008A99C(void);
+void gbaCommHandshakeB(s32 param);
+s32 gbaCommWaitReadyB(s32 r31);
+s32 gbaCommSendPokemon(s32 idx, void* obj, u32 packedStatus, u32 highHalf);
+u32 gbaKeyGetWord(u32 v);
+u32 gbaKeyGetHighByte(u32 v);
+u32 gbaKeyGetByte(u32 v);
+u32 gbaKeyGetHighHalf(u32 v);
+u32 gbaSendBattleSnapshot(u32 port, u32 trainer, u32 slot, s32 irekae);
+s32 gbaSetSnapshotSent(void);
 int gbaCommandEntryPokemon(u32 r3, u8* r4);
 s32 GbaMisc_GetEntryStatus(s32 idx, u32* out);
 void GbaMisc_SendPackedEntryStatus(s32 param0, u32 param1, u32 param2);
 void gbaCommandSendWazaText(s32 param0, s32 param1);
-s32 fn_8008AB8C(s32 r3);
-u8 fn_8008ABA0(s32 idx);
+s32 gbaCommGetKeys(s32 r3);
+u8 gbaCommIsReady(s32 idx);
 s32 GbaMisc_SetEntryState(s32 idx, s32 value);
-void fn_8008AC34(void);
+void gbaPollPort(void);
 void pokeconvPokemonToGBA(void* src, void* dst);
 void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src);
 u16 gbaPokemonConditonFromGC(void* pokemon);
-void fn_8008C6FC(void);
+void gbaNop_8008C6FC(void);
 void GbaMisc_RunFlagDispatch(void);
-s32 fn_8008C78C(void);
+s32 demoGetFlagB5D(void);
 void demoScene30(void);
 void demoScene29(void);
 void demoScene28(void);
@@ -431,32 +431,32 @@ void gbaReceiveHero(void) {
 }
 
 /* 0x800896B8 | size: 0x8 */
-u32 fn_800896B8(void) {
+u32 fightGetResult80478960(void) {
     return *(u32*)&lbl_80478960;
 }
 
 /* 0x800896C0 | size: 0x8 */
-u32 fn_800896C0(void) {
+u32 cardeGetEncounterParam8047A674(void) {
     return *(u32*)&lbl_8047A674;
 }
 
 /* 0x800896C8 | size: 0x8 */
-u32 fn_800896C8(void) {
+u32 cardeGetEncounterParam8047A670(void) {
     return *(u32*)&lbl_8047A670;
 }
 
 /* 0x800896D0 | size: 0x8 */
-void fn_800896D0(u32 v) {
+void cardeSetEncounterParam80478960(u32 v) {
     *(u32*)&lbl_80478960 = v;
 }
 
 /* 0x800896D8 | size: 0x8 */
-void fn_800896D8(u32 v) {
+void cardeSetEncounterParam8047A674(u32 v) {
     *(u32*)&lbl_8047A674 = v;
 }
 
 /* 0x800896E0 | size: 0x8 */
-void fn_800896E0(u32 v) {
+void cardeSetEncounterParam8047A670(u32 v) {
     *(u32*)&lbl_8047A670 = v;
 }
 
@@ -470,7 +470,7 @@ static inline u8* fn_800896E8_Trainer(u8* ctx) {
     extern void fightTrainerSetU16Arr14(void* trainer, u8 slot, u16 value);
     extern void fightTrainerSet06(void* trainer, u16 value);
     extern void fightTrainerSet00(void* trainer, u8 value);
-    extern u16 fn_801FCC3C(void* trainer);
+    extern u16 fightTrainerDataBiosGetStatus05(void* trainer);
     extern void fightTrainerDataBiosSetKindDataId(void* trainer, u8 value);
     extern void* fightTrainerDataBiosGetPtr(s32 id);
     extern void* fightEncountDataBiosGetPtr(s32 id);
@@ -497,8 +497,8 @@ static inline u8* fn_800896E8_Trainer(u8* ctx) {
 /* RULE-EXCEPTION(user-approved): single-use inline helper (depth-1 wrapper so Trainer's locals number after Finish's result) - see docs/RULE_EXCEPTIONS.md */
 static inline u8* fn_800896E8_Setup(u8* ctx) {
     extern u8* fightTrainerPokemonDataBiosGetPtr(u16 slot);
-    extern u16 fn_801FCC3C(void* trainer);
-    return fightTrainerPokemonDataBiosGetPtr(fn_801FCC3C(fn_800896E8_Trainer(ctx)));
+    extern u16 fightTrainerDataBiosGetStatus05(void* trainer);
+    return fightTrainerPokemonDataBiosGetPtr(fightTrainerDataBiosGetStatus05(fn_800896E8_Trainer(ctx)));
 }
 
 /* RULE-EXCEPTION(user-approved): single-use inline helper; the block locals are declared ahead of result so result numbers above them - see docs/RULE_EXCEPTIONS.md */
@@ -525,8 +525,8 @@ static inline u32 fn_800896E8_Finish(u8* ctx, void* work) {
             ok = 0;
         }
         if (ok == 1) {
-            fn_800830A4(ctx);
-            cur = fn_80083CFC(0);
+            cardeSaveCompact(ctx);
+            cur = cardeArenaGetPtr(0);
             if (cur != NULL) {
                 key = cur->tableKey_4136;
             } else {
@@ -557,7 +557,7 @@ s32 std215_battleStartTrainerWithPrompt(void* work, void* arg) {
     s32 count;
     s32 i;
 
-    ctx = (u8*)fn_80083CFC(0);
+    ctx = (u8*)cardeArenaGetPtr(0);
     if (ctx == NULL) {
         return 0;
     }
@@ -669,7 +669,7 @@ u8 GbaMisc_GetMappedContextByte(void) {
     u32 index;
     u32 count;
 
-    ptr = fn_80083CFC(0);
+    ptr = cardeArenaGetPtr(0);
     table = &ptr->tableKey_4136;
     if (ptr != 0) {
         value = *table;
@@ -690,7 +690,7 @@ u8 GbaMisc_GetMappedContextByte(void) {
 s32 GbaMisc_HasActiveContextState(void) {
     GbaMiscContext* ptr;
 
-    ptr = fn_80083CFC(0);
+    ptr = cardeArenaGetPtr(0);
     if (ptr != 0) {
         if (ptr->state_4000 != 0) {
             return 1;
@@ -701,24 +701,24 @@ s32 GbaMisc_HasActiveContextState(void) {
 
 /* 0x80089C54 | size: 0x30 */
 s32 std220_gbaUnk_80083bf8(void) {
-    extern s32 fn_80083BF8(s32);
-    return fn_80083BF8(0) > 0;
+    extern s32 cardeArenaCountRecords(s32);
+    return cardeArenaCountRecords(0) > 0;
 }
 
 /* 0x80089C84 | size: 0x24 */
-void fn_80089C84(s32 param) {
-    extern void fn_80071700(s32);
-    fn_80071700(param - 1);
+void gbaCommHandshakeA(s32 param) {
+    extern void gbaCmdHandshakeA(s32);
+    gbaCmdHandshakeA(param - 1);
 }
 
 #if !defined(GBA_MISC_80089B8C_ONLY)
 
 /* 0x80089CA8 | size: 0x88 */
 s32 GbaMisc_PollEntryStatusA(s32 r31) {
-    extern s32 fn_800719A8(s32);
+    extern s32 gbaCmdWaitReady(s32);
     s32 n;
 
-    n = fn_800719A8(r31 - 1);
+    n = gbaCmdWaitReady(r31 - 1);
     if (n < 0) {
         u16 *base = (u16*)&lbl_8047A684;
         base[r31 - 1] = 0;
@@ -735,12 +735,12 @@ s32 GbaMisc_PollEntryStatusA(s32 r31) {
 
 /* 0x80089D30 | size: 0x44 */
 s32 GbaMisc_ResetEntryStatusA(s32 param, const u8* data) {
-    extern s32 fn_80071AE4(s32 chan, const u8* data);
+    extern s32 gbaCmdUpload22(s32 chan, const u8* data);
     s32 ret;
     u32 tmp;
     u32 r4;
 
-    ret = fn_80071AE4(param - 1, data);
+    ret = gbaCmdUpload22(param - 1, data);
     tmp = GBA_MISC_ENTRY_HALF_OFFSET(param);
     r4 = (u32)&lbl_8047A684;
     r4 = r4 + tmp;
@@ -750,16 +750,16 @@ s32 GbaMisc_ResetEntryStatusA(s32 param, const u8* data) {
 }
 
 /* 0x80089D74 | size: 0x24 */
-void fn_80089D74(s32 param) {
-    extern void fn_800722A0(s32);
-    fn_800722A0(param - 1);
+void gbaCommHandshakeB(s32 param) {
+    extern void gbaCmdHandshakeB(s32);
+    gbaCmdHandshakeB(param - 1);
 }
 
 /* 0x80089D98 | size: 0x88 */
-s32 fn_80089D98(s32 r31) {
-    extern s32 fn_80072548(s32);
+s32 gbaCommWaitReadyB(s32 r31) {
+    extern s32 gbaCmdWaitReadyB(s32);
     s32 n;
-    n = fn_80072548(r31 - 1);
+    n = gbaCmdWaitReadyB(r31 - 1);
     if (n < 0) {
         u16 *base = (u16*)&lbl_8047A684;
         base[r31 - 1] = 0;
@@ -786,7 +786,7 @@ s32 fn_80089D98(s32 r31) {
     !defined(GBA_MISC_800896E8_ONLY)
 
 /* 0x80089E20 | size: 0x138 */
-s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
+s32 gbaCommSendPokemon(s32 r30, void* r31, u32 r5, u32 r29) {
     extern u8 pokemonBiosGetTokuseiFlag(void*);
     extern u16 pokemonBiosGetPokemonDataId(void*);
     extern u8 exribbonGetNo(s32);
@@ -834,7 +834,7 @@ s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
     for (r29 = 0; (s32)r29 < 0xb; r31 = (u8*)r31 + 1, r29++) {
         *(u8*)r31 = exribbonGetNo(r29);
     }
-    ret = fn_800726A8(r30 - 1, sp + 0x0);
+    ret = gbaCmdSendWords(r30 - 1, sp + 0x0);
     r3 = r30 << 1;
     r4 = (u32)&lbl_8047A684;
     r4 = r4 + r3;
@@ -853,22 +853,22 @@ s32 fn_80089E20(s32 r30, void* r31, u32 r5, u32 r29) {
     !defined(GBA_MISC_8008BBDC_ONLY)
 
 /* 0x80089F58 | size: 0x8 */
-u32 fn_80089F58(u32 v) {
+u32 gbaKeyGetWord(u32 v) {
     return v & 0xFFFF;
 }
 
 /* 0x80089F60 | size: 0x8 */
-u32 fn_80089F60(u32 v) {
+u32 gbaKeyGetHighByte(u32 v) {
     return (v >> 8) & 0xFF;
 }
 
 /* 0x80089F68 | size: 0x8 */
-u32 fn_80089F68(u32 v) {
+u32 gbaKeyGetByte(u32 v) {
     return v & 0xFF;
 }
 
 /* 0x80089F70 | size: 0x8 */
-u32 fn_80089F70(u32 v) {
+u32 gbaKeyGetHighHalf(u32 v) {
     return v >> 16;
 }
 
@@ -940,7 +940,7 @@ typedef struct GbaBattleSnapshot {
  * interrupted, or 0x40000 if the command timer ran out.
  */
 /* 0x80089F78 | size: 0xA24 */
-u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
+u32 gbaSendBattleSnapshot(u32 port, u32 trainer, u32 slot, s32 irekae) {
     extern s32 fightFloorGetStatus(s32, s32, s32, s32);
     extern void* fightTypeDataBiosGetPtr(u16 type);
     extern u8 fightTypeDataBiosGetTrainerNum(void* type);
@@ -1086,7 +1086,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
             waza = pokemonBiosGetPokemonWazaDataId(pokemon, j);
             snap.party[i].moves[j] = GbaSwap16(waza);
             snap.party[i].pp[j] = pokemonBiosGetPokemonWazaPp(pokemon, j);
-            fn_80083ECC(snap.party[i].moveInfo[j], waza);
+            cardeEncodeMoveText(snap.party[i].moveInfo[j], waza);
         }
     }
     count = i;
@@ -1134,7 +1134,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
         wazaId = pokemonBiosGetPokemonWazaDataId(outPokemon, j);
         snap.moves[j] = GbaSwap16(wazaId);
         snap.pp[j] = pokemonBiosGetPokemonWazaPp(outPokemon, j);
-        fightSeqSelectTarget(out, wazaId, fightType, fn_8008A99C, 1, 0, -1);
+        fightSeqSelectTarget(out, wazaId, fightType, gbaSetSnapshotSent, 1, 0, -1);
         if (lbl_8047A678 != 0) {
             moveFlags |= 8 << (j * 4);
         }
@@ -1182,17 +1182,17 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
     size = fighterNum * sizeof(GbaBattleFoe);
     memmove(&snap.party[count], snap.foes, size);
     channel = port - 1;
-    fn_80072D58(channel, &snap, 0x24 + count * sizeof(GbaBattleMon) + size);
+    gbaCmdUpload66(channel, &snap, 0x24 + count * sizeof(GbaBattleMon) + size);
     while (TRUE) {
         if (std103_battleGetResult() == 1) {
-            fn_80072A00(channel);
+            gbaCmdPing60(channel);
             return 0x50000;
         }
         if (fightFloorIsUseFightTimerCommand(0) == 1 && fightTimerCommandIsOver() == 1) {
-            fn_80072A00(channel);
+            gbaCmdPing60(channel);
             return 0x40000;
         }
-        status = ((s32 (*)(u32, u32*))fn_80072C74)(channel, &reply);
+        status = ((s32 (*)(u32, u32*))gbaCmdPollWord)(channel, &reply);
         if (status > 0) {
             return status | 0x50000;
         }
@@ -1211,7 +1211,7 @@ u32 fn_80089F78(u32 port, u32 trainer, u32 slot, s32 irekae) {
 #if !defined(GBA_MISC_8008AE18_ONLY) && !defined(GBA_MISC_8008BBDC_ONLY)
 
 /* 0x8008A99C | size: 0x10 */
-s32 fn_8008A99C(void) {
+s32 gbaSetSnapshotSent(void) {
     lbl_8047A678 = 1;
     return 0;
 }
@@ -1263,26 +1263,26 @@ void GbaMisc_SendPackedEntryStatus(s32 param0, u32 param1, u32 param2) {
 
     packed = param2 << 24;
     param0--;
-    fn_800730F8(param0, packed | param1);
+    gbaCmdSend77(param0, packed | param1);
 }
 
 /* 0x8008AB4C | size: 0x40 */
 void gbaCommandSendWazaText(s32 param0, s32 param1) {
-    extern void fn_80083D30(s32, void*);
-    extern void fn_800733D0(s32, void*);
+    extern void cardeEncodePartyMoveText(s32, void*);
+    extern void gbaCmdUpload88(s32, void*);
     u8 buf[0x780];
-    fn_80083D30(param1, buf);
-    fn_800733D0(param0 - 1, buf);
+    cardeEncodePartyMoveText(param1, buf);
+    gbaCmdUpload88(param0 - 1, buf);
 }
 
 /* 0x8008AB8C | size: 0x14 */
-s32 fn_8008AB8C(s32 r3) {
+s32 gbaCommGetKeys(s32 r3) {
     u16 *base = (u16*)&lbl_8047A67C;
     return base[r3 - 1];
 }
 
 /* 0x8008ABA0 | size: 0x44 */
-u8 fn_8008ABA0(s32 idx) {
+u8 gbaCommIsReady(s32 idx) {
     u32 ret = 0;
     if (GbaMisc_EntryState(idx) != 0) {
         if (GbaMisc_EntryCachedStatus(idx) == 0) {
@@ -1327,7 +1327,7 @@ s32 GbaMisc_SetEntryState(s32 idx, s32 value) {
 }
 
 /* 0x8008AC34 | size: 0x1E4 */
-void fn_8008AC34(void) {
+void gbaPollPort(void) {
     u8 sp[0x20];
     u32 tmp = 0;
     u32 r3 = 0;
@@ -1358,7 +1358,7 @@ void fn_8008AC34(void) {
             } else {
 
             r4 = (u32)sp + 0x8;
-            ((void(*)(void))fn_80073A44)();
+            ((void(*)(void))gbaCmdReadKeys)();
             if ((s32)r3 == 0) {
                 r7 = r29 << 1;
                 r6 = (u32)&lbl_8047A684;
@@ -1400,7 +1400,7 @@ void fn_8008AC34(void) {
             }
             }
         } else {
-        ((void(*)(void))fn_80073990)();
+        ((void(*)(void))gbaCmdKeepAlive)();
         if ((s32)r3 == 0) {
             tmp = r29 << 1;
             r4 = (u32)&lbl_8047A684;
@@ -1813,7 +1813,7 @@ void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src) {
     extern void pokemonBiosSetSpeAtk(void* pokemon, u16 value);
     extern void pokemonBiosSetSpeDef(void* pokemon, u16 value);
     extern void pokemonSetJoutaiKaisuu(void* pokemon, s32 kind, s8 value);
-    extern void fn_8012190C(void* pokemon, s32 kind, s16 value);
+    extern void pokemonSetJoutaiStack(void* pokemon, s32 kind, s16 value);
     extern void pokemonWriteJoutaiDataId(void* pokemon, s32 kind, s32 value);
     extern void* memmove(void* dst, const void* src, u32 size);
     u16 nickname[11]; /* 10 GBA characters and a terminator */
@@ -1966,7 +1966,7 @@ void pokeconvPokemonFromGBA(void* gc, GbaPokemon* src) {
     status = GbaSwap32(src->status);
     if ((status & 0x80) != 0) {
         pokemonWriteJoutaiDataId(gc, 4, 0);
-        fn_8012190C(gc, 4, (status & 0xF00) >> 8);
+        pokemonSetJoutaiStack(gc, 4, (status & 0xF00) >> 8);
     } else if ((status & 0x40) != 0) {
         pokemonWriteJoutaiDataId(gc, 5, 0);
     } else if ((status & 0x20) != 0) {
@@ -2020,7 +2020,7 @@ u16 gbaPokemonConditonFromGC(void* pokemon) {
 }
 
 /* 0x8008C6FC | size: 0x4 */
-void fn_8008C6FC(void) {
+void gbaNop_8008C6FC(void) {
 }
 
 /* 0x8008C700 | size: 0x8C */
@@ -2050,7 +2050,7 @@ void GbaMisc_RunFlagDispatch(void) {
 }
 
 /* 0x8008C78C | size: 0x24 */
-s32 fn_8008C78C(void) {
+s32 demoGetFlagB5D(void) {
     extern s32 std082_flagGetValue(s32);
     return std082_flagGetValue(0xb5d);
 }
@@ -2099,7 +2099,7 @@ void demoScene30(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2214,7 +2214,7 @@ void demoScene30(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2316,7 +2316,7 @@ void demoScene29(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2398,7 +2398,7 @@ void demoScene29(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r30 = 0x64;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1DC;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2440,7 +2440,7 @@ void demoScene29(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2525,7 +2525,7 @@ void demoScene28(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2623,7 +2623,7 @@ void demoScene28(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2715,7 +2715,7 @@ void demoScene27(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2813,7 +2813,7 @@ void demoScene27(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -2908,7 +2908,7 @@ void demoScene26(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r22 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -3125,7 +3125,7 @@ void demoScene26(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r22 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -3321,7 +3321,7 @@ void demoScene25(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r16 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -3403,7 +3403,7 @@ void demoScene25(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r16 = 0x32;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1E0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -3598,7 +3598,7 @@ void demoScene25(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r16 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -3977,7 +3977,7 @@ void demoScene24(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r27 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4059,7 +4059,7 @@ void demoScene24(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r27 = 0x32;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1E0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4167,7 +4167,7 @@ void demoScene24(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r25 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4301,7 +4301,7 @@ void demoScene23(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4383,7 +4383,7 @@ void demoScene23(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x32;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1E0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4474,7 +4474,7 @@ void demoScene23(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r26 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4597,7 +4597,7 @@ void demoScene22(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4695,7 +4695,7 @@ void demoScene22(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4780,7 +4780,7 @@ void demoScene21(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4881,7 +4881,7 @@ void demoScene21(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -4971,7 +4971,7 @@ void demoScene20(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5053,7 +5053,7 @@ void demoScene20(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r30 = 0x32;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1E0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5113,7 +5113,7 @@ void demoScene20(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5217,7 +5217,7 @@ void demoScene19(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5299,7 +5299,7 @@ void demoScene19(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r30 = 0x32;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1E0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5375,7 +5375,7 @@ void demoScene19(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r26 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5492,7 +5492,7 @@ void demoScene18(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5592,7 +5592,7 @@ void demoScene18(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5693,7 +5693,7 @@ void demoScene17(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5794,7 +5794,7 @@ void demoScene17(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5874,7 +5874,7 @@ void demoScene16(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -5957,7 +5957,7 @@ void demoScene16(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6055,7 +6055,7 @@ void demoScene15(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r18 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6076,7 +6076,7 @@ void demoScene15(void) {
     r3 = r3 + 0x1000;
     std116_mapObjectStopAnimation();
     r18 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6280,7 +6280,7 @@ void demoScene15(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r18 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6496,7 +6496,7 @@ void demoScene14(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6551,7 +6551,7 @@ void demoScene14(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6686,7 +6686,7 @@ void demoScene13(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6730,7 +6730,7 @@ void demoScene13(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r30 = 0x32;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1E0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6789,7 +6789,7 @@ void demoScene13(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6918,7 +6918,7 @@ void demoScene12(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -6990,7 +6990,7 @@ void demoScene12(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7256,7 +7256,7 @@ void demoScene11(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r25 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7478,7 +7478,7 @@ void demoScene10(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x64;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1DC;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7523,7 +7523,7 @@ void demoScene10(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7621,7 +7621,7 @@ void demoScene09(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x64;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1DC;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7666,7 +7666,7 @@ void demoScene09(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7764,7 +7764,7 @@ void demoScene08(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x64;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1DC;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7809,7 +7809,7 @@ void demoScene08(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7907,7 +7907,7 @@ void demoScene07(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r29 = 0x64;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1DC;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -7952,7 +7952,7 @@ void demoScene07(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8052,7 +8052,7 @@ void demoScene06(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r30 = 0x32;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1E0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8076,7 +8076,7 @@ void demoScene06(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r31 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8180,7 +8180,7 @@ void demoScene05(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r28 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8379,7 +8379,7 @@ void demoScene04(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r24 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8519,7 +8519,7 @@ void demoScene03(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8573,7 +8573,7 @@ void demoScene03(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r31 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8739,7 +8739,7 @@ void demoScene02(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r24 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8879,7 +8879,7 @@ void demoScene01(void) {
     r6 = 0x0;
     std115_mapObjectPlayAnimation();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -8916,7 +8916,7 @@ void demoScene01(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r31 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();
@@ -9004,7 +9004,7 @@ void demoScene00(void) {
     r6 = 0x0;
     cameraPlayAnime();
     r30 = 0x1;
-    ((void(*)(void))fn_800D37CC)();
+    ((void(*)(void))GSgfxGetVsyncRate)();
     if ((s32)r3 == 0x32) {
         f1 = *(f32*)&lbl_8047C1D0;
         ((void(*)(void))__cvt_fp2unsigned)();

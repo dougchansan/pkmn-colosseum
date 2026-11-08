@@ -1,6 +1,6 @@
 /**
  * @file gs_range_8017FA5C_exact_8017FDB0.c
- * @brief gs small-block heap allocator fn_8017FDB0 (0x8017FDB0 - 0x801800F8).
+ * @brief gs small-block heap allocator gsSmallHeapAlloc (0x8017FDB0 - 0x801800F8).
  *
  * K&R-style malloc over the lbl_80455070 block descriptors: first fit on
  * the circular free list, splitting the tail off a larger block, and
@@ -62,11 +62,11 @@ static inline GsRangeMemNode* memMoreCore(u32 size)
         block = memNewBlock(cursor);
     }
     block->size = size;
-    fn_8017FB08(block->data);
+    gsSmallHeapFree(block->data);
     return lbl_8047B1D0;
 }
 
-void* fn_8017FDB0(u32 size)
+void* gsSmallHeapAlloc(u32 size)
 {
     GsRangeMemNode* p;
     GsRangeMemNode* prevp;

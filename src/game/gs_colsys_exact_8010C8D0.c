@@ -133,7 +133,7 @@ s32 colsysMakeSRTMatrix(Mtx out, u32 index)
 }
 
 /* 0x8010CBC0 | 0x10 */
-void* fn_8010CBC0(void)
+void* GScolsys2GetCurFloor_8010CBC0(void)
 {
     return lbl_80404C68.wzxDataPtr;
 }

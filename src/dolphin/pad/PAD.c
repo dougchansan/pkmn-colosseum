@@ -270,10 +270,7 @@ static void PADReceiveCheckCallback(s32 chan, u32 type) {
     }
 }
 
-/*
- * fn_800AAD34 = PADReset
- */
-BOOL fn_800AAD34(u32 mask) {
+BOOL PADReset(u32 mask) {
     BOOL enabled;
     u32 disableBits;
 
@@ -365,7 +362,7 @@ BOOL PADInit(void) {
     SIRefreshSamplingRate();
     OSRegisterResetFunction(&lbl_80312500);
 
-    return fn_800AAD34(0xF0000000);
+    return PADReset(0xF0000000);
 }
 
 /*
@@ -388,7 +385,7 @@ u32 PADRead(PADStatus *status) {
         chanShift = 8 * (4 - 1 - chan);
 
         if (lbl_8047A8B8 & chanBit) {
-            fn_800AAD34(0);
+            PADReset(0);
             status->err = PAD_ERR_NOT_READY;
             memset(status, 0, 10);
             continue;
@@ -490,7 +487,7 @@ void SPEC2_MakeStatus(s32 chan, PADStatus *status, u32 data[2]);
 
 #include "dolphin/pad/PAD_spec_inline.h"
 
-void fn_800AB4FC(const u32 *commandArray) {
+void PADControlAllMotors(const u32 *commandArray) {
     BOOL enabled = OSDisableInterrupts();
     s32 chan;
     BOOL commit = FALSE;
@@ -693,7 +690,7 @@ extern BOOL SIBusy(void);
 
 /*
  * PADSync, as in the SDK's PAD.c. Nothing in the game calls it, so the
- * linker strips it; OnReset (fn_800ABD68) inlines it, as it does
+ * linker strips it; OnReset (OnReset_800ABD68) inlines it, as it does
  * PADRecalibrate (PADRecalibrate).
  */
 /* RULE-EXCEPTION(user-approved): reconstructed linker-stripped function — see docs/RULE_EXCEPTIONS.md */
@@ -702,7 +699,7 @@ BOOL PADSync(void) {
 }
 
 
-BOOL fn_800ABD68(BOOL final) {
+BOOL OnReset_800ABD68(BOOL final) {
     BOOL sync;
 
     if (lbl_8047A8BC != NULL) {

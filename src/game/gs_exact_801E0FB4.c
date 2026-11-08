@@ -10,7 +10,7 @@
 #include "dolphin/types.h"
 #include "game/gs_vtr_gapp_block.h"
 
-void fn_801E0FB4(s32 flags, u32 setupCamera, u32 resetQueue)
+void vtrUpdate(s32 flags, u32 setupCamera, u32 resetQueue)
 {
     extern u32 lbl_80467CF8[];
     extern u8 lbl_8047B420;

@@ -5,8 +5,8 @@
  * Address range: 0x800F915C - 0x800F96E4 (8 functions).
  * XD class: game/pxdvs/GSAPI/GSres/GSres.cpp
  *
- * The unit starts at the three release functions (fn_800F915C, fn_800F9210,
- * GSresFindById): they walk this registry's table, and fn_800F9210 is the
+ * The unit starts at the three release functions (GSresReleaseOwner, GSresReleaseOwnerItem,
+ * GSresFindById): they walk this registry's table, and GSresReleaseOwnerItem is the
  * resFindEntry lookup below inlined (its found-path `b` over the NULL
  * store is the inline's return), so they cannot belong to the pad manager
  * that precedes them.
@@ -17,7 +17,7 @@
  * GSresAllocResource/GSresAllocResourceAlign own a GSmem block (memHandle);
  * entries added with GSresRegisterResource wrap caller-owned data
  * (memHandle == 0).  The release callback is consulted by the free routines
- * (fn_800F915C / fn_800F9210) before an entry is
+ * (GSresReleaseOwner / GSresReleaseOwnerItem) before an entry is
  * dropped: it receives (data, group, id) and returns zero to veto the
  * release.
  */
@@ -40,7 +40,7 @@ extern u32 _toolentryAlloc__FUl(u32 size);      /* GSmemAllocRaw */
 extern u32 GSmemAlloc(u32 size, u32 align);    /* GSmemAlloc */
 extern void* GSmemLock(u16 handle);           /* GSmemGetPtr */
 extern void GSmemFree(u16 handle);            /* GSmemFree */
-extern void* fn_800E24B0(u16 handle);           /* GSmemLock */
+extern void* GSmemUnlock(u16 handle);           /* GSmemLock */
 
 /* Registry state (.sbss, owned outside this split) */
 extern u16 lbl_8047AC58;        /* GSmem handle of the entry table */
@@ -74,7 +74,7 @@ static inline GSresEntry* resFindFreeEntry(void) {
 }
 
 /* 0x800F915C | 0xB4 -- release every entry of a group */
-void fn_800F915C(u32 group) {
+void GSresReleaseOwner(u32 group) {
     u32 i;
     GSresEntry* entry;
 
@@ -90,7 +90,7 @@ void fn_800F915C(u32 group) {
             continue;
         }
         if (entry->memHandle != 0) {
-            fn_800E24B0(entry->memHandle);
+            GSmemUnlock(entry->memHandle);
             GSmemFree(entry->memHandle);
             entry->memHandle = 0;
         }
@@ -99,7 +99,7 @@ void fn_800F915C(u32 group) {
 }
 
 /* 0x800F9210 | 0xC4 -- release one entry */
-void fn_800F9210(u32 group, u32 id) {
+void GSresReleaseOwnerItem(u32 group, u32 id) {
     GSresEntry* entry = resFindEntry(group, id);
 
     if (entry == NULL) {
@@ -110,7 +110,7 @@ void fn_800F9210(u32 group, u32 id) {
         return;
     }
     if (entry->memHandle != 0) {
-        fn_800E24B0(entry->memHandle);
+        GSmemUnlock(entry->memHandle);
         GSmemFree(entry->memHandle);
         entry->memHandle = 0;
     }

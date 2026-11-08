@@ -26,7 +26,7 @@ asm void pcboxSwapItemSlot(void) {
 #if !defined(NO_LOCAL_PRAGMAS_PCBOX_CANDIDATE_8013433C)
 #endif
 s32 pcboxSwapItemSlot(void* base, s16 idx1, s16 idx2) {
-    extern void fn_80140A9C(void*, void*);
+    extern void itemSwapSlots(void*, void*);
     void* b;
     void* b2;
     void* entry1;
@@ -54,7 +54,7 @@ s32 pcboxSwapItemSlot(void* base, s16 idx1, s16 idx2) {
         entry2 = (u8*)b2 + 0x6dec + (s32)i * 4;
     }
     if (entry2 == 0) return 0;
-    fn_80140A9C(entry1, entry2);
+    itemSwapSlots(entry1, entry2);
     return 1;
 }
 #if !defined(NO_LOCAL_PRAGMAS_PCBOX_CANDIDATE_8013433C)
@@ -70,11 +70,11 @@ static inline void* pcboxGetSaveStatus(void* base) {
 }
 
 static inline s16 pcboxFindItem(void* status, u16 effect_id) {
-    extern u8 fn_801429E8(void*);
+    extern u8 itemSlotIsValid(void*);
     extern s32 itemGetStatus(void*, u32, u32, u32);
     s32 i;
     for (i = 0; i < 0xeb; i++) {
-        if (fn_801429E8((u8*)status + 0x6dec + i * 4)) {
+        if (itemSlotIsValid((u8*)status + 0x6dec + i * 4)) {
             if (itemGetStatus((u8*)status + 0x6dec + i * 4, 0, 0x1b, 0) == effect_id) break;
         }
     }
@@ -101,12 +101,12 @@ static inline void* pcboxGetItemSlot(void* status, s16 idx) {
 }
 
 static inline u16 pcboxGetItemSlotNum(void* entry) {
-    extern u8 fn_801429E8(void*);
+    extern u8 itemSlotIsValid(void*);
     extern s32 itemGetStatus(void*, u32, u32, u32);
     if (entry == 0) {
         return 0xFFFF;
     }
-    if (!fn_801429E8(entry)) {
+    if (!itemSlotIsValid(entry)) {
         return 0xFFFF;
     }
     return itemGetStatus(entry, 0, 0x1c, 0);
@@ -152,16 +152,16 @@ asm void pcboxAddItem(void) {
 #endif
 u16 pcboxAddItem(void* base, u16 effect_id, u16 r5) {
     extern void* itemDataBiosGetPtr(u16);
-    extern u8 fn_801429E8(void*);
+    extern u8 itemSlotIsValid(void*);
     extern s32 itemGetStatus(void*, u32, u32, u32);
-    extern u16 fn_80140ACC(void*, u16, u16, u16, s16, u16, u32);
+    extern u16 heroItemChangeCount(void*, u16, u16, u16, s16, u16, u32);
     void* status; void* cur; s16 idx; s32 i;
     status = pcboxGetSaveStatus(base);
     if (r5 == 0) return r5;
     if (!itemDataBiosGetPtr(effect_id)) return r5;
     idx = pcboxFindItem(status, effect_id);
     if (idx < 0) return r5;
-    return (u16)fn_80140ACC((u8*)status + 0x6dec, 0xeb, effect_id, r5, idx, 0x3e7, 0);
+    return (u16)heroItemChangeCount((u8*)status + 0x6dec, 0xeb, effect_id, r5, idx, 0x3e7, 0);
 }
 #if !defined(NO_LOCAL_PRAGMAS_PCBOX_CANDIDATE_8013433C)
 #endif
@@ -178,15 +178,15 @@ asm void pcboxDelItem(void) {
 #endif
 u16 pcboxDelItem(void* base, u16 effect_id, u16 r5) {
     extern void* itemDataBiosGetPtr(u16);
-    extern u8 fn_801429E8(void*);
+    extern u8 itemSlotIsValid(void*);
     extern s32 itemGetStatus(void*, u32, u32, u32);
-    extern u16 fn_80141308(void*, u16, u16, u16, s16, u16, u32, u32);
+    extern u16 itemSlotsAdd(void*, u16, u16, u16, s16, u16, u32, u32);
     void* status; void* cur; s16 idx; s32 i;
     status = pcboxGetSaveStatus(base);
     if (r5 == 0) return r5;
     if (!itemDataBiosGetPtr(effect_id)) return r5;
     idx = pcboxFindItem(status, effect_id);
-    return (u16)fn_80141308((u8*)status + 0x6dec, 0xeb, effect_id, r5, idx, 0x3e7, 0, 0);
+    return (u16)itemSlotsAdd((u8*)status + 0x6dec, 0xeb, effect_id, r5, idx, 0x3e7, 0, 0);
 }
 #if !defined(NO_LOCAL_PRAGMAS_PCBOX_CANDIDATE_8013433C)
 #endif
@@ -232,7 +232,7 @@ u16 pcboxGetNbItemSlot(s32 box) { return 235; }
 
 
 /* 0x801347D8 | 0x8 | return_const */
-s8 fn_801347D8(void) { return 30; }
+s8 pcBoxGetSlotCount(void) { return 30; }
 
 
 /* 0x801347E0 | 0x8 | return_const */
@@ -572,7 +572,7 @@ void pcboxInit(void* base) {
     extern void msgctrlSetValue(u32, u32);
     extern void GSmsgGetText(void*, u32, u32);
     extern void pokemonInitAry(void*, u32);
-    extern void fn_80142A88(void*, u32);
+    extern void itemSlotsClear(void*, u32);
     u8* status;
     s32 i;
     u8* cur;
@@ -590,7 +590,7 @@ void pcboxInit(void* base) {
         i++;
         cur += 0x24a4;
     } while (i < 3);
-    fn_80142A88(status + 0x6dec, 0xeb);
+    itemSlotsClear(status + 0x6dec, 0xeb);
 }
 #endif
 

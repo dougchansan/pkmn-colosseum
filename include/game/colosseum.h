@@ -110,7 +110,7 @@ u32 TeamValidation(u32 teamCtx, u32 rules);
  * ========================================================================= */
 
 /**
- * fn_80239984 - PreBattleSetup
+ * fightTrainerAiAddValueClamped - PreBattleSetup
  * Called 491 times. Sets up the pre-battle state for a trainer encounter.
  *
  * @param context    Battle context
@@ -121,7 +121,7 @@ u32 TeamValidation(u32 teamCtx, u32 rules);
 u32 PreBattleSetup(void* context, u32 trainerSlot, u16 sequenceId);
 
 /**
- * fn_80239EE8 - BattleSequenceStart
+ * fightTrainerAiAddValueLog2 - BattleSequenceStart
  * Called 491 times. Launches a battle sequence with full parameters.
  *
  * @param battleId   Battle identifier
@@ -171,7 +171,7 @@ u32 BattleResultCheck(void* context, u32 trainerSlot, u32 resultType);
 BOOL CheckEventFlag(void* context, u32 flagId);
 
 /**
- * fn_802025B8 - GetEventState
+ * fightOutPokemonCheckWritePokemonJoutaiDataId - GetEventState
  * Called 59 times. Gets the current state value of an event.
  */
 u32 GetEventState(void* context, u32 eventId);

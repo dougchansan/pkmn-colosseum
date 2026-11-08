@@ -5,12 +5,12 @@
 extern void* lbl_80312500[];
 extern u8 lbl_80312510[];
 
-extern u8 fn_800ABD68[];
+extern u8 OnReset_800ABD68[];
 
 /* Auto-carved .data unit 0x80312500..0x80312554 (2 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
 
 void* lbl_80312500[4] = {
-    (void*)((u8*)fn_800ABD68),
+    (void*)((u8*)OnReset_800ABD68),
     (void*)0x0000007F,
     (void*)0x00000000,
     (void*)0x00000000,

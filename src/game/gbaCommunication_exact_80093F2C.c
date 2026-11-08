@@ -1,10 +1,10 @@
 /**
  * @file gbaCommunication_exact_80093F2C.c
  * @brief gbaCommunication carve, 0x80093F2C - 0x80094650 (2 functions:
- *        menuPokemonStatusCtrlRibbon and the ribbon-grid builder fn_80093F64).
+ *        menuPokemonStatusCtrlRibbon and the ribbon-grid builder menuRibbonBuildGrid).
  *
  * Split from gbaCommunication_candidate_800937F4.c so these exact functions
- * link while _gbaCommThread and fn_80093B4C are still being matched. Standalone
+ * link while _gbaCommThread and menuRibbonDrawDebug are still being matched. Standalone
  * carve: GBA_COMMUNICATION_DECLS_ONLY takes only the shared declarations from
  * gbaCommunication.c. The bodies are gbaCommunication.c's; keep them in step.
  */
@@ -13,12 +13,12 @@
 
 /* 0x80093F2C | size: 0x38 */
 void menuPokemonStatusCtrlRibbon(void) {
-    extern void fn_80093F64();
+    extern void menuRibbonBuildGrid();
     u8 *r4 = (u8*)&lbl_803FB380;
     u32 r3 = *(u32*)(r4 + 0xC);
 
     if (r3 != 0) {
-        fn_80093F64(r3, r4 + 0x1c);
+        menuRibbonBuildGrid(r3, r4 + 0x1c);
     }
     return;
 }
@@ -54,7 +54,7 @@ extern RibbonGroupDescriptor lbl_802EF000[7];
 extern u32 pokemonGetStatus();
 
 /* Build the four-column ribbon grid used by the Pokemon status window. */
-void fn_80093F64(u8* pokemon, PokemonRibbonGrid* grid)
+void menuRibbonBuildGrid(u8* pokemon, PokemonRibbonGrid* grid)
 {
     s32 ribbon;
     u32 groupIndex;

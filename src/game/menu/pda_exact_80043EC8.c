@@ -35,7 +35,7 @@ typedef struct PdaSprite {
 
 extern u8 lbl_803A6818[];
 
-void fn_80043EC8(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaMemoDrawAnim2(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     extern u8 lbl_802EF0A8[];
     extern f32 lbl_8047BCA0;

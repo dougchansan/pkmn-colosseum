@@ -28,7 +28,7 @@ extern void* menuItemBiosGetPtr(s16 npcId);                  /* Lookup NPC data 
 /* Text/dialog system */
 extern void  windowDrawSprite();
 extern void  winSeqSetMenu(void* ctx, s32 state);       /* Set dialog state */
-extern void  fn_801081F8(void* ctx, s32 msgId, s32 flags); /* Display message */
+extern void  winSeqSetItem(void* ctx, s32 msgId, s32 flags); /* Display message */
 
 /* Rendering */
 extern u32   GSmsgGetRect();                           /* Get model dimensions */
@@ -41,13 +41,13 @@ extern void  winMsgOpen(s32 slot, s32 msgId, s32 p3, s32 p4);
 extern void  winMsgClose(s32 slot);                   /* Close message box */
 
 /* Input/frame */
-extern u8    fn_801F18DC(s32 controller);             /* Check input ready */
+extern u8    fightFloorIsKind10(s32 controller);             /* Check input ready */
 extern u8    fightFloorIsUseFightTimerCommand(s32 controller);             /* Check button pressed */
 extern u8    fightTimerCommandIsOver(void);                       /* Check A button */
 extern u16   std103_battleGetResult(void);                       /* Get input state */
 extern void  _threadSwitch(void);                       /* Frame advance */
 extern u32   GSinputButtonsChanged(s32 slot);                   /* Get render flags */
-extern u32   fn_800F7BC4(s32 slot);                   /* Get VSync flags */
+extern u32   GSinputGetButtons(s32 slot);                   /* Get VSync flags */
 
 /* Battle bridge */
 extern void menuClose();
@@ -165,7 +165,7 @@ void menuFightButtonSecretWazaTop(u8* ctx) {
         }
     }
 
-    if ((u8)fn_801F18DC(0) != 0) {
+    if ((u8)fightFloorIsKind10(0) != 0) {
         if ((u8)fightFloorIsUseFightTimerCommand(0) == 1 && (u8)fightTimerCommandIsOver() == 1) {
             pressed = 1;
             goto check_pressed;
@@ -219,7 +219,7 @@ u32 menuFightCtrlSecretWazaTop(u8* ptr) {
 /* menuFightButtonSecretMain - 0x8000FE38 | size: 0x118 */
 void menuFightButtonSecretMain(u8* arg1) {
     extern void* windowGetKeyInfo(void);
-    extern u8 fn_801F18DC(s32 a);
+    extern u8 fightFloorIsKind10(s32 a);
     extern u8 fightFloorIsUseFightTimerCommand(s32 a);
     extern u8 fightTimerCommandIsOver(void);
     extern u16 std103_battleGetResult(void);
@@ -245,7 +245,7 @@ void menuFightButtonSecretMain(u8* arg1) {
         arg1[0x98] = 1;
         *(s32*)(arg1 + 0x80) = flag_val;
     }
-    if ((u8)fn_801F18DC(0) != 0) {
+    if ((u8)fightFloorIsKind10(0) != 0) {
         if ((u8)fightFloorIsUseFightTimerCommand(0) == 1) {
             if ((u8)fightTimerCommandIsOver() == 1) {
                 flag = 1;

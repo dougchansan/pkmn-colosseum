@@ -4,17 +4,17 @@
  */
 #include "dolphin/types.h"
 
-/* fn_800C0E60 - 0x800C0E60 | size: 0x8 (upstream __TRK_get_MSR)
+/* __TRK_get_MSR - 0x800C0E60 | size: 0x8 (upstream __TRK_get_MSR)
  * Hand-written MetroTRK asm; evidence: docs/asm_evidence/trk_dispatch.md */
-asm u32 fn_800C0E60(void) {
+asm u32 __TRK_get_MSR(void) {
     nofralloc
     mfmsr r3
     blr
 }
 
-/* fn_800C0E68 - 0x800C0E68 | size: 0x8 (upstream __TRK_set_MSR)
+/* __TRK_set_MSR - 0x800C0E68 | size: 0x8 (upstream __TRK_set_MSR)
  * Hand-written MetroTRK asm; evidence: docs/asm_evidence/trk_dispatch.md */
-asm void fn_800C0E68(register u32 msr) {
+asm void __TRK_set_MSR(register u32 msr) {
     nofralloc
     mtmsr r3
     blr

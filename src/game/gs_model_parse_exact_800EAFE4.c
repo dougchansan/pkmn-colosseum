@@ -63,7 +63,7 @@ extern const f32 lbl_8047CC1C;
 extern void HSD_PObjClearMtxMark(u32 first, u32 second);
 extern HSD_JObj* HSD_JObjGetCurrent(void);
 extern void PSMTXConcat(f32* left, f32* right, f32* out);
-extern void fn_800E0628(void* dst, void* src);
+extern void GSmtxCopy(void* dst, void* src);
 
 void _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
     HSD_PObj* pobj, f32* vmtx, f32* pmtx, f32* mtx)
@@ -128,6 +128,6 @@ void _modelParseLoadEnvelopeMatrix__FP9_HSD_PObjP5GSmtxP5GSmtxP5GSmtx(
             PSMTXConcat(mtxp, right, m);
         }
         PSMTXConcat(vmtx, mtxp, tmp);
-        fn_800E0628(mtx + idx * 12, tmp);
+        GSmtxCopy(mtx + idx * 12, tmp);
     }
 }

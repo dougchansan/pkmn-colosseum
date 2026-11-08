@@ -2,7 +2,7 @@
 
 #pragma section ".data"
 
-extern u8 fn_801364A8[];
+extern u8 wazaEffectParseParams[];
 
 /* Tail of the original 0x80363774 data unit, after status.c's two switch
  * jump tables (0x80363AC8 - 0x80363B18, now owned by game/status.c). */
@@ -49,5 +49,5 @@ u8 lbl_80363C00[112] = {
     0x00, 0x00, 0x00, 0x00,
 };
 
-/* jumptable_80363C70 is fn_801364A8's switch table, emitted by
+/* jumptable_80363C70 is wazaEffectParseParams's switch table, emitted by
  * tracefx_r55_801364A8_gc13_o1. */

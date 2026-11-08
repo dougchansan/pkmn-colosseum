@@ -27,7 +27,7 @@ typedef struct PdaModelWindow {
 extern PdaModelWindow lbl_803A6748;
 extern f32 lbl_8047BAC0;
 
-void fn_8003BF54(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaSnagListDrawItem(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     extern u8 lbl_802EF0A8[];
     extern f32 lbl_8047BAD8;
@@ -49,7 +49,7 @@ void fn_8003BF54(PdaSprite* alphaSprite, PdaSprite* sprite)
         (s16)(*baseY + offset * *(s16*)(layoutData + 0x5088));
 }
 
-void fn_8003C03C(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaSnagListDrawAnim(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     extern u8 lbl_802EF0A8[];
     extern f32 lbl_8047BAF0;
@@ -84,7 +84,7 @@ void fn_8003C03C(PdaSprite* alphaSprite, PdaSprite* sprite)
                               (f32)(s32)*(s16*)(lbl_802EF0A8 + 0x504C));
 }
 
-void fn_8003C13C(PdaSprite* alphaSprite, PdaSprite* sprite)
+void pdaSnagListDrawAnim2(PdaSprite* alphaSprite, PdaSprite* sprite)
 {
     extern u8 lbl_802EF0A8[];
     extern f32 lbl_8047BAF0;
@@ -110,7 +110,7 @@ void fn_8003C13C(PdaSprite* alphaSprite, PdaSprite* sprite)
                               (f32)(s32)*(s16*)(lbl_802EF0A8 + 0x5014));
 }
 
-void fn_8003C21C(PdaSprite* sprite, PdaEvent* event)
+void pdaSnagListDetailDrawItem(PdaSprite* sprite, PdaEvent* event)
 {
     (void)event;
     sprite->alphaByte = lbl_8047BAC0 * lbl_803A6748.alphaScale;

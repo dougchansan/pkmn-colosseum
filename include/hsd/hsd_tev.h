@@ -64,14 +64,14 @@ struct HSD_Chan {
  *   HSD_StateGetNumTevStages HSD_StateGetNumTevStages HSD_StateInitTev HSD_StateInitTev
  *   HSD_StateSetNumTexGens HSD_StateSetNumTexGens
  *   HSD_SetupChannelAll HSD_SetupChannelAll     HSD_SetupChannel HSD_SetupChannel
- *   fn_801B3AE8 (disables a channel's lighting; no Melee counterpart)
+ *   HSD_ChanLightingOff (disables a channel's lighting; no Melee counterpart)
  */
 void HSD_RenderInitAllocData(void);
 HSD_ObjAllocData* HSD_RenderGetAllocData(void);
 HSD_ObjAllocData* HSD_TevRegGetAllocData(void);
 HSD_ObjAllocData* HSD_ChanGetAllocData(void);
 void HSD_SetupChannel(HSD_Chan* ch);
-void fn_801B3AE8(GXChannelID chan);
+void HSD_ChanLightingOff(GXChannelID chan);
 void HSD_StateSetNumChans(int num);
 void HSD_SetupChannelAll(HSD_Chan* ch);
 void HSD_StateRegisterTexGen(int coord);

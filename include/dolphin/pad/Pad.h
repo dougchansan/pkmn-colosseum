@@ -54,7 +54,7 @@ typedef void (*PADSamplingCallback)(void);
 
 BOOL PADInit(void);
 u32  PADRead(PADStatus* status);
-void PADReset(u32 mask);
+BOOL PADReset(u32 mask);
 BOOL PADRecalibrate(u32 mask);
 void PADControlMotor(s32 chan, u32 command);
 void PADClamp(PADStatus* status);

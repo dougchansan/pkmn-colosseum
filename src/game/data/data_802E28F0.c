@@ -5,11 +5,11 @@
 extern u8 lbl_802E28F0[];
 extern void* lbl_802E2DB8[];
 
-extern u8 fn_80008868[];
+extern u8 dbgFlagWindowDraw[];
 extern u8 dbgFlagMenuCursor[];
-extern u8 fn_80009178[];
-extern u8 fn_800094A4[];
-extern u8 fn_8000D3AC[];
+extern u8 dbgFlagMenuCursor2[];
+extern u8 dbgPokemonEditMenuButton[];
+extern u8 fieldMenuCtrl[];
 extern u8 menuFightCtrlTimer[];
 extern u8 menuFightButtonSecretKousan[];
 extern u8 menuFightButtonTargetSecret[];
@@ -20,26 +20,26 @@ extern u8 menuFightButtonSecretMain[];
 extern u8 menuFightWazaButton[];
 extern u8 menuFightWazaCtrl[];
 extern u8 menuFightMainCtrl[];
-extern u8 fn_800129A8[];
-extern u8 fn_80012B94[];
-extern u8 fn_80012D20[];
-extern u8 fn_80012E18[];
-extern u8 fn_80014574[];
-extern u8 fn_80014E50[];
-extern u8 fn_80014F48[];
-extern u8 fn_80017028[];
-extern u8 fn_80017764[];
-extern u8 fn_80017A0C[];
-extern u8 fn_800195E0[];
-extern u8 fn_80019680[];
-extern u8 fn_800199F4[];
+extern u8 menuFightCmdCtrl[];
+extern u8 menuSubSelectDrawText[];
+extern u8 menuSubSelectCtrl[];
+extern u8 menuSubSelectCursor[];
+extern u8 menuPocketCursor[];
+extern u8 bagSubMenuCursor[];
+extern u8 bagSubMenuCtrl[];
+extern u8 bagMenuCursor[];
+extern u8 bagMenuButton[];
+extern u8 bagMenuCtrl[];
+extern u8 menuPokemonItemListCursor[];
+extern u8 menuPokemonItemListCtrl[];
+extern u8 menuMoveSummaryCtrl[];
 extern u8 menuPokemonButton[];
 extern u8 menuPokemonCursor[];
 extern u8 menuPokemonCtrl[];
-extern u8 fn_8001EF78[];
-extern u8 fn_8001F1E8[];
-extern u8 fn_80020618[];
-extern u8 fn_80020E9C[];
+extern u8 titleMenuTick[];
+extern u8 titleMenuButtonCB[];
+extern u8 titleOptionsMenuCB[];
+extern u8 titleOptionsCursor[];
 extern u8 wmapMenuUpdate[];
 extern u8 wmapMenuInput[];
 extern u8 menuNameEntryCursor[];
@@ -47,111 +47,111 @@ extern u8 menuNameEntryButton[];
 extern u8 menuNameEntrySelectButton[];
 extern u8 menuNameEntrySelectCtrl[];
 extern u8 menuNameEntryBackCtrl[];
-extern u8 fn_8002A618[];
-extern u8 fn_8002AA68[];
-extern u8 fn_8002BE08[];
-extern u8 fn_8002C014[];
-extern u8 fn_8002C0E4[];
-extern u8 fn_800301AC[];
-extern u8 fn_80038250[];
-extern u8 fn_800382E8[];
-extern u8 fn_80038380[];
-extern u8 fn_8003907C[];
-extern u8 fn_80039128[];
+extern u8 shopSubMenuCursor[];
+extern u8 shopSubMenuCtrl[];
+extern u8 shopMenuCursor[];
+extern u8 shopMenuButton[];
+extern u8 shopMenuCtrl[];
+extern u8 menuDCCtrl[];
+extern u8 pcMenuListCtrl[];
+extern u8 pcMenuListCtrl2[];
+extern u8 pcMenuCursor[];
+extern u8 itemStorageMenuCursor[];
+extern u8 itemStorageMenuCtrl[];
 extern u8 itemStorageListKey[];
-extern u8 fn_80039F44[];
+extern u8 itemStorageListButton[];
 extern u8 itemStorageListSeq[];
-extern u8 fn_8003A7F0[];
-extern u8 fn_8003AC50[];
-extern u8 fn_8003B814[];
-extern u8 fn_8003B838[];
-extern u8 fn_8003D1FC[];
+extern u8 menuAmountKey[];
+extern u8 menuAmountCtrl[];
+extern u8 pdaSnagListCursor[];
+extern u8 pdaSnagListCursor2[];
+extern u8 pdaModelViewSetup[];
 extern u8 pdaUpdateFadeAndSelect[];
-extern u8 fn_80040308[];
-extern u8 fn_80041114[];
-extern u8 fn_8004115C[];
-extern u8 fn_800411A4[];
-extern u8 fn_8004B278[];
-extern u8 fn_8004CF78[];
-extern u8 fn_8004D26C[];
+extern u8 pdaMemoMainKey[];
+extern u8 pdaSceneEnter0[];
+extern u8 pdaSceneEnter1[];
+extern u8 pdaSceneEnter2[];
+extern u8 pdaTopMenuCtrl[];
+extern u8 pdaMailListKey[];
+extern u8 pdaMailListCtrl[];
 extern u8 pdaMailViewKey[];
-extern u8 fn_8004D8BC[];
-extern u8 fn_8004D928[];
-extern u8 fn_8004DB80[];
-extern u8 fn_8004DDC0[];
-extern u8 fn_8004DF34[];
+extern u8 pdaMailViewAttachKey[];
+extern u8 pdaMailViewCtrl[];
+extern u8 pdaMailSortCtrl[];
+extern u8 pdaMailPickerKey[];
+extern u8 pdaMailPickerCtrl[];
 extern u8 pdaMailAttachKey[];
-extern u8 fn_8004E89C[];
-extern u8 fn_8004E8E0[];
-extern u8 fn_800544A8[];
-extern u8 fn_80054C44[];
-extern u8 fn_80054E7C[];
-extern u8 fn_800550B4[];
+extern u8 pdaMailAttachButton[];
+extern u8 pdaMailAttachCtrl[];
+extern u8 pcBoxDetailCtrl[];
+extern u8 pcBoxMainCursor[];
+extern u8 pcBoxMainButton[];
+extern u8 pcBoxMainCtrl[];
 extern u8 pcBoxBoxSelectKey[];
-extern u8 fn_80056610[];
-extern u8 fn_80058798[];
-extern u8 fn_80058880[];
-extern u8 fn_80058AB0[];
-extern u8 fn_80058DCC[];
-extern u8 fn_8005D6A8[];
+extern u8 pcBoxGridCtrl[];
+extern u8 menu9BButton[];
+extern u8 menu94Cursor[];
+extern u8 menu94Button[];
+extern u8 menu94Ctrl[];
+extern u8 menu9DButton[];
 extern u8 dbgMenuLogDraw[];
 extern u8 menuDbgItemCreateCursor[];
-extern u8 fn_8005E690[];
-extern u8 fn_8005E730[];
-extern u8 fn_80063D10[];
-extern u8 fn_800676EC[];
-extern u8 fn_80068738[];
-extern u8 fn_80069220[];
-extern u8 fn_800693A4[];
-extern u8 fn_80069504[];
-extern u8 fn_80069664[];
-extern u8 fn_8006B908[];
-extern u8 fn_8006B930[];
-extern u8 fn_8006B9B8[];
-extern u8 fn_8006BB34[];
-extern u8 fn_8006C018[];
-extern u8 fn_8006C0DC[];
-extern u8 fn_8006C164[];
-extern u8 fn_8006D940[];
-extern u8 fn_8006D98C[];
-extern u8 fn_8006DAE4[];
+extern u8 menuTaisenBattleButton[];
+extern u8 menuTaisenBattleCtrl[];
+extern u8 menuColoBattleB8Ctrl[];
+extern u8 menuTaisenEntryKey[];
+extern u8 menuTaisenEntryCursor[];
+extern u8 menuTaisenEntryCtrl[];
+extern u8 menuTaisenEntryCtrl2[];
+extern u8 menuColoBattleB7Ctrl[];
+extern u8 menuColoBattleC4Ctrl[];
+extern u8 menu105Ctrl[];
+extern u8 menuColoBattleD0Button[];
+extern u8 menuTaisenButton[];
+extern u8 menuColoBattleC1Cursor[];
+extern u8 menuColoBattleC1Button[];
+extern u8 menuColoBattleC0Button[];
+extern u8 menuColoBattleC0Cursor[];
+extern u8 menuColoBattleD7Ctrl[];
+extern u8 menuColoBattleBCCtrl[];
+extern u8 menuColoBattleD6Ctrl[];
 extern u8 menuTaisenPartyCheckSeq[];
-extern u8 fn_8006E160[];
-extern u8 fn_8006E188[];
-extern u8 fn_8006E18C[];
-extern u8 fn_8006E258[];
-extern u8 fn_8006E338[];
+extern u8 menuColoBattleB9Ctrl[];
+extern u8 menuTaisenEntryCtrl3[];
+extern u8 menuTaisenCtrl[];
+extern u8 menuColoBattleD0Ctrl[];
+extern u8 menuTaisenCtrl2[];
 extern u8 menuBattleModeRefreshRules[];
-extern u8 fn_8006EE7C[];
-extern u8 fn_8006EF24[];
-extern u8 fn_8006EFF8[];
-extern u8 fn_8006F284[];
-extern u8 fn_8006F720[];
-extern u8 fn_8006FBFC[];
-extern u8 fn_8006FCF8[];
-extern u8 fn_8006FD24[];
-extern u8 fn_8006FD4C[];
-extern u8 fn_8006FD74[];
-extern u8 fn_8006FD9C[];
-extern u8 fn_8006FDC4[];
-extern u8 fn_8006FDEC[];
-extern u8 fn_8006FE14[];
-extern u8 fn_8006FE3C[];
-extern u8 fn_8006FE64[];
+extern u8 menuTaisenButton2[];
+extern u8 menuTaisenCursor[];
+extern u8 menuTaisenDrawHeldItems2[];
+extern u8 menuColoBattleC1Ctrl[];
+extern u8 menuColoBattleC0Ctrl[];
+extern u8 menuColoBattleBFCtrl[];
+extern u8 menuColoBattleB3Ctrl[];
+extern u8 menuColoBattleCCCtrl[];
+extern u8 menuEDCtrl[];
+extern u8 menuEECtrl[];
+extern u8 menuColoBattleB2Ctrl[];
+extern u8 menuEBCtrl[];
+extern u8 menuColoBattleB0Ctrl[];
+extern u8 menuColoBattleB1Ctrl[];
+extern u8 menuColoBattleAFCtrl[];
+extern u8 menuColoBattleAEButton[];
 extern u8 menuBattleModeCourseSelectCtrl[];
-extern u8 fn_80070274[];
-extern u8 fn_8007029C[];
-extern u8 fn_800702C8[];
-extern u8 fn_800702F0[];
-extern u8 fn_80070318[];
-extern u8 fn_800704A8[];
-extern u8 fn_800753D0[];
+extern u8 menuColoBattleADCtrl[];
+extern u8 menuColoBattleACCtrl[];
+extern u8 menuColoBattleA8Ctrl[];
+extern u8 titleContinueCtrl[];
+extern u8 menuColoBattleBECtrl[];
+extern u8 menuColoBattleD3Ctrl[];
+extern u8 exShrineMenuCtrl[];
 extern u8 menuCardEMatrixWindowProc[];
-extern u8 fn_80084034[];
-extern u8 fn_80084038[];
-extern u8 fn_80096D54[];
-extern u8 fn_80096FA0[];
-extern u8 fn_800973EC[];
+extern u8 cardeGBAMenuButton[];
+extern u8 menuGBACRun[];
+extern u8 menuPokemonStatusMoveConfirm[];
+extern u8 menuPokemonStatusMoveKey[];
+extern u8 menuPokemonStatusPageSync[];
 extern u8 winMsgCtrl[];
 extern u8 dbgMenuCursor[];
 extern u8 menuFightButtonNormal[];
@@ -354,7 +354,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0xB0840F09,
     (void*)0x000B0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80009178),
+    (void*)((u8*)dbgFlagMenuCursor2),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
@@ -369,7 +369,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x000D0028,
     (void*)0x00320000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800094A4),
+    (void*)((u8*)dbgPokemonEditMenuButton),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0xB0500000,
@@ -411,7 +411,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x0EFB0000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8001F1E8),
+    (void*)((u8*)titleMenuButtonCB),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x60240000,
@@ -425,8 +425,8 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x0EFA0000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8001F1E8),
-    (void*)((u8*)fn_8001EF78),
+    (void*)((u8*)titleMenuButtonCB),
+    (void*)((u8*)titleMenuTick),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x02C50000,
@@ -461,14 +461,14 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800382E8),
+    (void*)((u8*)pcMenuListCtrl2),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x034D0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80038250),
+    (void*)((u8*)pcMenuListCtrl),
     (void*)0x00000000,
     (void*)0x63240000,
     (void*)0x03590000,
@@ -480,7 +480,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x63840000,
     (void*)0x12630000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80038380),
+    (void*)((u8*)pcMenuCursor),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
@@ -529,23 +529,23 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x63840000,
     (void*)0x036D0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8003907C),
+    (void*)((u8*)itemStorageMenuCursor),
     (void*)0x00000000,
-    (void*)((u8*)fn_80039128),
+    (void*)((u8*)itemStorageMenuCtrl),
     (void*)0x00000000,
     (void*)0x63900000,
     (void*)0x03770000,
     (void*)0x00000000,
     (void*)((u8*)itemStorageListKey),
-    (void*)((u8*)fn_80039F44),
+    (void*)((u8*)itemStorageListButton),
     (void*)((u8*)itemStorageListSeq),
     (void*)0x00000000,
     (void*)0x63840000,
     (void*)0x038E0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8003A7F0),
+    (void*)((u8*)menuAmountKey),
     (void*)0x00000000,
-    (void*)((u8*)fn_8003AC50),
+    (void*)((u8*)menuAmountCtrl),
     (void*)0x00000000,
     (void*)0x63240000,
     (void*)0x03980000,
@@ -627,7 +627,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x60840000,
     (void*)0x02E30000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8003B838),
+    (void*)((u8*)pdaSnagListCursor2),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
@@ -641,7 +641,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x60840000,
     (void*)0x03150000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8003B814),
+    (void*)((u8*)pdaSnagListCursor),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
@@ -650,7 +650,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8003D1FC),
+    (void*)((u8*)pdaModelViewSetup),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x031E0000,
@@ -683,9 +683,9 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x60900000,
     (void*)0x03260000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800411A4),
+    (void*)((u8*)pdaSceneEnter2),
     (void*)((u8*)pdaUpdateFadeAndSelect),
-    (void*)((u8*)fn_8003D1FC),
+    (void*)((u8*)pdaModelViewSetup),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x03250000,
@@ -711,9 +711,9 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x60840000,
     (void*)0x03320000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8004115C),
+    (void*)((u8*)pdaSceneEnter1),
     (void*)0x00000000,
-    (void*)((u8*)fn_8003D1FC),
+    (void*)((u8*)pdaModelViewSetup),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x03350000,
@@ -734,14 +734,14 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8000D3AC),
+    (void*)((u8*)fieldMenuCtrl),
     (void*)0x00000000,
     (void*)0xA1240400,
     (void*)0x0E900000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800199F4),
+    (void*)((u8*)menuMoveSummaryCtrl),
     (void*)0x00000000,
     (void*)0x61240300,
     (void*)0x0E970000,
@@ -762,42 +762,42 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00720000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800129A8),
+    (void*)((u8*)menuFightCmdCtrl),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x0099017A,
     (void*)0x00300000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800129A8),
+    (void*)((u8*)menuFightCmdCtrl),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00A40025,
     (void*)0x00300000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800129A8),
+    (void*)((u8*)menuFightCmdCtrl),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00A4000D,
     (void*)0x00720000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800129A8),
+    (void*)((u8*)menuFightCmdCtrl),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00990192,
     (void*)0x002F0000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800129A8),
+    (void*)((u8*)menuFightCmdCtrl),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00A4001D,
     (void*)0x002F0000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800129A8),
+    (void*)((u8*)menuFightCmdCtrl),
     (void*)0x00000000,
     (void*)0xA6240000,
     (void*)0x00AF0000,
@@ -858,9 +858,9 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x66900000,
     (void*)0x00D80000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80096FA0),
-    (void*)((u8*)fn_80096D54),
-    (void*)((u8*)fn_800973EC),
+    (void*)((u8*)menuPokemonStatusMoveKey),
+    (void*)((u8*)menuPokemonStatusMoveConfirm),
+    (void*)((u8*)menuPokemonStatusPageSync),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x12960000,
@@ -900,65 +900,65 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x61900002,
     (void*)0x01F90000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80017028),
-    (void*)((u8*)fn_80017764),
-    (void*)((u8*)fn_80017A0C),
+    (void*)((u8*)bagMenuCursor),
+    (void*)((u8*)bagMenuButton),
+    (void*)((u8*)bagMenuCtrl),
     (void*)0x00000000,
     (void*)0x61840000,
     (void*)0x02230000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80014E50),
+    (void*)((u8*)bagSubMenuCursor),
     (void*)0x00000000,
-    (void*)((u8*)fn_80014F48),
+    (void*)((u8*)bagSubMenuCtrl),
     (void*)0x00000000,
     (void*)0x61840000,
     (void*)0x023B0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80014574),
+    (void*)((u8*)menuPocketCursor),
     (void*)0x00000000,
     (void*)((u8*)menuPocket2NumCtrl),
     (void*)0x00000000,
     (void*)0x61840000,
     (void*)0x02430000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80014574),
+    (void*)((u8*)menuPocketCursor),
     (void*)0x00000000,
     (void*)((u8*)menuPocket2NumCtrl),
     (void*)0x00000000,
     (void*)0x61840000,
     (void*)0x024E0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80014574),
+    (void*)((u8*)menuPocketCursor),
     (void*)0x00000000,
     (void*)((u8*)menuPocket2NumCtrl),
     (void*)0x00000000,
     (void*)0x61840000,
     (void*)0x025B0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80014574),
+    (void*)((u8*)menuPocketCursor),
     (void*)0x00000000,
     (void*)((u8*)menuPocket2NumCtrl),
     (void*)0x00000000,
     (void*)0x61840000,
     (void*)0x026C0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800195E0),
+    (void*)((u8*)menuPokemonItemListCursor),
     (void*)0x00000000,
-    (void*)((u8*)fn_80019680),
+    (void*)((u8*)menuPokemonItemListCtrl),
     (void*)0x00000000,
     (void*)0x61900000,
     (void*)0x05310000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002BE08),
-    (void*)((u8*)fn_8002C014),
-    (void*)((u8*)fn_8002C0E4),
+    (void*)((u8*)shopMenuCursor),
+    (void*)((u8*)shopMenuButton),
+    (void*)((u8*)shopMenuCtrl),
     (void*)0x00000000,
     (void*)0x61840000,
     (void*)0x02AD0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8002A618),
+    (void*)((u8*)shopSubMenuCursor),
     (void*)0x00000000,
-    (void*)((u8*)fn_8002AA68),
+    (void*)((u8*)shopSubMenuCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x02BA0000,
@@ -1070,7 +1070,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8004B278),
+    (void*)((u8*)pdaTopMenuCtrl),
     (void*)0x00000000,
     (void*)0x65240000,
     (void*)0x04370000,
@@ -1082,37 +1082,37 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x6184000A,
     (void*)0x043B0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8004CF78),
+    (void*)((u8*)pdaMailListKey),
     (void*)0x00000000,
-    (void*)((u8*)fn_8004D26C),
+    (void*)((u8*)pdaMailListCtrl),
     (void*)0x00000000,
     (void*)0x61900000,
     (void*)0x04B00000,
     (void*)0x00000000,
     (void*)((u8*)pdaMailViewKey),
-    (void*)((u8*)fn_8004D8BC),
-    (void*)((u8*)fn_8004D928),
+    (void*)((u8*)pdaMailViewAttachKey),
+    (void*)((u8*)pdaMailViewCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x04C80000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8004DB80),
+    (void*)((u8*)pdaMailSortCtrl),
     (void*)0x00000000,
     (void*)0x61840000,
     (void*)0x04DB0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8004DDC0),
+    (void*)((u8*)pdaMailPickerKey),
     (void*)0x00000000,
-    (void*)((u8*)fn_8004DF34),
+    (void*)((u8*)pdaMailPickerCtrl),
     (void*)0x00000000,
     (void*)0x61900000,
     (void*)0x04FC0000,
     (void*)0x00000000,
     (void*)((u8*)pdaMailAttachKey),
-    (void*)((u8*)fn_8004E89C),
-    (void*)((u8*)fn_8004E8E0),
+    (void*)((u8*)pdaMailAttachButton),
+    (void*)((u8*)pdaMailAttachCtrl),
     (void*)0x00000000,
     (void*)0x10000000,
     (void*)0x050C0000,
@@ -1138,7 +1138,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x61840000,
     (void*)0x051E0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80020618),
+    (void*)((u8*)titleOptionsMenuCB),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
@@ -1166,7 +1166,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x61840000,
     (void*)0x0A890000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80020E9C),
+    (void*)((u8*)titleOptionsCursor),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
@@ -1280,42 +1280,42 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800544A8),
+    (void*)((u8*)pcBoxDetailCtrl),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x06340000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80056610),
+    (void*)((u8*)pcBoxGridCtrl),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x065C0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80056610),
+    (void*)((u8*)pcBoxGridCtrl),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x06840000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80056610),
+    (void*)((u8*)pcBoxGridCtrl),
     (void*)0x00000000,
     (void*)0x67900000,
     (void*)0x06D20000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80054C44),
-    (void*)((u8*)fn_80054E7C),
-    (void*)((u8*)fn_800550B4),
+    (void*)((u8*)pcBoxMainCursor),
+    (void*)((u8*)pcBoxMainButton),
+    (void*)((u8*)pcBoxMainCtrl),
     (void*)0x00000000,
     (void*)0x67900000,
     (void*)0x06CB0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80058880),
-    (void*)((u8*)fn_80058AB0),
-    (void*)((u8*)fn_80058DCC),
+    (void*)((u8*)menu94Cursor),
+    (void*)((u8*)menu94Button),
+    (void*)((u8*)menu94Ctrl),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x06D30000,
@@ -1363,7 +1363,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x06FB0000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80058798),
+    (void*)((u8*)menu9BButton),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x63240000,
@@ -1377,7 +1377,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x07220000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8005D6A8),
+    (void*)((u8*)menu9DButton),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x63240000,
@@ -1411,7 +1411,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x60840000,
     (void*)0x077F0000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8004115C),
+    (void*)((u8*)pdaSceneEnter1),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
@@ -1455,7 +1455,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800702C8),
+    (void*)((u8*)menuColoBattleA8Ctrl),
     (void*)0x00000000,
     (void*)0x63240000,
     (void*)0x07F70000,
@@ -1469,7 +1469,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800702F0),
+    (void*)((u8*)titleContinueCtrl),
     (void*)0x00000000,
     (void*)0x18000000,
     (void*)0x08890000,
@@ -1483,20 +1483,20 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8007029C),
+    (void*)((u8*)menuColoBattleACCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x08AF0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80070274),
+    (void*)((u8*)menuColoBattleADCtrl),
     (void*)0x00000000,
     (void*)0x61300000,
     (void*)0x08A90000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FE64),
+    (void*)((u8*)menuColoBattleAEButton),
     (void*)((u8*)menuBattleModeCourseSelectCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
@@ -1504,84 +1504,84 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FE3C),
+    (void*)((u8*)menuColoBattleAFCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x08A00000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FDEC),
+    (void*)((u8*)menuColoBattleB0Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x089F0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FE14),
+    (void*)((u8*)menuColoBattleB1Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x089E0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FD9C),
+    (void*)((u8*)menuColoBattleB2Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x08A10000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FCF8),
+    (void*)((u8*)menuColoBattleB3Ctrl),
     (void*)0x00000000,
     (void*)0x61900000,
     (void*)0x0A170000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006EF24),
-    (void*)((u8*)fn_8006EE7C),
-    (void*)((u8*)fn_8006EFF8),
+    (void*)((u8*)menuTaisenCursor),
+    (void*)((u8*)menuTaisenButton2),
+    (void*)((u8*)menuTaisenDrawHeldItems2),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x08A40000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006E18C),
+    (void*)((u8*)menuTaisenCtrl),
     (void*)0x00000000,
     (void*)0x61300000,
     (void*)0x0A420000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006B9B8),
-    (void*)((u8*)fn_8006E338),
+    (void*)((u8*)menuTaisenButton),
+    (void*)((u8*)menuTaisenCtrl2),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0AFF0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80069504),
+    (void*)((u8*)menuColoBattleB7Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x08A70000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80063D10),
+    (void*)((u8*)menuColoBattleB8Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x08A80000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006E160),
+    (void*)((u8*)menuColoBattleB9Ctrl),
     (void*)0x00000000,
     (void*)0x61300000,
     (void*)0x0BF10000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8005E690),
-    (void*)((u8*)fn_8005E730),
+    (void*)((u8*)menuTaisenBattleButton),
+    (void*)((u8*)menuTaisenBattleCtrl),
     (void*)0x00000000,
     (void*)0x18000000,
     (void*)0x00000000,
@@ -1595,7 +1595,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006D98C),
+    (void*)((u8*)menuColoBattleBCCtrl),
     (void*)0x00000000,
     (void*)0xE0900000,
     (void*)0x09060000,
@@ -1609,28 +1609,28 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80070318),
+    (void*)((u8*)menuColoBattleBECtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x09B20000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FBFC),
+    (void*)((u8*)menuColoBattleBFCtrl),
     (void*)0x00000000,
     (void*)0x61900000,
     (void*)0x09C90000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006C164),
-    (void*)((u8*)fn_8006C0DC),
-    (void*)((u8*)fn_8006F720),
+    (void*)((u8*)menuColoBattleC0Cursor),
+    (void*)((u8*)menuColoBattleC0Button),
+    (void*)((u8*)menuColoBattleC0Ctrl),
     (void*)0x00000000,
     (void*)0x61900000,
     (void*)0x09F60000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006BB34),
-    (void*)((u8*)fn_8006C018),
-    (void*)((u8*)fn_8006F284),
+    (void*)((u8*)menuColoBattleC1Cursor),
+    (void*)((u8*)menuColoBattleC1Button),
+    (void*)((u8*)menuColoBattleC1Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x08A30000,
@@ -1651,28 +1651,28 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80069664),
+    (void*)((u8*)menuColoBattleC4Ctrl),
     (void*)0x00000000,
     (void*)0x61300000,
     (void*)0x0A880000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800676EC),
-    (void*)((u8*)fn_8006E188),
+    (void*)((u8*)menuTaisenEntryKey),
+    (void*)((u8*)menuTaisenEntryCtrl3),
     (void*)0x00000000,
     (void*)0x61900000,
     (void*)0x0A860000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80068738),
-    (void*)((u8*)fn_800676EC),
-    (void*)((u8*)fn_800693A4),
+    (void*)((u8*)menuTaisenEntryCursor),
+    (void*)((u8*)menuTaisenEntryKey),
+    (void*)((u8*)menuTaisenEntryCtrl2),
     (void*)0x00000000,
     (void*)0x61300000,
     (void*)0x0A870000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800676EC),
-    (void*)((u8*)fn_80069220),
+    (void*)((u8*)menuTaisenEntryKey),
+    (void*)((u8*)menuTaisenEntryCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0E4D0000,
@@ -1707,7 +1707,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FD24),
+    (void*)((u8*)menuColoBattleCCCtrl),
     (void*)0x00000000,
     (void*)0xB0500000,
     (void*)0x0D3E0014,
@@ -1719,9 +1719,9 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x60900000,
     (void*)0x0D470000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80041114),
-    (void*)((u8*)fn_80040308),
-    (void*)((u8*)fn_8003D1FC),
+    (void*)((u8*)pdaSceneEnter0),
+    (void*)((u8*)pdaMemoMainKey),
+    (void*)((u8*)pdaModelViewSetup),
     (void*)0x00000000,
     (void*)0x10000000,
     (void*)0x0D9D0000,
@@ -1734,64 +1734,64 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x0DA40000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006B930),
-    (void*)((u8*)fn_8006E258),
+    (void*)((u8*)menuColoBattleD0Button),
+    (void*)((u8*)menuColoBattleD0Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0C4D0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8005E730),
+    (void*)((u8*)menuTaisenBattleCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0C010000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8005E730),
+    (void*)((u8*)menuTaisenBattleCtrl),
     (void*)0x00000000,
     (void*)0x60240000,
     (void*)0x0DAE0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800704A8),
+    (void*)((u8*)menuColoBattleD3Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0E080000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80063D10),
+    (void*)((u8*)menuColoBattleB8Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0E170000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80063D10),
+    (void*)((u8*)menuColoBattleB8Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0E860000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006DAE4),
+    (void*)((u8*)menuColoBattleD6Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0E8F0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006D940),
+    (void*)((u8*)menuColoBattleD7Ctrl),
     (void*)0x00000000,
     (void*)0x51240000,
     (void*)0x0D3D0000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800753D0),
+    (void*)((u8*)exShrineMenuCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x0F0E0000,
@@ -1819,7 +1819,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_800301AC),
+    (void*)((u8*)menuDCCtrl),
     (void*)0x00000000,
     (void*)0xB0841E00,
     (void*)0x00000000,
@@ -1827,7 +1827,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)((u8*)dbgFlagMenuCursor),
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80008868),
+    (void*)((u8*)dbgFlagWindowDraw),
     (void*)0x00000000,
     (void*)0x0FB20000,
     (void*)0x00000000,
@@ -1874,8 +1874,8 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x10D00000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80084034),
-    (void*)((u8*)fn_80084038),
+    (void*)((u8*)cardeGBAMenuButton),
+    (void*)((u8*)menuGBACRun),
     (void*)0x00000000,
     (void*)0x72240000,
     (void*)0x10FE0000,
@@ -1894,10 +1894,10 @@ void* lbl_802E2DB8[1904] = {
     (void*)0xA1840C00,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80012E18),
+    (void*)((u8*)menuSubSelectCursor),
     (void*)0x00000000,
-    (void*)((u8*)fn_80012D20),
-    (void*)((u8*)fn_80012B94),
+    (void*)((u8*)menuSubSelectCtrl),
+    (void*)((u8*)menuSubSelectDrawText),
     (void*)0x60100000,
     (void*)0x110B0000,
     (void*)0x00000000,
@@ -1924,7 +1924,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FDC4),
+    (void*)((u8*)menuEBCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x11230000,
@@ -1938,14 +1938,14 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FD4C),
+    (void*)((u8*)menuEDCtrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006FD74),
+    (void*)((u8*)menuEECtrl),
     (void*)0x00000000,
     (void*)0x00200000,
     (void*)0x10BF0000,
@@ -2106,14 +2106,14 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8006B908),
+    (void*)((u8*)menu105Ctrl),
     (void*)0x00000000,
     (void*)0x61240000,
     (void*)0x12640000,
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_80063D10),
+    (void*)((u8*)menuColoBattleB8Ctrl),
     (void*)0x00000000,
     (void*)0x20040000,
     (void*)0x0092005B,
@@ -2134,7 +2134,7 @@ void* lbl_802E2DB8[1904] = {
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x00000000,
-    (void*)((u8*)fn_8000D3AC),
+    (void*)((u8*)fieldMenuCtrl),
     (void*)0x00000000,
     (void*)0x00000000,
     (void*)0x12AC0000,

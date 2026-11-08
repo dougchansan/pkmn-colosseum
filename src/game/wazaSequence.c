@@ -32,13 +32,13 @@ s32 wazaSequenceUpdate(void* sequence) {
     obj->state += elapsed;
     owner = obj->owner;
 
-    if (fn_801DA74C(owner, obj->moveIndex, obj->animationMode, 2) >
+    if (wazaSequenceGetWazaTime(owner, obj->moveIndex, obj->animationMode, 2) >
         (s32)obj->state) {
         pending = 1;
     }
 
     if (owner->motionBusy == 0 && owner->sequenceEnabled != 0 &&
-        fn_801DA74C(owner, obj->moveIndex, obj->animationMode, 1) <
+        wazaSequenceGetWazaTime(owner, obj->moveIndex, obj->animationMode, 1) <
             (s32)obj->state) {
         return -1;
     }
@@ -97,12 +97,12 @@ void wazaSequenceApplyStop(void* obj) {
         owner = effect->owner;
         if (effect->active != 0) {
             if (effect->cameraActive != 0) {
-                fn_801D3034(owner);
+                battleCameraWazaStopIfOwner(owner);
             }
             if (owner->animationActive == 0) {
                 wazaSequenceOwnerPlayIdle(owner, 1, 0);
             }
-            fn_800E3CC8(owner->model, 0);
+            GSmodelSetFlag200(owner->model, 0);
             if ((effect->flags & 0x08000000) != 0) {
                 GSmodelLinkToGSparticleBank(owner->model, owner->particleBank);
             }
@@ -129,10 +129,10 @@ void wazaSequenceApplyStop(void* obj) {
 }
 
 /**
- * fn_801DBC30 - Waza rendering cleanup.
+ * wazaSequenceEntryStop_801DBC30 - Waza rendering cleanup.
  * Address: 0x801DBC30 | Size: 0x9C
  */
-void fn_801DBC30(void* obj) {
+void wazaSequenceEntryStop_801DBC30(void* obj) {
     WazaSequence* sequence;
     WazaSequenceOwner* owner;
     s32 kind;
@@ -146,9 +146,9 @@ void fn_801DBC30(void* obj) {
                 wazaSequenceOwnerPlayIdle(owner, 1, 0);
             }
             if (sequence->cameraActive != 0) {
-                fn_801D3034(owner);
+                battleCameraWazaStopIfOwner(owner);
             }
-            fn_800E3CC8(owner->model, 0);
+            GSmodelSetFlag200(owner->model, 0);
             owner->currentSequence = NULL;
         }
     }
@@ -236,9 +236,9 @@ void wazaSequenceFree(void* obj) {
 
     handle = *(u16*)(sequence + 0x2A);
     if (handle != 0) {
-        extern void fn_800E24B0(u16 handle);
+        extern void GSmemUnlock(u16 handle);
         extern void GSmemFree(u16 handle);
-        fn_800E24B0(handle);
+        GSmemUnlock(handle);
         GSmemFree(handle);
     }
 }
@@ -272,7 +272,7 @@ WazaSequence* wazaSequenceAllocNode(void) {
 
 /* WAZA_SEQUENCE_C014_ONLY (set by wazaSequence_r52_801DC014_prefix.c) builds
  * only 0x801DC014-0x801DCAA0: wazaSequenceLoadData, wazaSequenceEntryLink,
- * wazaSequenceLoadEntryParams, fn_801DC5F0 and _wazaSequenceEffectEntryLoad. */
+ * wazaSequenceLoadEntryParams, wazaSequenceLoadEntryHeader and _wazaSequenceEffectEntryLoad. */
 #if (!defined(PR409_WAZA_SEQUENCE_SPLIT) || defined(PR409_WAZA_SEQUENCE_C014_CDA8)) && \
     !defined(WAZA_SEQUENCE_DCAA0_ONLY)
 
@@ -292,9 +292,9 @@ static inline u8* wazaSequenceLoadParticle(u8* seq, u8* entry, u8* parsed) {
 u8 wazaSequenceLoadData(void* sequence, void* resource) {
     extern u16 _toolentryAlloc__FUl(u32);
     extern void* GSmemLock(u16);
-    extern void fn_800E24B0(u16);
+    extern void GSmemUnlock(u16);
     extern void GSmemFree(u16);
-    extern u32 fn_800D37CC(void);
+    extern u32 GSgfxGetVsyncRate(void);
     extern void GSlogWrite(const char*, ...);
     extern const char lbl_8027997C[];
     extern f32 lbl_8047E3A0;
@@ -321,7 +321,7 @@ u8 wazaSequenceLoadData(void* sequence, void* resource) {
 
     header = wazaSequenceLoadEntryParams(parser, resource);
     count = *(s32*)(header + 4) - 1;
-    data = fn_801DC5F0(seq, header);
+    data = wazaSequenceLoadEntryHeader(seq, header);
     if (count != 0) {
         handle = _toolentryAlloc__FUl(count * 0xB4);
         if (handle != 0) {
@@ -341,7 +341,7 @@ u8 wazaSequenceLoadData(void* sequence, void* resource) {
                     case 0:
                         *(s32*)(entry + 0x7C) =
                             (s32)(((f32)*(s32*)(parsed + 4) *
-                                   (f32)(s32)fn_800D37CC()) /
+                                   (f32)(s32)GSgfxGetVsyncRate()) /
                                   lbl_8047E3A0);
                         break;
                     case 1:
@@ -391,7 +391,7 @@ u8 wazaSequenceLoadData(void* sequence, void* resource) {
                 case 0:
                 default:
                     GSlogWrite(lbl_8027997C);
-                    fn_800E24B0(handle);
+                    GSmemUnlock(handle);
                     GSmemFree(handle);
                     return FALSE;
                 }
@@ -499,7 +499,7 @@ linked:
  * Address: 0x801DC46C | Size: 0x184
  */
 void* wazaSequenceLoadEntryParams(u8* entry, void* dataPtr) {
-    extern s32 fn_800D37CC(void);
+    extern s32 GSgfxGetVsyncRate(void);
     extern const f32 lbl_8047E3A0;
     s32 adjustment = 0;
     /* RULE-EXCEPTION(user-approved): the switch and field reads go through a typed copy of dataPtr while the result is computed on dataPtr as an integer, as retail's registers do - see docs/RULE_EXCEPTIONS.md */
@@ -530,7 +530,7 @@ void* wazaSequenceLoadEntryParams(u8* entry, void* dataPtr) {
     memset(entry + 0x2C, 0, 0x40);
     for (i = 0; i < 16; i++) {
         *(s32*)(entry + i * 4 + 0x2C) =
-            (s32)((f32)*(s32*)(data + i * 4 + 0x20) * (f32)fn_800D37CC() / lbl_8047E3A0);
+            (s32)((f32)*(s32*)(data + i * 4 + 0x20) * (f32)GSgfxGetVsyncRate() / lbl_8047E3A0);
     }
 
     *(void**)(entry + 0xA8) = NULL;
@@ -549,10 +549,10 @@ void* wazaSequenceLoadEntryParams(u8* entry, void* dataPtr) {
 #if (!defined(PR409_WAZA_SEQUENCE_SPLIT) || defined(PR409_WAZA_SEQUENCE_C014_CDA8) || \
      defined(PR409_WAZA_SEQUENCE_DC5F0)) && !defined(WAZA_SEQUENCE_DCAA0_ONLY)
 /**
- * fn_801DC5F0 - Waza screen overlay update.
+ * wazaSequenceLoadEntryHeader - Waza screen overlay update.
  * Address: 0x801DC5F0 | Size: 0x22C
  */
-void* fn_801DC5F0(void* sequencePtr, u8* next) {
+void* wazaSequenceLoadEntryHeader(void* sequencePtr, u8* next) {
     extern void loadArchivePtr(void* resource, u32 size, u32 group, u32 handle);
     extern void loadCamera(void* archive, u32 resourceArg, u32 callbackArg);
     extern void* GSresGetResource(u32 group, u32 resource);
@@ -665,8 +665,8 @@ typedef struct WazaEffectLoadList {
 
 void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
 {
-    extern s32 fn_800D37CC(void);
-    extern u8* fn_801364A8(u8* work, u8* desc);
+    extern s32 GSgfxGetVsyncRate(void);
+    extern u8* wazaEffectParseParams(u8* work, u8* desc);
     extern u32 filterEffectCreate(void* callbacks);
     extern u32 boltEffectCreate(void* callbacks);
     extern u32 electronEffectCreate(void* callbacks);
@@ -690,13 +690,13 @@ void* _wazaSequenceEffectEntryLoad(void* entryPtr, void* dataPtr)
 
     entry->resourceId = 0;
     entry->runtimeFlags =
-        (s32)(((f32)(s32)fn_800D37CC() * (f32)(s32)*(u32*)((u8*)dataPtr + 4)) /
+        (s32)(((f32)(s32)GSgfxGetVsyncRate() * (f32)(s32)*(u32*)((u8*)dataPtr + 4)) /
               lbl_8047E3A0);
     entry->resource = *(void**)dataPtr;
     entry->field_80 = 0;
     entry->animationMode = 0;
 
-    dataPtr = fn_801364A8(parsed, dataPtr);
+    dataPtr = wazaEffectParseParams(parsed, dataPtr);
     type = *(u32*)parsed;
     switch (type) {
     case 0:

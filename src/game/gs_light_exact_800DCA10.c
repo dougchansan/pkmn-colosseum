@@ -8,7 +8,7 @@ extern void HSD_LObjReqAnimAll(void* lobj, f32 frame);
 extern void HSD_ForeachAnim(void* object, u32 type, u32 mask, void* function,
                             u32 argumentType, ...);
 extern void HSD_AObjSetRate(void);
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern void lightGetFrameCount__FP9_HSD_AObj(u8* aobj);
 
 extern f32 lbl_8047CA78;
@@ -66,7 +66,7 @@ void GSlightSetAnimRate(u8* object, f32 rate)
     if (!object[0x2]) {
         return;
     }
-    if (fn_800D37CC() == 0x32) {
+    if (GSgfxGetVsyncRate() == 0x32) {
         rate *= lbl_8047CA88;
     }
     *(f32*)(object + 0x64) = rate;

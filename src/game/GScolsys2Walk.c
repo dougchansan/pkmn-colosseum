@@ -3,7 +3,7 @@
  * @brief GScolsys2 walk-layer queries, 0x8010DE00 - 0x8010E53C.
  *
  * One retail TU: GScolsys2WalkGetLayer,
- * getCpPolyVec and the walk-height collector fn_8010E138 (linked on its
+ * getCpPolyVec and the walk-height collector GScolsys2CollectWalkHeight (linked on its
  * own in GScolsys2Walk_exact_8010E138.c; it uses no pool literals). It owns its
  * .sdata2 pool, 0x8047CEE0 - 0x8047CEF0 (0.0f, 1000000.0f, -1000000.0f,
  * padding); retail reloads the 0.0f literal at each use, which only a TU
@@ -14,7 +14,7 @@
  * record member by member (lhz/sth, lbz/stb); retail copies it with three
  * lwz/stw pairs, which is the C struct copy.
  *
- * fn_8010E138's collectors and the add-hit test are static inline: the
+ * GScolsys2CollectWalkHeight's collectors and the add-hit test are static inline: the
  * add-hit sequence is expanded twice (same order and constants), each
  * collector's count is routed through its own register and copied to the
  * caller's (mr r7), and the grid collector's early "return 0" re-clears
@@ -89,12 +89,12 @@ typedef struct ColWalkHit {
     u8 subLayer;
 } ColWalkHit;
 
-extern ColScene* fn_8010CBC0(void);
+extern ColScene* GScolsys2GetCurFloor_8010CBC0(void);
 extern s32 GScolsys2GetObjEnable(s32 index, s32* enabled);
 extern void colsysMakeSRTMatrix(ColMtx out, u32 index);
 extern void colsysMakeRotMatrix(ColMtx out, u32 index);
 extern void PSMTXMultVec(ColMtx m, const GSvec* src, GSvec* dst);
-s32 fn_8010E138(GSvec* point, ColWalkHit* out);
+s32 GScolsys2CollectWalkHeight(GSvec* point, ColWalkHit* out);
 
 #define COL_ABS(x) ((x) > 0.0f ? (x) : -(x))
 
@@ -108,7 +108,7 @@ s32 GScolsys2WalkGetLayer(GSvec* position, u8* layer, u8* subLayer)
     f32 distance;
     f32 closestDistance;
 
-    count = fn_8010E138(position, hits);
+    count = GScolsys2CollectWalkHeight(position, hits);
     if (count <= 0) {
         return 0;
     }

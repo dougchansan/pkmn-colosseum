@@ -1,7 +1,7 @@
 /**
  * @file menu_middle_r50_8006EE7C_prefix.c
- * @brief menu_middle carve, 0x8006EE7C - 0x8006EFF8: fn_8006EE7C (toggle the
- *        flag under the cursor on the trigger key) and fn_8006EF24 (step the
+ * @brief menu_middle carve, 0x8006EE7C - 0x8006EFF8: menuTaisenButton2 (toggle the
+ *        flag under the cursor on the trigger key) and menuTaisenCursor (step the
  *        cursor with the repeat keys at scroll 0 or 10).
  *
  * Text only, GC/1.3 -O4,p with the peephole pass off for the whole unit
@@ -33,7 +33,7 @@ extern u8* windowGetParam(void* window, s32 index);
 extern void menuButtonNormal(void* menu);
 extern void menuCursorNormal(void* menu);
 
-void fn_8006EE7C(void* menu)
+void menuTaisenButton2(void* menu)
 {
     MenuMiddleState* state = menu;
     u8* params;
@@ -55,7 +55,7 @@ void fn_8006EE7C(void* menu)
     menuButtonNormal(menu);
 }
 
-void fn_8006EF24(void* menu)
+void menuTaisenCursor(void* menu)
 {
     MenuMiddleState* state = menu;
 

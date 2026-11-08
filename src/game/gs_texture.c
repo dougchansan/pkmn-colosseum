@@ -29,7 +29,7 @@
  *     GStextureFree, GStextureLoad and GStextureInit are confirmed real
  *     names (matched against the XD reference binary's GStexture.cpp
  *     function order/sizes), replacing the previous fn_ scaffold names.
- *     fn_800EF098 has no confirmed name yet. It is exact and linked from
+ *     GStextureSwizzleCI4 has no confirmed name yet. It is exact and linked from
  *     this unit, which compiles only that function
  *     (-DGS_TEXTURE_800EF098_ONLY).
  *
@@ -65,7 +65,7 @@ extern u8 lbl_80466BC0[];  /* current display descriptor */
 extern u16 _toolentryAlloc__FUl(u32 size); /* GSmemAllocRaw */
 extern void* GSmemLock(u16 handle); /* GSmemGetPtr */
 
-/* The linked unit compiles only fn_800EF098 (-DGS_TEXTURE_800EF098_ONLY);
+/* The linked unit compiles only GStextureSwizzleCI4 (-DGS_TEXTURE_800EF098_ONLY);
  * the rest of the TU is linked from its own gs_texture_exact_* partitions. */
 #if !defined(GS_TEXTURE_800EF098_ONLY)
 /* ===== Global state (sbss/sdata) ===== */
@@ -80,7 +80,7 @@ static GStextureHandle* gsTexPool;       /* @sda21 lbl_8047ABF4 */
 
 #if !defined(GS_TEXTURE_800EF548_SUFFIX_ACTIVE)
 /* =======================================================================
- *  fn_800EF098 | 0x150
+ *  GStextureSwizzleCI4 | 0x150
  *  Rearranges CI4 texture pixel data from linear to 4x4 block-tiled
  *  order. Only operates on format 0x44 (GS_CI4).
  * ======================================================================= */
@@ -109,7 +109,7 @@ static inline void GStextureTileImage(u16* converted, u16* source, u16 pixelCoun
     }
 }
 
-void fn_800EF098(GStextureHandle* tex) {
+void GStextureSwizzleCI4(GStextureHandle* tex) {
     u32 byteCount;
     u16* source;
     u16* converted;
@@ -143,7 +143,7 @@ void fn_800EF098(GStextureHandle* tex) {
     DCFlushRange(tex->mipData[0], tex->totalSize);
     GXInvalidateTexAll();
     tex->refCount--;
-    fn_800E24B0(handle);
+    GSmemUnlock(handle);
     GSmemFree(handle);
 }
 
@@ -292,16 +292,16 @@ void GStextureFree(GStextureHandle* tex) {
     }
 
     tex->inUse = 0;
-    fn_800E24B0(tex->memHandle);
+    GSmemUnlock(tex->memHandle);
     GSmemFree(tex->memHandle);
 }
 
 /* =======================================================================
- *  fn_800EFD14 | 0x28
- *  TODO: match -- effect_util.c calls fn_800EFD14() with zero args,
+ *  GStextureClaimHandle | 0x28
+ *  TODO: match -- effect_util.c calls GStextureClaimHandle() with zero args,
  *  incompatible with the old 2-argument Bind signature.
  * ======================================================================= */
-void fn_800EFD14(GStextureHandle* tex, u16 handle) {
+void GStextureClaimHandle(GStextureHandle* tex, u16 handle) {
     if (tex == NULL || tex->inUse != 0) {
         return;
     }

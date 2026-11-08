@@ -9,11 +9,11 @@ u32 couponAddFromResult(void)
 {
     extern s32 savedataBattleGetCouponRun(void);
     extern u8* savedataBattleGetSavedHero(u8* savedata);
-    extern u8* fn_8006B5A8(void);
+    extern u8* battleResultGetSave(void);
     extern void heroAddPokecoupon(u8* savedata, s32 amount);
     s32 amount;
 
-    savedataBattleGetSavedHero(fn_8006B5A8());
+    savedataBattleGetSavedHero(battleResultGetSave());
     amount = savedataBattleGetCouponRun();
     heroAddPokecoupon(0, amount);
     return 0;

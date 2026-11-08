@@ -3,12 +3,12 @@
  * @brief Head of the title translation unit, 0x8001EF78 - 0x8002058C: the
  *        title menu tick, button and item-draw callbacks (historically split
  *        as gs_pcbox_*), the title floor coroutine fn_8001FD48, and GStitle's
- *        cleanup, main loop and init (fn_80020328, fn_800203B4, fn_8002049C,
+ *        cleanup, main loop and init (titleCleanup, titleMainLoop, titleInit,
  *        formerly in gs_title.c).
  *
  * These functions share one .sdata2 pool, 0x8047B808-0x8047B868, which this
- * unit owns: fn_800203B4's two-float frame table first, then fn_8001EF78's
- * literals and its two conversion biases, fn_8001F304's, and fn_8002049C's
+ * unit owns: titleMainLoop's two-float frame table first, then titleMenuTick's
+ * literals and its two conversion biases, titleMenuDraw's, and titleInit's
  * column targets. The pool repeats 0.0f and 1.0f right after it (0x8047B868,
  * gs_title_80020618.c's own pool), which is where the next source file
  * starts. Retail is GC/1.3 with -opt nopeephole, the title code's flag.
@@ -35,7 +35,7 @@ typedef struct TitleMenuItem {
     u8 alpha;          /* 0x67 */
 } TitleMenuItem;
 
-/* The title model's animation frames at which fn_800203B4 plays sound
+/* The title model's animation frames at which titleMainLoop plays sound
  * 0x46E. Retail has them as the pool's first two objects (0x8047B808,
  * 0x8047B80C), which MWCC gives only to file-scope constants defined
  * ahead of the code. */
@@ -46,8 +46,8 @@ extern TitleMenuWork lbl_803A1F88;
 extern u8 lbl_802EF0A8[];          /* menu item data, 0x1C bytes per item id */
 extern s32 lbl_80478878;           /* current title menu page */
 extern s32 lbl_8047A310;           /* title mode */
-extern s32 lbl_8047A314;           /* paused while fn_8017B1AC reports 5 */
-extern s32 lbl_8047A318;           /* paused while fn_8017B1AC reports 4/11 */
+extern s32 lbl_8047A314;           /* paused while fsysCheckDrive reports 5 */
+extern s32 lbl_8047A318;           /* paused while fsysCheckDrive reports 4/11 */
 extern s32 lbl_8047A31C;           /* title state */
 extern s32 lbl_8047A320;           /* set when title mode 1 starts at state 7 */
 extern GSmodel* lbl_8047A324;      /* title model */
@@ -62,11 +62,11 @@ extern f32 lbl_8047A344;           /* frame step */
 extern f32 lbl_8047A348;
 extern u8 lbl_8047A34C;
 
-extern s32 fn_800D37CC(void);
+extern s32 GSgfxGetVsyncRate(void);
 extern u32 GSgetFrameStep(void);
 extern s32 GSsndGetStatus(s32 id);
 extern u32 GSinputButtonsChanged(s32 pad);
-extern u32 fn_800F7BC4(s32 pad);
+extern u32 GSinputGetButtons(s32 pad);
 extern u8* windowGetKeyInfo(void);
 extern void dbgMenuSetEnable(s32 enable);
 extern void soundStopRaw(s32 id, s32 a, s32 b);
@@ -86,19 +86,19 @@ extern void GSmodelAllUnpauseAnimation(void);
 extern void cameraStartAnimation(void);
 extern void cameraStopAnimation(void);
 extern void cameraPlayAnime(u32 groupId, u32 animationId, s32 frame, u8 loop);
-extern void fn_801662E8(s32 a, s32 b);
+extern void soundFindOwnerWrapper(s32 a, s32 b);
 extern void std104_soundSetBackgroundMusic(s32 id, s32 a, s32 volume);
 extern void soundResumeMusic(void);
 extern void soundPauseMusic(void);
-extern s32 fn_8017B1AC(void);
+extern s32 fsysCheckDrive(void);
 extern void _threadSwitch(void);
 extern s32 menuOpen(s32 id, s32 arg);
 extern void fadeSet(s32 mode, f32 time);
 extern s8 fadeCheck(s32 wait);
-extern s32 fn_801D0748(s32 a, s32 b, s32 c);
+extern s32 memcardWaitTask2(s32 a, s32 b, s32 c);
 extern void savedataCreate(s32 a, s32 b);
 extern u32 gamedatasaveGetStatus(s32 a, s32 b);
-extern void fn_800216E0(u32 value);
+extern void titleSetIntroFlag8047A358(u32 value);
 extern void floorLink(s32 floorId, s32 arg);
 extern void menuCloseCustom(s32 menuId, s32 mode, s32 force);
 extern void winMsgClose(s32 wait);
@@ -106,16 +106,16 @@ extern void GSthreadTerminate(void* threadCtx);
 extern void* GSthreadCreate(s32 priority, void* stack, s32 stackSize,
                             s32 flags, s32 p5, void (*entry)(void));
 extern void* floorGetCurrentContext(void);
-extern u8 fn_800FF548(void);
+extern u8 floorGetFadeOutFlag(void);
 extern void floorSetFadeScript(s32 p1, s32 p2);
-void fn_8002058C(void);
-void fn_8002060C(void);
+void _titleThread(void);
+void titleResetAutodemoTimer(void);
 
-/* fn_8001EF78 (0x8001EF78 - 0x8001F1E8): title menu 0x15's tick.
- * - the frame step lbl_8047A344 = fn_800D3088() / fn_800D37CC() (an
+/* titleMenuTick (0x8001EF78 - 0x8001F1E8): title menu 0x15's tick.
+ * - the frame step lbl_8047A344 = fn_800D3088() / GSgfxGetVsyncRate() (an
  *   unsigned count over a signed rate);
  * - the blink phase lbl_8047A338 advances by step / 2 and wraps to 0 at 1
- *   (fn_8001F304 turns it into PRESS START's alpha);
+ *   (titleMenuDraw turns it into PRESS START's alpha);
  * - from title state 0x1E on (except state 0xC8) the attract timer
  *   lbl_8047A334 advances by the step. When fn_801666BC(0x46A) returns 0
  *   the timer is cleared, and unless the state is 0x3E8 the title moves to
@@ -153,14 +153,14 @@ void fn_8002060C(void);
         }                                                                   \
     }
 
-void fn_8001EF78(void)
+void titleMenuTick(void)
 {
     f32 rate;
     s32 i;
     f32 step;
     TitleMenuWork* work;
 
-    rate = fn_800D37CC();
+    rate = GSgfxGetVsyncRate();
     lbl_8047A344 = GSgetFrameStep() / rate;
     lbl_8047A338 += lbl_8047A344 / 2.0f;
     if (lbl_8047A338 >= 1.0f) {
@@ -187,13 +187,13 @@ void fn_8001EF78(void)
     }
 }
 
-/* fn_8001F1E8 (0x8001F1E8 - 0x8001F304): title menu button callback.
+/* titleMenuButtonCB (0x8001F1E8 - 0x8001F304): title menu button callback.
  * Before the title state reaches 4 the callback disables the debug menu and
  * waits for A/START (0x1100) or B (0x200): either one advances the state to
  * 4, plays sound 0x46E and raises lbl_8047A328. From state 4 on it enables
  * the debug menu and marks the item (offset 0x98) when the window key info
  * reports 0x810. -opt nopeephole keeps retail's `andi.` + `cmplwi` pairs. */
-void fn_8001F1E8(u8* arg)
+void titleMenuButtonCB(u8* arg)
 {
     u32 a;
     u32 b;
@@ -204,14 +204,14 @@ void fn_8001F1E8(u8* arg)
         if (arg == 0) return;
         menuDataBiosGetPtr(*(u32*)(arg + 0x4));
         a = GSinputButtonsChanged(1);
-        b = fn_800F7BC4(1);
+        b = GSinputGetButtons(1);
         if ((b & a) & 0x1100) {
             lbl_8047A31C = 4;
             soundStopRaw(0x46e, 0, 0);
             lbl_8047A328 = 1;
         }
         a = GSinputButtonsChanged(1);
-        b = fn_800F7BC4(1);
+        b = GSinputGetButtons(1);
         if (((b & a) & 0x200) == 0) return;
         lbl_8047A31C = 4;
         soundStopRaw(0x46e, 0, 0);
@@ -227,7 +227,7 @@ void fn_8001F1E8(u8* arg)
     soundStartRaw(0x4c2, 0, 0);
 }
 
-/* fn_8001F304 (0x8001F304 - 0x8001FD48): title menu item draw callback.
+/* titleMenuDraw (0x8001F304 - 0x8001FD48): title menu item draw callback.
  * winSpriteDraw calls this for every sprite item of the title menus 0x13 and
  * 0x15 (items 0x2C4 and 0xEFA-0xF0D). It picks which items are shown for
  * the current title state and slides the menu columns:
@@ -238,7 +238,7 @@ void fn_8001F1E8(u8* arg)
  * - 0xEFB-0xF0D belong to one of four menu pages (lbl_80478878). An item on
  *   the current page is shown and placed at its menu-data x (the 0x1C-byte
  *   records of lbl_802EF0A8) plus one of the six animated column offsets in
- *   lbl_803A1F88, which fn_8001EF78 eases toward their targets;
+ *   lbl_803A1F88, which titleMenuTick eases toward their targets;
  * - any other item is hidden unless lbl_8047A34C is set. */
 
 /* Show the item when the title menu is on `page`, at its menu-data x plus
@@ -254,7 +254,7 @@ void fn_8001F1E8(u8* arg)
     }                                                                       \
     break;
 
-void fn_8001F304(void* menu, TitleMenuItem* item)
+void titleMenuDraw(void* menu, TitleMenuItem* item)
 {
     u8 visible;
     f32 speed;
@@ -321,9 +321,9 @@ void fn_8001F304(void* menu, TitleMenuItem* item)
 }
 
 /* fn_8001FD48 (0x8001FD48 - 0x80020328): the title floor (floor 900)
- * coroutine. It owns the title state word lbl_8047A31C that fn_800203B4
+ * coroutine. It owns the title state word lbl_8047A31C that titleMainLoop
  * polls, fills the title model/camera globals (lbl_8047A324/33C/340) that
- * fn_800203B4 reads, and finishes by linking to floor 0x3A1. Retail keeps
+ * titleMainLoop reads, and finishes by linking to floor 0x3A1. Retail keeps
  * unpeepholed `mr r4,r3; mr r30,r4` copy chains and dead loop-entry
  * branches (-opt nopeephole). */
 
@@ -368,7 +368,7 @@ void std021_newGameIntroSequence(void)
     lbl_8047A324 = model;
     lbl_8047A33C = 0;
     lbl_8047A328 = 0;
-    fn_801662E8(0, 0x406);
+    soundFindOwnerWrapper(0, 0x406);
     std104_soundSetBackgroundMusic(0x46A, 0, 0xFF);
 
     if (lbl_8047A310 == 1) {
@@ -382,7 +382,7 @@ void std021_newGameIntroSequence(void)
     menuOpen(0x15, 0);
 
     do {
-        status = fn_8017B1AC();
+        status = fsysCheckDrive();
         if (status == 11 || status == 4) {
             if (lbl_8047A318 == 0) {
                 GSmodelAllPauseAnimation();
@@ -395,7 +395,7 @@ void std021_newGameIntroSequence(void)
         }
         if (lbl_8047A318 == 1) {
             cameraStartAnimation();
-            fn_801662E8(0, 0x406);
+            soundFindOwnerWrapper(0, 0x406);
             soundResumeMusic();
             GSmodelAllUnpauseAnimation();
             lbl_8047A318 = 0;
@@ -413,7 +413,7 @@ void std021_newGameIntroSequence(void)
         }
         if (lbl_8047A314 == 1) {
             cameraStartAnimation();
-            fn_801662E8(0, 0x406);
+            soundFindOwnerWrapper(0, 0x406);
             soundResumeMusic();
             GSmodelAllUnpauseAnimation();
             lbl_8047A314 = 0;
@@ -499,7 +499,7 @@ void std021_newGameIntroSequence(void)
             lbl_8047A31C = 0xC8;
             break;
         case 0xC8:
-            status = fn_801D0748(1, 2, 0);
+            status = memcardWaitTask2(1, 2, 0);
             if (status == -1) {
                 lbl_8047A31C = 0x20;
                 break;
@@ -508,9 +508,9 @@ void std021_newGameIntroSequence(void)
                 savedataCreate(0, 0);
             }
             if (gamedatasaveGetStatus(0, 4) != 0) {
-                fn_800216E0(1);
+                titleSetIntroFlag8047A358(1);
             } else {
-                fn_800216E0(0);
+                titleSetIntroFlag8047A358(0);
             }
             lbl_8047A31C = 0x29;
             break;
@@ -527,9 +527,9 @@ void std021_newGameIntroSequence(void)
     } while (running != 0);
 }
 
-/* fn_80020328 (GStitle cleanup): cancels menus 0x13, 0x15 and 0x16, closes
+/* titleCleanup (GStitle cleanup): cancels menus 0x13, 0x15 and 0x16, closes
  * any open message box, then waits for the title thread to finish. */
-void fn_80020328(void)
+void titleCleanup(void)
 {
     menuCloseCustom(0x13, 0, 1);
     menuCloseCustom(0x15, 0, 1);
@@ -550,10 +550,10 @@ void fn_80020328(void)
     lbl_8047A32C = 0;
 }
 
-/* fn_800203B4 (GStitle main loop): links the autodemo floor on state 0x28,
+/* titleMainLoop (GStitle main loop): links the autodemo floor on state 0x28,
  * and while the title model runs plays sound 0x46E once each time its
  * animation frame passes 180 and then 199. */
-void fn_800203B4(void)
+void titleMainLoop(void)
 {
     for (;;) {
         if (lbl_8047A31C == 0x28) {
@@ -593,16 +593,16 @@ void fn_800203B4(void)
     }
 }
 
-/* fn_8002049C (GStitle init): starts the title thread, resets the frame
+/* titleInit (GStitle init): starts the title thread, resets the frame
  * step and the autodemo model, advances the menu page (0..3) and sets the
  * six menu column offsets and targets. */
-void fn_8002049C(void)
+void titleInit(void)
 {
     void* ctx;
 
     lbl_8047A32C = 0;
     ctx = floorGetCurrentContext();
-    lbl_8047A330 = GSthreadCreate(0x14, ctx, 0x2000, 1, 0, fn_8002058C);
+    lbl_8047A330 = GSthreadCreate(0x14, ctx, 0x2000, 1, 0, _titleThread);
     lbl_8047A314 = 0;
     lbl_8047A344 = 0.0f;
     lbl_8047A324 = NULL;
@@ -626,7 +626,7 @@ void fn_8002049C(void)
         *(f32*)(base + 0x30) = 0.0f;
         *(f32*)(base + 0x3c) = 0.0f;
     }
-    if (fn_800FF548() == 0) {
-        fn_8002060C();
+    if (floorGetFadeOutFlag() == 0) {
+        titleResetAutodemoTimer();
     }
 }

@@ -32,7 +32,7 @@ extern u8 fadeEffectHookFunction_trainer_Init[];
 extern u8 fadeEffectHookFunction_yoko_Init[];
 extern u8 fadeEffectHookFunction_yoko_or_tate_Init[];
 extern u8 fadeEffectHookFunction_yoko_or_tate_or_ball_Init[];
-extern u8 fn_8020A8E0[];
+extern u8 fightJoukenCheck_8020A8E0[];
 extern u8 lbl_80375E60[];
 extern u8 lbl_80375E6A[];
 extern u8 lbl_80375E9F[];
@@ -43,7 +43,7 @@ extern u8 lbl_80375F39[];
 
 /* Auto-carved .data unit 0x80375938..0x80375E60 (21 objects). Non-relocated data as byte-exact u8[]; pointer/jump tables as void*[] for R_PPC_ADDR32 relocations. */
 
-/* jumptable_80375938 / jumptable_80375954 (0x80375938-0x80375970) belong to fight_out_pokemon_suffix_8020A8E0.c, which emits them as fn_8020A8E0's switch tables. */
+/* jumptable_80375938 / jumptable_80375954 (0x80375938-0x80375970) belong to fight_out_pokemon_suffix_8020A8E0.c, which emits them as fightJoukenCheck_8020A8E0's switch tables. */
 
 u8 lbl_80375970[16] = {
     0x00, 0x90, 0x00, 0x91, 0x00, 0x92, 0x00, 0x93, 0x00, 0x94, 0x00, 0x00,

@@ -5,7 +5,7 @@ extern u32 lbl_8047A350;
 extern u32 lbl_80478880;
 
 /** Check the title-screen autodemo timer. */
-void fn_800205C8(u8* obj) {
+void titleDrawAutodemoTimer(u8* obj) {
     s32 mask = -0x100;
     u32 timer = obj[0x8B];
 

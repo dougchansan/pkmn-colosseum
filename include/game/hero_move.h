@@ -8,7 +8,7 @@
  *
  * Layout derived from the hero_move text (0x8012AC9C-0x80130660):
  * - leader: s32 compared signed against member indices and used as
- *   member[leader] (fn_8012F40C stores its argument there with stwu).
+ *   member[leader] (partnerSetFollowState stores its argument there with stwu).
  * - member[2], stride 0x20 from +0x04: bit 0 of the u16 flags marks a party
  *   member (heroMoveIsMember, heroMoveDismissMember clears it with
  *   rlwinm 16,30); spacing is the f32 follow distance written by the

@@ -1,13 +1,13 @@
 /**
  * @file menuSub.c
- * @brief menuSub TU: 0x8001D718 - 0x8001EF78 (fn_8001D718 .. fn_8001EC08).
+ * @brief menuSub TU: 0x8001D718 - 0x8001EF78 (menuPokemonWaitSeconds .. fn_8001EC08).
  *
  * The retail translation unit, identified by its .sdata2 literal pool
  * 0x8047B7C8-0x8047B808 (0.0f, both int->float doubles, 1.0f, 255.0f, 30.0,
  * 2*pi, 1/32, 15.0). No function outside this range reads it, and the
  * neighbouring pools repeat 0.0f and the conversion double, so the TU
  * boundaries sit at 0x8001D718 (after menuPokemon's menuPokemonGetStatusSprite) and
- * 0x8001EF78 (the GStitle TU). It also owns fn_8001E644's colour initializer
+ * 0x8001EF78 (the GStitle TU). It also owns windowDrawFrame's colour initializer
  * (.rodata 0x80266C20-0x80266C30) and fn_8001EC08's vertex work area
  * (.bss 0x803A1D60-0x803A1F88). The function names that are known come
  * from the Colosseum map (menuSub.o) and XD's menuSub.cpp.
@@ -35,29 +35,29 @@ extern void gfxVtxColor1u32(s32 index, u32 color);
 extern void gfxSetLineWidth(f32 width);
 extern void gfxLoadTexture(s32 map, void* texture);
 extern void gfxLoadTexMatrix(s32 id, s32 type, s32 src, void* mtx);
-extern void fn_800DC1D4(s32 count);
+extern void gfxSetNumTevStages(s32 count);
 extern void gfxSetTevStage(s32 stage, s32 coord, s32 map, s32 color, s32 a);
-extern void fn_800DC14C(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
-extern void fn_800DC0D4(s32 stage, s32 a, s32 b, s32 c, s32 d);
-extern void fn_800DC04C(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
-extern void fn_800DBFD4(s32 stage, s32 a, s32 b, s32 c, s32 d);
+extern void gfxSetTevAlphaOp(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void gfxSetTevAlphaIn(s32 stage, s32 a, s32 b, s32 c, s32 d);
+extern void gfxSetTevColorOp(s32 stage, s32 a, s32 b, s32 c, s32 d, s32 e);
+extern void gfxSetTevColorIn(s32 stage, s32 a, s32 b, s32 c, s32 d);
 extern u8 lbl_80314E08[];
 
 /* 0x8001D718 | 0xCC */
-void fn_8001D718(f32 target) {
-    extern s32 fn_800D37CC(void);
+void menuPokemonWaitSeconds(f32 target) {
+    extern s32 GSgfxGetVsyncRate(void);
     extern u32 GSgetFrameStep(void);
     f32 progress = 0.0f;
 
     while (progress < target) {
         _threadSwitch();
-        progress += (f32)GSgetFrameStep() / (f32)fn_800D37CC();
+        progress += (f32)GSgetFrameStep() / (f32)GSgfxGetVsyncRate();
     }
 }
 
 /* 0x8001D7E4 | 0x50 */
 extern u32 GSinputButtonsChanged(s32);
-extern u32 fn_800F7BC4(s32);
+extern u32 GSinputGetButtons(s32);
 u32 menuSubKeyWait(void) {
     u32 a;
     u32 b;
@@ -67,7 +67,7 @@ u32 menuSubKeyWait(void) {
         _threadSwitch();
     _test:
         a = GSinputButtonsChanged(1);
-        b = fn_800F7BC4(1);
+        b = GSinputGetButtons(1);
         m = (b & a) & 0x300;
     } while (m == 0);
     return b;
@@ -182,7 +182,7 @@ typedef struct MenuSubSprite {
 /* Sprite draw callback: draws the sprite's crop of its texture blended
  * with a second texture (0x00EF1200), the second set of coordinates
  * offset by `shift`. */
-s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
+s32 spriteDrawBlendTexture(void* context, MenuSubSprite* sprite, f32 shift) {
     extern void* lbl_8047AD00;
     extern void* GSresFindById(u32 id);
     extern u16 GStextureGetXsize(void* texture);
@@ -210,28 +210,28 @@ s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
         gfxLoadTexMatrix(0, 0, 4, mtx);
         gfxLoadTexMatrix(1, 0, 5, mtx);
         gfxLoadTexMatrix(2, 0, 6, mtx);
-        fn_800DC1D4(3);
+        gfxSetNumTevStages(3);
 
         gfxLoadTexture(0, texture);
         gfxSetTevStage(0, 0, 0, 0, 0);
-        fn_800DC14C(0, 0, 0, 0, 0, 1);
-        fn_800DC0D4(0, 0xF, 8, 0xA, 0xF);
-        fn_800DC04C(0, 0, 0, 0, 0, 1);
-        fn_800DBFD4(0, 7, 4, 5, 7);
+        gfxSetTevAlphaOp(0, 0, 0, 0, 0, 1);
+        gfxSetTevAlphaIn(0, 0xF, 8, 0xA, 0xF);
+        gfxSetTevColorOp(0, 0, 0, 0, 0, 1);
+        gfxSetTevColorIn(0, 7, 4, 5, 7);
 
         gfxLoadTexture(1, pattern);
         gfxSetTevStage(1, 0, 1, 1, 0);
-        fn_800DC14C(1, 1, 0, 0, 1, 0);
-        fn_800DC0D4(1, 0xF, 8, 0xD, 2);
-        fn_800DC04C(1, 0, 0, 0, 1, 0);
-        fn_800DBFD4(1, 7, 7, 7, 1);
+        gfxSetTevAlphaOp(1, 1, 0, 0, 1, 0);
+        gfxSetTevAlphaIn(1, 0xF, 8, 0xD, 2);
+        gfxSetTevColorOp(1, 0, 0, 0, 1, 0);
+        gfxSetTevColorIn(1, 7, 7, 7, 1);
 
         gfxLoadTexture(2, pattern);
         gfxSetTevStage(2, 0, 2, 2, 0);
-        fn_800DC14C(2, 1, 0, 0, 1, 0);
-        fn_800DC0D4(2, 0xF, 8, 0xD, 2);
-        fn_800DC04C(2, 0, 0, 0, 1, 0);
-        fn_800DBFD4(2, 7, 7, 7, 1);
+        gfxSetTevAlphaOp(2, 1, 0, 0, 1, 0);
+        gfxSetTevAlphaIn(2, 0xF, 8, 0xD, 2);
+        gfxSetTevColorOp(2, 0, 0, 0, 1, 0);
+        gfxSetTevColorIn(2, 7, 7, 7, 1);
 
         gfxSetVtxDesc(lbl_8047AD00);
         gfxSetPrimitive(7);
@@ -247,14 +247,14 @@ s32 fn_8001DACC(void* context, MenuSubSprite* sprite, f32 shift) {
         gfxVtxTexCoord(1, shift + u1, shift + v1);
         gfxVtxTexCoord(2, (1.0f - shift) + u1, shift + v1);
         gfxEnd();
-        fn_800DC1D4(1);
+        gfxSetNumTevStages(1);
         gfxClearFlags(0x80000000);
     }
     return 0;
 }
 
-/* 0x64 | fn_8001DFA8 | generic_call_check_store */
-s32 fn_8001DFA8(u32 arg1, u8* arg2) {
+/* 0x64 | titleDebugTopMenuDrawItem | generic_call_check_store */
+s32 titleDebugTopMenuDrawItem(u32 arg1, u8* arg2) {
     extern u8 menuItemBiosGetSelectFlag(s16);
     if (menuItemBiosGetSelectFlag(*(s16*)(arg2 + 0x6)) != 0) {
         *(u8*)(arg2 + 0x66) = 0xff;
@@ -332,7 +332,7 @@ void menuSubCloseNumberInput(void) {
     menuClose(0x2);
 }
 
-s32 fn_8001E224(void* a, u32* b, u8 c, void* d, void* e, u8 f) {
+s32 menuNumberInput(void* a, u32* b, u8 c, void* d, void* e, u8 f) {
     extern void* windowGetActiveID();
     extern void menuOpenCustom(s32, ...);
     extern void menuSetPosition();
@@ -461,7 +461,7 @@ typedef struct GsPcboxItemBios {
     s16 y;
 } GsPcboxItemBios;
 
-void fn_8001E644(s32 x, s32 y, s32 width, s32 height, u8 alpha) {
+void windowDrawFrame(s32 x, s32 y, s32 width, s32 height, u8 alpha) {
     extern u8 lbl_80266C20[];
         extern GsPcboxSpriteBios* menuSpriteBiosGetPtr(s32);
     extern GsPcboxItemBios* menuItemBiosGetPtr(s16);

@@ -1,6 +1,6 @@
 /**
  * @file gs_npc_event_candidate_8003037C_r40_80030D34_gc20.c
- * @brief fn_80030D34 carve, 0x80030D34 - 0x80030F0C.
+ * @brief gbaTradeMenuDrawSprite carve, 0x80030D34 - 0x80030F0C.
  *
  * NPC event callback: look the event id up in the held-item column of the
  * twelve-entry table lbl_80266E90 and show the sprite when the party (1)
@@ -24,7 +24,7 @@ typedef struct {
 extern NpcPokemonEvent lbl_80266E90[];
 extern u8 lbl_803A2688[];
 
-void fn_80030D34(u8* r3, u8* r4)
+void gbaTradeMenuDrawSprite(u8* r3, u8* r4)
 {
     void* pokemon;
     s32 i;

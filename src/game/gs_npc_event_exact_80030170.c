@@ -5,7 +5,7 @@ typedef struct GSnpcEventQueue {
     u32 index;
 } GSnpcEventQueue;
 
-void* fn_80030170(GSnpcEventQueue* queue)
+void* gbaTradeNextPartyEntry(GSnpcEventQueue* queue)
 {
     u32 index;
 
@@ -22,10 +22,10 @@ void* fn_80030170(GSnpcEventQueue* queue)
     return queue->items[index];
 }
 
-void fn_800301A8(void)
+void menuDCDrawItem(void)
 {
 }
 
-void fn_800301AC(void)
+void menuDCCtrl(void)
 {
 }

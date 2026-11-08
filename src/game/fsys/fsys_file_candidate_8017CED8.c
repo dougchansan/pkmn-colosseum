@@ -31,11 +31,11 @@ extern FSYSFileHandle* lbl_8047B1B8; /* handle table, LRU order */
 extern s32 lbl_8047B1BC;             /* handle table fill count */
 
 extern void DCFlushRange(void* addr, u32 nBytes);
-extern u32 fn_8017F794(u32 fileHandle, u32 key1, u32 key2);
-extern void fn_8017F800(s32 handleID);
-extern u32 fn_8017FA5C(void);
-extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 key1, u32 key2);
-extern void fn_80180450(void* main, void* aram, u32 size);
+extern u32 fsysCacheLookup(u32 fileHandle, u32 key1, u32 key2);
+extern void fsysCacheFreeHandle(s32 handleID);
+extern u32 fsysCacheGetFreeSize(void);
+extern u32 fsysCacheReserve(u32 size, u32 fileHandle, u32 key1, u32 key2);
+extern void fsysMainToARAMSync(void* main, void* aram, u32 size);
 extern FSYSFileHandle* fsysSlotRefreshHandle(FSYSSlot* slot);
 
 /* The slot's archive handle if the handle table holds it, else -1. */
@@ -118,18 +118,18 @@ static inline void fsysCacheMakeRoom(FSYSSlot* slot, u32 size)
     s32 n;
     s32 handleID;
 
-    freeSize = fn_8017FA5C();
+    freeSize = fsysCacheGetFreeSize();
     if (size > freeSize && fsysCacheFindHandle(slot) < 0) {
         for (n = 0;; n++) {
             handleID = fsysCacheOldestHandle();
             if (handleID < 0) {
                 break;
             }
-            fn_8017F800(handleID);
+            fsysCacheFreeHandle(handleID);
             if (fsysCacheRemoveHandle(handleID) < 0) {
                 break;
             }
-            freeSize = fn_8017FA5C();
+            freeSize = fsysCacheGetFreeSize();
             if (size <= freeSize) {
                 break;
             }
@@ -144,18 +144,18 @@ static inline void fsysCacheMakeRoomTotal(FSYSSlot* slot)
     s32 n;
     s32 handleID;
 
-    freeSize = fn_8017FA5C();
+    freeSize = fsysCacheGetFreeSize();
     if (slot->totalDecompSize > freeSize && fsysCacheFindHandle(slot) < 0) {
         for (n = 0;; n++) {
             handleID = fsysCacheOldestHandle();
             if (handleID < 0) {
                 break;
             }
-            fn_8017F800(handleID);
+            fsysCacheFreeHandle(handleID);
             if (fsysCacheRemoveHandle(handleID) < 0) {
                 break;
             }
-            freeSize = fn_8017FA5C();
+            freeSize = fsysCacheGetFreeSize();
             if (slot->totalDecompSize <= freeSize) {
                 break;
             }
@@ -194,13 +194,13 @@ s32 fsysStatus4(FSYSSlot* slot)
     u32 cached;
 
     tocSize = slot->field_1C;
-    cached = fn_8017F794(slot->fileHandle, 0, 1);
+    cached = fsysCacheLookup(slot->fileHandle, 0, 1);
     if (!cached) {
         DCFlushRange(slot->archiveData, (tocSize + 0x1F) & ~0x1F);
         fsysCacheMakeRoom(slot, (tocSize + 0x1F) & ~0x1F);
-        cached = fn_8017F928((tocSize + 0x1F) & ~0x1F, slot->fileHandle, 0, 1);
+        cached = fsysCacheReserve((tocSize + 0x1F) & ~0x1F, slot->fileHandle, 0, 1);
         if (cached) {
-            fn_80180450(slot->archiveData, (void*)cached, (tocSize + 0x1F) & ~0x1F);
+            fsysMainToARAMSync(slot->archiveData, (void*)cached, (tocSize + 0x1F) & ~0x1F);
         }
     }
     fsysCacheMakeRoomTotal(slot);

@@ -14,7 +14,7 @@
 #include "dolphin/types.h"
 
 extern void* memset(void* dst, int val, u32 size);
-extern void fn_800FE6AC(s16* x, s16* y);
+extern void spriteGetOrigin(s16* x, s16* y);
 /* RULE-EXCEPTION(title-path): extern stand-in for the window TU's pool literal - see docs/RULE_EXCEPTIONS.md */
 extern const f32 lbl_8047CDEC;
 
@@ -112,7 +112,7 @@ void windowDrawSprite2(s16 x, s16 y, s16 width, s16 height, u32 color,
     if (context == NULL) {
         context = &localContext;
         memset(context, 0, sizeof(WinSpriteContext));
-        fn_800FE6AC(&context->x, &context->y);
+        spriteGetOrigin(&context->x, &context->y);
         context->layer = -1;
     }
     winSpriteDraw(context, sp);

@@ -13,7 +13,7 @@ extern void winSeqSetMenu(s32 ctx, s32 id);
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_8004DF34(PdaMailPhaseWidget* w)
+s32 pdaMailPickerCtrl(PdaMailPhaseWidget* w)
 {
     switch (w->phase) {
     case 0:

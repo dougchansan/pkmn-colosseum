@@ -8,10 +8,10 @@
  * "-opt nopeephole", and the local peephole/scheduling pragmas that part of
  * menu_middle.c carried are gone. Evidence:
  * - every exact function in the range stays exact with no pragma:
- *   menuCBBattleReturnToMenuRoom - fn_8006A81C, menuCBBiosInitHero, menuCBBios_InitTrainer,
- *   fn_8006AC6C, savedataBattleSetCouponRun, savedataBattleGetCouponRun, fn_8006AEEC, savedataBattleGetSavedHero,
+ *   menuCBBattleReturnToMenuRoom - savedataBattleSetTrainerData, menuCBBiosInitHero, menuCBBios_InitTrainer,
+ *   menuTaisenClassifyTrainer, savedataBattleSetCouponRun, savedataBattleGetCouponRun, savedataBattleGetHeroParty, savedataBattleGetSavedHero,
  *   savedataBattleGetEntryPtr, savedataBattleGetTeamPtr, savedataBattleGetEntryId - savedataBattleGetCourseCleared, savedataBattleUnlockCourse,
- *   savedataBattleIsCourseUnlocked, menuSetRuleType - fn_8006B5A8 (ten of them used to need
+ *   savedataBattleIsCourseUnlocked, menuSetRuleType - battleResultGetSave (ten of them used to need
  *   "peephole off" and six "scheduling off");
  * - savedataBattleSetSavedHero (93.4) and savedataBattleGetSavedHeroKind (97.7) become exact, and every
  *   candidate gains or holds: menuCBBiosCopyHero 79.3 -> 83.6, menuCBBiosCreateTrainerHero

@@ -141,7 +141,7 @@ L_next:
 s32 fightTrainerCheckItemKind(u8* ptr) {
     extern u8* fightTrainerGetStatus(u8*, u32, u16, u32);
     extern u8* heroItemGetItemKindToItemAryPtr(u8*, u32, u16*, u32, u32, u32);
-    extern u8 fn_801429E8(u8*);
+    extern u8 itemSlotIsValid(u8*);
     extern u16 itemGetStatus(u8*, u32, u16, u32);
     u16 count;
     u8* r31;
@@ -155,7 +155,7 @@ s32 fightTrainerCheckItemKind(u8* ptr) {
     r29 = 0;
     while ((u16)r29 < count) {
         r30 = r31 + (u16)r29 * 4;
-        if (fn_801429E8(r30) != 0) {
+        if (itemSlotIsValid(r30) != 0) {
             if (itemGetStatus(r30, 0, 0x1b, 0) != 0) {
                 if (itemGetStatus(r30, 0, 0x1c, 0) != 0) {
                     return 1;
@@ -171,7 +171,7 @@ s32 fightTrainerCheckItemKind(u8* ptr) {
 u32 fightTrainerGetTemotiNormalItemDataIdAry(u8* ptr, u16* out, u16 count, u8 mode) {
     extern u8* fightTrainerGetStatus(u8*, u32, u16, u32);
     extern u8* heroItemGetItemKindToItemAryPtr(u8*, u32, u16*, u32, u32, u32);
-    extern u8 fn_801429E8(u8*);
+    extern u8 itemSlotIsValid(u8*);
     extern u32 itemGetStatus(u8*, u32, u16, u32);
     extern u8 fightOutPokemonCheckFightOut(u8*);
     extern u16 fightOutPokemonGetFightActionUseItemDataId(u8*);
@@ -212,7 +212,7 @@ u32 fightTrainerGetTemotiNormalItemDataIdAry(u8* ptr, u16* out, u16 count, u8 mo
     outputCount = 0;
     for (itemIndex = 0; (u16)itemIndex < itemCount; itemIndex++) {
         item = itemArray + (u16)itemIndex * 4;
-        if ((u8)fn_801429E8(item) != 0) {
+        if ((u8)itemSlotIsValid(item) != 0) {
             itemId = itemGetStatus(item, 0, 0x1B, 0);
             if (itemId != 0) {
                 u16 amount = itemGetStatus(item, 0, 0x1C, 0);

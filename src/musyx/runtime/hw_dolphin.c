@@ -92,7 +92,7 @@ extern void PPCSync(void);
 extern void DSPInit(void);
 extern DSPTaskInfo* DSPAddTask(DSPTaskInfo* task);
 extern void DSPSendMailToDSP(u32 mail);
-extern u32 fn_800AE794(void);                /* DSPCheckMailToDSP */
+extern u32 DSPCheckMailFromDSPFlag(void);                /* DSPCheckMailToDSP */
 extern void DSPHalt(void);               /* DSPHalt */
 extern u32 DSPGetDMAStatus(void);                /* DSPGetDMAStatus */
 extern void DSPReset(void);               /* DSPReset */
@@ -226,10 +226,10 @@ static void salStartDsp(u16* cmdList)
     PPCSync();
     DSPSendMailToDSP(lbl_8047B00C | 0xBABE0000);
 
-    while (fn_800AE794()) {
+    while (DSPCheckMailFromDSPFlag()) {
     }
     DSPSendMailToDSP((u32)cmdList);
-    while (fn_800AE794()) {
+    while (DSPCheckMailFromDSPFlag()) {
     }
 }
 

@@ -1,7 +1,7 @@
 /**
  * @file pda_exact_8004A7A8.c
  * @brief PDA mail screen sprite positions and caption pulses,
- *        0x8004A7A8 - 0x8004B278: fn_8004A7A8 offsets the mail widgets by the
+ *        0x8004A7A8 - 0x8004B278: pdaTrainerDataAnimItem offsets the mail widgets by the
  *        eased x/y offsets, fades the captions and pulses their alpha.
  *        Copied from pda_range_80037158.c.
  */
@@ -37,7 +37,7 @@ extern u8 lbl_802EF0A8[];
  * widget x/y offsets, +0x40 pulse phase. */
 extern u8 lbl_803A6A60[];
 extern f32 lbl_804788D8;
-extern s32 fn_800FE6D0(s16 x, s16 y);
+extern s32 spriteSetOrigin(s16 x, s16 y);
 extern void spriteSetEnv(s32 env);
 extern f64 sin(f64 x);
 
@@ -71,7 +71,7 @@ static inline void pda_8004A7A8_Pulse(PdaSprite* sprite, f32 k)
 }
 
 /* Backdrop alpha ramp and the staggered caption pulses on the mail screen. */
-void fn_8004A7A8(void* work, PdaSprite* sprite)
+void pdaTrainerDataAnimItem(void* work, PdaSprite* sprite)
 {
     s32 fade;
     s16* pos;
@@ -89,7 +89,7 @@ void fn_8004A7A8(void* work, PdaSprite* sprite)
     case 0x758:
         pos = (s16*)(lbl_802EF0A8 + sprite->eventId * 0x1c);
         sprite->field_50 = pos[1] + (s32)*(f32*)(lbl_803A6A60 + 0x30);
-        spriteSetEnv(fn_800FE6D0(
+        spriteSetEnv(spriteSetOrigin(
             (s16)(*(s16*)((u8*)work + 0x84) + sprite->field_50),
             (s16)(*(s16*)((u8*)work + 0x86) + sprite->field_52)));
         break;

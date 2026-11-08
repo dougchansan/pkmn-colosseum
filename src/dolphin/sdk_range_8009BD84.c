@@ -221,7 +221,7 @@ extern u32 __OSBusClock : 0x800000F8;
  */
 #if !defined(SDK_8009BD84_BANK_ACTIVE) || \
     defined(SDK_CANDIDATE_8009CD38_8009D510)
-void fn_8009CD38(GXColor fg, GXColor bg, const char* msg) {
+void __OSBootDol(GXColor fg, GXColor bg, const char* msg) {
     extern void __OSStopAudioSystem(void);
     extern void AISetStreamVolLeft(u8 vol);
     extern void AISetStreamVolRight(u8 vol);

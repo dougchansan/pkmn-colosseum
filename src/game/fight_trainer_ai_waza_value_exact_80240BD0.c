@@ -60,7 +60,7 @@ extern u32  savedataGetStatus();
 extern int  fadeCheck();
 extern int  fadeSet();
 extern int  wazaSequenceSysRelease();
-extern int  fn_801DADC0();
+extern int  wazaSequenceSysInitEx();
 extern void OSRegisterResetFunction();
 extern void OSInitAlarm();
 extern void OSInitThreadQueue();
@@ -78,17 +78,17 @@ s32 fightTrainerGetStatus(u32, u32, u32, u32);
 u16 fightFloorGetFightTrainerFightPokemonPtrAry(u32, void*, void*, u32, u32);
 u32 fightOutPokemonGetPokemonPtr(u32);
 u8 fightTrainerAiIsJoutaiNormal(void*, u32);
-u8 fn_80237F74(void*, u32, u32);
-u8 fn_802384B4(void*, u32, u32);
-u8 fn_80239564(void*, u32);
+u8 fightTrainerAiIsTokusei(void*, u32, u32);
+u8 fightTrainerAiCheckWriteJoutai(void*, u32, u32);
+u8 fightTrainerAiGetWazaTsuikaAvg(void*, u32);
 u8 fightTrainerAiGetNowTenkou(void*, u32, u32);
 u16 fightTrainerAiGetPokemonDataId2(void*, u32);
 u8 fightTrainerAiGetPokemonZokusei(void*, u32, u32);
-u8 fn_80239058(void*, u32, u32);
-u32 fn_80239984(u32, void*, u32);
+u8 fightTrainerAiIsPokemonTokusei(void*, u32, u32);
+u32 fightTrainerAiAddValueClamped(u32, void*, u32);
 u32 fightTrainerAiAddValue(u32, s32);
-void fn_80239CCC(u32, void*, u32, u32, u32, u32, u32, u32, s32);
-void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
+void fightTrainerAiLogValue(u32, void*, u32, u32, u32, u32, u32, u32, s32);
+void fightTrainerAiAddValueLog2(u32, void*, u32, u32, u32, u32, u32, u32);
 
 
 /* =========================================================================
@@ -108,15 +108,15 @@ void fn_80239EE8(u32, void*, u32, u32, u32, u32, u32, u32);
 int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 param3) {
     extern u8 fightTrainerAiGetAbicntPhyAtk(void* ctx, u32 elem);
     extern u8 fightTrainerAiGetAbicntPhyDef(void* ctx, u32 elem);
-    extern u8 fn_802359D8(void* ctx, u32 elem);
-    extern u8 fn_80235974(void* ctx, u32 elem);
+    extern u8 fightTrainerAiGetAbicntSpeAtk(void* ctx, u32 elem);
+    extern u8 fightTrainerAiGetAbicntSpeDef(void* ctx, u32 elem);
     extern u8 fightTrainerAiGetAbicntNimbleness(void* ctx, u32 elem);
     extern u8 fightTrainerAiGetAbicntAverage(void* ctx, u32 elem);
     extern u8 fightTrainerAiGetAbicntAvoid(void* ctx, u32 elem);
     extern u16 fightFloorGetFightTrainerFightOutPokemonPtrAry(int a, void* ctx, u32* buf, int b, int c);
-    extern int fn_80239984(int handle, void* ctx, int seq);
+    extern int fightTrainerAiAddValueClamped(int handle, void* ctx, int seq);
     extern u32 fightOutPokemonGetPokemonPtr(u32 v);
-    extern void fn_80239EE8(int a, void* ctx, u32 v, int b, int c, u32 d, int e, int seq);
+    extern void fightTrainerAiAddValueLog2(int a, void* ctx, u32 v, int b, int c, u32 d, int e, int seq);
     u32 array1[10];
     u32 array2[8];
     u8 bufA[8];
@@ -145,8 +145,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
             elem = array2[i];
             bufA[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
             bufA[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
-            bufA[2] = fn_802359D8(ctx, elem);
-            bufA[3] = fn_80235974(ctx, elem);
+            bufA[2] = fightTrainerAiGetAbicntSpeAtk(ctx, elem);
+            bufA[3] = fightTrainerAiGetAbicntSpeDef(ctx, elem);
             bufA[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
             bufA[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
             bufA[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
@@ -160,8 +160,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         found = 0;
     L0:
         if (found == 1) {
-            handle = fn_80239984(handle, ctx, 0x1b6);
-            fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1b6);
+            handle = fightTrainerAiAddValueClamped(handle, ctx, 0x1b6);
+            fightTrainerAiAddValueLog2(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1b6);
         }
     }
 
@@ -172,8 +172,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
             elem = array1[i];
             bufB[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
             bufB[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
-            bufB[2] = fn_802359D8(ctx, elem);
-            bufB[3] = fn_80235974(ctx, elem);
+            bufB[2] = fightTrainerAiGetAbicntSpeAtk(ctx, elem);
+            bufB[3] = fightTrainerAiGetAbicntSpeDef(ctx, elem);
             bufB[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
             bufB[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
             bufB[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
@@ -187,8 +187,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         found = 0;
     L1:
         if (found == 1) {
-            handle = fn_80239984(handle, ctx, 0x1b7);
-            fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1b7);
+            handle = fightTrainerAiAddValueClamped(handle, ctx, 0x1b7);
+            fightTrainerAiAddValueLog2(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1b7);
         }
     }
 
@@ -199,8 +199,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
             elem = array2[i];
             bufC[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
             bufC[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
-            bufC[2] = fn_802359D8(ctx, elem);
-            bufC[3] = fn_80235974(ctx, elem);
+            bufC[2] = fightTrainerAiGetAbicntSpeAtk(ctx, elem);
+            bufC[3] = fightTrainerAiGetAbicntSpeDef(ctx, elem);
             bufC[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
             bufC[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
             bufC[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
@@ -214,8 +214,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         found = 0;
     L2:
         if (found == 1) {
-            handle = fn_80239984(handle, ctx, 0x1b8);
-            fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1b8);
+            handle = fightTrainerAiAddValueClamped(handle, ctx, 0x1b8);
+            fightTrainerAiAddValueLog2(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1b8);
         }
     }
 
@@ -226,8 +226,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
             elem = array1[i];
             bufD[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
             bufD[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
-            bufD[2] = fn_802359D8(ctx, elem);
-            bufD[3] = fn_80235974(ctx, elem);
+            bufD[2] = fightTrainerAiGetAbicntSpeAtk(ctx, elem);
+            bufD[3] = fightTrainerAiGetAbicntSpeDef(ctx, elem);
             bufD[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
             bufD[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
             bufD[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
@@ -249,8 +249,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         found = 0;
     L3:
         if (found == 1) {
-            handle = fn_80239984(handle, ctx, 0x1b9);
-            fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1b9);
+            handle = fightTrainerAiAddValueClamped(handle, ctx, 0x1b9);
+            fightTrainerAiAddValueLog2(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1b9);
         }
     }
 
@@ -261,8 +261,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
             elem = array1[i];
             bufE[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
             bufE[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
-            bufE[2] = fn_802359D8(ctx, elem);
-            bufE[3] = fn_80235974(ctx, elem);
+            bufE[2] = fightTrainerAiGetAbicntSpeAtk(ctx, elem);
+            bufE[3] = fightTrainerAiGetAbicntSpeDef(ctx, elem);
             bufE[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
             bufE[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
             bufE[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
@@ -276,8 +276,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         found = 0;
     L4:
         if (found == 1) {
-            handle = fn_80239984(handle, ctx, 0x1ba);
-            fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1ba);
+            handle = fightTrainerAiAddValueClamped(handle, ctx, 0x1ba);
+            fightTrainerAiAddValueLog2(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1ba);
         }
     }
 
@@ -288,8 +288,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
             elem = array2[i];
             bufF[0] = fightTrainerAiGetAbicntPhyAtk(ctx, elem);
             bufF[1] = fightTrainerAiGetAbicntPhyDef(ctx, elem);
-            bufF[2] = fn_802359D8(ctx, elem);
-            bufF[3] = fn_80235974(ctx, elem);
+            bufF[2] = fightTrainerAiGetAbicntSpeAtk(ctx, elem);
+            bufF[3] = fightTrainerAiGetAbicntSpeDef(ctx, elem);
             bufF[4] = fightTrainerAiGetAbicntNimbleness(ctx, elem);
             bufF[5] = fightTrainerAiGetAbicntAverage(ctx, elem);
             bufF[6] = fightTrainerAiGetAbicntAvoid(ctx, elem);
@@ -303,8 +303,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         found = 0;
     L5:
         if (found == 1) {
-            handle = fn_80239984(handle, ctx, 0x1bb);
-            fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1bb);
+            handle = fightTrainerAiAddValueClamped(handle, ctx, 0x1bb);
+            fightTrainerAiAddValueLog2(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1bb);
         }
     }
 
@@ -316,8 +316,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
             block_elem = array1[(u16)elem];
             bufG[0] = fightTrainerAiGetAbicntPhyAtk(ctx, block_elem);
             bufG[1] = fightTrainerAiGetAbicntPhyDef(ctx, block_elem);
-            bufG[2] = fn_802359D8(ctx, block_elem);
-            bufG[3] = fn_80235974(ctx, block_elem);
+            bufG[2] = fightTrainerAiGetAbicntSpeAtk(ctx, block_elem);
+            bufG[3] = fightTrainerAiGetAbicntSpeDef(ctx, block_elem);
             bufG[4] = fightTrainerAiGetAbicntNimbleness(ctx, block_elem);
             bufG[5] = fightTrainerAiGetAbicntAverage(ctx, block_elem);
             bufG[6] = fightTrainerAiGetAbicntAvoid(ctx, block_elem);
@@ -331,8 +331,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         found = 0;
     L6:
         if (found == 1) {
-            handle = fn_80239984(handle, ctx, 0x1bc);
-            fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1bc);
+            handle = fightTrainerAiAddValueClamped(handle, ctx, 0x1bc);
+            fightTrainerAiAddValueLog2(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1bc);
         }
     }
 
@@ -345,8 +345,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
             block_elem = array2[block_i];
             bufH[0] = fightTrainerAiGetAbicntPhyAtk(ctx, block_elem);
             bufH[1] = fightTrainerAiGetAbicntPhyDef(ctx, block_elem);
-            bufH[2] = fn_802359D8(ctx, block_elem);
-            bufH[3] = fn_80235974(ctx, block_elem);
+            bufH[2] = fightTrainerAiGetAbicntSpeAtk(ctx, block_elem);
+            bufH[3] = fightTrainerAiGetAbicntSpeDef(ctx, block_elem);
             bufH[4] = fightTrainerAiGetAbicntNimbleness(ctx, block_elem);
             bufH[5] = fightTrainerAiGetAbicntAverage(ctx, block_elem);
             bufH[6] = fightTrainerAiGetAbicntAvoid(ctx, block_elem);
@@ -368,8 +368,8 @@ int fightTrainerAiWazaValueKuroikiri(void* ctx, u32 param1, u32 param2, u32 para
         found = 0;
     L7:
         if (found == 1) {
-            handle = fn_80239984(handle, ctx, 0x1bd);
-            fn_80239EE8(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1bd);
+            handle = fightTrainerAiAddValueClamped(handle, ctx, 0x1bd);
+            fightTrainerAiAddValueLog2(0xEC64, ctx, fightOutPokemonGetPokemonPtr(param1), 0, 0, param2, 0, 0x1bd);
         }
     }
     return handle;

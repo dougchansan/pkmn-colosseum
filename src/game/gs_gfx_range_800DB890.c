@@ -19,7 +19,7 @@ extern u32 lbl_8047AAD4;
 /* Retail retains this otherwise-unreferenced render-state entry-point group. */
 #pragma force_active on
 
-void fn_800DB890(u32 count)
+void gfxInitDeferredPool(u32 count)
 {
     u32 i;
 
@@ -33,7 +33,7 @@ void fn_800DB890(u32 count)
     }
 }
 
-void fn_800DB900(u32 idx, void* src, s8 val) {
+void gfxSetIndTexMtx(u32 idx, void* src, s8 val) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x5b, 0x12, idx, src, (s32)val); }
     else {
         u32 off = (idx - 1) * 0x1c;
@@ -43,7 +43,7 @@ void fn_800DB900(u32 idx, void* src, s8 val) {
     }
 }
 
-void fn_800DB988(u32 idx, u32 a, u32 b) {
+void gfxSetIndTexCoordScale(u32 idx, u32 a, u32 b) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x5a, 3, idx, a, b); }
     else {
         u8 *p = lbl_80400B28 + idx * 4 + 0x34d;
@@ -52,7 +52,7 @@ void fn_800DB988(u32 idx, u32 a, u32 b) {
     }
 }
 
-void fn_800DB9F0(u32 idx, u32 a, u32 b) {
+void gfxSetIndTexOrder(u32 idx, u32 a, u32 b) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x59, 3, idx, a, b); }
     else {
         u8 *p = lbl_80400B28 + idx * 4 + 0x34d;
@@ -61,12 +61,12 @@ void fn_800DB9F0(u32 idx, u32 a, u32 b) {
     }
 }
 
-void fn_800DBA54(u8 val) {
+void gfxSetNumIndStages(u8 val) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x58, 1, (u8)val); }
     else { lbl_80400B28[0x34c] = val; }
 }
 
-void fn_800DBAA4(u32 idx) {
+void gfxSetTevIndRepeat(u32 idx) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x57, 1, idx); }
     else {
         lbl_80400B28[idx + 0x1fc] = 1;
@@ -74,7 +74,7 @@ void fn_800DBAA4(u32 idx) {
     }
 }
 
-void fn_800DBB0C(u32 idx, u32 a, u32 b) {
+void gfxSetTevIndBumpXYZ(u32 idx, u32 a, u32 b) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x56, 3, idx, a, b); }
     else {
         u8 *p;
@@ -86,7 +86,7 @@ void fn_800DBB0C(u32 idx, u32 a, u32 b) {
     }
 }
 
-void fn_800DBB84(u32 idx, u32 a, u32 b) {
+void gfxSetTevIndBumpST(u32 idx, u32 a, u32 b) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x55, 3, idx, a, b); }
     else {
         u8 *p;
@@ -98,7 +98,7 @@ void fn_800DBB84(u32 idx, u32 a, u32 b) {
     }
 }
 
-void fn_800DBBFC(u32 idx, u32 a, u16 b, u16 c, u16 d, u16 e, u32 f, u32 g, u32 h, u32 j) {
+void gfxSetTevIndTile(u32 idx, u32 a, u16 b, u16 c, u16 d, u16 e, u32 f, u32 g, u32 h, u32 j) {
     u8* p;
 
     if (*(s32*)lbl_8047AA80 == 1) {
@@ -119,7 +119,7 @@ void fn_800DBBFC(u32 idx, u32 a, u16 b, u16 c, u16 d, u16 e, u32 f, u32 g, u32 h
     }
 }
 
-void fn_800DBCE4(u32 idx, u32 a, u8 b, u8 c, u32 d) {
+void gfxSetTevIndWarp(u32 idx, u32 a, u8 b, u8 c, u32 d) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x53, 5, idx, a, (u32)b, (u32)c, d); }
     else {
         u8 *p;
@@ -133,7 +133,7 @@ void fn_800DBCE4(u32 idx, u32 a, u8 b, u8 c, u32 d) {
     }
 }
 
-void fn_800DBD70(u32 idx, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, u8 g, u8 h, u32 j) {
+void gfxSetTevIndirect(u32 idx, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, u8 g, u8 h, u32 j) {
     u8* p;
 
     if (*(s32*)lbl_8047AA80 == 1) {
@@ -154,12 +154,12 @@ void fn_800DBD70(u32 idx, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f, u8 g, u8 h, 
     }
 }
 
-void fn_800DBE5C(u32 idx) {
+void gfxSetTevDirect(u32 idx) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x51, 1, idx); }
     else { lbl_80400B28[idx + 0x1fc] = 0; }
 }
 
-void fn_800DBEB4(u32 idx, GXColor color) {
+void gfxSetTevKColor(u32 idx, GXColor color) {
     if (*(s32*)lbl_8047AA80 == 1) {
         gfxRecordCommand(0x50, 0x14, idx, color);
     } else {
@@ -167,7 +167,7 @@ void fn_800DBEB4(u32 idx, GXColor color) {
     }
 }
 
-void fn_800DBF1C(u32 idx, u32 val) {
+void gfxSetTevKAlphaSel(u32 idx, u32 val) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x4f, 2, idx, val); }
     else {
         u32* base = (u32*)(lbl_80400B28 + 0x1ac);
@@ -175,7 +175,7 @@ void fn_800DBF1C(u32 idx, u32 val) {
     }
 }
 
-void fn_800DBF78(u32 idx, u32 val) {
+void gfxSetTevKColorSel(u32 idx, u32 val) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x4e, 2, idx, val); }
     else {
         u32* base = (u32*)(lbl_80400B28 + 0x16c);
@@ -183,7 +183,7 @@ void fn_800DBF78(u32 idx, u32 val) {
     }
 }
 
-void fn_800DBFD4(u32 idx, u32 a, u32 b, u32 c, u32 d) {
+void gfxSetTevColorIn(u32 idx, u32 a, u32 b, u32 c, u32 d) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x4d, 5, idx, a, b, c, d); }
     else {
         u8 *p = lbl_80400B28 + idx * 4 + 0x12b;
@@ -194,7 +194,7 @@ void fn_800DBFD4(u32 idx, u32 a, u32 b, u32 c, u32 d) {
     }
 }
 
-void fn_800DC04C(u32 idx, u32 a, u32 b, u32 c, u8 d, u32 e) {
+void gfxSetTevColorOp(u32 idx, u32 a, u32 b, u32 c, u8 d, u32 e) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x4c, 6, idx, a, b, c, (u32)d, e); }
     else {
         u8 *p = lbl_80400B28 + idx * 5 + 0x9b;
@@ -206,7 +206,7 @@ void fn_800DC04C(u32 idx, u32 a, u32 b, u32 c, u8 d, u32 e) {
     }
 }
 
-void fn_800DC0D4(u32 idx, u32 a, u32 b, u32 c, u32 d) {
+void gfxSetTevAlphaIn(u32 idx, u32 a, u32 b, u32 c, u32 d) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x4b, 5, idx, a, b, c, d); }
     else {
         u8 *p = lbl_80400B28 + idx * 4 + 0xeb;
@@ -217,7 +217,7 @@ void fn_800DC0D4(u32 idx, u32 a, u32 b, u32 c, u32 d) {
     }
 }
 
-void fn_800DC14C(u32 idx, u32 a, u32 b, u32 c, u8 d, u32 e) {
+void gfxSetTevAlphaOp(u32 idx, u32 a, u32 b, u32 c, u8 d, u32 e) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x4a, 6, idx, a, b, c, (u32)d, e); }
     else {
         u8 *p = lbl_80400B28 + idx * 5 + 0x4b;
@@ -229,7 +229,7 @@ void fn_800DC14C(u32 idx, u32 a, u32 b, u32 c, u8 d, u32 e) {
     }
 }
 
-void fn_800DC1D4(u8 val) {
+void gfxSetNumTevStages(u8 val) {
     if (*(s32*)lbl_8047AA80 == 1) { gfxRecordCommand(0x49, 1, (u8)val); }
     else { lbl_80400B28[0x1a] = val; }
 }

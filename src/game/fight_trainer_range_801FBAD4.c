@@ -4,7 +4,7 @@ extern void _threadSwitch(void);
 extern void wazaSequenceSysStopWaza(void* ptr, u16 field, u32 size);
 extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u16 field, u32 size);
 extern void wazaSequenceSysStartWaza(void* ptr, u16 field, u32 size);
-extern void fn_801DDD28(void* ptr, u16 field, u32 size, u32 flags);
+extern void wazaSequenceOwnerLoadWaza(void* ptr, u16 field, u32 size, u32 flags);
 extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
 extern u32 itemGetStatus(u32 a, u32 b, u32 c, u32 d);
 extern void* fightOutPokemonGetPokemonPtr(void* ctx);
@@ -20,7 +20,7 @@ void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode)
     }
     animId = itemGetStatus(0, param, 0x12, 0);
     if (mode == 0) {
-        fn_801DDD28(data, animId, 4, 0);
+        wazaSequenceOwnerLoadWaza(data, animId, 4, 0);
     } else if (mode == 1) {
         wazaSequenceSysStartWaza(data, animId, 4);
         do {
@@ -32,7 +32,7 @@ void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode)
     } else if (mode == 2) {
         wazaSequenceSysStopWaza(data, animId, 4);
     } else if (mode == 3) {
-        fn_801DDD28(data, 0x57, 4, 0);
+        wazaSequenceOwnerLoadWaza(data, 0x57, 4, 0);
     } else if (mode == 4) {
         wazaSequenceSysStartWaza(data, 0x57, 4);
     } else if (mode == 5) {
@@ -60,7 +60,7 @@ void fightTrainerBallThrowEffect(void* context, void* trainerCtx, u8 mode)
                                        0, 0x73, 0);
     animId = itemGetStatus(0, typeId, 0x11, 0);
     if (mode == 0) {
-        fn_801DDD28(data, animId, 4, 0);
+        wazaSequenceOwnerLoadWaza(data, animId, 4, 0);
     } else if (mode == 1) {
         wazaSequenceSysStartWaza(data, animId, 4);
     } else if (mode == 2) {

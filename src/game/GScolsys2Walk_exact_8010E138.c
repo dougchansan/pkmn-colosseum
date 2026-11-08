@@ -1,6 +1,6 @@
 /**
  * @file GScolsys2Walk_exact_8010E138.c
- * @brief GScolsys2Walk: fn_8010E138, the walk-height collector,
+ * @brief GScolsys2Walk: GScolsys2CollectWalkHeight, the walk-height collector,
  *        0x8010E138 - 0x8010E53C.
  *
  * The tail of the GScolsys2Walk TU (GScolsys2Walk.c keeps
@@ -82,12 +82,12 @@ typedef struct ColWalkHit {
     u8 subLayer;
 } ColWalkHit;
 
-extern ColScene* fn_8010CBC0(void);
+extern ColScene* GScolsys2GetCurFloor_8010CBC0(void);
 extern s32 GScolsys2GetObjEnable(s32 index, s32* enabled);
 extern void colsysMakeSRTMatrix(ColMtx out, u32 index);
 extern void colsysMakeRotMatrix(ColMtx out, u32 index);
 extern void PSMTXMultVec(ColMtx m, const GSvec* src, GSvec* dst);
-s32 fn_8010E138(GSvec* point, ColWalkHit* out);
+s32 GScolsys2CollectWalkHeight(GSvec* point, ColWalkHit* out);
 s32 getCpPolyVec__FP5GSvecP5GSvecP5GSvecP5GSvec(GSvec* out, GSvec* point, GSvec* vertices, GSvec* normal);
 
 /* Append the height of a hit point to the list unless it already holds
@@ -193,7 +193,7 @@ static inline s32 ColWalkCollectGrid(ColWalkHit* list, GSvec* point,
     return count;
 }
 /* 0x8010E138 | 0x404 */
-s32 fn_8010E138(GSvec* point, ColWalkHit* out)
+s32 GScolsys2CollectWalkHeight(GSvec* point, ColWalkHit* out)
 {
     ColWalkHit temp[8];
     ColMtx matrix;
@@ -208,7 +208,7 @@ s32 fn_8010E138(GSvec* point, ColWalkHit* out)
     s32 count;
 
     total = 0;
-    scene = fn_8010CBC0();
+    scene = GScolsys2GetCurFloor_8010CBC0();
     if (scene == NULL) {
         return 0;
     }

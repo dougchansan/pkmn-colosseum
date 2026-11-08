@@ -6,7 +6,7 @@
  */
 #include "game/menu/pkjb_uploader_shared.h"
 
-/* 0x80073034 | 0xC4: like fn_80072C74, without touching the key state. */
+/* 0x80073034 | 0xC4: like gbaCmdPollWord, without touching the key state. */
 s32 _AGB_EntryGetStatus__FlPUl(s32 chan, u32* response)
 {
     u32 data;
@@ -34,7 +34,7 @@ s32 _AGB_EntryGetStatus__FlPUl(s32 chan, u32* response)
 /*
  * One attempt of command 0x77: send the command, then the byte-swapped
  * value, and wait until the GBA has taken it. Inline in the target: the
- * fn_80073C38 result is tested in r3 and only then copied to the caller's
+ * gbaCmdResetLink result is tested in r3 and only then copied to the caller's
  * result register.
  */
 static inline s32 pkjbSend77(s32 chan, u32 value)
@@ -46,7 +46,7 @@ static inline s32 pkjbSend77(s32 chan, u32 value)
     u32 timeout;
     u32 start;
 
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }
@@ -83,7 +83,7 @@ static inline s32 pkjbSend77(s32 chan, u32 value)
 }
 
 /* 0x800730F8 | 0x2D8: command 0x77, retried for 100 ms while the GBA is absent. */
-s32 fn_800730F8(s32 chan, u32 value)
+s32 gbaCmdSend77(s32 chan, u32 value)
 {
     s32 key;
     s32 result;

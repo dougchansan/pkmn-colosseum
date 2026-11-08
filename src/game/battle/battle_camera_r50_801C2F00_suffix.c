@@ -42,7 +42,7 @@ extern void* GSresGetResource(void*, u32);
 extern ModelList* HSD_ArchiveGetPublicAddress(void*, const char*);
 extern u32 floorReadMakeModelResID(u32);
 extern void GSmodelSetScale(void*, f32*);
-extern void fn_800D1070(u32);
+extern void cameraObjectAnimUpdate(u32);
 extern void cameraUpdate(void);
 
 typedef struct BattleCameraVec {
@@ -137,7 +137,7 @@ void battleCameraStartOffsetAnime(void* arg0, u32 arg1)
     }
 
     cameraSetOffsetScale(scale);
-    fn_800D1070(0);
+    cameraObjectAnimUpdate(0);
     cameraUpdate();
     lbl_80478CA8 = 200;
     lbl_8047B398 = 0;

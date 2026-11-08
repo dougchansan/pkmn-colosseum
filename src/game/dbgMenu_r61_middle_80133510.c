@@ -1,7 +1,7 @@
 /**
  * @file dbgMenu_r61_middle_80133510.c
  * @brief dbgMenu carve, 0x80133510 - 0x80133630: debugMenuNodrawArea,
- *        fn_8013356C (party member toggle) and debugMenuChangeMemInfo.
+ *        dbgMenuTogglePartner (party member toggle) and debugMenuChangeMemInfo.
  *
  * Text only, GC/1.3 -O4,p, no pragmas. The three entries are debug-menu
  * callbacks referenced only from unlinked data, so they are listed in
@@ -20,11 +20,11 @@ u32 debugMenuNodrawArea(void)
     return 0;
 }
 
-u32 fn_8013356C(u32 arg1, s32 arg2)
+u32 dbgMenuTogglePartner(u32 arg1, s32 arg2)
 {
     extern u32 heroMoveIsMember(s32 id);
     extern void heroMoveDismissMember(s32 id);
-    extern void fn_8012F1FC(s32 id);
+    extern void partnerSetFollowing(s32 id);
     s32 id;
 
     id = -1;
@@ -37,7 +37,7 @@ u32 fn_8013356C(u32 arg1, s32 arg2)
         if (heroMoveIsMember(id) & 0xFF) {
             heroMoveDismissMember(id);
         } else {
-            fn_8012F1FC(id);
+            partnerSetFollowing(id);
         }
     }
     return 0;

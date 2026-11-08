@@ -1,6 +1,6 @@
 /**
  * @file people_candidate_8018F4C8.c
- * @brief fn_8018F4C8, 0x8018F4C8 - 0x8018F5B4, with its switch jump table
+ * @brief peopleInfoGetMotion, 0x8018F4C8 - 0x8018F5B4, with its switch jump table
  *        (.data 0x8036C540 - 0x8036C564).
  *
  * Standalone source for the split range; the body is the one previously
@@ -9,7 +9,7 @@
  */
 #include "dolphin/types.h"
 
-void fn_8018F4C8(void* entry, u8 param, s32* outNode, u8* outResult) {
+void peopleInfoGetMotion(void* entry, u8 param, s32* outNode, u8* outResult) {
     s8* data = entry;
 
     if (data == NULL) {

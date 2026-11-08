@@ -55,18 +55,18 @@ typedef struct PdaOrbitPoint {
     f32 pad20;
 } PdaOrbitPoint;
 
-void fn_800472CC(PdaSprite* alphaSprite)
+void menu9FDrawItem(PdaSprite* alphaSprite)
 {
     extern PdaOrbitPoint lbl_802E52C8[8];
     extern u32 lbl_8047A4EC;
     extern f32 lbl_8047BCA0;
-    extern void fn_800473E0(PdaOrbitPoint* point);
+    extern void pdaDrawSpline(PdaOrbitPoint* point);
     s32 i;
 
     alphaSprite->alphaByte =
         lbl_8047BCA0 * lbl_803A6818.alphaScale;
     for (i = 0; i < 8; i++) {
-        fn_800473E0(&lbl_802E52C8[i]);
+        pdaDrawSpline(&lbl_802E52C8[i]);
     }
     for (i = (s32)lbl_8047A4EC - 1; i >= 0; i--) {
         lbl_802E52C8[i].alpha -= 10.0f;

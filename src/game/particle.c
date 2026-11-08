@@ -66,7 +66,7 @@
 #include "sysdolphin/baselib/psstructs.h"
 
 extern void* memset(void* dst, int val, u32 size);
-extern void fn_800060F0(const char* file, int line, const char* msg, ...); /* OSPanic */
+extern void errorPanic(const char* file, int line, const char* msg, ...); /* OSPanic */
 extern void HSD_JObjUnref(HSD_JObj* jobj);                                    /* HSD_JObjUnref */
 
 extern HSD_Particle* _psListNew(HSD_Particle* parent, u32 linkNo);
@@ -229,7 +229,7 @@ static inline void psInitDataBankLoad(s32 bank, s32* cmdBank, s32* texBank,
                                       u32* ref, s32* formBank)
 {
     if (formBank != NULL && *formBank != *texBank) {
-        fn_800060F0(__FILE__, 95, "illigal form data (strange number of group)\n");
+        errorPanic(__FILE__, 95, "illigal form data (strange number of group)\n");
     }
 
     psBankRef[bank] = ref;
@@ -257,7 +257,7 @@ static inline void psInitDataBankLoad(s32 bank, s32* cmdBank, s32* texBank,
         break;
     }
     default:
-        fn_800060F0(__FILE__, 125, "psInitDataBanks: unknown version\n");
+        errorPanic(__FILE__, 125, "psInitDataBanks: unknown version\n");
     }
 }
 

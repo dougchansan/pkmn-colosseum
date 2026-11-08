@@ -41,7 +41,7 @@ extern void GSlightSetColor(void* light, void* color);
 extern void GSlightSetPosition(void* light, void* pos);
 extern void GSlightSetTarget(void* light, void* target);
 extern void GSlightSetActive(void* light, s32 active);
-extern u8 fn_80047CC0(u8* work);
+extern u8 pdaModelFrameSingle(u8* work);
 extern u8 pdaModelFrameCamera(void* work, void* sub);
 extern void* memcpy(void* dst, const void* src, u32 size);
 
@@ -107,7 +107,7 @@ static inline u8 fn_8003D1FC_setup(u8* sub)
     return 1;
 }
 
-s32 fn_8003D1FC(void)
+s32 pdaModelViewSetup(void)
 {
     switch (*(s32*)((u8*)&lbl_803A6818 + 0x1c)) {
     case 0:
@@ -119,7 +119,7 @@ s32 fn_8003D1FC(void)
     case 8:
     case 0xb:
     case 0xc:
-        *((u8*)&lbl_803A6818 + 0x214) = fn_80047CC0((u8*)&lbl_803A6818 + 0x7c);
+        *((u8*)&lbl_803A6818 + 0x214) = pdaModelFrameSingle((u8*)&lbl_803A6818 + 0x7c);
         break;
     case 5:
         *((u8*)&lbl_803A6818 + 0x214) =

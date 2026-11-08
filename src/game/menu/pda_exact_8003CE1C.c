@@ -21,7 +21,7 @@ extern void* fightTrainerKindDataBiosGetPtr(u16 kind);
 extern u8 darkPokemonSaveGet49C(u16 id);
 extern s32 darkPokemonGetFlagListValue(u16 id, s8* variant);
 extern u32 darkPokemonSaveGetC(u16 id);
-extern u16 fn_801EEFAC(u16 id, s32 side);
+extern u16 darkPokemonGetSpecies(u16 id, s32 side);
 
 /* RULE-EXCEPTION(user-approved): local peephole-control pragma - see docs/RULE_EXCEPTIONS.md */
 #pragma push
@@ -45,11 +45,11 @@ s32 pdaSnagListGetTrainerName(s32 index)
             message = 0x3720;
             break;
         case 2:
-            kind = fn_801EEFAC(battleId, 0);
+            kind = darkPokemonGetSpecies(battleId, 0);
             if (kind == 9) {
                 kindData = fightTrainerKindDataBiosGetPtr(darkPokemonSaveGet49C(battleId));
             } else {
-                alternate = fn_801EEFAC(battleId, 1);
+                alternate = darkPokemonGetSpecies(battleId, 1);
                 if (alternate != 0 && darkPokemonSaveGetC(battleId) != 3) {
                     kind = alternate;
                 }

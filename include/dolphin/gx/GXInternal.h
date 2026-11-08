@@ -75,7 +75,7 @@ void __GXSendFlushPrim(void);
 void GXSetViewportJitter(f32 left, f32 top, f32 width, f32 height, f32 nearz,
                  f32 farz, u32 field);
 void __GXSetMatrixIndex(s32 value);
-void fn_800BE164(u32* hi, u32* lo);
+void GXReadGPMetric(u32* hi, u32* lo);
 u32 __cvt_fp2unsigned(f32 value);
 
 /* The only other volatile accesses in these sources are the GX FIFO MMIO. */

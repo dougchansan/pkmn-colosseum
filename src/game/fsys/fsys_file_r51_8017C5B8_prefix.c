@@ -2,9 +2,9 @@
  * @file fsys_file_r51_8017C5B8_prefix.c
  * @brief FSYS slot status handler fsysSlotStatusStartEntries (0x8017C5B8 - 0x8017C6E0).
  *
- * Puts the entry being loaded into the ARAM cache: when fn_8017F794 finds
- * no cached image of it, fn_8017F928 reserves one of the entry's size and
- * fn_80180694 copies the entry's buffer there (completion callback
+ * Puts the entry being loaded into the ARAM cache: when fsysCacheLookup finds
+ * no cached image of it, fsysCacheReserve reserves one of the entry's size and
+ * fsysMainToARAMAsync copies the entry's buffer there (completion callback
  * fsysARQCallback, status 151); a failed lookup-and-reserve leaves status 152.
  * For load mode 3 the slot's handle is refreshed first (fsysSlotRefreshHandle) and the
  * handle table is scanned for it; the scan's result is not used.
@@ -37,10 +37,10 @@
 extern FSYSFileHandle* lbl_8047B1B8; /* handle table */
 extern s32 lbl_8047B1BC;             /* handle table fill count */
 
-extern u32 fn_8017F794(u32 fileHandle, u32 groupID, u32 nameHash);
-extern u32 fn_8017F928(u32 size, u32 fileHandle, u32 groupID, u32 nameHash);
+extern u32 fsysCacheLookup(u32 fileHandle, u32 groupID, u32 nameHash);
+extern u32 fsysCacheReserve(u32 size, u32 fileHandle, u32 groupID, u32 nameHash);
 extern FSYSFileHandle* fsysSlotRefreshHandle(FSYSSlot* slot);
-extern void fn_80180694(void* src, u32 aram, u32 size,
+extern void fsysMainToARAMAsync(void* src, u32 aram, u32 size,
                         void (*callback)(s32 result, void* userData), FSYSSlot* slot);
 extern void fsysARQCallback(s32 result, void* userData);
 
@@ -56,10 +56,10 @@ static inline u32 fsysCacheEntry(FSYSSlot* slot)
 
     entry = fsysGetEntry(slot, slot->entryIndex);
     sub = slot->currentSub;
-    cached = fn_8017F794(slot->fileHandle, entry->groupID, entry->nameHash);
+    cached = fsysCacheLookup(slot->fileHandle, entry->groupID, entry->nameHash);
     if (cached == 0) {
         size = entry->decompressedSize;
-        cached = fn_8017F928(size, slot->fileHandle, entry->groupID, entry->nameHash);
+        cached = fsysCacheReserve(size, slot->fileHandle, entry->groupID, entry->nameHash);
         if (cached == 0) {
             slot->status = 0x98;
         } else {
@@ -74,7 +74,7 @@ static inline u32 fsysCacheEntry(FSYSSlot* slot)
                 }
             }
             slot->status = 0x97;
-            fn_80180694(sub->buffer, cached, size, fsysARQCallback, slot);
+            fsysMainToARAMAsync(sub->buffer, cached, size, fsysARQCallback, slot);
         }
     } else {
         slot->status = 0x98;

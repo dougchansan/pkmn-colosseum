@@ -72,8 +72,8 @@ extern u8*  lbl_80478F34;  /* Story/event data */
 
 /* Forward declarations for converted functions (defined with real bodies,
  * possibly in a sibling segment). */
-u16 fn_801FCC94(u8* ptr);
-u8 fn_801FCCAC(u8* ptr);
+u16 fightTrainerDataBiosGetStatus02(u8* ptr);
+u8 fightTrainerDataBiosGetStatus01(u8* ptr);
 void fightTrainerSetStatus(void);
 void fightTrainerGetStatus(void);
 
@@ -474,7 +474,7 @@ s32 fightTrainerGetFightPokemonToTemotiBanme(void* context, void* target) {
 /* 0x801F86C0 | size: 0x10C */
 void fightTrainerBackFightPokemonToTemotiPokemon(void* context, u8 flag) {
     extern void pokemonBiosCopy(void* ptr, void* pokemon);
-    extern void fn_8012190C(void* ptr, u32 field, u32 val);
+    extern void pokemonSetJoutaiStack(void* ptr, u32 field, u32 val);
     extern u8 pokemonIsJoutaiDataId(void* ptr, u32 field);
     extern u16 pokemonGetSoubiItemDataId(void* pokemon);
     extern u8 fightPokemonCheckValid(void* ptr);
@@ -499,7 +499,7 @@ void fightTrainerBackFightPokemonToTemotiPokemon(void* context, u8 flag) {
                 if ((moveData = pokemonGetStatus(slot, 0, 0xCB, 0)) != NULL) {
                     pokemonBiosCopy(moveData, pokemon);
                     if ((u8)pokemonIsJoutaiDataId(moveData, 4) == 1) {
-                        fn_8012190C(moveData, 4, 1);
+                        pokemonSetJoutaiStack(moveData, 4, 1);
                     }
                     if (flag == 1) {
                         pokemonSetStatus(moveData, 0, 0x82, 0, speciesId);
@@ -1044,8 +1044,8 @@ static inline u8 fightTrainerGetTrainerDataKindInline(u16 trainerDataId) {
 /* 0x801F9CBC | size: 0x2BC | large */
 void fightTrainerCreateFightTrainerDataIdToHero(
     u16 trainerDataId, s32 inputDevice, void* hero) {
-    extern u32 fn_800896B8(void);
-    extern void* fn_800896C8(void);
+    extern u32 fightGetResult80478960(void);
+    extern void* cardeGetEncounterParam8047A670(void);
     extern void* GSmsgGetGSchar(u32);
     extern void* savedataGetStatus(u32, u32);
     extern s32 heroItemAddItemDataId(void*, u16, u32, s32);
@@ -1083,8 +1083,8 @@ void fightTrainerCreateFightTrainerDataIdToHero(
     sex = (u8)(u32)fightTrainerGetStatus(NULL, trainerDataId, 1, 0);
     name = GSmsgGetGSchar(
         (u32)fightTrainerGetStatus(NULL, trainerDataId, 3, 0));
-    if (trainerDataId == fn_800896B8()) {
-        name = fn_800896C8();
+    if (trainerDataId == fightGetResult80478960()) {
+        name = cardeGetEncounterParam8047A670();
     }
     heroCreate(hero, name, sex);
 
@@ -1157,7 +1157,7 @@ u8 fightTrainerCreateFightTrainerPokemonDataIdToPokemon(
     extern void pokemonResetBasisStatus(void* pokemon);
     extern u32 darkPokemonSaveGet8(u16 darkId);
     extern void darkPokemonSaveSet8(u16 darkId, u32 value);
-    extern s8 fn_801EE824(u16 darkId, u16 index);
+    extern s8 darkPokemonGetFlag24(u16 darkId, u16 index);
     extern void darkPokemonSetFlag24(u16 darkId, u16 index, s8 value);
     extern u8 darkPokemonCheckFlag16(u16 darkId);
     extern s32 fightTrainerGetStatus(void* ctx, u16 slot, u32 field, u16 idx);
@@ -1220,7 +1220,7 @@ u8 fightTrainerCreateFightTrainerPokemonDataIdToPokemon(
     for (stat = 0; stat < 6; stat++) {
         if (darkId != 0 && (u8)darkPokemonCheckFlag16((u8)darkId) == 1) {
             pokemonSetStatus(pokemon, 0, individualIds.id[stat], 0,
-                             (u16)fn_801EE824((u8)darkId, stat));
+                             (u16)darkPokemonGetFlag24((u8)darkId, stat));
         } else if (individual[stat] >= 0) {
             pokemonSetStatus(pokemon, 0, individualIds.id[stat], 0, individual[stat]);
         }
@@ -1444,7 +1444,7 @@ void fightTrainerSetStatus(void) {
     extern void fightTrainerEnemyPokemonBiosSetNowhp1banhikuiFlag();
     extern void fightTrainerEnemyPokemonBiosSetStoreTokuseiData();
     extern void fightTrainerEnemyPokemonBiosSetTokuseiFlag();
-    extern void fn_801FBDF4();
+    extern void fightTrainerEnemyBiosSetEntry();
     extern void fightTrainerAiValueAddsubDataBiosSetPrefixName();
     extern void fightTrainerAiValueAddsubDataBiosSetKoudouName();
     extern void fightTrainerAiValueAddsubDataBiosSetName();
@@ -1808,7 +1808,7 @@ void fightTrainerSetStatus(void) {
     if (r3 == (u32)0x0) return;
     r4 = r29 & 0xFF;
     r5 = r31 & 0xFFFF;
-    fn_801FBDF4();
+    fightTrainerEnemyBiosSetEntry();
     return;
     r30 = (s16)r28;
     if (r3 >= (u32)0x0) {
@@ -2037,15 +2037,15 @@ void fightTrainerGetStatus(void) {
     extern void fightTrainerPokemonDataBiosGetNickname();
     extern void fightTrainerPokemonPartDataBiosGetWazaTypeRevise();
     extern void fightTrainerPokemonPartDataBiosGetName();
-    extern void fn_801FCBA4();
-    extern void fn_801FCBBC();
-    extern void fn_801FCBF0();
-    extern void fn_801FCC08();
-    extern void fn_801FCC3C();
+    extern void fightTrainerDataBiosGetStatus09();
+    extern void fightTrainerDataBiosGetStatus08();
+    extern void fightTrainerDataBiosGetStatus07();
+    extern void fightTrainerDataBiosGetStatus06();
+    extern void fightTrainerDataBiosGetStatus05();
     extern void fightTrainerDataBiosGetKindDataId();
-    extern void fn_801FCC7C();
-    extern void fn_801FCC94();
-    extern void fn_801FCCAC();
+    extern void fightTrainerDataBiosGetStatus03();
+    extern void fightTrainerDataBiosGetStatus02();
+    extern void fightTrainerDataBiosGetStatus01();
     extern void fightTrainer_GetFightActionBuffPtr();
     extern void fightTrainer_GetFightTrainerEnemyPokemonAryPtr();
     extern void fightTrainer_GetSequencePtr();
@@ -2135,30 +2135,30 @@ void fightTrainerGetStatus(void) {
     r0 = *(u32*)(r4 + r0);
     ctr_fn = (void(*)(void))r0;
     /* indirect jump via ctr */;
-    fn_801FCCAC();
+    fightTrainerDataBiosGetStatus01();
     r3 = r3 & 0xFF;
     return;
-    fn_801FCC94();
+    fightTrainerDataBiosGetStatus02();
     r3 = r3 & 0xFFFF;
     return;
-    fn_801FCC7C();
+    fightTrainerDataBiosGetStatus03();
     return;
     fightTrainerDataBiosGetKindDataId();
     r3 = r3 & 0xFFFF;
     return;
-    fn_801FCC3C();
+    fightTrainerDataBiosGetStatus05();
     r3 = r3 & 0xFFFF;
     return;
     r4 = r30 & 0xFF;
-    fn_801FCC08();
+    fightTrainerDataBiosGetStatus06();
     r3 = r3 & 0xFFFF;
     return;
-    fn_801FCBF0();
+    fightTrainerDataBiosGetStatus07();
     return;
     r4 = r30 & 0xFF;
-    fn_801FCBBC();
+    fightTrainerDataBiosGetStatus08();
     return;
-    fn_801FCBA4();
+    fightTrainerDataBiosGetStatus09();
     return;
     fightTrainerPokemonPartDataBiosGetName();
     return;
@@ -2551,7 +2551,7 @@ void fightTrainerWazaSeq57(void* context, u8 mode) {
     extern void wazaSequenceSysStopWaza(void* ptr, u32 field, u32 size);
     extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u32 field, u32 size);
     extern void wazaSequenceSysStartWaza(void* ptr, u32 field, u32 size);
-    extern void fn_801DDD28(void* ptr, u32 field, u32 size, u32 flags);
+    extern void wazaSequenceOwnerLoadWaza(void* ptr, u32 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
 
@@ -2559,7 +2559,7 @@ void fightTrainerWazaSeq57(void* context, u8 mode) {
         return;
     }
     if (mode == 0) {
-        fn_801DDD28(data, 0x57, 4, 0);
+        wazaSequenceOwnerLoadWaza(data, 0x57, 4, 0);
     } else if (mode == 1) {
         wazaSequenceSysStartWaza(data, 0x57, 4);
     } else if (mode == 2) {
@@ -2580,7 +2580,7 @@ void fightTrainerWazaSeq74(void* context, u8 mode) {
     extern void wazaSequenceSysStopWaza(void* ptr, u32 field, u32 size);
     extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u32 field, u32 size);
     extern void wazaSequenceSysStartWaza(void* ptr, u32 field, u32 size);
-    extern void fn_801DDD28(void* ptr, u32 field, u32 size, u32 flags);
+    extern void wazaSequenceOwnerLoadWaza(void* ptr, u32 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
 
@@ -2588,7 +2588,7 @@ void fightTrainerWazaSeq74(void* context, u8 mode) {
         return;
     }
     if (mode == 0) {
-        fn_801DDD28(data, 0x74, 4, 0);
+        wazaSequenceOwnerLoadWaza(data, 0x74, 4, 0);
     } else if (mode == 1) {
         wazaSequenceSysStartWaza(data, 0x74, 4);
     } else if (mode == 2) {
@@ -2612,7 +2612,7 @@ void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode) {
     extern void wazaSequenceSysStopWaza(void* ptr, u16 field, u32 size);
     extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u16 field, u32 size);
     extern void wazaSequenceSysStartWaza(void* ptr, u16 field, u32 size);
-    extern void fn_801DDD28(void* ptr, u16 field, u32 size, u32 flags);
+    extern void wazaSequenceOwnerLoadWaza(void* ptr, u16 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     void* data;
     u32 animId;
@@ -2622,7 +2622,7 @@ void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode) {
     }
     animId = itemGetStatus(0, param, 0x12, 0);
     if (mode == 0) {
-        fn_801DDD28(data, animId, 4, 0);
+        wazaSequenceOwnerLoadWaza(data, animId, 4, 0);
     } else if (mode == 1) {
         wazaSequenceSysStartWaza(data, animId, 4);
         do {
@@ -2634,7 +2634,7 @@ void fightTrainerHokakuThrowEffect(void* context, u32 param, u8 mode) {
     } else if (mode == 2) {
         wazaSequenceSysStopWaza(data, animId, 4);
     } else if (mode == 3) {
-        fn_801DDD28(data, 0x57, 4, 0);
+        wazaSequenceOwnerLoadWaza(data, 0x57, 4, 0);
     } else if (mode == 4) {
         wazaSequenceSysStartWaza(data, 0x57, 4);
     } else if (mode == 5) {
@@ -2655,7 +2655,7 @@ void fightTrainerBallThrowEffect(void* context, void* trainerCtx, u8 mode) {
     extern void wazaSequenceSysStopWaza(void* ptr, u16 field, u32 size);
     extern u8 wazaSequenceSysIsPlayingWaza(void* ptr, u16 field, u32 size);
     extern void wazaSequenceSysStartWaza(void* ptr, u16 field, u32 size);
-    extern void fn_801DDD28(void* ptr, u16 field, u32 size, u32 flags);
+    extern void wazaSequenceOwnerLoadWaza(void* ptr, u16 field, u32 size, u32 flags);
     extern void* fightTrainerGetStatus(void* ctx, u32 slot, u32 field, u32 idx);
     extern void* fightOutPokemonGetPokemonPtr(void* ctx);
     void* data;
@@ -2668,7 +2668,7 @@ void fightTrainerBallThrowEffect(void* context, void* trainerCtx, u8 mode) {
     typeId = (u8)(u32)pokemonGetStatus(fightOutPokemonGetPokemonPtr(trainerCtx), 0, 0x73, 0);
     animId = itemGetStatus(0, typeId, 0x11, 0);
     if (mode == 0) {
-        fn_801DDD28(data, animId, 4, 0);
+        wazaSequenceOwnerLoadWaza(data, animId, 4, 0);
     } else if (mode == 1) {
         wazaSequenceSysStartWaza(data, animId, 4);
     } else if (mode == 2) {

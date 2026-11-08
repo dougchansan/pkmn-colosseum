@@ -48,7 +48,7 @@ void GXGetProjectionv(f32* p);
 /* GXGetViewportv */
 void GXGetViewportv(f32* vp);
 /* hsdNew */
-void* fn_80193828(HSD_ClassInfo* info);
+void* hsdNew_80193828(HSD_ClassInfo* info);
 
 #define GX_FOG_NONE 0
 #define GX_FOG_LIN 2
@@ -158,7 +158,7 @@ void HSD_FogSet(HSD_Fog* fog)
 
 HSD_Fog* HSD_FogAlloc(void)
 {
-    HSD_Fog* fog = fn_80193828(HSD_CLASS_INFO(&hsdFog));
+    HSD_Fog* fog = hsdNew_80193828(HSD_CLASS_INFO(&hsdFog));
     HSD_ASSERT(161, fog);
     return fog;
 }
@@ -201,7 +201,7 @@ void HSD_FogInit(HSD_Fog* fog, HSD_FogDesc* desc)
 
 HSD_FogAdj* HSD_FogAdjAlloc(void)
 {
-    HSD_FogAdj* adj = fn_80193828(HSD_CLASS_INFO(&hsdFogAdj));
+    HSD_FogAdj* adj = hsdNew_80193828(HSD_CLASS_INFO(&hsdFogAdj));
     HSD_ASSERT(249, adj);
     return adj;
 }

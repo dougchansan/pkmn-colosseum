@@ -1,6 +1,6 @@
 # MetroTRK FPSCR access helpers in Pokémon Colosseum (GC6E01)
 
-`fn_800C11F4` and `fn_800C1218` sit in the `trk/TRKInterrupt.c` unit
+`ReadFPSCR` and `WriteFPSCR` sit in the `trk/TRKInterrupt.c` unit
 (.text 0x800C0EAC–0x800C1300). They are MetroTRK's `ReadFPSCR` and
 `WriteFPSCR` from `Processor/ppc/Generic/targimpl.c`, called by
 `TRKPPCAccessFPRegister` (in this tree `TRKTarget_range_800C1348.c`, which calls
@@ -12,7 +12,7 @@ Common origin: Metrowerks MetroTRK for Dolphin (`TRK_MINNOW_DOLPHIN`),
 `targimpl.c`, linked into Colosseum's main.dol from the CodeWarrior debugger
 library.
 
-## fn_800C11F4
+## ReadFPSCR
 
 Retail address 0x800C11F4, size 0x24 (upstream `ReadFPSCR`).
 
@@ -20,10 +20,10 @@ Retail address 0x800C11F4, size 0x24 (upstream `ReadFPSCR`).
 - Other decompilations: [zeldaret/tp, commit c8fa8c9e, `libs/TRK_MINNOW_DOLPHIN/debugger/embedded/MetroTRK/Processor/ppc/Generic/targimpl.c`](https://github.com/zeldaret/tp/blob/c8fa8c9e2aab72cf4e5db0e5d1c84a9ea6ee6eb0/libs/TRK_MINNOW_DOLPHIN/debugger/embedded/MetroTRK/Processor/ppc/Generic/targimpl.c#L1116) and [zeldaret/tww, commit f5234ec8, `src/TRK_MINNOW_DOLPHIN/ppc/Generic/targimpl.c`](https://github.com/zeldaret/tww/blob/f5234ec8f4b8f4119b8db4a018c1ca25572988b1/src/TRK_MINNOW_DOLPHIN/ppc/Generic/targimpl.c#L1116) keep `ReadFPSCR` as an `asm` function body.
 - Origin: Metrowerks MetroTRK for Dolphin, `targimpl.c`, hand-written assembly in the vendor source; the exact CodeWarrior/MetroTRK build in Colosseum is not established.
 
-## fn_800C1218
+## WriteFPSCR
 
 Retail address 0x800C1218, size 0x24 (upstream `WriteFPSCR`).
 
-- Why it cannot be C: the inverse of `fn_800C11F4`: it preserves f31 with `stfd` and the paired-single `psq_st`, loads the saved value through r3 and writes the whole FPSCR with `mtfsf 0xff, f31`, then restores f31 with `psq_l`/`lfd`. MWCC emits `mtfsf` only through hand-written asm.
+- Why it cannot be C: the inverse of `ReadFPSCR`: it preserves f31 with `stfd` and the paired-single `psq_st`, loads the saved value through r3 and writes the whole FPSCR with `mtfsf 0xff, f31`, then restores f31 with `psq_l`/`lfd`. MWCC emits `mtfsf` only through hand-written asm.
 - Other decompilations: [zeldaret/tp, commit c8fa8c9e, `libs/TRK_MINNOW_DOLPHIN/debugger/embedded/MetroTRK/Processor/ppc/Generic/targimpl.c`](https://github.com/zeldaret/tp/blob/c8fa8c9e2aab72cf4e5db0e5d1c84a9ea6ee6eb0/libs/TRK_MINNOW_DOLPHIN/debugger/embedded/MetroTRK/Processor/ppc/Generic/targimpl.c#L1131) and [zeldaret/tww, commit f5234ec8, `src/TRK_MINNOW_DOLPHIN/ppc/Generic/targimpl.c`](https://github.com/zeldaret/tww/blob/f5234ec8f4b8f4119b8db4a018c1ca25572988b1/src/TRK_MINNOW_DOLPHIN/ppc/Generic/targimpl.c#L1131) keep `WriteFPSCR` as an `asm` function body.
 - Origin: Metrowerks MetroTRK for Dolphin, `targimpl.c`, hand-written assembly in the vendor source; the exact CodeWarrior/MetroTRK build in Colosseum is not established.

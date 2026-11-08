@@ -13,8 +13,8 @@
  */
 #include "dolphin/types.h"
 
-extern u8 fn_80077B3C(void);
-extern u8 fn_80077B60(void);
+extern u8 menuCBRule_GetRule0F(void);
+extern u8 menuCBRule_GetRule0E(void);
 extern u32 fightTargetGetPtrAsNowFightType();
 extern u32 fightFloorGetStatus();
 extern u32 fightSideGetValidFightTrainerPtr();
@@ -58,8 +58,8 @@ u32 fightAiCheckRule0E0F(u32 statusId, u32 target)
     u8 disabled7;
 
     enabled = fightFloorGetStatus(0, 0, 0x34, 0);
-    disabled8 = fn_80077B60();
-    disabled7 = fn_80077B3C();
+    disabled8 = menuCBRule_GetRule0E();
+    disabled7 = menuCBRule_GetRule0F();
     if (enabled == 1) {
         if ((u16)statusId == 8) {
             if (disabled8 != 1 && fightCountJoutai(target, statusId) >= 1) {
@@ -76,9 +76,9 @@ u32 fightAiCheckRule0E0F(u32 statusId, u32 target)
 
 u8 fightCheckAccuracyRules(u32 move, u32 attacker, u32 target)
 {
-    extern u8 fn_80077AAC();
-    extern u8 fn_80077AD0();
-    extern u8 fn_80077B18();
+    extern u8 menuCBRule_GetRule13();
+    extern u8 menuCBRule_GetRule12();
+    extern u8 menuCBRule_GetRule10();
     extern u16 wazaGetStatus();
     extern u32 fightSideGetFightPokemonNum();
     u8 enabled;
@@ -94,11 +94,11 @@ u8 fightCheckAccuracyRules(u32 move, u32 attacker, u32 target)
     u32 id;
 
     enabled = fightFloorGetStatus(0, 0, 0x34, 0);
-    disabled11D = fn_80077B18();
-    disabledC2 = fn_80077AD0();
-    disabled52 = fn_80077AAC();
-    disabled8 = fn_80077B60();
-    fn_80077B3C();
+    disabled11D = menuCBRule_GetRule10();
+    disabledC2 = menuCBRule_GetRule12();
+    disabled52 = menuCBRule_GetRule13();
+    disabled8 = menuCBRule_GetRule0E();
+    menuCBRule_GetRule0F();
     if (enabled == 1) {
         id = move & 0xffff;
         if (id == 0x11d) {

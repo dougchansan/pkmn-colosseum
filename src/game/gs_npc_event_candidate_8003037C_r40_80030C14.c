@@ -1,9 +1,9 @@
 /**
  * @file gs_npc_event_candidate_8003037C_r40_80030C14.c
- * @brief fn_80030C14 carve, 0x80030C14 - 0x80030D34.
+ * @brief menuDBDrawModel carve, 0x80030C14 - 0x80030D34.
  *
  * NPC event callback: draw trainer model A (event 0x10CC) or B (0x10CD)
- * over the sprite, like fn_800301B0 does for events 0x10CE/0x10CF.
+ * over the sprite, like tradeEvoMenuDrawModel does for events 0x10CE/0x10CF.
  */
 #include "dolphin/types.h"
 
@@ -25,7 +25,7 @@ extern u8 lbl_80314F98[];
 extern f32 lbl_8047B9D4;
 extern f32 lbl_8047B9F0;
 
-void fn_80030C14(void* r3, u8* r4)
+void menuDBDrawModel(void* r3, u8* r4)
 {
     s32 evtype = *(s16*)(r4 + 0x6);
     void* model = NULL;

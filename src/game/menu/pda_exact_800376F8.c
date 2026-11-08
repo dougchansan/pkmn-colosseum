@@ -13,7 +13,7 @@ extern f32 lbl_8047A494;
 
 /* Four identical fade steps over the PDA fade block (one per sprite slot);
  * written out per function (was a PDA_FADE_STEP macro). */
-void fn_800376F8(void* window, volatile PdaSprite* sprite)
+void pcMenuDrawItem(void* window, volatile PdaSprite* sprite)
 {
     f32 value;
     f32 next;
@@ -43,7 +43,7 @@ void fn_800376F8(void* window, volatile PdaSprite* sprite)
     }
 }
 
-void fn_800377B4(void* window, volatile PdaSprite* sprite)
+void pcMenuDrawItem2(void* window, volatile PdaSprite* sprite)
 {
     f32 value;
     f32 next;
@@ -73,7 +73,7 @@ void fn_800377B4(void* window, volatile PdaSprite* sprite)
     }
 }
 
-void fn_80037870(void* window, volatile PdaSprite* sprite)
+void pcMenuDrawItem3(void* window, volatile PdaSprite* sprite)
 {
     f32 value;
     f32 next;
@@ -103,7 +103,7 @@ void fn_80037870(void* window, volatile PdaSprite* sprite)
     }
 }
 
-void fn_8003792C(void* window, volatile PdaSprite* sprite)
+void pcMenuDrawItem4(void* window, volatile PdaSprite* sprite)
 {
     f32 value;
     f32 next;

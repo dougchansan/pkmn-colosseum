@@ -20,7 +20,7 @@ extern void* GSmsgGetGSchar(u32 id);
 extern void msgctrlSetValue(u32 id, u32 value);
 extern u8 fightTargetIsHostSide(u32 pokemon, u16 status);
 extern void* fightTargetGetPtrAsNowFightType(u32 target, u32 pokemon);
-extern u8 fn_801F18DC(u32 arg);
+extern u8 fightFloorIsKind10(u32 arg);
 extern void* fightFloorGetFightOutPokemonPtrToFightTrainerPtr(u32 arg, u32 pokemon);
 extern u32 fightFloorGetStatus(u32 a, u32 b, u32 id, u32 d);
 extern void* fightSideGetValidFightTrainerPtr(void* side, u16 index);
@@ -89,7 +89,7 @@ void* _msgctrlSideName__FP15FightOutPokemonUc(u32 pokemon, u8 kind)
         }
     }
 
-    if (fn_801F18DC(0) == 1 && ownTrainer != NULL) {
+    if (fightFloorIsKind10(0) == 1 && ownTrainer != NULL) {
         if (count <= 1) {
             msgctrlSetValue(0x4D, fightTrainerGetNamePtr(ownTrainer));
             if (kind == 0) {
@@ -133,7 +133,7 @@ static inline void* msgctrlOutPokemonName(u32 pokemon)
 {
     void* trainer = fightFloorGetFightOutPokemonPtrToFightTrainerPtr(0, pokemon);
 
-    if (fn_801F18DC(0) == 1 && trainer != NULL) {
+    if (fightFloorIsKind10(0) == 1 && trainer != NULL) {
         msgctrlSetValue(0x4D, fightTrainerGetNamePtr(trainer));
         msgctrlSetValue(0x57, fightOutPokemonGetNicknamePtr(pokemon));
         return GSmsgGetGSchar(0x7721);

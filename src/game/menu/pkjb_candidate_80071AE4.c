@@ -1,25 +1,25 @@
 /**
  * @file pkjb_candidate_80071AE4.c
- * @brief pkjb_uploader.c carve, 0x80071AE4 - 0x80071E34 (fn_80071AE4).
+ * @brief pkjb_uploader.c carve, 0x80071AE4 - 0x80071E34 (gbaCmdUpload22).
  *
- * fn_80071AE4's buffer is the u8 block gbaCommunication.c passes
- * (p + 0x4344, through fn_80089D30). The command-0x22 helper takes the
+ * gbaCmdUpload22's buffer is the u8 block gbaCommunication.c passes
+ * (p + 0x4344, through gbaPortUpload22). The command-0x22 helper takes the
  * swapped header word and splits it into its own extra/count locals at its
  * top; MWCC hoists the header read and swap out of the retry loop into a
  * block of their own after the idle-callback addresses, as in retail, and
  * the helper's count local keeps retail's register order. The hoist needs
  * GC/2.5 or later (GC/2.0 keeps the swap in the loop).
  *
- * fn_80071E34 is pkjb_exact_80071E34.c. fn_80071EA4 receives into a byte
+ * gbaCmdRecv33Locked is pkjb_exact_80071E34.c. gbaCmdRecv33 receives into a byte
  * buffer (gbaCommunication.c passes u8 readBuffer[0xD8]) one word at a time
  * at a byte offset; the body size is an unsigned word count times 4.
  * pkjb_candidate_80071EA4.c compiles it from this file alone
- * (PKJB_80071EA4_ONLY); compiled directly, this file holds fn_80071AE4 only.
+ * (PKJB_80071EA4_ONLY); compiled directly, this file holds gbaCmdUpload22 only.
  * Unit flags and shared helpers: see game/menu/pkjb_uploader_shared.h.
  */
 #include "game/menu/pkjb_uploader_shared.h"
 
-s32 fn_80071EA4(s32 chan, u8* data);
+s32 gbaCmdRecv33(s32 chan, u8* data);
 
 #ifndef PKJB_80071EA4_ONLY
 static inline s32 pkjbSendBlockIdle(s32 chan, const u8* data, s32 size)
@@ -71,7 +71,7 @@ static inline s32 pkjbSend22(s32 chan, const u8* data, u32 header)
 
     extra = header >> 16;
     count = header;
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }
@@ -95,7 +95,7 @@ static inline s32 pkjbSend22(s32 chan, const u8* data, u32 header)
 }
 
 /* 0x80071AE4 | 0x350: command 0x22, upload a block sized by its own header. */
-s32 fn_80071AE4(s32 chan, const u8* data)
+s32 gbaCmdUpload22(s32 chan, const u8* data)
 {
     s32 key;
     s32 result;
@@ -141,13 +141,13 @@ static inline s32 pkjbRecvBlock(s32 chan, u8* data, s32 size)
 }
 
 /* 0x80071EA4 | 0x3FC: command 0x33, receive a 16-byte header and its body. */
-s32 fn_80071EA4(s32 chan, u8* data)
+s32 gbaCmdRecv33(s32 chan, u8* data)
 {
     u32 response;
     s32 result;
     u32 size;
 
-    result = fn_80073C38(chan);
+    result = gbaCmdResetLink(chan);
     if (result != 0) {
         return result;
     }

@@ -15,7 +15,7 @@ extern u8 pokemonCheckValid(void*);
 extern const ColosseumRosterRow lbl_802677D0[7];
 
 /* Address: 0x80058F08 | Size: 0x38 */
-s32 fn_80058F08(s32* partyIndex, s32 cursor) {
+s32 pcBoxGetDetailCell(s32* partyIndex, s32 cursor) {
     const ColosseumRosterRow* row;
 
     if (cursor < 0 || cursor >= 7) {
@@ -31,7 +31,7 @@ s32 fn_80058F08(s32* partyIndex, s32 cursor) {
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (push; peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma push
 #pragma peephole off
-void* fn_80058F40(void* dflt, s32 dir, s32* state) {
+void* pcBoxStepPartyPokemon(void* dflt, s32 dir, s32* state) {
     extern void* heroGetStatus(void*, s32, u16);
     void* hero;
     s32 i;

@@ -50,7 +50,7 @@ extern s32 TRKTargetAccessARAM(void* data, u32 address, u32* length, s32 read);
 extern s32 TRKTargetAccessMemory(void* data, u32 address, u32* length,
                                  s32 debuggerMemory, s32 read);
 extern s32 MessageSend(TRKBuffer* buffer);
-extern void fn_800053E0(void);
+extern void __TRK_reset(void);
 extern void __TRK_copy_vectors(void);
 extern void TRKConstructEvent(TRKEvent* event, s32 type);
 extern s32 TRKPostEvent(TRKEvent* event);
@@ -475,7 +475,7 @@ s32 TRKDoOverride(TRKBuffer* buffer)
 s32 TRKDoReset(TRKBuffer* buffer)
 {
     TRKStandardACK(buffer, 0);
-    fn_800053E0();
+    __TRK_reset();
     return 0;
 }
 

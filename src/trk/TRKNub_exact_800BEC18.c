@@ -4,7 +4,7 @@
  */
 #include "dolphin/types.h"
 
-extern void fn_80003488(void* dst, const void* src, u32 size);
+extern void TRK_memcpy(void* dst, const void* src, u32 size);
 extern u8 gTRKBigEndian[];
 
 s32 TRKAppendBuffer1_ui64(u8* buffer, u64 value)
@@ -39,7 +39,7 @@ s32 TRKAppendBuffer1_ui64(u8* buffer, u64 value)
     if (count == 1) {
         buffer[position + 0x10] = *source;
     } else {
-        fn_80003488(buffer + position + 0x10, source, count);
+        TRK_memcpy(buffer + position + 0x10, source, count);
     }
     *(u32*)(buffer + 0xC) = *(u32*)(buffer + 0xC) + count;
     *(u32*)(buffer + 0x8) = *(u32*)(buffer + 0xC);

@@ -1,6 +1,6 @@
 /**
  * @file gs_texture_exact_800EFD14.c
- * @brief fn_800EFD14 / GStextureLoad, 0x800EFD14 - 0x800EFFC0.
+ * @brief GStextureClaimHandle / GStextureLoad, 0x800EFD14 - 0x800EFFC0.
  *
  * Function-boundary carve of the GStexture candidate
  * (gs_texture_candidate_800EF5FC.c): no jump table (GStextureGetGXformat's
@@ -11,7 +11,7 @@
 #include "game/gs_texture_init_gx.h"
 
 /* Claim tex for the memory handle unless it is already in use. */
-void fn_800EFD14(GStextureHandle* tex, u16 handle)
+void GStextureClaimHandle(GStextureHandle* tex, u16 handle)
 {
     if (tex == NULL || tex->inUse != 0) {
         return;

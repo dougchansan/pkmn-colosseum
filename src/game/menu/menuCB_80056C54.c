@@ -10,7 +10,7 @@
 /* RULE-EXCEPTION(user-approved): reconstructed linker-stripped function — see docs/RULE_EXCEPTIONS.md
  * Retail's pool opens with the u32 and then the s32 int-to-float biases ahead of
  * the float literals, although the first function to read them
- * (fn_80056C54) uses its float literals first. An unreferenced conversion
+ * (pcBoxDrawIconGrid) uses its float literals first. An unreferenced conversion
  * helper compiled ahead of it (and dead-stripped at link) creates the two
  * biases first, in that order; its body rests only on the pool layout. */
 f32 menuCBStrippedConv(u32 a, s32 b) { return (f32)a + (f32)b; }

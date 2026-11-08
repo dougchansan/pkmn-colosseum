@@ -366,7 +366,7 @@ void HSD_VISetXFBWaitDone(int idx)
 }
 
 /* HAL: HSD_VICopyXFBAsync */
-void fn_801BF8A0(HSD_RenderPass rpass)
+void HSD_VICopyEFB2XFBWait(HSD_RenderPass rpass)
 {
     int idx;
 

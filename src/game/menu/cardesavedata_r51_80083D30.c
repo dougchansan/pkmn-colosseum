@@ -1,11 +1,11 @@
 /**
  * @file cardesavedata_r51_80083D30.c
- * @brief fn_80083D30 / fn_80083ECC (0x80083D30 - 0x80084034): encode the
+ * @brief cardeEncodePartyMoveText / cardeEncodeMoveText (0x80083D30 - 0x80084034): encode the
  *        party's move descriptions into Card-e text records.
  *
  * Function-boundary carve of the Card-e save-data TU (see cardesavedata.c),
- * text only, on the TU's unit-wide -opt nopeephole. fn_80083D30 carries
- * fn_80083ECC's body inline. MWCC only auto-inlines a function defined
+ * text only, on the TU's unit-wide -opt nopeephole. cardeEncodePartyMoveText carries
+ * cardeEncodeMoveText's body inline. MWCC only auto-inlines a function defined
  * earlier, so the unit is built with -inline auto,deferred, under which it
  * is generated in reverse definition order (like pslist.c). Each line is
  * copied and encoded by an inline that owns its bounce buffer and advances
@@ -42,7 +42,7 @@ static inline void CardEPutLine(u8** destination, const u16** text)
 }
 
 /* Encode one move's description (two lines split at 0xFFFF). */
-s32 fn_80083ECC(u8* destination, u16 id)
+s32 cardeEncodeMoveText(u8* destination, u16 id)
 {
     void* waza;
     const u16* text;
@@ -63,7 +63,7 @@ s32 fn_80083ECC(u8* destination, u16 id)
 }
 
 /* Encode the four move descriptions of each of the six party members. */
-s32 fn_80083D30(void* hero, u8* destination)
+s32 cardeEncodePartyMoveText(void* hero, u8* destination)
 {
     s32 partyIndex;
     s32 moveIndex;
@@ -72,7 +72,7 @@ s32 fn_80083D30(void* hero, u8* destination)
     for (partyIndex = 0; partyIndex < 6; partyIndex++) {
         pokemon = heroBiosGetPokemonPtr(hero, partyIndex);
         for (moveIndex = 0; moveIndex < 4; moveIndex++) {
-            fn_80083ECC(destination,
+            cardeEncodeMoveText(destination,
                         pokemonBiosGetPokemonWazaDataId(pokemon, moveIndex));
             destination += 0x50;
         }

@@ -40,7 +40,7 @@ void _cameraLoadCameraMatrix__FP9_GScamera12GSgfxLayerID(void) {
         p2 = HSD_CObjGetNear(c->cobj);
         p3 = HSD_CObjGetFar(c->cobj);
         gfxSetPerspective(p0, p1, p2, p3);
-        fn_800E0628(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
+        GSmtxCopy(c->viewMtx, HSD_CObjGetViewingMtxPtr(c->cobj));
         gfxLoadIdentity();
         gfxMultMatrix(c->viewMtx);
         HSD_CObjGetEyePosition(c->cobj, &c->eye);

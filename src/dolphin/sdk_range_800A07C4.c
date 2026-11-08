@@ -281,7 +281,7 @@ void OSSetWirelessID(s32 chan, u16 id) {
 void __OSSystemCallVectorStart(void);
 void __OSSystemCallVectorEnd(void);
 
-asm void fn_800A1208(void) {
+asm void SystemCallVector(void) {
     nofralloc
 entry __OSSystemCallVectorStart
     mfspr   r9, HID0

@@ -23,7 +23,7 @@ extern void fsysStartLoadMode3(FSYSSlot* slot, u32 fileHandle, u32 callbackA,
  * build; with the if as the last statement, or an empty statement, empty
  * block or do-while(0) there, it is dropped. Same idiom as the stripped
  * test in fsysStartLoadMode1. */
-s32 fn_8017AF6C(u32 fileHandle, u32 requestID)
+s32 fsysLoadEntryInto(u32 fileHandle, u32 requestID)
 {
     FSYSSlot* slot;
 
@@ -44,7 +44,7 @@ s32 fn_8017AF6C(u32 fileHandle, u32 requestID)
 }
 
 /* Address: 0x8017B000 | size: 0x7C */
-s32 fn_8017B000(u32 fileHandle, u32 requestID, u32 callbackA, u32 callbackB,
+s32 fsysStartLoadInto(u32 fileHandle, u32 requestID, u32 callbackA, u32 callbackB,
                 u32 callbackC)
 {
     FSYSSlot* slot;

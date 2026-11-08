@@ -38,7 +38,7 @@ typedef struct PdaKeyInfo {
 
 /* RULE-EXCEPTION(user-approved): local compiler-control pragma (peephole off) needed for the byte match of the code it covers - see docs/RULE_EXCEPTIONS.md */
 #pragma peephole off
-s32 fn_80039004(PdaSprite* context, PdaSprite* sprite)
+s32 itemStorageMenuDrawItem(PdaSprite* context, PdaSprite* sprite)
 {
     extern f32 lbl_803A65B0[][3];
     s32 index;
@@ -56,7 +56,7 @@ s32 fn_80039004(PdaSprite* context, PdaSprite* sprite)
 #pragma peephole reset
 
 #pragma peephole off
-s32 fn_8003907C(PdaSelectionWork* work)
+s32 itemStorageMenuCursor(PdaSelectionWork* work)
 {
     extern PdaKeyInfo* windowGetKeyInfo(void);
     extern s32 menuGetSelectItemNum();

@@ -48,18 +48,18 @@ extern u8* pokemonSeikakuRateDataBiosGetPtr(u8 index);
 extern u8 pokemonSeikakuRateDataBiosGetKake(u8* data);
 extern u8 pokemonSeikakuRateDataBiosGetWaru(u8* data);
 extern u16 darkPokemonSaveGet4A6(u16 dark_id);
-extern void fn_8011B950(u8* base, u16 count);
+extern void joutaiSlotsClear(u8* base, u16 count);
 extern u16 joutaiDataBiosGetStatusKind(u16 idx);
-extern u8 fn_8011B67C(u8* obj, u16 id);
-extern void fn_8011B788(u8* obj, u16 id);
+extern u8 statusIsJoutaiDataId(u8* obj, u16 id);
+extern void statusInitJoutaiDataId(u8* obj, u16 id);
 extern u16 pokemonGetFaceSpriteId(u8* pokemon);
 extern u8 menuSubGetPokemonSexForFightDisp(u8* pokemon);
 extern void* pokemonGrowDataBiosGetPtr(u8 idx);
 extern u32 pokemonGrowDataBiosGetExp(void* ptr, u8 idx);
 extern void GScharCpy(u8* dst, u32 src);
 extern u32 GSmsgGetGSchar(u32 id);
-extern u32 fn_8010C46C(u16 id);
-extern u32 fn_8010C4D4(u16 id);
+extern u32 wazaDataGetName(u16 id);
+extern u32 wazaDataGetDesc(u16 id);
 extern u8 wazaGetMaxPP(u16 id, u8 up);
 extern u32 wazaGetStatus(u32 obj, u16 id, u32 status, u32 index);
 extern void* memset(void* dst, int val, u32 size);
@@ -101,7 +101,7 @@ static inline u8 pokemonGetJoutai(u8* pokemon, u16 id)
     if (joutaiDataBiosGetStatusKind(id) != 0x7C && joutaiDataBiosGetStatusKind(id) != 0xC8) {
         return 0;
     }
-    return fn_8011B67C(pokemon, id);
+    return statusIsJoutaiDataId(pokemon, id);
 }
 
 static inline u16 pokemonGetJoutaiIcon(u8* pokemon)
@@ -195,7 +195,7 @@ static inline u16 pokemonGetTokusei(u8* pokemon)
 static inline void pokemonClearJoutai(u8* pokemon, u16 id)
 {
     if (joutaiDataBiosGetStatusKind(id) == 0x7C || joutaiDataBiosGetStatusKind(id) == 0xC8) {
-        fn_8011B788(pokemon, id);
+        statusInitJoutaiDataId(pokemon, id);
     }
 }
 
@@ -279,8 +279,8 @@ void pokemonToMenuWazaStatus(u8* ptr, u8* out)
             id = (u16)pokemonGetStatus(ptr, 0, 0x7F, i);
             resolved = (u16)wazaGetStatus(0, id, 3, 0);
             *(u32*)(slot + 0x0) = GSmsgGetGSchar(wazaGetStatus(0, id, 1, 0));
-            *(u32*)(slot + 0x4) = GSmsgGetGSchar(fn_8010C4D4(resolved));
-            *(u16*)(slot + 0x8) = (u16)fn_8010C46C(resolved);
+            *(u32*)(slot + 0x4) = GSmsgGetGSchar(wazaDataGetDesc(resolved));
+            *(u16*)(slot + 0x8) = (u16)wazaDataGetName(resolved);
             *(u8*)(slot + 0xA) = pokemonGetWazaMaxPP(ptr, i);
             *(u8*)(slot + 0xB) = (u8)pokemonGetStatus(ptr, 0, 0x80, i);
         }
@@ -336,7 +336,7 @@ void pokemonSetDarkPokemonStatus(u8* pokemon, u16 dark_id)
     pokemonSetDp(pokemon, -1.0f);
     pokemonSetStatus(pokemon, 0, 0xC6, 0, 0);
     pokemonSetStatus(pokemon, 0, 0xC7, 0, 0);
-    fn_8011B950((u8*)pokemonGetStatus(pokemon, 0, 0xC8, 0), 1);
+    joutaiSlotsClear((u8*)pokemonGetStatus(pokemon, 0, 0xC8, 0), 1);
     pokemonSetStatus(pokemon, 0, 0xC3, 0, dark_id);
     pokemonSetDp(pokemon, darkPokemonSaveGet4A6(dark_id));
 }

@@ -71,8 +71,8 @@
 /** _gfxScratchNotify__F15GSscratchNotifyPvUc */ void GSgfx_VBlankCallback(s32 mode, void* buffer);
 /** GSgfxSetViewportJitter */ void GSgfx_PreRetraceCallback(s32 flag, f32 p1, f32 p2,
                                                    f32 p3, f32 p4, f32 p5, f32 p6);
-/** fn_800D3F50 */ void GSgfx_DrawDoneCallback(void);
-/** fn_800D3F5C */ void GSgfx_FrameEndCallback(void);
+/** GSgfxSetInitialized */ void GSgfx_DrawDoneCallback(void);
+/** GSgfxRetraceHandler */ void GSgfx_FrameEndCallback(void);
 /** GSgfxDrawScene */ void GSgfx_BeginFrame(void);
 
 /* ===================================================================

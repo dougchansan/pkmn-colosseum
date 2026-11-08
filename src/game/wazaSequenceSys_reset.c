@@ -22,7 +22,7 @@ static void wazaResetBssLayout(void) {
     lbl_80467CD4[0] = 0;
 }
 
-void fn_801DADC0(void* context) {
+void wazaSequenceSysInitEx(void* context) {
     extern void* floorDataBiosGetCurrentPtr(void);
     extern u32 floorDataBiosGetGroupID(void*);
     extern u32 floorDataBiosGetShadowReciveNum(void*);
@@ -116,7 +116,7 @@ void wazaSequenceSysInit(s32 count) {
             ((WazaPoolHeader*)lbl_80467CC0)->entries = GSmemLock(handle);
             memset(((WazaPoolHeader*)lbl_80467CC0)->entries, 0, receiverCount);
             battleCameraWazaInit();
-            fn_801DE598(0x6F7, 0);
+            wazaSequenceLoadResourceSync(0x6F7, 0);
             ((WazaPoolHeader*)lbl_80467CC0)->resourceA = GSresGetResource(0x6F7, 0x11EF2400);
             ((WazaPoolHeader*)lbl_80467CC0)->resourceB = GSresGetResource(0x6F7, 0x11EE2400);
             ((WazaPoolHeader*)lbl_80467CC0)->active = 0;

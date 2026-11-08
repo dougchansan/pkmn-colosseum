@@ -10,7 +10,7 @@ typedef struct CircleBuffer {
     u32 state;
 } CircleBuffer;
 
-extern void fn_800C459C(u32* state);
+extern void TRKInitializeMutex_800C459C(u32* state);
 
 void CircleBufferInitialize(CircleBuffer* circle, u8* buffer, u32 size)
 {
@@ -20,5 +20,5 @@ void CircleBufferInitialize(CircleBuffer* circle, u8* buffer, u32 size)
     circle->writePtr = circle->buffer;
     circle->used = 0;
     circle->free = circle->size;
-    fn_800C459C(&circle->state);
+    TRKInitializeMutex_800C459C(&circle->state);
 }

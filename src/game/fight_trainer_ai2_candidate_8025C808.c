@@ -11,7 +11,7 @@ extern u32 fightTrainerGetStatus(void*, u32, u32, u32);
 extern s8 fightSeqCondChgActParaIdToValue(u32);
 extern u32 fightSeqCondChgActTypeToPokemonStatusId(u32);
 extern u8 fightIsWazaBlockedByMamoru(u32, u32);
-extern u8 fn_80237F74(void*, u32, u32);
+extern u8 fightTrainerAiIsTokusei(void*, u32, u32);
 extern u32 pokemonGetStatus(u32, u32, u32, u32);
 
 u32 fightTrainerAiCheckAbiCnt(
@@ -79,20 +79,20 @@ u32 fightTrainerAiCheckAbiCnt(
             }
         }
 
-        if ((fn_80237F74(trainer, pokemon, 0x1D) == 1 ||
-             fn_80237F74(trainer, pokemon, 0x49) == 1) &&
+        if ((fightTrainerAiIsTokusei(trainer, pokemon, 0x1D) == 1 ||
+             fightTrainerAiIsTokusei(trainer, pokemon, 0x49) == 1) &&
             ignoreAbility == 0 && (u16)actionId != 0xAE) {
             return 0;
         }
-        if (fn_80237F74(trainer, pokemon, 0x33) == 1 &&
+        if (fightTrainerAiIsTokusei(trainer, pokemon, 0x33) == 1 &&
             ignoreAbility == 0 && (u16)statusId == 0xEB) {
             return 0;
         }
-        if (fn_80237F74(trainer, pokemon, 0x34) == 1 &&
+        if (fightTrainerAiIsTokusei(trainer, pokemon, 0x34) == 1 &&
             ignoreAbility == 0 && (u16)statusId == 0xE6) {
             return 0;
         }
-        if (fn_80237F74(trainer, pokemon, 0x13) == 1 &&
+        if (fightTrainerAiIsTokusei(trainer, pokemon, 0x13) == 1 &&
             (mode & 0x1F) == 0) {
             return 0;
         }

@@ -4,7 +4,7 @@
  *        at or below the trainer's threshold percentage (trainer status
  *        0x37) of its max PP.
  *
- * The body is built from the fight AI accessors (compare fn_802381C4, which
+ * The body is built from the fight AI accessors (compare fightTrainerAiGetWazaPp, which
  * is the PP getter written out). As inlines, aiGetTrainer's result is
  * numbered before the PP value and the slot's u8 mask is taken in place,
  * which is retail's allocation.

@@ -6,7 +6,7 @@
 
 extern u8 lbl_80266E58[];
 
-s32 fn_8002A5B0(void* r3, u8* r4) {
+s32 shopSubMenuDrawItem2(void* r3, u8* r4) {
     s16 val;
     u8 idx;
     u8* entry;

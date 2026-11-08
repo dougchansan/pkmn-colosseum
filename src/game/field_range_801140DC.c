@@ -21,12 +21,12 @@ extern u8 lbl_80408378[];
 /* 0x801140DC | 0x90 */
 void std246_saveSetStatus578(u32 material, u32 palette, u8 slot) {
     extern u32 savedataGetWorkPtr(void);
-    extern void* fn_80128E04(void);
+    extern void* savedataGetSection0(void);
     extern void gamedatasaveSetStatus(void*, u32, u32);
     void* obj;
 
     if (savedataGetWorkPtr() != 0) {
-        obj = fn_80128E04();
+        obj = savedataGetSection0();
         if (obj != 0) {
             gamedatasaveSetStatus(obj, 5, material);
             gamedatasaveSetStatus(obj, 7, palette);
@@ -46,7 +46,7 @@ void std161_fieldSetPending(u32 material, u32 palette, u8 materialSlot) {
 }
 
 /* 0x8011418C | 0x4C */
-void fn_8011418C(u32* texture, u32* palette, u8* textureSlot) {
+void floorGetSaveInfo(u32* texture, u32* palette, u8* textureSlot) {
     if (texture != NULL) {
         *texture = *(u32*)(lbl_80408378 + 0x3C);
     }
@@ -88,10 +88,10 @@ void EvlogSet__FScUl(s8 event, u32 value) {
 /* 0x80114254 | 0x60 */
 s32 floorReadRelModulePostFunc(s32 param1, s32 param2, s32 param3) {
     extern s32 GSresGetResource(s32);
-    extern void fn_8017F484(s32, s32, s32);
+    extern void floorRelPostRead(s32, s32, s32);
     s32 result = GSresGetResource(param1);
 
-    fn_8017F484(param1, param2, param3);
+    floorRelPostRead(param1, param2, param3);
     return result;
 }
 

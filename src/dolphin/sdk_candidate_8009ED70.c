@@ -116,7 +116,7 @@ found:
     return TRUE;
 }
 
-BOOL fn_8009EFE4(OSModuleInfo* oldModule)
+BOOL OSUnlinkModule(OSModuleInfo* oldModule)
 {
     OSModuleHeader* moduleHeader;
     OSModuleInfo* moduleInfo;

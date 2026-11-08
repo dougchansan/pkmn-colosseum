@@ -6,13 +6,13 @@
  * Shared by two objects: gs_model_bound_r55_800EB5A0_gc13_o2.c defines
  * GS_MODEL_BOUND_EMIT_BLEND_MODEL (modelCalculateBlendModel, 0x800EB5A0) and
  * gs_model_bound_r55_800EB6E0_suffix.c defines GS_MODEL_BOUND_EMIT_INTP
- * (_modelIntpJObjAll and fn_800EB904, 0x800EB6E0). gs_model_bound.c supplies
+ * (_modelIntpJObjAll and _modelIntpJObj, 0x800EB6E0). gs_model_bound.c supplies
  * the types only. Both build with GC/1.3.2: its -inline auto expands the
  * recursive _modelIntpJObjAll into itself four levels, as retail does, while
  * GC/1.3 does not inline the recursion at all; every other exact GSmodel
  * function in this lane also compiles identically under GC/1.3.2.
  *
- * fn_800EB904 is Colosseum's _modelIntpJObj: XD's modelIntpJObjTrans/Scale/
+ * _modelIntpJObj is Colosseum's _modelIntpJObj: XD's modelIntpJObjTrans/Scale/
  * Rotate bodies, written here through the jobj.h getters and setters, plus
  * the part-anim-mix Euler override.
  */
@@ -28,11 +28,11 @@ extern const char lbl_8047CC48[5];
 extern void _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
     GSmodel*, struct ModelIntpJObj*, struct ModelIntpJObj*,
     struct ModelIntpJObj*, f32);
-extern void fn_800E0560(GSmtx, const GSvec*);
+extern void GSmtxMakeTranslate(GSmtx, const GSvec*);
 extern void GSmtxMakeXRotation(GSmtx, f32);
 extern void GSmtxMakeYRotation(GSmtx, f32);
 extern void GSmtxMakeZRotation(GSmtx, f32);
-extern void fn_800E042C(GSmtx, const GSvec*);
+extern void GSmtxMakeScaleVec(GSmtx, const GSvec*);
 extern void GSmtxConcat(GSmtx, GSmtx, GSmtx);
 
 typedef struct ModelQuat {
@@ -96,9 +96,9 @@ static inline GSmtx* HSD_JObjGetMtxPtr(HSDJObj* jobj)
 
 #if defined(GS_MODEL_BOUND_EMIT_INTP)
 
-extern void fn_8019D620(ModelIntpJObj* jobj);        /* HSD_JObjSetMtxDirtySub */
+extern void HSD_JObjSetMtxDirtySub_8019D620(ModelIntpJObj* jobj);        /* HSD_JObjSetMtxDirtySub */
 extern void EulerToQuat(GSvec* euler, ModelQuat* q); /* EulerToQuat */
-extern void fn_801AD7CC(ModelQuat* from, ModelQuat* to, ModelQuat* out,
+extern void HSD_QuatSlerp(ModelQuat* from, ModelQuat* to, ModelQuat* out,
                         f32 t);                      /* QuatSlerp */
 /* RULE-EXCEPTION(title-path): extern named stand-in for the TU's pooled
  * 1.0f - see docs/RULE_EXCEPTIONS.md */
@@ -107,7 +107,7 @@ extern const f32 lbl_8047CC50; /* 1.0f */
 static inline void HSD_JObjSetMtxDirty(ModelIntpJObj* jobj)
 {
     if (jobj != NULL && !HSD_JObjMtxIsDirty(jobj)) {
-        fn_8019D620(jobj);
+        HSD_JObjSetMtxDirtySub_8019D620(jobj);
     }
 }
 
@@ -174,7 +174,7 @@ typedef struct ModelPartAnimMix {
     GSvec* value;
 } ModelPartAnimMix;
 
-void fn_800EB904(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
+void _modelIntpJObj(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
                  ModelIntpJObj* out, f32 blend);
 
 void _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
@@ -188,7 +188,7 @@ void _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
     if (from == NULL || to == NULL || out == NULL) {
         return;
     }
-    fn_800EB904(model, from, to, out, blend);
+    _modelIntpJObj(model, from, to, out, blend);
     if (!(from->flags & 0x1000)) {
         f = from->child;
         t = to->child;
@@ -203,7 +203,7 @@ void _modelIntpJObjAll__FP8_GSmodelP9_HSD_JObjP9_HSD_JObjP9_HSD_JObjff(
     }
 }
 
-void fn_800EB904(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
+void _modelIntpJObj(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
                  ModelIntpJObj* out, f32 blend)
 {
     s32 i;
@@ -290,7 +290,7 @@ void fn_800EB904(GSmodel* model, ModelIntpJObj* from, ModelIntpJObj* to,
         toQuat.z = -toQuat.z;
         toQuat.w = -toQuat.w;
     }
-    fn_801AD7CC(&fromQuat, &toQuat, &quat, blend);
+    HSD_QuatSlerp(&fromQuat, &toQuat, &quat, blend);
     HSD_JObjSetRotation(out, &quat);
     lbl_8047ABA0++;
 }
@@ -314,11 +314,11 @@ void modelCalculateBlendModel__FP8_GSmodelf(GSmodel* model, f32 unused)
         (struct ModelIntpJObj*)model->blendJObjB,
         (struct ModelIntpJObj*)model->blendJObj, model->blendFactor);
     matrix = HSD_JObjGetMtxPtr((HSDJObj*)model->blendJObj);
-    fn_800E0560(translation, &model->position);
+    GSmtxMakeTranslate(translation, &model->position);
     GSmtxMakeXRotation(rotate_x, model->rotation.x);
     GSmtxMakeYRotation(rotate_y, model->rotation.y);
     GSmtxMakeZRotation(rotate_z, model->rotation.z);
-    fn_800E042C(scale, &model->scale);
+    GSmtxMakeScaleVec(scale, &model->scale);
     GSmtxConcat(*matrix, *matrix, scale);
     GSmtxConcat(*matrix, *matrix, translation);
     GSmtxConcat(*matrix, *matrix, rotate_x);

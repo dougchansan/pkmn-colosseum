@@ -139,7 +139,7 @@ typedef struct ConvertedPokemon {
  * ========================================================================= */
 
 /**
- * fn_80089048: Convert a Pokemon from GBA format to GCN format.
+ * pokeconvToGBA: Convert a Pokemon from GBA format to GCN format.
  * Performs byte-swapping (GBA is little-endian, GCN is big-endian) on
  * the PID, OT ID, and substructure data. If a target context is provided,
  * also performs species validation and ribbon data extraction.
@@ -167,7 +167,7 @@ typedef struct ConvertedPokemon {
 s32 pokeconv_ConvertPokemon(void* pDst, void* pSrc, void* pSaveCtx);
 
 /**
- * fn_80089380: Convert a Pokemon from GCN format back to GBA format.
+ * pokeconvCheck: Convert a Pokemon from GCN format back to GBA format.
  * Reverse of pokeconv_ConvertPokemon. Performs big-endian to
  * little-endian byte-swapping and validates the PC item count.
  *
@@ -260,7 +260,7 @@ s32 gbaCommunication_Transfer5(s32 channel, void* pSrc, void* pSaveCtx);
 s32 gbaCommunication_Transfer6(s32 channel, void* pDst);
 
 /**
- * fn_80093B04: GBA SI callback.
+ * _gbaCommYield: GBA SI callback.
  * Called by the SI system when a transfer completes or errors.
  * Registered during channel setup in Transfer1/Transfer2.
  */
@@ -285,7 +285,7 @@ void gbaCommunication_ThreadEntry(void);
 void gba_SystemInit(void);
 
 /**
- * fn_801ED388: Initialize GBA link subsystem.
+ * darkPokemonStepInit: Initialize GBA link subsystem.
  * Called from GameMainLoop(). Prepares for GBA connections.
  */
 void gba_LinkInit(void);
@@ -299,7 +299,7 @@ void gba_LinkInit(void);
 /* GSmemLock */ extern void* GSmem_GetPtr(void* handle);
 
 /* SI / Thread functions */
-/* fn_800716C8 */ extern void  GSthread_Register(s32 channel, void* threadData);
+/* gbaCommSetChannelBuffer */ extern void  GSthread_Register(s32 channel, void* threadData);
 /* OSInitMutex */ extern void  SI_Setup(void* ctx);
 /* OSInitCond */ extern void  SI_SetupCallback(void* callbackData);
 /* OSCreateThread */ extern void  OSCreateThread(void* thread, void* func,

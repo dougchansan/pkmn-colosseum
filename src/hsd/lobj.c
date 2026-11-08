@@ -63,9 +63,9 @@ void GXLoadLightObjImm(GXLightObj* lt_obj, s32 light);
                  1.0F - (shininess) / 2.0F))
 
 /* hsdSearchClassInfo */
-HSD_ClassInfo* fn_80193748(const char* class_name);
+HSD_ClassInfo* hsdSearchClassInfo_80193748(const char* class_name);
 /* hsdNew */
-void* fn_80193828(HSD_ClassInfo* info);
+void* hsdNew_80193828(HSD_ClassInfo* info);
 /* HSD_SListRemove */
 HSD_SList* HSD_SListRemove(HSD_SList* list);
 /* HSD_SListAllocAndPrepend */
@@ -1026,7 +1026,7 @@ HSD_LObjInfo* HSD_LObjGetDefaultClass(void)
 
 HSD_LObj* HSD_LObjAlloc(void)
 {
-    HSD_LObj* new = fn_80193828(&HSD_LObjGetDefaultClass()->parent.parent);
+    HSD_LObj* new = hsdNew_80193828(&HSD_LObjGetDefaultClass()->parent.parent);
     HSD_ASSERT(1493, new);
     return new;
 }
@@ -1121,11 +1121,11 @@ HSD_LObj* HSD_LObjLoadDesc(HSD_LightDesc* ldesc)
         HSD_ClassInfo* info;
 
         if (!ldesc->class_name ||
-            !(info = fn_80193748(ldesc->class_name)))
+            !(info = hsdSearchClassInfo_80193748(ldesc->class_name)))
         {
             *p = HSD_LObjAlloc();
         } else {
-            *p = fn_80193828(info);
+            *p = hsdNew_80193828(info);
             HSD_ASSERT(1659, *p);
         }
         HSD_LOBJ_METHOD(*p)->load(*p, ldesc);
