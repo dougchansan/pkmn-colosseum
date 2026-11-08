@@ -1,9 +1,9 @@
 {
-  "format": "colosseum-battle-source-v1",
+  "format": "colosseum-battle-source-v2",
   "catalog": "catalog.json",
   "unit": "main/auto_05_803795D8_data",
   "alignment": 8,
-  "programs": [
+  "objects": [
     {
       "symbol": "lbl_803795D8",
       "body": [
@@ -14,14 +14,14 @@
         {"command": "wait_message", "frames": 64},
         {"command": "compat_wait_state"},
         {"command": "wait_animation", "channel": 6},
-        {"command": "call_sequence", "target": {"script": "lbl_803796D5", "entry": "entry", "encoding": "reloc"}},
+        {"command": "call_sequence", "target": {"script": "lbl_803796D5", "entry": "entry"}},
         {"command": "return_ability"}
       ]
     },
     {
       "symbol": "lbl_803795F5",
       "body": [
-        {"command": "call_sequence", "target": {"script": "lbl_803795F5", "entry": "at_wait_frames_2", "encoding": "absolute"}},
+        {"command": "call_sequence", "target": {"script": "lbl_803795F5", "entry": "at_wait_frames_2"}},
         {"command": "return_ability"},
         {"label": "at_wait_frames_2", "command": "wait_frames", "frames": 32}
       ]
@@ -29,7 +29,7 @@
     {
       "symbol": "lbl_803795FE",
       "body": [
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF76", "encoding": "absolute"}, "value": 145},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF76"}, "value": 145},
         {"command": "apply_intimidate", "ignored_operand": 0, "note": "The handler ignores this four-byte compatibility operand."},
         {"command": "return_sequence"}
       ]
@@ -37,14 +37,14 @@
     {
       "symbol": "lbl_8037960A",
       "body": [
-        {"command": "jump_if_condition_alternate", "battler": "defender", "condition": 20, "target": {"script": "lbl_8037964E", "entry": "entry", "encoding": "reloc"}},
-        {"command": "jump_if_ability", "battler": "defender", "ability": 29, "target": {"script": "lbl_8037964E", "entry": "at_play_animation_1", "encoding": "absolute"}},
-        {"command": "jump_if_ability", "battler": "defender", "ability": 52, "target": {"script": "lbl_8037964E", "entry": "at_play_animation_1", "encoding": "absolute"}},
-        {"command": "jump_if_ability", "battler": "defender", "ability": 73, "target": {"script": "lbl_8037964E", "entry": "at_play_animation_1", "encoding": "absolute"}},
-        {"command": "change_stat_stage", "flags": 33, "target": {"script": "lbl_8037964E", "entry": "entry", "encoding": "absolute"}},
-        {"command": "jump_if_byte", "comparison": "greater", "address": {"symbol": "lbl_80478D7D", "encoding": "absolute"}, "value": 1, "target": {"script": "lbl_8037964E", "entry": "entry", "encoding": "absolute"}},
+        {"command": "jump_if_condition_alternate", "battler": "defender", "condition": 20, "target": {"script": "lbl_8037964E", "entry": "entry"}},
+        {"command": "jump_if_ability", "battler": "defender", "ability": 29, "target": {"script": "lbl_8037964E", "entry": "at_play_animation_1"}},
+        {"command": "jump_if_ability", "battler": "defender", "ability": 52, "target": {"script": "lbl_8037964E", "entry": "at_play_animation_1"}},
+        {"command": "jump_if_ability", "battler": "defender", "ability": 73, "target": {"script": "lbl_8037964E", "entry": "at_play_animation_1"}},
+        {"command": "change_stat_stage", "flags": 33, "target": {"script": "lbl_8037964E", "entry": "entry"}},
+        {"command": "jump_if_byte", "comparison": "greater", "address": {"symbol": "lbl_80478D7D"}, "value": 1, "target": {"script": "lbl_8037964E", "entry": "entry"}},
         {"command": "prepare_stat_change_animation"},
-        {"command": "play_animation", "battler": "defender", "animation": 1, "argument": {"symbol": "lbl_8038FFFC", "encoding": "absolute"}},
+        {"command": "play_animation", "battler": "defender", "animation": 1, "argument": {"symbol": "lbl_8038FFFC"}},
         {"command": "wait_animation", "channel": 7},
         {"command": "print_message", "message_id": 30222},
         {"command": "wait_message", "frames": 64},
@@ -60,7 +60,7 @@
         {"command": "print_message", "message_id": 30240},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "jump", "target": {"script": "lbl_8037964E", "entry": "entry", "encoding": "absolute"}}
+        {"command": "jump", "target": {"script": "lbl_8037964E", "entry": "entry"}}
       ]
     },
     {
@@ -78,7 +78,7 @@
     {
       "symbol": "lbl_8037967E",
       "body": [
-        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618", "encoding": "absolute"}, "mask": 256},
+        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618"}, "mask": 256},
         {"command": "play_animation", "battler": "attacker", "animation": 7, "argument": null},
         {"command": "wait_animation", "channel": 0},
         {"command": "apply_damage_and_update_hp", "battler": "attacker"},
@@ -104,9 +104,9 @@
     {
       "symbol": "lbl_803796B5",
       "body": [
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF76", "encoding": "absolute"}, "value": 19},
-        {"command": "set_byte", "destination": {"symbol": "lbl_80478D7B", "encoding": "reloc"}, "value": 17},
-        {"command": "play_animation", "battler": 25, "animation": 1, "argument": {"symbol": "lbl_8038FFFC", "encoding": "reloc"}},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF76"}, "value": 19},
+        {"command": "set_byte", "destination": {"symbol": "lbl_80478D7B"}, "value": 17},
+        {"command": "play_animation", "battler": 25, "animation": 1, "argument": {"symbol": "lbl_8038FFFC"}},
         {"command": "wait_animation", "channel": 7},
         {"command": "print_message", "message_id": 30210},
         {"command": "wait_message", "frames": 64},
@@ -124,7 +124,7 @@
     {
       "symbol": "lbl_803796D7",
       "body": [
-        {"command": "call_sequence", "target": {"script": "lbl_803796DD", "entry": "entry", "encoding": "reloc"}},
+        {"command": "call_sequence", "target": {"script": "lbl_803796DD", "entry": "entry"}},
         {"command": "return_ability"}
       ]
     },
@@ -151,7 +151,7 @@
         {"command": "print_message", "message_id": 30238},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618", "encoding": "absolute"}, "mask": 1024},
+        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618"}, "mask": 1024},
         {"command": "return_sequence"}
       ]
     }

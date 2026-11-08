@@ -1,0 +1,15 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_80378794.c",
+  "alignment": 4,
+  "objects": [
+    {
+      "symbol": "lbl_80378794",
+      "body": [
+        {"command": "wait_message", "frames": 32},
+        {"command": "return_sequence"}
+      ]
+    }
+  ]
+}

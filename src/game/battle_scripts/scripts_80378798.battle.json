@@ -1,9 +1,9 @@
 {
-  "format": "colosseum-battle-source-v1",
+  "format": "colosseum-battle-source-v2",
   "catalog": "catalog.json",
   "unit": "main/auto_05_80378798_data",
   "alignment": 8,
-  "programs": [
+  "objects": [
     {
       "symbol": "lbl_80378798",
       "body": [
@@ -14,21 +14,21 @@
     {
       "symbol": "lbl_8037879E",
       "body": [
-        {"command": "select_replacement_battler", "battler": 21, "target": {"script": "lbl_80378800", "entry": "entry", "encoding": "reloc"}},
+        {"command": "select_replacement_battler", "battler": 21, "target": {"script": "lbl_80378800", "entry": "entry"}},
         {"command": "buffer_switch_name", "battler": 21, "name_kind": 2},
         {"command": "compat_draw_party_summary", "ignored_battler": 21},
         {"command": "load_switched_battler", "battler": 21},
         {"command": "initialize_switched_battler", "battler": 21, "mode": 0},
         {"command": "buffer_low_hp_message", "battler": 21},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279EA0", "encoding": "absolute"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279EA0"}},
         {"command": "compat_hide_party_summary", "ignored_battler": 21},
         {"command": "animate_switch_in", "battler": 21, "mode": 0},
         {"command": "wait_message", "frames": 0},
         {"command": "apply_switch_in_effects", "battler": 21},
-        {"command": "get_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 22, "index": null, "value": {"symbol": "lbl_8047B63C", "encoding": "absolute"}},
-        {"command": "jump_if_halfword", "comparison": "not_equal", "address": {"symbol": "lbl_8047B63C", "encoding": "absolute"}, "value": 1, "target": {"script": "lbl_80378800", "entry": "entry", "encoding": "absolute"}},
-        {"command": "get_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 24, "index": null, "value": {"symbol": "lbl_8047B63C", "encoding": "absolute"}},
-        {"command": "jump_if_halfword", "comparison": "not_equal", "address": {"symbol": "lbl_8047B63C", "encoding": "absolute"}, "value": 1, "target": {"script": "lbl_80378800", "entry": "entry", "encoding": "absolute"}},
+        {"command": "get_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 22, "index": null, "value": {"symbol": "lbl_8047B63C"}},
+        {"command": "jump_if_halfword", "comparison": "not_equal", "address": {"symbol": "lbl_8047B63C"}, "value": 1, "target": {"script": "lbl_80378800", "entry": "entry"}},
+        {"command": "get_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 24, "index": null, "value": {"symbol": "lbl_8047B63C"}},
+        {"command": "jump_if_halfword", "comparison": "not_equal", "address": {"symbol": "lbl_8047B63C"}, "value": 1, "target": {"script": "lbl_80378800", "entry": "entry"}},
         {"command": "cancel_all_actions"}
       ]
     },
@@ -41,7 +41,7 @@
     {
       "symbol": "lbl_80378801",
       "body": [
-        {"command": "award_prize_money", "target": {"script": "lbl_80378801", "entry": "at_end_sequence_3", "encoding": "absolute"}},
+        {"command": "award_prize_money", "target": {"script": "lbl_80378801", "entry": "at_end_sequence_3"}},
         {"command": "print_message", "message_id": 30022},
         {"command": "wait_message", "frames": 0},
         {"label": "at_end_sequence_3", "command": "end_sequence"}
@@ -56,7 +56,7 @@
         {"command": "compat_trainer_slide", "ignored_battler": 1},
         {"command": "compat_wait_state"},
         {"command": "print_message", "message_id": 30001},
-        {"command": "award_prize_money", "target": {"script": "lbl_8037880F", "entry": "at_award_pay_day_money_9", "encoding": "absolute"}},
+        {"command": "award_prize_money", "target": {"script": "lbl_8037880F", "entry": "at_award_pay_day_money_9"}},
         {"command": "print_message", "message_id": 30022},
         {"command": "wait_message", "frames": 64},
         {"label": "at_award_pay_day_money_9", "command": "award_pay_day_money"},
@@ -93,10 +93,10 @@
         {"command": "end_sequence"},
         {"command": "print_message", "message_id": 30276},
         {"command": "end_sequence"},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279D2C", "encoding": "absolute"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279D2C"}},
         {"command": "wait_message", "frames": 64},
         {"command": "end_sequence"},
-        {"command": "print_selection_message_from_table", "message_table": {"symbol": "lbl_80279D2C", "encoding": "reloc"}},
+        {"command": "print_selection_message_from_table", "message_table": {"symbol": "lbl_80279D2C"}},
         {"command": "return_selection"},
         {"command": "print_selection_message_legacy", "message_prefix": 30380, "note": "The handler reads a 32-bit message using these two bytes and two following bytes, then advances only three bytes."},
         {"command": "return_selection"}
@@ -106,14 +106,14 @@
       "symbol": "lbl_8037889D",
       "body": [
         {"command": "buffer_damage_hp_message", "battler": 20},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279EB8", "encoding": "reloc"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279EB8"}},
         {"command": "wait_message", "frames": 64},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8047B648", "encoding": "reloc"}, "value": 0},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8047B649", "encoding": "absolute"}, "value": 8},
-        {"command": "check_pursuit_switch", "target": {"script": "lbl_803788C0", "entry": "entry", "encoding": "reloc"}},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8047B648"}, "value": 0},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8047B649"}, "value": 8},
+        {"label": "at_check_pursuit_switch_5", "command": "check_pursuit_switch", "target": {"script": "lbl_803788C0", "entry": "entry"}},
         {"command": "swap_attacker_and_defender"},
         {"command": "check_destiny_bond"},
-        {"command": "call_sequence", "target": {"script": "lbl_803788C0", "entry": "at_set_byte_21", "encoding": "absolute"}},
+        {"command": "call_sequence", "target": {"script": "lbl_803788C0", "entry": "at_set_byte_21"}},
         {"command": "swap_attacker_and_defender"}
       ]
     }

@@ -1,0 +1,20 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_803760D8.c",
+  "alignment": 8,
+  "objects": [
+    {
+      "symbol": "lbl_803760D8",
+      "body": [
+        {"command": "play_move_animation"},
+        {"command": "wait_animation", "channel": 0},
+        {"command": "apply_damage_and_update_hp", "battler": "attacker"},
+        {"command": "get_status_byte", "family": "fight_floor", "context": null, "object_id": null, "field": 61, "index": null, "value": {"symbol": "lbl_8047B63E"}},
+        {"command": "jump_if_byte", "comparison": "equal", "address": {"symbol": "lbl_8047B63E"}, "value": 0, "target": {"script": "lbl_80376104", "entry": "entry"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E5A8", "addend": 32}},
+        {"command": "wait_message", "frames": 64}
+      ]
+    }
+  ]
+}

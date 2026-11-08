@@ -1,0 +1,17 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_80375F98.c",
+  "alignment": 8,
+  "objects": [
+    {
+      "symbol": "lbl_80375F98",
+      "body": [
+        {"command": "calculate_critical"},
+        {"command": "calculate_damage"},
+        {"command": "calculate_type_effectiveness"},
+        {"command": "adjust_damage"}
+      ]
+    }
+  ]
+}

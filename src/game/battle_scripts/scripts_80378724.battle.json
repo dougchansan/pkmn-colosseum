@@ -1,9 +1,9 @@
 {
-  "format": "colosseum-battle-source-v1",
+  "format": "colosseum-battle-source-v2",
   "catalog": "catalog.json",
   "unit": "main/auto_05_80378724_data",
   "alignment": 4,
-  "programs": [
+  "objects": [
     {
       "symbol": "lbl_80378724",
       "body": [
@@ -11,25 +11,25 @@
         {"command": "print_message", "message_id": 30005},
         {"command": "wait_message", "frames": 0},
         {"command": "show_level_up_stats"},
-        {"command": "check_learn_move", "cannot_learn": {"script": "lbl_80378783", "entry": "entry", "encoding": "absolute"}, "learned": {"script": "lbl_80378794", "entry": "entry", "encoding": "absolute"}, "mode": 1},
-        {"command": "jump", "target": {"script": "lbl_8037873F", "entry": "at_buffer_move_to_learn_1", "encoding": "absolute"}}
+        {"command": "check_learn_move", "cannot_learn": {"script": "lbl_80378783", "entry": "entry"}, "learned": {"script": "lbl_80378794", "entry": "entry"}, "mode": 1},
+        {"command": "jump", "target": {"script": "lbl_8037873F", "entry": "at_buffer_move_to_learn_1"}}
       ]
     },
     {
       "symbol": "lbl_8037873F",
       "body": [
-        {"command": "check_learn_move", "cannot_learn": {"script": "lbl_80378783", "entry": "entry", "encoding": "reloc"}, "learned": {"script": "lbl_80378794", "entry": "entry", "encoding": "reloc"}, "mode": 0},
+        {"command": "check_learn_move", "cannot_learn": {"script": "lbl_80378783", "entry": "entry"}, "learned": {"script": "lbl_80378794", "entry": "entry"}, "mode": 0},
         {"label": "at_buffer_move_to_learn_1", "command": "buffer_move_to_learn"},
         {"command": "print_message", "message_id": 30007},
         {"command": "print_message", "message_id": 30008},
         {"command": "print_message", "message_id": 30009},
         {"command": "compat_wait_state"},
-        {"command": "select_move_to_forget", "target": {"script": "lbl_8037873F", "entry": "at_print_message_12", "encoding": "absolute"}},
+        {"command": "select_move_to_forget", "target": {"script": "lbl_8037873F", "entry": "at_print_message_12"}},
         {"command": "print_message", "message_id": 30011},
         {"command": "compat_wait_state"},
-        {"command": "confirm_stop_learning", "target": {"script": "lbl_8037873F", "entry": "at_buffer_move_to_learn_1", "encoding": "absolute"}},
+        {"command": "confirm_stop_learning", "target": {"script": "lbl_8037873F", "entry": "at_buffer_move_to_learn_1"}},
         {"command": "print_message", "message_id": 30012},
-        {"command": "jump", "target": {"script": "lbl_8037873F", "entry": "entry", "encoding": "reloc"}},
+        {"command": "jump", "target": {"script": "lbl_8037873F", "entry": "entry"}},
         {"label": "at_print_message_12", "command": "print_message", "message_id": 30259},
         {"command": "print_message", "message_id": 30010},
         {"command": "print_message", "message_id": 30260}
@@ -42,7 +42,7 @@
         {"command": "play_fanfare", "sound_id": 1226},
         {"command": "print_message", "message_id": 30006},
         {"command": "battler_action", "battler": "none", "action": 6},
-        {"command": "jump", "target": {"script": "lbl_8037873F", "entry": "entry", "encoding": "reloc"}}
+        {"command": "jump", "target": {"script": "lbl_8037873F", "entry": "entry"}}
       ]
     }
   ]

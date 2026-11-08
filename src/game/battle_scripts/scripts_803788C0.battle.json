@@ -1,0 +1,71 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_803788C0.c",
+  "alignment": 8,
+  "objects": [
+    {
+      "symbol": "lbl_803788C0",
+      "body": [
+        {"command": "add_byte", "destination": {"symbol": "lbl_8047B648"}, "amount": 1},
+        {"command": "jump_if_byte", "comparison": "less", "address": {"symbol": "lbl_8047B648"}, "value": 8, "target": {"script": "lbl_8037889D", "entry": "at_check_pursuit_switch_5"}},
+        {"command": "apply_switch_out_ability", "battler": 20},
+        {"command": "compat_wait_state"},
+        {"command": "animate_selected_battler_return"},
+        {"command": "compat_wait_state"},
+        {"command": "compat_draw_party_summary", "ignored_battler": 20},
+        {"command": "load_switched_battler", "battler": 20},
+        {"command": "initialize_switched_battler", "battler": 20, "mode": 0},
+        {"command": "buffer_low_hp_message", "battler": 20},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279EA0"}},
+        {"command": "compat_hide_party_summary", "ignored_battler": 20},
+        {"command": "animate_switch_in", "battler": 20, "mode": 0},
+        {"command": "wait_message", "frames": 0},
+        {"command": "compat_wait_state"},
+        {"command": "apply_switch_in_effects", "battler": 20},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8047B627"}, "value": 4},
+        {"command": "finish_move_effects", "mode": 1, "stop_state": 0},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8047B627"}, "value": 15},
+        {"command": "finish_move_effects", "mode": 1, "stop_state": 0},
+        {"command": "end_sequence"},
+        {"label": "at_set_byte_21", "command": "set_byte", "destination": {"symbol": "lbl_8047B63E"}, "value": 2},
+        {"command": "set_status_byte", "family": "fight_floor", "context": null, "object_id": null, "field": 57, "index": null, "value": {"symbol": "lbl_8047B63E"}},
+        {"command": "wait_frames", "frames": 32},
+        {"command": "announce_move"},
+        {"command": "consume_pp"},
+        {"command": "calculate_critical"},
+        {"command": "calculate_damage"},
+        {"command": "calculate_type_effectiveness"},
+        {"command": "adjust_damage"},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8047B600"}, "value": 1},
+        {"command": "play_move_animation"},
+        {"command": "wait_animation", "channel": 5},
+        {"command": "compat_effectiveness_sound"},
+        {"command": "animate_damage", "battler": "defender"},
+        {"command": "compat_wait_state"},
+        {"command": "apply_damage_and_update_hp", "battler": "defender"},
+        {"command": "wait_hp_animation", "battler": "defender"},
+        {"command": "print_critical_message"},
+        {"command": "wait_message", "frames": 64},
+        {"command": "print_result_message"},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "handle_fainted_battler", "battler": "defender", "branch_mode": 0, "target": null},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8047B627"}, "value": 3},
+        {"command": "finish_move_effects", "mode": 2, "stop_state": 6},
+        {"command": "battler_action", "battler": "defender", "action": 4},
+        {"command": "jump_if_byte", "comparison": "equal", "address": {"symbol": "lbl_80478D78"}, "value": 0, "target": {"script": "lbl_803788C0", "entry": "at_wait_frames_49"}},
+        {"command": "award_experience", "battler": "defender"},
+        {"label": "at_wait_frames_49", "command": "wait_frames", "frames": 32},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80378964",
+      "body": [
+        {"command": "wait_frames", "frames": 32},
+        {"command": "return_sequence"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_803784C0.c",
+  "alignment": 8,
+  "objects": [
+    {
+      "symbol": "lbl_803784C0",
+      "body": [
+        {"command": "wait_message", "frames": 0},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry"}},
+        {"label": "at_wait_frames_3", "command": "wait_frames", "frames": 32},
+        {"command": "set_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 59, "index": null, "value": {"symbol": "lbl_80478D80"}},
+        {"command": "play_animation", "battler": "defender", "animation": 23, "argument": null},
+        {"command": "print_message", "message_id": 30256},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry"}},
+        {"label": "at_check_attack_allowed_10", "command": "check_attack_allowed"},
+        {"command": "announce_move"},
+        {"command": "consume_pp"},
+        {"command": "jump_if_stat_stage", "battler": "attacker", "comparison": "less", "stat": "defense", "value": 12, "target": {"script": "lbl_803784C0", "entry": "at_play_move_animation_15"}},
+        {"command": "jump_if_stat_stage", "battler": "attacker", "comparison": "equal", "stat": "special_defense", "value": 12, "target": {"script": "lbl_80378643", "entry": "entry"}},
+        {"label": "at_play_move_animation_15", "command": "play_move_animation"},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8047B64A"}, "value": 0},
+        {"command": "animate_stat_change", "battler": "attacker", "stat_mask": 36, "flags": 0},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF76"}, "value": 18},
+        {"command": "change_stat_stage", "flags": 65, "target": {"script": "lbl_80378538", "entry": "entry"}},
+        {"command": "jump_if_byte", "comparison": "equal", "address": {"symbol": "lbl_80478D7D"}, "value": 2, "target": {"script": "lbl_80378538", "entry": "entry"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279DA8"}},
+        {"command": "wait_frames", "frames": 64}
+      ]
+    }
+  ]
+}

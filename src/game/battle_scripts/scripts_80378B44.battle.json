@@ -1,9 +1,9 @@
 {
-  "format": "colosseum-battle-source-v1",
+  "format": "colosseum-battle-source-v2",
   "catalog": "catalog.json",
   "unit": "main/auto_05_80378B44_data",
   "alignment": 4,
-  "programs": [
+  "objects": [
     {
       "symbol": "lbl_80378B44",
       "body": [
@@ -31,22 +31,22 @@
     {
       "symbol": "lbl_80378B72",
       "body": [
-        {"command": "play_animation", "battler": "attacker", "animation": 14, "argument": {"symbol": "lbl_8038FFFC", "encoding": "absolute"}},
+        {"command": "play_animation", "battler": "attacker", "animation": 14, "argument": {"symbol": "lbl_8038FFFC"}},
         {"command": "wait_animation", "channel": 7},
-        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618", "encoding": "reloc"}, "mask": 1048832},
+        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618"}, "mask": 1048832},
         {"command": "apply_damage_and_update_hp", "battler": "attacker"},
         {"command": "wait_hp_animation", "battler": "attacker"},
-        {"command": "get_status_word", "family": "fight_floor", "context": null, "object_id": null, "field": 65, "index": null, "value": {"symbol": "lbl_8047B608", "encoding": "reloc"}},
-        {"command": "set_status_word", "family": "fight_floor", "context": null, "object_id": null, "field": 62, "index": null, "value": {"symbol": "lbl_8047B608", "encoding": "reloc"}},
-        {"command": "jump_if_ability", "battler": "attacker", "ability": 64, "target": {"script": "lbl_80378B72", "entry": "at_set_byte_11", "encoding": "absolute"}},
+        {"command": "get_status_word", "family": "fight_floor", "context": null, "object_id": null, "field": 65, "index": null, "value": {"symbol": "lbl_8047B608"}},
+        {"command": "set_status_word", "family": "fight_floor", "context": null, "object_id": null, "field": 62, "index": null, "value": {"symbol": "lbl_8047B608"}},
+        {"command": "jump_if_ability", "battler": "attacker", "ability": 64, "target": {"script": "lbl_80378B72", "entry": "at_set_byte_11"}},
         {"command": "transform_damage", "operation": 0},
-        {"command": "set_byte", "destination": {"symbol": "lbl_80478D7D", "encoding": "absolute"}, "value": 3},
-        {"command": "jump", "target": {"script": "lbl_80378BF2", "entry": "entry", "encoding": "reloc"}},
-        {"label": "at_set_byte_11", "command": "set_byte", "destination": {"symbol": "lbl_80478D7D", "encoding": "absolute"}, "value": 4},
+        {"command": "set_byte", "destination": {"symbol": "lbl_80478D7D"}, "value": 3},
+        {"command": "jump", "target": {"script": "lbl_80378BF2", "entry": "entry"}},
+        {"label": "at_set_byte_11", "command": "set_byte", "destination": {"symbol": "lbl_80478D7D"}, "value": 4},
         {"command": "wait_animation", "channel": 6},
         {"command": "play_animation", "battler": "defender", "animation": 27, "argument": null},
         {"command": "apply_damage_and_update_hp", "battler": "defender"},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279D88", "encoding": "absolute"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279D88"}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 7},
         {"command": "wait_hp_animation", "battler": "defender"},
@@ -59,8 +59,8 @@
     {
       "symbol": "lbl_80378BF2",
       "body": [
-        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618", "encoding": "absolute"}, "mask": 1048832},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279D88", "encoding": "reloc"}},
+        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618"}, "mask": 1048832},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279D88"}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
         {"command": "play_animation", "battler": "defender", "animation": 7, "argument": null},
@@ -81,7 +81,7 @@
         {"command": "print_message", "message_id": 30121},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry", "encoding": "absolute"}}
+        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry"}}
       ]
     },
     {
@@ -92,13 +92,13 @@
         {"command": "print_message", "message_id": 30122},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "check_accuracy", "target": {"script": "lbl_80375FE2", "entry": "entry", "encoding": "absolute"}, "move_id": 0},
+        {"command": "check_accuracy", "target": {"script": "lbl_80375FE2", "entry": "entry"}, "move_id": 0},
         {"command": "calculate_type_effectiveness"},
-        {"command": "set_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 60, "index": null, "value": {"symbol": "lbl_80478D86", "encoding": "absolute"}},
-        {"command": "set_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 60, "index": null, "value": {"symbol": "lbl_80478D88", "encoding": "absolute"}},
-        {"command": "set_status_word", "family": "fight_floor", "context": null, "object_id": null, "field": 62, "index": null, "value": {"symbol": "lbl_8047B620", "encoding": "absolute"}},
+        {"command": "set_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 60, "index": null, "value": {"symbol": "lbl_80478D86"}},
+        {"command": "set_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 60, "index": null, "value": {"symbol": "lbl_80478D88"}},
+        {"command": "set_status_word", "family": "fight_floor", "context": null, "object_id": null, "field": 62, "index": null, "value": {"symbol": "lbl_8047B620"}},
         {"command": "adjust_fixed_damage"},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF5A", "encoding": "reloc"}, "value": 1},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF5A"}, "value": 1},
         {"command": "play_move_animation"},
         {"command": "wait_animation", "channel": 5},
         {"command": "compat_effectiveness_sound"},
@@ -110,7 +110,7 @@
         {"command": "wait_hp_animation", "battler": "defender"},
         {"command": "wait_animation", "channel": 6},
         {"command": "handle_fainted_battler", "battler": "defender", "branch_mode": 0, "target": null},
-        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry", "encoding": "absolute"}}
+        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry"}}
       ]
     },
     {
@@ -121,7 +121,7 @@
         {"command": "print_message", "message_id": 30122},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "jump", "target": {"script": "lbl_80377B05", "entry": "entry", "encoding": "absolute"}}
+        {"command": "jump", "target": {"script": "lbl_80377B05", "entry": "entry"}}
       ]
     },
     {
@@ -138,7 +138,7 @@
         {"command": "animate_switch_in", "battler": "defender", "mode": 2},
         {"command": "compat_wait_state"},
         {"command": "apply_switch_in_effects", "battler": "defender"},
-        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry", "encoding": "absolute"}}
+        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry"}}
       ]
     },
     {

@@ -92,8 +92,11 @@ The source evidence is in:
 - `src/game/fight_target.c`, `fight_trainer.c` and `fight_seq.c`
 - `src/game/fight_range_80211A00.c`, `status.c` and `fight_floor.c`
 - `src/game/toolentry.c`, `pokemon_relive.c` and `sequence.c`
-- `src/game/data/data_80375230.c`, `data_80375938.c`, `data_80377B0C.c`,
-  `data_80379714.c`, `rodata_80279B78.c` and `sdata_80478CA8.c`
+- `src/game/data/data_80375230.c`, `data_80375938.c`, `rodata_80279B78.c` and
+  `sdata_80478CA8.c`
+- `src/game/battle_scripts/scripts_80377B0C.battle.json` and
+  `scripts_80379714.battle.json` (formerly `data_80377B0C.c` and
+  `data_80379714.c`)
 
 ## Scalar extents and padding
 
