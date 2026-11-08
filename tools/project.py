@@ -608,9 +608,12 @@ def generate_build_ninja(
         name="patch_forceactive_ldscript",
         command=(
             f"$python {patch_forceactive_ldscript} $in $out "
-            "--symbols $forceactive_symbols"
+            "--symbols-file $out.rsp"
         ),
         description="FORCEACTIVE $out",
+        # The symbol list exceeds the Windows command-line limit.
+        rspfile="$out.rsp",
+        rspfile_content="$forceactive_symbols",
     )
 
     cargo_rule_written = False
@@ -957,6 +960,8 @@ def generate_build_ninja(
         ("mwcc_extab", mwcc_extab_cmd),
         ("mwcc_sjis_extab", mwcc_sjis_extab_cmd),
     ]:
+        if not command.startswith(CHAIN):
+            command = CHAIN + command
         n.rule(
             name=rule + "_constant_export",
             command=command + f' && $python {constant_export} --objcopy "{gnu_objcopy}"'
@@ -1006,7 +1011,8 @@ def generate_build_ninja(
         command=gnu_ld_cmd,
         description="LINK $out",
         rspfile="$out.rsp",
-        rspfile_content="$in_newline",
+        # GNU ld reads backslashes in response files as escapes.
+        rspfile_content="$ld_inputs",
     )
     n.newline()
 
@@ -1181,7 +1187,12 @@ def generate_build_ninja(
                     rule="gnu_ld_r",
                     inputs=self.inputs,
                     implicit=[self.ldscript, *gnu_ld_implicit],
-                    variables={"ldscript": serialize_path(self.ldscript)},
+                    variables={
+                        "ldscript": serialize_path(self.ldscript),
+                        "ld_inputs": " ".join(
+                            Path(path).as_posix() for path in self.inputs
+                        ),
+                    },
                     order_only="post-compile",
                 )
             else:
