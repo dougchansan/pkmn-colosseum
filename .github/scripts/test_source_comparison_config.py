@@ -182,6 +182,31 @@ class SourceComparisonConfigTests(unittest.TestCase):
         edge = next(s for s in ninja.splitlines() if s.startswith('build all_source:'))
         self.assertIn('build/GC6E01/src/sound.o', edge)
 
+    def test_generated_comparison_object_is_reported_but_never_linked(self):
+        Path('src/program.json').write_text('{}\n')
+        spec = {'kind': 'object', 'tool': 'tools/program_source.py', 'assembler': True,
+                'comparison': True}
+        obj = self.object(source='program.json', mw_version='GC/1.2.5n', source_generator=spec)
+        ninja, unit = self.generate(obj)
+        self.assertEqual(unit['target_path'], 'originals/sound.o')
+        self.assertEqual(unit['base_path'], 'build/GC6E01/compare/sound.o')
+        generated_edge = next(s for s in ninja.splitlines()
+                              if s.startswith('build build/GC6E01/src/sound.o build/GC6E01/compare/sound.o:'))
+        self.assertIn('generate_data_object_views src/program.json', generated_edge)
+        self.assertIn('--comparison-output $comparison_object', ninja)
+        self.assertIn('elf fixup $comparison_object $comparison_object', ninja)
+        link = next(s for s in ninja.splitlines() if s.startswith('build build/GC6E01/main.elf:'))
+        self.assertIn('build/GC6E01/src/sound.o', link)
+        self.assertNotIn('compare/sound.o', link)
+        edge = next(s for s in ninja.splitlines() if s.startswith('build all_source:'))
+        self.assertIn('build/GC6E01/compare/sound.o', edge)
+        for changes in ({'kind': 'c', 'assembler': False}, {'comparison': 'yes'}):
+            with self.subTest(changes=changes), self.assertRaises(SystemExit):
+                self.object(source='program.json', source_generator={**spec, **changes})
+        with self.assertRaises(SystemExit):
+            self.object(source='program.json', mw_version='ProDG/3.5', comparison_view='prodg_data',
+                        source_generator=spec)
+
     def test_generated_source_never_accepts_code_or_original_dependencies(self):
         Path('src/program.json').write_text('{}\n')
         spec = {'kind': 'c', 'tool': 'tools/program_source.py'}
