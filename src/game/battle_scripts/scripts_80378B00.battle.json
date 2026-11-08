@@ -1,0 +1,47 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_80378B00.c",
+  "alignment": 8,
+  "objects": [
+    {
+      "symbol": "lbl_80378B00",
+      "body": [
+        {"command": "play_animation_indirect", "battler": "attacker", "animation": {"legacy_address": "wsCmd46_pointer_eleven"}, "argument": null},
+        {"command": "jump", "target": {"script": "lbl_80378B2D", "entry": "entry"}}
+      ]
+    },
+    {
+      "symbol": "lbl_80378B0F",
+      "body": [
+        {"command": "play_animation_indirect", "battler": "attacker", "animation": {"legacy_address": "wsCmd46_pointer_twelve"}, "argument": null},
+        {"command": "jump", "target": {"script": "lbl_80378B2D", "entry": "entry"}}
+      ]
+    },
+    {
+      "symbol": "lbl_80378B1E",
+      "body": [
+        {"command": "play_animation_indirect", "battler": "attacker", "animation": {"legacy_address": "wsCmd46_pointer_thirteen"}, "argument": null},
+        {"command": "jump", "target": {"script": "lbl_80378B2D", "entry": "entry"}}
+      ]
+    },
+    {
+      "symbol": "lbl_80378B2D",
+      "body": [
+        {"command": "wait_animation", "channel": 6},
+        {"command": "return_ability"}
+      ]
+    },
+    {
+      "symbol": "lbl_80378B30",
+      "body": [
+        {"command": "play_animation", "battler": "attacker", "animation": 31, "argument": null},
+        {"command": "wait_animation", "channel": 0},
+        {"command": "print_message", "message_id": 30104},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "end_sequence"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_80379388.c",
+  "alignment": 8,
+  "objects": [
+    {
+      "symbol": "lbl_80379388",
+      "body": [
+        {"command": "play_animation", "battler": "attacker", "animation": 23, "argument": null},
+        {"command": "wait_animation", "channel": 0},
+        {"command": "print_message", "message_id": 30061},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "return_sequence"}
+      ]
+    }
+  ]
+}

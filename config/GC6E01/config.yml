@@ -75,10 +75,12 @@ block_relocations:
   - source: .rodata:0x80276C28
   - source: .rodata:0x80276E34
   - source: .rodata:0x802790E8
-  # Packed battle instructions: this aligned word straddles the final byte of
-  # a WS_STATUS_SET16 pointer and the next play-animation instruction header.
-  # It is not a pointer to lbl_80451217; the semantic bytecode source preserves
-  # all four original bytes without a false ADDR32 relocation.
+  # Packed battle instructions: these aligned words straddle the final byte of
+  # a WS_STATUS_SET16 pointer (lbl_80478D80) and the next play-animation
+  # instruction header. They are not pointers to lbl_80451217; the semantic
+  # bytecode source preserves all four original bytes without a false ADDR32
+  # relocation.
+  - source: .data:0x803784E0
   - source: .data:0x80378FF4
 
 # REL modules. The game keeps them inside FSYS archives; extract them into

@@ -1,0 +1,28 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_80378A7C.c",
+  "alignment": 4,
+  "objects": [
+    {
+      "symbol": "lbl_80378A7C",
+      "body": [
+        {"command": "play_animation", "battler": "attacker", "animation": 30, "argument": null},
+        {"command": "print_message", "message_id": 30291},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80378A8E",
+      "body": [
+        {"command": "play_animation", "battler": "attacker", "animation": 31, "argument": null},
+        {"command": "print_message", "message_id": 30292},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "end_sequence"}
+      ]
+    }
+  ]
+}

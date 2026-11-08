@@ -178,18 +178,24 @@ class Object:
                 sys.exit(f"Generated data requires an authored JSON source: {obj.name}")
             if generator["kind"] == "object":
                 obj.ctx_path = None
+            if generator.get("comparison", False):
+                if obj.comparison_obj_path is not None:
+                    sys.exit(f"Generated comparison objects cannot use another view: {obj.name}")
+                obj.comparison_obj_path = build_dir / "compare" / f"{base_name}.o"
         return obj
 
 
 def validate_source_generator(generator: Any, name: str) -> None:
     """Register a source compiler, never an original-object replacement."""
     if not isinstance(generator, dict) or not {"kind", "tool"} <= set(generator) or \
-            not set(generator) <= {"kind", "tool", "args", "dependencies", "assembler"} or \
+            not set(generator) <= {"kind", "tool", "args", "dependencies", "assembler", "comparison"} or \
             generator["kind"] not in ("c", "object") or \
             not isinstance(generator["tool"], str) or \
             not re.fullmatch(r"tools/[A-Za-z_0-9]+\.py", generator["tool"]) or \
             not isinstance(generator.get("assembler", False), bool) or \
-            generator.get("assembler", False) and generator["kind"] != "object":
+            generator.get("assembler", False) and generator["kind"] != "object" or \
+            not isinstance(generator.get("comparison", False), bool) or \
+            generator.get("comparison", False) and generator["kind"] != "object":
         sys.exit(f"Invalid data source generator for {name}")
     for key in ("args", "dependencies"):
         values = generator.get(key, [])
@@ -608,9 +614,12 @@ def generate_build_ninja(
         name="patch_forceactive_ldscript",
         command=(
             f"$python {patch_forceactive_ldscript} $in $out "
-            "--symbols $forceactive_symbols"
+            "--symbols-file $out.rsp"
         ),
         description="FORCEACTIVE $out",
+        # The symbol list exceeds the Windows command-line limit.
+        rspfile="$out.rsp",
+        rspfile_content="$forceactive_symbols",
     )
 
     cargo_rule_written = False
@@ -864,6 +873,16 @@ def generate_build_ninja(
         command=f"{CHAIN}$python $generator --source $in --output $out $generator_args && {dtk} elf fixup $out $out",
         description="Compile data object $in",
     )
+    n.rule(
+        name="generate_data_object_views",
+        # The generator writes the linked object and a comparison-only view;
+        # objdiff reads the view, and the linker never does.
+        command=f"{CHAIN}$python $generator --source $in --output $link_object"
+        " --comparison-output $comparison_object $generator_args"
+        f" && {dtk} elf fixup $link_object $link_object"
+        f" && {dtk} elf fixup $comparison_object $comparison_object",
+        description="Compile data object and comparison view $in",
+    )
     source_aliases = config.tools_dir / "source_data_aliases.py"
     n.rule(
         name="source_data_aliases",
@@ -957,6 +976,8 @@ def generate_build_ninja(
         ("mwcc_extab", mwcc_extab_cmd),
         ("mwcc_sjis_extab", mwcc_sjis_extab_cmd),
     ]:
+        if not command.startswith(CHAIN):
+            command = CHAIN + command
         n.rule(
             name=rule + "_constant_export",
             command=command + f' && $python {constant_export} --objcopy "{gnu_objcopy}"'
@@ -1006,7 +1027,8 @@ def generate_build_ninja(
         command=gnu_ld_cmd,
         description="LINK $out",
         rspfile="$out.rsp",
-        rspfile_content="$in_newline",
+        # GNU ld reads backslashes in response files as escapes.
+        rspfile_content="$ld_inputs",
     )
     n.newline()
 
@@ -1181,7 +1203,12 @@ def generate_build_ninja(
                     rule="gnu_ld_r",
                     inputs=self.inputs,
                     implicit=[self.ldscript, *gnu_ld_implicit],
-                    variables={"ldscript": serialize_path(self.ldscript)},
+                    variables={
+                        "ldscript": serialize_path(self.ldscript),
+                        "ld_inputs": " ".join(
+                            Path(path).as_posix() for path in self.inputs
+                        ),
+                    },
                     order_only="post-compile",
                 )
             else:
@@ -1532,19 +1559,27 @@ def generate_build_ninja(
                         dependencies.append(binutils_implicit or binutils / f"powerpc-eabi-as{EXE}")
                     quote_args = subprocess.list2cmdline if is_windows() else shlex.join
                     output = obj.src_obj_path
+                    outputs = [output]
                     rule = "generate_data_object"
+                    variables = {"generator": quote_args([generator["tool"]]),
+                                 "generator_args": quote_args(arguments)}
                     if generator["kind"] == "c":
                         rule = "generate_data_source"
                         output = config.out_path() / "generated" / Path(obj.name).with_suffix(".c")
+                        outputs = [output]
                     else:
                         dependencies.append(dtk)
+                    if generator.get("comparison", False):
+                        rule = "generate_data_object_views"
+                        outputs = [obj.src_obj_path, obj.comparison_obj_path]
+                        variables["link_object"] = obj.src_obj_path
+                        variables["comparison_object"] = obj.comparison_obj_path
                     n.build(
-                        outputs=output,
+                        outputs=outputs,
                         rule=rule,
                         inputs=obj.src_path,
                         implicit=dependencies,
-                        variables={"generator": quote_args([generator["tool"]]),
-                                   "generator_args": quote_args(arguments)},
+                        variables=variables,
                         order_only="pre-compile",
                     )
                     if generator["kind"] == "c":
@@ -1554,6 +1589,8 @@ def generate_build_ninja(
                         source_added.add(built_obj_path)
                         if obj.options["add_to_all"]:
                             source_inputs.append(built_obj_path)
+                            if generator.get("comparison", False):
+                                source_inputs.append(obj.comparison_obj_path)
                 elif file_is_c_cpp(obj.src_path):
                     # Add C/C++ build rule
                     built_obj_path = c_build(obj, obj.src_path)
@@ -1595,7 +1632,7 @@ def generate_build_ninja(
                 )
                 source_inputs.extend([obj.link_obj_path, obj.comparison_obj_path])
                 built_obj_path = obj.link_obj_path
-            elif obj.comparison_obj_path is not None:
+            elif obj.comparison_obj_path is not None and obj.options["comparison_view"] is not None:
                 if built_obj_path != obj.src_obj_path or obj_path is None:
                     sys.exit(f"Source comparison view needs native source and target objects: {obj.name}")
                 # This separate view is used only by objdiff. The native source

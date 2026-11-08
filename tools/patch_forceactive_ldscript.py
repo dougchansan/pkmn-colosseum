@@ -46,12 +46,16 @@ def main() -> int:
     parser.add_argument("input_path")
     parser.add_argument("output_path")
     parser.add_argument("--symbols", default="")
+    parser.add_argument("--symbols-file", type=Path)
     args = parser.parse_args()
 
     input_path = Path(args.input_path)
     output_path = Path(args.output_path)
     text = input_path.read_text(encoding="utf-8")
-    patched = patch_forceactive_block(text, parse_symbols(args.symbols))
+    symbols = parse_symbols(args.symbols)
+    if args.symbols_file is not None:
+        symbols += parse_symbols(args.symbols_file.read_text(encoding="utf-8"))
+    patched = patch_forceactive_block(text, symbols)
     output_path.write_text(patched, encoding="utf-8")
     return 0
 

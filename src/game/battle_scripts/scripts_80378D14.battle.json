@@ -1,0 +1,56 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_80378D14.c",
+  "alignment": 4,
+  "objects": [
+    {
+      "symbol": "lbl_80378D14",
+      "body": [
+        {"command": "play_animation", "battler": "defender", "animation": 23, "argument": null},
+        {"command": "wait_animation", "channel": 0},
+        {"command": "print_message", "message_id": 30205},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry"}}
+      ]
+    },
+    {
+      "symbol": "lbl_80378D2C",
+      "body": [
+        {"command": "play_animation", "battler": "attacker", "animation": 23, "argument": null},
+        {"command": "wait_animation", "channel": 0},
+        {"command": "print_message", "message_id": 30134},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80378D40",
+      "body": [
+        {"command": "play_animation", "battler": "attacker", "animation": 23, "argument": null},
+        {"command": "wait_animation", "channel": 0},
+        {"command": "print_message", "message_id": 30136},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80378D54",
+      "body": [
+        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618"}, "mask": 1048832},
+        {"command": "play_animation", "battler": "attacker", "animation": 23, "argument": null},
+        {"command": "wait_animation", "channel": 0},
+        {"command": "apply_damage_and_update_hp", "battler": "attacker"},
+        {"command": "print_message", "message_id": 30140},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_hp_animation", "battler": "attacker"},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "handle_fainted_battler", "battler": "attacker", "branch_mode": 0, "target": null},
+        {"command": "return_sequence"}
+      ]
+    }
+  ]
+}

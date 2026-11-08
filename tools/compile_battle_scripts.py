@@ -5,6 +5,14 @@ Inputs are authored JSON programs, their source catalog, and the public symbol
 map. No original executable, extracted section, target object, or byte dump is an
 input. GNU as emits ordinary data symbols and R_PPC_ADDR32 relocations; there is
 no binary patching or native instruction generation.
+
+Every address operand is a relocation in the linked object, so a modified link
+layout moves branch targets, dispatch entries and memory operands with their
+symbols. The interpreter packs most of those operands at unaligned offsets.
+dtk's split target objects can only carry word-aligned relocations, so an
+optional comparison object (read by objdiff, never linked) writes unaligned
+operands as their public-map addresses instead. Both objects have identical
+bytes in the original layout.
 """
 
 from __future__ import annotations
@@ -19,20 +27,29 @@ import tempfile
 from typing import Any
 
 if __package__:
-    from .battle_script_format import (BATTLERS, COMMANDS, COMPARISONS, EXTERNAL_COMMAND_STRIDES, FIELD_WIDTH,
-                                       STATS, STATUS_FAMILIES, STATUS_GET_FIELDS, STATUS_SET_FIELDS)
+    from .battle_script_format import (BATTLERS, COMMANDS, COMPARISONS, FIELD_WIDTH, STATS,
+                                       STATUS_FAMILIES, STATUS_GET_FIELDS, STATUS_SET_FIELDS)
 else:
-    from battle_script_format import (BATTLERS, COMMANDS, COMPARISONS, EXTERNAL_COMMAND_STRIDES, FIELD_WIDTH,
-                                      STATS, STATUS_FAMILIES, STATUS_GET_FIELDS, STATUS_SET_FIELDS)
+    from battle_script_format import (BATTLERS, COMMANDS, COMPARISONS, FIELD_WIDTH, STATS,
+                                      STATUS_FAMILIES, STATUS_GET_FIELDS, STATUS_SET_FIELDS)
 
 
-FORMAT = "colosseum-battle-source-v1"
-CATALOG_FORMAT = "colosseum-battle-catalog-v1"
+FORMAT = "colosseum-battle-source-v2"
+CATALOG_FORMAT = "colosseum-battle-catalog-v2"
 IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z_0-9]*\Z")
 SOURCE_FILENAME = re.compile(r"[A-Za-z_0-9]+\.battle\.json\Z")
+UNIT_NAME = re.compile(r"main/[A-Za-z_0-9]+(?:/[A-Za-z_0-9]+)*(?:\.c)?\Z")
 MAP_ROW = re.compile(
     r"^(\S+) = ([^:]+):0x([0-9A-Fa-f]+);.*\btype:(\w+).*\bsize:0x([0-9A-Fa-f]+)"
 )
+VIEWS = ("link", "comparison")
+# legacy name: (program, program address, dereferenced wire address)
+LEGACY_ADDRESSES = {
+    "wsCmd46_pointer_ten": ("lbl_80378AF1", 0x80378AF1, 10),
+    "wsCmd46_pointer_eleven": ("lbl_80378B00", 0x80378B00, 11),
+    "wsCmd46_pointer_twelve": ("lbl_80378B0F", 0x80378B0F, 12),
+    "wsCmd46_pointer_thirteen": ("lbl_80378B1E", 0x80378B1E, 13),
+}
 
 
 class SourceError(ValueError):
@@ -96,13 +113,31 @@ def parse_symbols(text: str) -> dict[str, Symbol]:
     return symbols
 
 
+def apply_native_bounds(symbols: dict[str, Symbol], registry: list) -> None:
+    """Use a registered native C array's full extent instead of its map fragment.
+
+    The public map keeps historical fragments such as lbl_80478D78 (one byte)
+    whose native C object is larger; data-alias registries record those bounds.
+    """
+    require(isinstance(registry, list), "native bounds registry must be a list")
+    for group in registry:
+        require(isinstance(group, dict) and {"base", "size"} <= group.keys(), "invalid native bounds")
+        symbol = symbols.get(group["base"])
+        require(symbol is not None and type(group["size"]) is int and group["size"] >= symbol.size,
+                f"invalid native bounds for {group['base']}")
+        symbols[group["base"]] = Symbol(symbol.address, group["size"], symbol.section, symbol.kind)
+
+
 @dataclass
 class Program:
+    """One owned data object: a command program, a dispatch table or storage."""
     symbol: str
-    body: list[dict]
+    kind: str
+    body: list
     labels: dict[str, int]
     positions: list[int]
     size: int
+    padding: int = 0
 
 
 @dataclass
@@ -110,6 +145,7 @@ class Owner:
     filename: str
     unit: str
     alignment: int
+    start: int
     programs: list[Program]
     size: int
 
@@ -117,15 +153,14 @@ class Owner:
 class Compiler:
     """Validate a source catalog before serializing any selected owner.
 
-    A branch names an entry label, never a numeric offset. Labels in authored
-    programs are computed from command widths. External entries are declarations
-    for already source-backed scripts, with their independently checked offsets
-    recorded in the catalog; they cannot be invented in an operand.
+    A branch or dispatch entry names an entry label, never a numeric offset.
+    Labels are computed from command widths, so every reference lands on an
+    instruction boundary of an owned program.
     """
 
     def __init__(self, documents: dict[str, dict], catalog: dict,
                  symbols: dict[str, Symbol]):
-        fields(catalog, {"format", "sources", "external_entries"}, {"description"}, "catalog")
+        fields(catalog, {"format", "sources"}, {"description"}, "catalog")
         require(catalog["format"] == CATALOG_FORMAT, "unsupported battle catalog format")
         require(isinstance(catalog["sources"], list) and catalog["sources"], "empty source catalog")
         require(all(isinstance(name, str) and SOURCE_FILENAME.fullmatch(name)
@@ -136,149 +171,87 @@ class Compiler:
         self.owners: dict[str, Owner] = {}
         self.programs: dict[str, Program] = {}
         self.entries: dict[str, dict[str, int]] = {}
-        self.external_sources: set[str] = set()
-        self.external_entries: list[dict] = []
         occupied = []
         for filename in catalog["sources"]:
             doc = documents[filename]
-            fields(doc, {"format", "catalog", "unit", "alignment", "programs"},
+            fields(doc, {"format", "catalog", "unit", "alignment", "objects"},
                    {"description"}, filename)
             require(doc["format"] == FORMAT, f"{filename}: unsupported source format")
             require(doc["catalog"] == "catalog.json", "source must use its sibling catalog.json")
-            require(isinstance(doc["unit"], str) and
-                    re.fullmatch(r"main/[A-Za-z_0-9]+", doc["unit"]), "invalid source unit name")
+            require(isinstance(doc["unit"], str) and UNIT_NAME.fullmatch(doc["unit"]),
+                    "invalid source unit name")
             require(doc["unit"] not in {o.unit for o in self.owners.values()}, "duplicate source unit")
             alignment = integer(doc["alignment"], "section alignment", 1, 32)
             require(alignment & (alignment - 1) == 0, "alignment must be a power of two")
-            require(isinstance(doc["programs"], list) and doc["programs"], "empty program owner")
+            require(isinstance(doc["objects"], list) and doc["objects"], "empty program owner")
             programs = []
             start = None
             cursor = None
-            for source in doc["programs"]:
-                fields(source, {"symbol", "body"}, {"description"}, "program")
-                name = identifier(source["symbol"], "program symbol")
-                require(name not in self.programs, f"duplicate program definition: {name}")
+            for source in doc["objects"]:
+                require(isinstance(source, dict) and "symbol" in source, "object: expected a symbol")
+                name = identifier(source["symbol"], "object symbol")
+                require(name not in self.programs, f"duplicate object definition: {name}")
                 symbol = self.symbol(name)
                 require(symbol.section == ".data" and symbol.kind == "object" and symbol.size > 0,
-                        f"{name}: script must be a nonempty .data object")
+                        f"{name}: object must be a nonempty .data object")
                 if start is None:
                     start = cursor = symbol.address
                     require(start % alignment == 0, f"{name}: section start violates alignment")
                 require(symbol.address == cursor, f"{name}: source ownership has a gap or overlap")
-                require(isinstance(source["body"], list) and source["body"], f"{name}: empty body")
-                labels = {"entry": 0}
-                positions = []
-                position = 0
-                for node in source["body"]:
-                    require(isinstance(node, dict) and "command" in node, f"{name}: expected a command")
-                    require(isinstance(node["command"], str) and node["command"] in COMMANDS,
-                            f"{name}: unknown command")
-                    command = COMMANDS[node["command"]]
-                    fields(node, {"command", *(name for name, _ in command.fields)},
-                           {"label", "note"}, f"{name}/{command.name}")
-                    if "note" in node:
-                        require(isinstance(node["note"], str), "command note must be text")
-                    if "label" in node:
-                        label = identifier(node["label"], "entry label")
-                        require(label not in labels, f"{name}: duplicate/reserved entry label {label}")
-                        labels[label] = position
-                    positions.append(position)
-                    position += command.size
-                require(position == symbol.size,
-                        f"{name}: command extent {position} differs from mapped object size {symbol.size}")
-                program = Program(name, source["body"], labels, positions, position)
+                program = self.object(name, source)
+                require(program.size == symbol.size,
+                        f"{name}: object extent {program.size} differs from mapped object size {symbol.size}")
                 self.programs[name] = program
-                self.entries[name] = labels
+                if program.kind == "program":
+                    self.entries[name] = program.labels
                 programs.append(program)
                 occupied.append((symbol.address, symbol.address + symbol.size, name))
                 cursor += symbol.size
-            self.owners[filename] = Owner(filename, doc["unit"], alignment, programs, cursor - start)
+            self.owners[filename] = Owner(filename, doc["unit"], alignment, start, programs,
+                                          cursor - start)
         occupied.sort()
         require(all(left[1] <= right[0] for left, right in zip(occupied, occupied[1:])),
                 "source program owners overlap")
-        require(isinstance(catalog["external_entries"], list), "external entries must be a list")
-        for entry in catalog["external_entries"]:
-            fields(entry, {"symbol", "source", "labels"}, {"description"}, "external script")
-            name = identifier(entry["symbol"], "external script symbol")
-            require(name not in self.entries, f"duplicate external/defined script: {name}")
-            symbol = self.symbol(name)
-            require(symbol.kind == "object" and symbol.section == ".data" and symbol.size > 0,
-                    "external script must name a nonempty data object")
-            path = entry["source"]
-            require(isinstance(path, str) and re.fullmatch(r"src/game/[A-Za-z_0-9/]+\.c", path),
-                    "external entry requires an existing C source path")
-            self.external_sources.add(path)
-            self.external_entries.append(entry)
-            require(isinstance(entry["labels"], dict) and entry["labels"], "empty external entry set")
-            labels = {}
-            for label, offset in entry["labels"].items():
-                identifier(label, "external label")
-                labels[label] = integer(offset, "external entry offset", 0, symbol.size - 1)
-            require(labels.get("entry") == 0, "external script must declare its entry at zero")
-            require(len(set(labels.values())) == len(labels), "duplicate external entry offset")
-            self.entries[name] = labels
         # Check operands in every catalog member, including cross-owner branches,
         # before an object for any one owner can be emitted.
         for owner in self.owners.values():
             self.assembly(owner.filename)
 
-    def verify_external_entries(self, root: Path) -> list[Path]:
-        """Check entry declarations against the existing, source-owned C arrays.
-
-        This intentionally recognizes only the explicit u8[] and void*[] constant
-        initializer forms used by those owners. It never reads a target object.
-        Symbolic pointer initializers are evaluated with the public map, after
-        which the handler-derived strides locate valid instruction boundaries.
-        Unsupported C syntax fails closed instead of approximating its bytes.
-        """
-        root = root.resolve()
-        paths = set()
-        lengths = {c.opcode: c.size for c in COMMANDS.values()}
-        lengths.update({opcode: row[0] for opcode, row in EXTERNAL_COMMAND_STRIDES.items()})
-        for entry in self.external_entries:
-            path = (root / entry["source"]).resolve()
-            require(path.is_relative_to(root) and path.is_file(), "external script source is missing")
-            paths.add(path)
-            text = re.sub(r"/\*.*?\*/|//[^\n]*", " ", path.read_text(), flags=re.S)
-            name = entry["symbol"]
-            pattern = (r"(?m)^(u8|void\*)\s+" + re.escape(name)
-                       + r"\s*\[([0-9]+)\]\s*(?:__attribute__\s*\(\(aligned\([0-9]+\)\)\)\s*)?"
-                       + r"=\s*\{([^{}]*)\}\s*;")
-            definitions = list(re.finditer(pattern, text))
-            require(len(definitions) == 1, f"{name}: unsupported or ambiguous external C definition")
-            definition = definitions[0]
-            width = 1 if definition[1] == "u8" else 4
-            count = int(definition[2])
-            require(count * width == self.symbol(name).size, f"{name}: external C extent differs")
-            tokens = [re.sub(r"\s+", "", token) for token in definition[3].split(",")]
-            if tokens and not tokens[-1]:
-                tokens.pop()
-            require(len(tokens) <= count and all(tokens), f"{name}: invalid C initializer extent")
-            wire = bytearray()
-            for token in tokens:
-                literal = re.fullmatch(r"(?:\(void\*\))?(0x[0-9A-Fa-f]+|[0-9]+)", token)
-                pointer = re.fullmatch(r"\(void\*\)\(\(u8\*\)([A-Za-z_][A-Za-z_0-9]*)"
-                                       r"(?:\+(0x[0-9A-Fa-f]+|[0-9]+))?\)", token)
-                if literal:
-                    require(width == 4 or not token.startswith("("), "pointer initializer in byte array")
-                    value = int(literal[1], 0)
-                elif pointer and width == 4:
-                    value = self.symbol(pointer[1]).address + (int(pointer[2], 0) if pointer[2] else 0)
-                else:
-                    raise SourceError(f"{name}: unsupported external C initializer expression")
-                integer(value, "external initializer", 0, (1 << (8 * width)) - 1)
-                wire.extend(value.to_bytes(width, "big"))
-            wire.extend(bytes((count - len(tokens)) * width))
-            boundaries = set()
-            cursor = 0
-            while cursor < len(wire):
-                boundaries.add(cursor)
-                require(wire[cursor] in lengths, f"{name}: unknown external instruction")
-                cursor += lengths[wire[cursor]]
-                require(cursor <= len(wire), f"{name}: external instruction overruns its object")
-            require(set(entry["labels"].values()) <= boundaries,
-                    f"{name}: external entry points inside an operand")
-        return sorted(paths)
+    def object(self, name: str, source: dict) -> Program:
+        if "body" in source:
+            fields(source, {"symbol", "body"}, {"description"}, name)
+            require(isinstance(source["body"], list) and source["body"], f"{name}: empty body")
+            labels = {"entry": 0}
+            positions = []
+            position = 0
+            for node in source["body"]:
+                require(isinstance(node, dict) and "command" in node, f"{name}: expected a command")
+                require(isinstance(node["command"], str) and node["command"] in COMMANDS,
+                        f"{name}: unknown command")
+                command = COMMANDS[node["command"]]
+                fields(node, {"command", *(field for field, _ in command.fields)},
+                       {"label", "note"}, f"{name}/{command.name}")
+                if "note" in node:
+                    require(isinstance(node["note"], str), "command note must be text")
+                if "label" in node:
+                    label = identifier(node["label"], "entry label")
+                    require(label not in labels, f"{name}: duplicate/reserved entry label {label}")
+                    labels[label] = position
+                positions.append(position)
+                position += command.size
+            return Program(name, "program", source["body"], labels, positions, position)
+        if "table" in source:
+            # A dispatch table of script entry addresses, e.g. the move-effect
+            # table indexed by wsRunScript callers. Padding covers the alignment
+            # bytes the mapped object includes after its last entry.
+            fields(source, {"symbol", "table"}, {"description", "padding"}, name)
+            require(isinstance(source["table"], list) and source["table"], f"{name}: empty table")
+            padding = integer(source.get("padding", 0), "table padding", 0, 3)
+            return Program(name, "table", source["table"], {}, [4 * i for i in range(len(source["table"]))],
+                           4 * len(source["table"]) + padding, padding)
+        fields(source, {"symbol", "zero_fill"}, {"description"}, name)
+        size = integer(source["zero_fill"], "zero-filled storage size", 1, 0x1000000)
+        return Program(name, "zero_fill", [], {}, [], size)
 
     def symbol(self, name: str) -> Symbol:
         identifier(name, "symbol reference")
@@ -299,31 +272,33 @@ class Compiler:
         return integer(value, what, 0, (1 << (FIELD_WIDTH[kind] * 8)) - 1)
 
     def address(self, value: Any, kind: str, nullable: bool, program: Program,
-                position: int, field: str, required_width: int) -> tuple[str, bool, dict | None]:
+                position: int, field: str, required_width: int) -> tuple[str | None, int, dict | None]:
+        """Return a relocation expression (or None for a constant) and its wire value."""
         what = f"{program.symbol}+{position}/{field}"
         if value is None:
             require(nullable, f"{what}: required address cannot be null")
-            return "0", False, None
+            return None, 0, None
         require(isinstance(value, dict), f"{what}: address must be symbolic")
         if "legacy_address" in value:
             fields(value, {"legacy_address"}, set(), what)
-            # This single original command actually asks wsCmd46 to dereference
-            # address ten. Preserve its wire behavior; do not reinterpret it as
-            # an immediate animation id or generalize it into a raw-byte escape.
-            require((program.symbol, self.symbol(program.symbol).address, position,
-                     kind, field, value["legacy_address"]) ==
-                    ("lbl_80378AF1", 0x80378AF1, 0, "mem8", "animation", "wsCmd46_pointer_ten"),
+            # These four sibling commands actually ask wsCmd46 to dereference
+            # addresses ten to thirteen. Preserve their wire behavior; do not
+            # reinterpret them as immediate animation ids or generalize them
+            # into a raw-byte escape.
+            site = LEGACY_ADDRESSES.get(value["legacy_address"])
+            require(site is not None and site[:2] == (program.symbol, self.symbol(program.symbol).address)
+                    and (position, kind, field) == (0, "mem8", "animation"),
                     f"{what}: unsupported legacy address")
-            return "10", False, None
+            return None, site[2], None
         if kind in {"branch", "ignored_branch"}:
-            fields(value, {"script", "entry", "encoding"}, set(), what)
+            fields(value, {"script", "entry"}, set(), what)
             target = identifier(value["script"], "branch script")
             label = identifier(value["entry"], "branch label")
             require(target in self.entries and label in self.entries[target],
                     f"{what}: branch does not name an instruction entry")
             offset = self.entries[target][label]
         else:
-            fields(value, {"symbol", "encoding"}, {"addend"}, what)
+            fields(value, {"symbol"}, {"addend"}, what)
             target = identifier(value["symbol"], "memory symbol")
             offset = integer(value.get("addend", 0), "memory addend", 0, 0xFFFFFFFF)
         symbol = self.symbol(target)
@@ -332,30 +307,51 @@ class Compiler:
                 f"{what}: address must refer to a data object")
         require(0 <= offset < symbol.size and offset + required_width <= symbol.size,
                 f"{what}: operand access exceeds the named object")
-        encoding = value["encoding"]
-        require(encoding in {"absolute", "reloc"}, f"{what}: unknown address encoding")
         address = symbol.address + offset
         require(address <= 0xFFFFFFFF, f"{what}: wire address overflows")
-        expression = target + (f"+{offset}" if offset else "") if encoding == "reloc" else str(address)
         edge = None
         if kind == "branch":
             edge = {"source": program.symbol, "offset": position, "field": field,
                     "target": target, "entry": value["entry"]}
-        return expression, encoding == "reloc", edge
+        return target + (f"+{offset}" if offset else ""), address, edge
 
-    def assembly(self, filename: str) -> tuple[str, dict]:
+    def assembly(self, filename: str, view: str = "link") -> tuple[str, dict]:
         require(filename in self.owners, "source is not in the battle catalog")
+        require(view in VIEWS, "unknown object view")
         owner = self.owners[filename]
         lines = ["# Generated from typed battle source; do not edit.",
                  '.section .data,"aw",@progbits', f".balign {owner.alignment}"]
         relocations = []
+        resolved = []
         edges = []
         command_count = 0
         section_offset = 0
+
+        def emit_address(expression: str | None, value: int, offset: int) -> None:
+            # Unaligned relocations exist only in the linked object; the
+            # comparison object mirrors what the split target can express.
+            if expression is None:
+                lines.append(f".long {value}")
+            elif view == "comparison" and (owner.start + offset) % 4:
+                lines.append(f".long {value}")
+                resolved.append({"offset": offset, "expression": expression, "value": value})
+            else:
+                lines.append(f".long {expression}")
+                relocations.append({"offset": offset, "expression": expression, "type": 1})
+
         for program in owner.programs:
             lines.extend((f".global {program.symbol}", f".type {program.symbol},@object",
                           program.symbol + ":"))
-            for position, node in zip(program.positions, program.body):
+            if program.kind == "zero_fill":
+                lines.append(f".space {program.size}")
+            elif program.kind == "table":
+                for index, entry in enumerate(program.body):
+                    expression, value, _ = self.address(entry, "branch", False, program,
+                                                        4 * index, f"table[{index}]", 1)
+                    emit_address(expression, value, section_offset + 4 * index)
+                if program.padding:
+                    lines.append(f".space {program.padding}")
+            for position, node in zip(program.positions, program.body) if program.kind == "program" else ():
                 command = COMMANDS[node["command"]]
                 command_count += 1
                 lines.extend((f"# {command.name}", f".byte {command.opcode}"))
@@ -372,12 +368,9 @@ class Compiler:
                         access = int(kind[3:]) // 8 if kind.startswith("mem") else 1
                         if kind.startswith("mem") and command.name in {"copy_memory", "jump_if_memory_equal", "jump_if_memory_different"}:
                             access = integer(node["count"], "memory transfer count", 0, 255)
-                        expression, relocated, edge = self.address(
+                        expression, value, edge = self.address(
                             node[name], kind, wire_kind.endswith("?"), program, position, name, access)
-                        lines.append(f".long {expression}")
-                        if relocated:
-                            relocations.append({"offset": section_offset + position + field_offset,
-                                                "expression": expression, "type": 1})
+                        emit_address(expression, value, section_offset + position + field_offset)
                         if edge is not None:
                             edges.append(edge)
                     else:
@@ -390,7 +383,8 @@ class Compiler:
         return "\n".join(lines) + "\n", {
             "unit": owner.unit, "size": owner.size, "alignment": owner.alignment,
             "symbols": [{"name": p.symbol, "size": p.size} for p in owner.programs],
-            "commands": command_count, "relocations": relocations, "edges": edges,
+            "commands": command_count, "relocations": relocations, "resolved": resolved,
+            "edges": edges,
         }
 
 
@@ -406,7 +400,8 @@ def read_json(path: Path) -> dict:
     return json.loads(path.read_text(), object_pairs_hook=no_duplicate_keys)
 
 
-def load_source(source: Path, symbols_path: Path) -> tuple[Compiler, list[Path]]:
+def load_source(source: Path, symbols_path: Path,
+                native_bounds: list[Path] = ()) -> tuple[Compiler, list[Path]]:
     source = source.resolve()
     catalog_path = source.parent / "catalog.json"
     catalog = read_json(catalog_path)
@@ -421,9 +416,21 @@ def load_source(source: Path, symbols_path: Path) -> tuple[Compiler, list[Path]]
         documents[name] = read_json(path)
         inputs.append(path)
     require(source in inputs, "requested source is not catalogued")
-    compiler = Compiler(documents, catalog, parse_symbols(symbols_path.read_text()))
-    inputs.extend(compiler.verify_external_entries(Path(__file__).resolve().parents[1]))
-    return compiler, inputs
+    symbols = parse_symbols(symbols_path.read_text())
+    for path in native_bounds:
+        apply_native_bounds(symbols, read_json(path))
+        inputs.append(path.resolve())
+    return Compiler(documents, catalog, symbols), inputs
+
+
+def assemble(assembler: Path, assembly: str, output: Path, listing: Path, directory: str) -> None:
+    temporary_asm = Path(directory) / f"{output.stem}.s"
+    temporary_obj = Path(directory) / f"{output.stem}.o"
+    temporary_asm.write_text(assembly)
+    subprocess.run([str(assembler.resolve()), "-mgekko", "-o", str(temporary_obj),
+                    str(temporary_asm)], check=True)
+    temporary_obj.replace(output)
+    listing.write_text(assembly)
 
 
 def main() -> None:
@@ -433,25 +440,29 @@ def main() -> None:
     parser.add_argument("--assembler", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--assembly", type=Path)
+    parser.add_argument("--native-bounds", type=Path, action="append", default=[],
+                        help="data-alias registry recording native C array extents")
+    parser.add_argument("--comparison-output", type=Path,
+                        help="also write the objdiff comparison object")
     args = parser.parse_args()
-    compiler, inputs = load_source(args.source, args.symbols)
-    assembly, _ = compiler.assembly(args.source.name)
-    output = args.output.resolve()
-    assembly_path = (args.assembly or output.with_suffix(".s")).resolve()
-    require(output.suffix == ".o" and assembly_path.suffix == ".s", "expected .o/.s output paths")
-    require(output not in inputs and assembly_path not in inputs and output != assembly_path,
+    compiler, inputs = load_source(args.source, args.symbols, args.native_bounds)
+    outputs = [(args.output.resolve(), (args.assembly or args.output.with_suffix(".s")).resolve(), "link")]
+    if args.comparison_output is not None:
+        comparison = args.comparison_output.resolve()
+        outputs.append((comparison, comparison.with_suffix(".s"), "comparison"))
+    paths = [path for output in outputs for path in output[:2]]
+    require(all(output.suffix == ".o" and listing.suffix == ".s" for output, listing, _ in outputs),
+            "expected .o/.s output paths")
+    require(not set(paths) & set(inputs) and len(set(paths)) == len(paths),
             "output would overwrite a source input")
-    output.parent.mkdir(parents=True, exist_ok=True)
-    assembly_path.parent.mkdir(parents=True, exist_ok=True)
+    views = [(output, listing, compiler.assembly(args.source.name, view)[0])
+             for output, listing, view in outputs]
     # Install only after the full source catalog validates and GNU as succeeds.
-    with tempfile.TemporaryDirectory(prefix="battle-source-", dir=output.parent) as directory:
-        temporary_asm = Path(directory) / "program.s"
-        temporary_obj = Path(directory) / "program.o"
-        temporary_asm.write_text(assembly)
-        subprocess.run([str(args.assembler.resolve()), "-mgekko", "-o", str(temporary_obj),
-                        str(temporary_asm)], check=True)
-        temporary_obj.replace(output)
-        assembly_path.write_text(assembly)
+    for output, listing, assembly in views:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        listing.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="battle-source-", dir=output.parent) as directory:
+            assemble(args.assembler, assembly, output, listing, directory)
 
 
 if __name__ == "__main__":

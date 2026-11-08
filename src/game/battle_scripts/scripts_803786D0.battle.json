@@ -1,0 +1,66 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_803786D0.c",
+  "alignment": 8,
+  "objects": [
+    {
+      "symbol": "lbl_803786D0",
+      "body": [
+        {"command": "wait_message", "frames": 0},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry"}},
+        {"label": "at_check_attack_allowed_3", "command": "check_attack_allowed"},
+        {"command": "announce_move"},
+        {"command": "consume_pp"},
+        {"command": "command_eb", "target": {"script": "lbl_80377B05", "entry": "entry"}},
+        {"command": "play_move_animation"},
+        {"command": "wait_animation", "channel": 0},
+        {"command": "print_message", "message_id": 30068},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "jump", "target": {"script": "lbl_80375FBF", "entry": "entry"}}
+      ]
+    },
+    {
+      "symbol": "lbl_803786F4",
+      "body": [
+        {"command": "open_battler_status_menu", "battler": "attacker"},
+        {"command": "play_battler_cry", "battler": "attacker"},
+        {"command": "print_message", "message_id": 30020},
+        {"command": "wait_message", "frames": 64},
+        {"command": "close_battler_status_menu", "battler": "attacker"},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80378703",
+      "body": [
+        {"command": "open_battler_status_menu", "battler": "defender"},
+        {"command": "play_battler_cry", "battler": "defender"},
+        {"command": "print_message", "message_id": 30021},
+        {"command": "wait_message", "frames": 64},
+        {"command": "close_battler_status_menu", "battler": "defender"},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80378712",
+      "body": [
+        {"command": "open_battler_status_menu", "battler": 21},
+        {"command": "play_battler_cry", "battler": 21},
+        {"command": "print_message", "message_id": 30465},
+        {"command": "wait_message", "frames": 64},
+        {"command": "close_battler_status_menu", "battler": 21},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80378721",
+      "body": [
+        {"command": "award_experience", "battler": 21},
+        {"command": "end_sequence"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "format": "colosseum-battle-source-v2",
+  "catalog": "catalog.json",
+  "unit": "main/game/data/data_80379A3C.c",
+  "alignment": 4,
+  "objects": [
+    {
+      "symbol": "lbl_80379A3C",
+      "body": [
+        {"command": "play_animation", "battler": 25, "animation": 7, "argument": null},
+        {"command": "wait_animation", "channel": 7},
+        {"command": "refresh_status_icon", "battler": 25},
+        {"command": "print_message", "message_id": 30383},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "remove_held_item", "battler": 25},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379A54",
+      "body": [
+        {"command": "call_sequence", "target": {"script": "lbl_80379A5A", "entry": "entry"}},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379A5A",
+      "body": [
+        {"command": "play_animation", "battler": 25, "animation": 7, "argument": null},
+        {"command": "wait_animation", "channel": 7},
+        {"command": "refresh_status_icon", "battler": 25},
+        {"command": "print_message", "message_id": 30384},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "remove_held_item", "battler": 25},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379A72",
+      "body": [
+        {"command": "call_sequence", "target": {"script": "lbl_80379A78", "entry": "entry"}},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379A78",
+      "body": [
+        {"command": "play_animation", "battler": 25, "animation": 7, "argument": null},
+        {"command": "wait_animation", "channel": 7},
+        {"command": "refresh_status_icon", "battler": 25},
+        {"command": "print_message", "message_id": 30385},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "remove_held_item", "battler": 25},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379A90",
+      "body": [
+        {"command": "call_sequence", "target": {"script": "lbl_80379A96", "entry": "entry"}},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379A96",
+      "body": [
+        {"command": "play_animation", "battler": 25, "animation": 7, "argument": null},
+        {"command": "wait_animation", "channel": 7},
+        {"command": "refresh_status_icon", "battler": 25},
+        {"command": "print_message", "message_id": 30386},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "remove_held_item", "battler": 25},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379AAE",
+      "body": [
+        {"command": "call_sequence", "target": {"script": "lbl_80379AB4", "entry": "entry"}},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379AB4",
+      "body": [
+        {"command": "play_animation", "battler": 25, "animation": 7, "argument": null},
+        {"command": "wait_animation", "channel": 7},
+        {"command": "refresh_status_icon", "battler": 25},
+        {"command": "print_message", "message_id": 30387},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "remove_held_item", "battler": 25},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379ACC",
+      "body": [
+        {"command": "call_sequence", "target": {"script": "lbl_80379AD2", "entry": "entry"}},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379AD2",
+      "body": [
+        {"command": "play_animation", "battler": 25, "animation": 7, "argument": null},
+        {"command": "wait_animation", "channel": 7},
+        {"command": "print_message", "message_id": 30388},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "remove_held_item", "battler": 25},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379AE8",
+      "body": [
+        {"command": "call_sequence", "target": {"script": "lbl_80379AEE", "entry": "entry"}},
+        {"command": "end_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379AEE",
+      "body": [
+        {"command": "play_animation", "battler": 25, "animation": 7, "argument": null},
+        {"command": "wait_animation", "channel": 7},
+        {"command": "refresh_status_icon", "battler": 25},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E5D8", "addend": 8}},
+        {"command": "wait_message", "frames": 64},
+        {"command": "wait_animation", "channel": 6},
+        {"command": "remove_held_item", "battler": 25},
+        {"command": "return_sequence"}
+      ]
+    },
+    {
+      "symbol": "lbl_80379B06",
+      "body": [
+        {"command": "call_sequence", "target": {"script": "lbl_80379B0C", "entry": "entry"}},
+        {"command": "end_sequence"}
+      ]
+    }
+  ]
+}

@@ -1,19 +1,19 @@
 {
-  "format": "colosseum-battle-source-v1",
+  "format": "colosseum-battle-source-v2",
   "catalog": "catalog.json",
   "unit": "main/auto_05_80379478_data",
   "alignment": 8,
-  "programs": [
+  "objects": [
     {
       "symbol": "lbl_80379478",
       "body": [
         {"command": "animate_primary_condition", "battler": 22},
         {"command": "wait_animation", "channel": 7},
         {"command": "refresh_status_icon", "battler": 22},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E558", "encoding": "absolute", "addend": 64}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E558", "addend": 64}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "jump", "target": {"script": "lbl_80379462", "entry": "entry", "encoding": "absolute"}}
+        {"command": "jump", "target": {"script": "lbl_80379462", "entry": "entry"}}
       ]
     },
     {
@@ -22,10 +22,10 @@
         {"command": "animate_primary_condition", "battler": 22},
         {"command": "wait_animation", "channel": 7},
         {"command": "refresh_status_icon", "battler": 22},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E5A8", "encoding": "reloc"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E5A8"}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "jump", "target": {"script": "lbl_80379462", "entry": "entry", "encoding": "absolute"}}
+        {"command": "jump", "target": {"script": "lbl_80379462", "entry": "entry"}}
       ]
     },
     {
@@ -34,10 +34,10 @@
         {"command": "animate_primary_condition", "battler": 22},
         {"command": "wait_animation", "channel": 7},
         {"command": "refresh_status_icon", "battler": 22},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E5A8", "encoding": "absolute", "addend": 8}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E5A8", "addend": 8}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "jump", "target": {"script": "lbl_80379462", "entry": "entry", "encoding": "absolute"}}
+        {"command": "jump", "target": {"script": "lbl_80379462", "entry": "entry"}}
       ]
     },
     {
@@ -46,10 +46,10 @@
         {"command": "animate_primary_condition", "battler": 22},
         {"command": "wait_animation", "channel": 7},
         {"command": "refresh_status_icon", "battler": 22},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E558", "encoding": "absolute", "addend": 72}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E558", "addend": 72}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "jump", "target": {"script": "lbl_80379462", "entry": "entry", "encoding": "reloc"}}
+        {"command": "jump", "target": {"script": "lbl_80379462", "entry": "entry"}}
       ]
     }
   ]

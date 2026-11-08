@@ -1,13 +1,13 @@
 {
-  "format": "colosseum-battle-source-v1",
+  "format": "colosseum-battle-source-v2",
   "catalog": "catalog.json",
   "unit": "main/auto_05_80375E60_data",
   "alignment": 8,
-  "programs": [
+  "objects": [
     {
       "symbol": "lbl_80375E60",
       "body": [
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64", "encoding": "absolute"}, "value": 15},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64"}, "value": 15},
         {"command": "finish_move_effects", "mode": 1, "stop_state": 0},
         {"command": "end_move"}
       ]
@@ -18,7 +18,7 @@
         {"command": "print_message", "message_id": 30364},
         {"command": "wait_message", "frames": 64},
         {"command": "apply_opponent_item"},
-        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618", "encoding": "reloc"}, "mask": 256},
+        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618"}, "mask": 256},
         {"command": "play_animation", "battler": "attacker", "animation": 7, "argument": null},
         {"command": "wait_animation", "channel": 0},
         {"command": "refresh_status_icon", "battler": "attacker"},
@@ -27,7 +27,7 @@
         {"command": "wait_message", "frames": 64},
         {"command": "wait_hp_animation", "battler": "attacker"},
         {"command": "wait_animation", "channel": 6},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64", "encoding": "absolute"}, "value": 15},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64"}, "value": 15},
         {"command": "finish_move_effects", "mode": 1, "stop_state": 0},
         {"command": "end_item_action"}
       ]
@@ -41,10 +41,10 @@
         {"command": "play_animation", "battler": "attacker", "animation": 7, "argument": null},
         {"command": "wait_animation", "channel": 0},
         {"command": "refresh_status_icon", "battler": "attacker"},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279E30", "encoding": "reloc"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279E30"}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64", "encoding": "absolute"}, "value": 15},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64"}, "value": 15},
         {"command": "finish_move_effects", "mode": 1, "stop_state": 0},
         {"command": "end_item_action"}
       ]
@@ -57,10 +57,10 @@
         {"command": "apply_opponent_item"},
         {"command": "play_animation", "battler": "attacker", "animation": 29, "argument": null},
         {"command": "wait_animation", "channel": 0},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279DA8", "encoding": "absolute"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279DA8"}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64", "encoding": "reloc"}, "value": 15},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64"}, "value": 15},
         {"command": "finish_move_effects", "mode": 1, "stop_state": 0},
         {"command": "end_item_action"}
       ]
@@ -73,10 +73,10 @@
         {"command": "apply_opponent_item"},
         {"command": "play_animation", "battler": "attacker", "animation": 1, "argument": null},
         {"command": "wait_animation", "channel": 0},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279DA8", "encoding": "reloc"}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_80279DA8"}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64", "encoding": "absolute"}, "value": 15},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64"}, "value": 15},
         {"command": "finish_move_effects", "mode": 1, "stop_state": 0},
         {"command": "end_item_action"}
       ]
@@ -89,10 +89,10 @@
         {"command": "apply_opponent_item"},
         {"command": "play_animation", "battler": "attacker", "animation": 28, "argument": null},
         {"command": "wait_animation", "channel": 0},
-        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E558", "encoding": "absolute", "addend": 32}},
+        {"command": "print_message_from_table", "message_table": {"symbol": "lbl_8047E558", "addend": 32}},
         {"command": "wait_message", "frames": 64},
         {"command": "wait_animation", "channel": 6},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64", "encoding": "reloc"}, "value": 15},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8038FF64"}, "value": 15},
         {"command": "finish_move_effects", "mode": 1, "stop_state": 0},
         {"command": "end_item_action"}
       ]
@@ -110,19 +110,19 @@
     {
       "symbol": "lbl_80375F40",
       "body": [
-        {"command": "get_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 55, "index": null, "value": {"symbol": "lbl_8047B63C", "encoding": "reloc"}},
-        {"command": "jump_if_halfword", "comparison": "not_equal", "address": {"symbol": "lbl_8047B63C", "encoding": "absolute"}, "value": 57, "target": {"script": "lbl_80375F8E", "entry": "entry", "encoding": "reloc"}},
-        {"command": "jump_if_condition_matches", "battler": "defender", "condition": 33, "present": 0, "target": {"script": "lbl_80375F8E", "entry": "entry", "encoding": "absolute"}},
-        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618", "encoding": "reloc"}, "mask": 262144},
-        {"command": "set_byte", "destination": {"symbol": "lbl_8047B63E", "encoding": "absolute"}, "value": 2},
-        {"command": "set_status_byte", "family": "fight_floor", "context": null, "object_id": null, "field": 57, "index": null, "value": {"symbol": "lbl_8047B63E", "encoding": "absolute"}}
+        {"command": "get_status_halfword", "family": "fight_floor", "context": null, "object_id": null, "field": 55, "index": null, "value": {"symbol": "lbl_8047B63C"}},
+        {"command": "jump_if_halfword", "comparison": "not_equal", "address": {"symbol": "lbl_8047B63C"}, "value": 57, "target": {"script": "lbl_80375F8E", "entry": "entry"}},
+        {"command": "jump_if_condition_matches", "battler": "defender", "condition": 33, "present": 0, "target": {"script": "lbl_80375F8E", "entry": "entry"}},
+        {"command": "set_word_bits", "destination": {"symbol": "lbl_8047B618"}, "mask": 262144},
+        {"command": "set_byte", "destination": {"symbol": "lbl_8047B63E"}, "value": 2},
+        {"command": "set_status_byte", "family": "fight_floor", "context": null, "object_id": null, "field": 57, "index": null, "value": {"symbol": "lbl_8047B63E"}}
       ]
     },
     {
       "symbol": "lbl_80375F8E",
       "body": [
         {"command": "check_attack_allowed"},
-        {"label": "at_check_accuracy_1", "command": "check_accuracy", "target": {"script": "lbl_80375FDD", "entry": "entry", "encoding": "reloc"}, "move_id": 0}
+        {"label": "at_check_accuracy_1", "command": "check_accuracy", "target": {"script": "lbl_80375FDD", "entry": "entry"}, "move_id": 0}
       ]
     },
     {

@@ -16,7 +16,6 @@
 ###
 
 import argparse
-import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -617,21 +616,38 @@ MENU_MIDDLE_RODATA_POOL = (
 
 # Battle-script sources keep the original data-only owner identities. Their
 # compiler derives widths and branch labels from the interpreted data language.
-BATTLE_SCRIPT_ADDRESSES = (
-    "80375E60", "80375F9C", "80376104", "80377088", "80377D90", "80378538",
-    "80378724", "80378798", "80378968", "80378AA0", "80378B44", "80378D7C",
-    "8037939C", "80379478", "803795D8", "80379808", "80379B0C",
+# Every address operand is relocated in the linked object; objdiff reads a
+# comparison view that mirrors what dtk's split targets can express.
+BATTLE_SCRIPT_OWNERS = (
+    ("80375E60", "auto_05_80375E60_data"), ("80375F98", "game/data/data_80375F98.c"),
+    ("80375F9C", "auto_05_80375F9C_data"), ("803760D8", "game/data/data_803760D8.c"),
+    ("80376104", "auto_05_80376104_data"), ("80376FCC", "game/data/data_80376FCC.c"),
+    ("80377088", "auto_05_80377088_data"), ("80377B0C", "game/data/data_80377B0C.c"),
+    ("80377D90", "auto_05_80377D90_data"), ("803784C0", "game/data/data_803784C0.c"),
+    ("80378538", "auto_05_80378538_data"), ("803786D0", "game/data/data_803786D0.c"),
+    ("80378724", "auto_05_80378724_data"), ("80378794", "game/data/data_80378794.c"),
+    ("80378798", "auto_05_80378798_data"), ("803788C0", "game/data/data_803788C0.c"),
+    ("80378968", "auto_05_80378968_data"), ("80378A7C", "game/data/data_80378A7C.c"),
+    ("80378AA0", "auto_05_80378AA0_data"), ("80378B00", "game/data/data_80378B00.c"),
+    ("80378B44", "auto_05_80378B44_data"), ("80378D14", "game/data/data_80378D14.c"),
+    ("80378D7C", "auto_05_80378D7C_data"), ("80379388", "game/data/data_80379388.c"),
+    ("8037939C", "auto_05_8037939C_data"), ("8037943C", "game/data/data_8037943C.c"),
+    ("80379478", "auto_05_80379478_data"), ("803794CC", "game/data/data_803794CC.c"),
+    ("803795D8", "auto_05_803795D8_data"), ("80379714", "game/data/data_80379714.c"),
+    ("80379808", "auto_05_80379808_data"), ("80379A3C", "game/data/data_80379A3C.c"),
+    ("80379B0C", "auto_05_80379B0C_data"), ("80379BF4", "game/data/data_80379BF4.c"),
 )
 battle_catalog_path = Path("src/game/battle_scripts/catalog.json")
-battle_catalog = json.loads(battle_catalog_path.read_text(encoding="utf-8"))
 config.reconfig_deps.append(battle_catalog_path)
+# lbl_80478D78's native C array is larger than its historical map fragment.
+battle_native_bounds = "config/GC6E01/data_aliases/sdata_80478D78.json"
 battle_source_dependencies = [
     "tools/battle_script_format.py",
     "config/GC6E01/symbols.txt",
+    battle_native_bounds,
     str(battle_catalog_path),
     *[f"src/game/battle_scripts/scripts_{address}.battle.json"
-      for address in BATTLE_SCRIPT_ADDRESSES],
-    *sorted({entry["source"] for entry in battle_catalog["external_entries"]}),
+      for address, _ in BATTLE_SCRIPT_OWNERS],
 ]
 
 config.libs = [
@@ -642,17 +658,19 @@ config.libs = [
             *[
                 Object(
                     Matching,
-                    f"auto_05_{address}_data",
+                    unit,
                     source=f"game/battle_scripts/scripts_{address}.battle.json",
                     source_generator={
                         "kind": "object", "tool": "tools/compile_battle_scripts.py",
-                        "args": ["--symbols", "config/GC6E01/symbols.txt"],
+                        "args": ["--symbols", "config/GC6E01/symbols.txt",
+                                 "--native-bounds", battle_native_bounds],
                         "dependencies": battle_source_dependencies,
                         "assembler": True,
+                        "comparison": True,
                     },
                     progress_category="game",
                 )
-                for address in BATTLE_SCRIPT_ADDRESSES
+                for address, unit in BATTLE_SCRIPT_OWNERS
             ],
             # Typed task/menu/GBA defaults and small lookup tables.
             Object(
@@ -13570,101 +13588,6 @@ config.libs = [
             Object(
                 Matching,
                 "game/data/data_80375938.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80375F98.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_803760D8.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80376FCC.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80377B0C.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_803784C0.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_803786D0.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80378794.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_803788C0.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80378A7C.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80378B00.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80378D14.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80379388.c",
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_8037943C.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_803794CC.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80379714.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80379A3C.c",
-                data_alignment=4,
-                progress_category="game",
-            ),
-            Object(
-                Matching,
-                "game/data/data_80379BF4.c",
-                data_alignment=4,
                 progress_category="game",
             ),
             Object(

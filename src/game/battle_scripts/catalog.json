@@ -1,141 +1,40 @@
 {
-  "format": "colosseum-battle-catalog-v1",
-  "description": "Existing battle-sequence object ownership and checked entry declarations for neighboring source-backed scripts. New branch labels are derived from named command widths.",
+  "format": "colosseum-battle-catalog-v2",
+  "description": "Battle-sequence object ownership. Branch labels are derived from named command widths.",
   "sources": [
     "scripts_80375E60.battle.json",
+    "scripts_80375F98.battle.json",
     "scripts_80375F9C.battle.json",
+    "scripts_803760D8.battle.json",
     "scripts_80376104.battle.json",
+    "scripts_80376FCC.battle.json",
     "scripts_80377088.battle.json",
+    "scripts_80377B0C.battle.json",
     "scripts_80377D90.battle.json",
+    "scripts_803784C0.battle.json",
     "scripts_80378538.battle.json",
+    "scripts_803786D0.battle.json",
     "scripts_80378724.battle.json",
+    "scripts_80378794.battle.json",
     "scripts_80378798.battle.json",
+    "scripts_803788C0.battle.json",
     "scripts_80378968.battle.json",
+    "scripts_80378A7C.battle.json",
     "scripts_80378AA0.battle.json",
+    "scripts_80378B00.battle.json",
     "scripts_80378B44.battle.json",
+    "scripts_80378D14.battle.json",
     "scripts_80378D7C.battle.json",
+    "scripts_80379388.battle.json",
     "scripts_8037939C.battle.json",
+    "scripts_8037943C.battle.json",
     "scripts_80379478.battle.json",
+    "scripts_803794CC.battle.json",
     "scripts_803795D8.battle.json",
+    "scripts_80379714.battle.json",
     "scripts_80379808.battle.json",
-    "scripts_80379B0C.battle.json"
-  ],
-  "external_entries": [
-    {
-      "symbol": "lbl_80375F98",
-      "source": "src/game/data/data_80375F98.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_803760D8",
-      "source": "src/game/data/data_803760D8.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_80376FCC",
-      "source": "src/game/data/data_80376FCC.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_80377B0C",
-      "source": "src/game/data/data_80377B0C.c",
-      "labels": {
-        "entry": 0,
-        "at_consume_pp_5": 31
-      }
-    },
-    {
-      "symbol": "lbl_80377B38",
-      "source": "src/game/data/data_80377B0C.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_803784C0",
-      "source": "src/game/data/data_803784C0.c",
-      "labels": {
-        "entry": 0,
-        "at_wait_frames_3": 10
-      }
-    },
-    {
-      "symbol": "lbl_803786D0",
-      "source": "src/game/data/data_803786D0.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_80378794",
-      "source": "src/game/data/data_80378794.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_803788C0",
-      "source": "src/game/data/data_803788C0.c",
-      "labels": {
-        "entry": 0,
-        "at_set_byte_21": 66
-      }
-    },
-    {
-      "symbol": "lbl_80378B00",
-      "source": "src/game/data/data_80378B00.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_80378B0F",
-      "source": "src/game/data/data_80378B00.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_80378B1E",
-      "source": "src/game/data/data_80378B00.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_80378B2D",
-      "source": "src/game/data/data_80378B00.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_80379462",
-      "source": "src/game/data/data_8037943C.c",
-      "labels": {
-        "entry": 0
-      }
-    },
-    {
-      "symbol": "lbl_803797BB",
-      "source": "src/game/data/data_80379714.c",
-      "labels": {
-        "entry": 0,
-        "at_play_animation_7": 27
-      }
-    },
-    {
-      "symbol": "lbl_80379A3C",
-      "source": "src/game/data/data_80379A3C.c",
-      "labels": {
-        "entry": 0
-      }
-    }
+    "scripts_80379A3C.battle.json",
+    "scripts_80379B0C.battle.json",
+    "scripts_80379BF4.battle.json"
   ]
 }
